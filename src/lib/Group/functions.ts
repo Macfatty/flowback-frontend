@@ -1,18 +1,7 @@
 import { fetchRequest } from '$lib/FetchRequest';
 import type { Tag } from './interface';
 import { tags as tagLimit } from '../Generic/APILimits.json';
-
-export const getUserIsOwner = async (groupId: number | string) => {
-	const userData = await fetchRequest('GET', 'user');
-	const groupAdmins = await fetchRequest('GET', `group/${groupId}/users?is_admin=true`);
-
-	if (userData && groupAdmins)
-	return (
-		groupAdmins.json.results.find(
-			(user: any) => user.user.id === userData.json.id && user.is_admin
-		) !== undefined
-	);
-};
+import { userStore } from '$lib/User/interfaces';
 
 export const getTags = async (
 	groupId: string | number,

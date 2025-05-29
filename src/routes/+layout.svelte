@@ -19,6 +19,7 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { workGroupsStore } from '$lib/Group/WorkingGroups/interface';
 	import LogBackInModal from '$lib/Generic/LogBackInModal.svelte';
+	import { userStore } from '$lib/User/interfaces';
 
 	export const prerender = true;
 
@@ -139,7 +140,11 @@
 
 	const setUserGroupInfo = async () => {
 		if (!$page.params.groupId) return;
-		if ($userGroupInfo?.group_id === Number($page.params.groupId)) return;
+		// if (
+		// 	(Number(localStorage.getItem('userId')) === $userGroupInfo?.user.id &&
+		// 	$userGroupInfo?.group_id === Number($page.params.groupId))
+		// )
+		// 	return;
 
 		const { res, json } = await fetchRequest(
 			'GET',
@@ -147,6 +152,21 @@
 		);
 		if (!res.ok) return;
 		userGroupInfo.set(json.results[0]);
+
+		console.log(json, "User Group Info");
+		
+	};
+
+	const setUserInfo = async () => {
+		if (
+			localStorage.getItem('userId') === null ||
+			Number(localStorage.getItem('userId')) === $userStore?.id
+		)
+			return;
+
+		const { res, json } = await fetchRequest('GET', `users?id=${localStorage.getItem('userId')}`);
+		if (!res.ok) return;
+		userStore.set(json.results[0]);
 	};
 
 	beforeNavigate(() => {
@@ -166,6 +186,7 @@
 
 		checkSessionExpiration();
 		setUserGroupInfo();
+		setUserInfo();
 	});
 
 	//Initialize Translation, which should happen before any lifecycle hooks.

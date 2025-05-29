@@ -10,9 +10,9 @@
 	import { onMount } from 'svelte';
 	import { getPhase, getPhaseUserFriendlyNameWithNumber, nextPhase } from './functions';
 	import DefaultBanner from '$lib/assets/default_banner_group.png';
-	import { elipsis, getPermissionsFast, onThumbnailError } from '$lib/Generic/GenericFunctions';
+	import { getPermissionsFast, onThumbnailError } from '$lib/Generic/GenericFunctions';
 	import Select from '$lib/Generic/Select.svelte';
-	import { getTags, getUserIsOwner } from '$lib/Group/functions';
+	import { getTags } from '$lib/Group/functions';
 	import type { Tag as TagType } from '$lib/Group/interface';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import Button from '$lib/Generic/Button.svelte';
@@ -23,7 +23,6 @@
 	import {
 		faAnglesRight,
 		faThumbtack,
-		faComment,
 		faAlignLeft,
 		faCalendarAlt,
 		faSlash
@@ -34,10 +33,10 @@
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import Timeline from './NewDesign/Timeline.svelte';
 	import ReportPollModal from './ReportPollModal.svelte';
-	import type { Permission, Permissions } from '$lib/Group/Permissions/interface';
+	import type { Permissions } from '$lib/Group/Permissions/interface';
+	import { userGroupInfo } from '$lib/Group/interface';
 
-	export let poll: poll,
-		isAdmin = false;
+	export let poll: poll;
 
 	let onHoverGroup = false,
 		phase: Phase,
@@ -53,8 +52,7 @@
 		reportPollModalShow = false,
 		hovering = false,
 		showGroupInfo = !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') && !$page.params.groupId,
-		permissions: Permissions,
-		userIsOwner: boolean;
+		permissions: Permissions;
 
 	//When adminn presses the pin tack symbol, pin the poll
 	const pinPoll = async () => {
@@ -99,8 +97,6 @@
 		}
 
 		permissions = await getPermissionsFast(Number(poll.group_id));
-		userIsOwner = await getUserIsOwner(poll?.group_id);
-
 		darkModeStore.subscribe((dark) => (darkMode = dark));
 	});
 
@@ -154,8 +150,8 @@
 						Class="text-black dark:text-darkmodeText"
 						ClassOpen="right-0"
 					/>
-					{#if isAdmin || poll?.pinned}
-						<button class:cursor-pointer={isAdmin} on:click={pinPoll}>
+					{#if $userGroupInfo.is_admin || poll?.pinned}
+						<button class:cursor-pointer={$userGroupInfo.is_admin} on:click={pinPoll}>
 							<Fa
 								size="1.2x"
 								icon={faThumbtack}
@@ -167,12 +163,11 @@
 
 					<MultipleChoices
 						bind:choicesOpen
-						labels={phase === 'result' ||
-						phase === 'prediction_vote' ||
-						!poll?.allow_fast_forward ||
-						(!permissions?.poll_fast_forward && !userIsOwner)
-							? [$_('Delete Poll'), $_('Report Poll')]
-							: [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]}
+						labels={!(phase === 'result' || phase === 'prediction_vote') ||
+						(poll?.allow_fast_forward &&
+							(permissions?.poll_fast_forward || $userGroupInfo.is_admin))
+							? [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]
+							: [$_('Delete Poll'), $_('Report Poll')]}
 						functions={[
 							() => ((deletePollModalShow = true), (choicesOpen = false)),
 							() => ((reportPollModalShow = true), (choicesOpen = false)),
@@ -207,8 +202,8 @@
 						Class="text-black dark:text-darkmodeText"
 						ClassOpen="right-0"
 					/>
-					{#if isAdmin || poll?.pinned}
-						<button class:cursor-pointer={isAdmin} on:click={pinPoll}>
+					{#if $userGroupInfo.is_admin || poll?.pinned}
+						<button class:cursor-pointer={$userGroupInfo.is_admin} on:click={pinPoll}>
 							<Fa
 								size="1.2x"
 								icon={faThumbtack}
@@ -220,12 +215,11 @@
 
 					<MultipleChoices
 						bind:choicesOpen
-						labels={phase === 'result' ||
-						phase === 'prediction_vote' ||
-						!poll?.allow_fast_forward ||
-						(!permissions?.poll_fast_forward && !userIsOwner)
-							? [$_('Delete Poll'), $_('Report Poll')]
-							: [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]}
+						labels={!(phase === 'result' || phase === 'prediction_vote') &&
+						(poll?.allow_fast_forward &&
+							(permissions?.poll_fast_forward || $userGroupInfo.is_admin))
+							? [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]
+							: [$_('Delete Poll'), $_('Report Poll')]}
 						functions={[
 							() => ((deletePollModalShow = true), (choicesOpen = false)),
 							() => ((reportPollModalShow = true), (choicesOpen = false)),
@@ -250,8 +244,12 @@
 				<HeaderIcon Class="!p-0 !cursor-default" icon={faAnglesRight} text={'Fast Forward'} />
 			{:else}
 				<div
+					role="button"
+					tabindex="0"
 					on:mouseover={() => (hovering = true)}
 					on:mouseleave={() => (hovering = false)}
+					on:focus={() => (hovering = true)}
+					on:blur={() => (hovering = false)}
 					class="relative w-4 h-4"
 				>
 					<Fa style="position:absolute" icon={faAnglesRight} />
