@@ -9,10 +9,8 @@
 		faCircle,
 		faCircleCheck,
 		faCircleExclamation,
-		faMinus
 	} from '@fortawesome/free-solid-svg-icons';
 	import type { Phase, poll } from '../interface';
-	import { onMount } from 'svelte';
 
 	export let enableDetails = false,
 		displayTimeline = true,
@@ -103,7 +101,8 @@
 
 	{#if displayTimeline}
 		<div
-			class={`mt-4 flex gap-20 justify-between rounded-md 
+			class={`mt-4 flex justify-between rounded-md 
+			${horizontal ? '' : 'gap-20'}
 			${horizontal ? 'flex-row' : 'flex-col'}
 			${horizontal ? 'w-full' : 'w-4'}
 			${horizontal ? 'max-h-4' : 'max-w-4'}

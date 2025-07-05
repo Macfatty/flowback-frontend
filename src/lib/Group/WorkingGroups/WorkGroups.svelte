@@ -32,7 +32,8 @@
 			previous: '',
 			total_page: 0,
 			joined: false,
-			chat: 1
+			chat: 1,
+			requested_access: false
 		},
 		poppup: poppup,
 		open = false,
@@ -80,7 +81,8 @@
 			previous: '',
 			total_page: 0,
 			joined: false,
-			chat: 1
+			chat: 1,
+			requested_access: false
 		};
 
 		open = false;
@@ -116,8 +118,14 @@
 		workGroups.forEach((workGroup) => {
 			if (workGroup.id === workGroupId && groupUserId === Number(localStorage.getItem('userId')))
 				workGroup.joined = true;
+			workGroup.member_count++;
 		});
 		workGroups = workGroups;
+	};
+
+	const handleRemoveGroup = (id: number) => {
+		workGroups = workGroups.filter((group) => group.id !== id);
+		getWorkGroupInvite();
 	};
 
 	onMount(async () => {
@@ -128,10 +136,6 @@
 		getWorkGroupInvite();
 		loading = false;
 	});
-
-	const handleRemoveGroup = (id: number) => {
-		workGroups = workGroups.filter((group) => group.id !== id);
-	};
 </script>
 
 <div class="flex items-center gap-3 mb-4">
@@ -161,25 +165,23 @@
 <Loader bind:loading>
 	{#if $groupUserStore?.is_admin && invites?.length > 0}
 		<div class="flex flex-col gap-4 mt-4">
-			{#key invites}
-				{#each invites as invite}
-					<div
-						class="bg-white w-full px-4 py-2 flex gap-2 shadow rounded dark:bg-darkobject min-h-14"
-					>
-						<div class="flex justify-between w-full">
-							<div>
-								<b class="font-semibold">{invite.group_user.user.username}</b>
-								{$_('wants to join')} <b class="font-semibold">{invite.work_group_name}</b>
-							</div>
-							<Button
-								buttonStyle="primary-light"
-								onClick={() => addUserToGroup(invite.group_user.id, invite.work_group_id)}
-								>{$_('Add User')}</Button
-							>
+			{#each invites as invite}
+				<div
+					class="bg-white w-full px-4 py-2 flex gap-2 shadow rounded dark:bg-darkobject min-h-14"
+				>
+					<div class="flex justify-between w-full">
+						<div>
+							<b class="font-semibold">{invite.group_user.user.username}</b>
+							{$_('wants to join')} <b class="font-semibold">{invite.work_group_name}</b>
 						</div>
+						<Button
+							buttonStyle="primary-light"
+							onClick={() => addUserToGroup(invite.group_user.id, invite.work_group_id)}
+							>{$_('Add User')}</Button
+						>
 					</div>
-				{/each}
-			{/key}
+				</div>
+			{/each}
 		</div>
 	{/if}
 	<div class="flex flex-col gap-4 mt-4">
@@ -196,7 +198,7 @@
 
 <Poppup bind:poppup />
 
-<Modal bind:open>
+<Modal bind:open Class="max-w-[500px]">
 	<div slot="header" class="w-full"><span>{$_('Create work group')}</span></div>
 	<form slot="body" class="w-full" on:submit|preventDefault={createWorkingGroup}>
 		<TextInput label="Name" required bind:value={workGroupEdit.name} />

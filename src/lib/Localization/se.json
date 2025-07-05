@@ -662,5 +662,10 @@
     "Clear probability": "Rensa sannolikhet",
     "Clear vote": "Rensa röst",
     "Calculating results...": "Beräknar resultat...",
-    "Failed to calculate results": "Misslyckades att beräkna resultat"
+    "Failed to calculate results": "Misslyckades att beräkna resultat",
+    "Already asked to join": "Redan frågat om att gå med",
+    "Invite Sent" : "Inbjudan skickad",
+    "Confirm Deletion": "Bekräfta borttagning",
+    "Are you sure you want to delete this workgroup?": "Är du säker på att du vill ta bort den här arbetsgruppen?",
+    "Direct Join?": "Ingen Inbjudan?"
 }

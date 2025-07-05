@@ -14,8 +14,8 @@
 	import type { poppup } from '$lib/Generic/Poppup';
 	import Poppup from '$lib/Generic/Poppup.svelte';
 	import { commentsStore } from './commentStore';
-	import { derived } from 'svelte/store';
 	import { getCommentDepth } from './functions';
+	import { onDestroy } from 'svelte';
 
 	export let comments: Comment[] = [],
 		proposals: proposal[] = [],
@@ -166,10 +166,23 @@
 		});
 	};
 
+	const handleKeyDown = (event: KeyboardEvent) => {
+		// Check for a specific key, e.g., the "k" key:
+		if (event.ctrlKey && event.key === 'Enter' && message.trim() !== '') {
+			beingEdited ? commentUpdate() : commentCreate();
+		}
+	};
+
+	document.addEventListener('keydown', handleKeyDown);
+
 	onMount(() => {
 		darkModeStore.subscribe((value) => {
 			darkmode = value;
 		});
+	});
+
+	onDestroy(() => {
+		document.removeEventListener('keydown', handleKeyDown);
 	});
 </script>
 
@@ -189,14 +202,15 @@
 				</div>
 				<ul class="divide-y divide-gray-200">
 					{#each proposals as proposal}
-						<li
-							class="hover:bg-gray-100 dark:hover:bg-darkbackground dark:hover:brightness-125 cursor-pointer px-4 py-2"
-							on:click={() => {
-								message = `${message}${proposal.title.replaceAll(' ', '-')} `;
-								recentlyTappedButton = '';
-							}}
-						>
-							{proposal.title}
+						<li class="px-4 py-2">
+							<button type="button"
+								class="w-full text-left hover:bg-gray-100 dark:hover:bg-darkbackground dark:hover:brightness-125 cursor-pointer"
+								on:click={() => {
+									message = `${message}${proposal.title.replaceAll(' ', '-')} `;
+									recentlyTappedButton = '';
+								}}>
+								{proposal.title}
+							</button>
 						</li>
 					{/each}
 				</ul>
@@ -216,19 +230,21 @@
 				id="comment"
 			/>
 		</div>
-		<div class="flex ml-2 gap-2 items-start">
+		<div class="flex ml-2 items-start">
 			<FileUploads
 				bind:files
 				minimalist
 				disableCropping
 				Class="content-center p-2 rounded hover:bg-gray-100 h-10"
 			/>
-			<Button
-				Class="bg-white dark:bg-darkbackground hover:!brightness-100 hover:bg-gray-100 p-2 h-10 m-auto"
-				type="submit"
-				label=""
-				><Fa icon={faPaperPlane} color={darkmode ? 'white' : 'black'} class="text-lg" /></Button
-			>
+			<div class="p-2 m-auto">
+				<Button
+					Class=" !rounded-none bg-white dark:bg-darkbackground hover:!brightness-100 hover:bg-gray-100"
+					type="submit"
+					label=""
+					><Fa icon={faPaperPlane} color={darkmode ? 'white' : 'black'} class="text-lg" /></Button
+				>
+			</div>
 		</div>
 	</div>
 </form>
