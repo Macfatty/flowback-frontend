@@ -356,7 +356,7 @@
 								{$_('Delegate')}
 							</div>
 						{/if}
-						{#if user.is_admin}
+						{#if user?.is_admin}
 							<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700 mr-2">
 								{$_('Admin')}
 							</div>
@@ -378,7 +378,7 @@
 									</button>
 								{/if}
 							{/await}
-							{#if $groupUserStore.is_admin && user.user.id !== (Number(localStorage.getItem('userId')) || 0)}
+							{#if $groupUserStore?.is_admin && user.user.id !== (Number(localStorage.getItem('userId')) || 0)}
 								<Button
 									Class="w-10 h-10 flex items-center justify-center pl-6 bg-transparent"
 									onClick={() => (removeUserModalShow = true)}

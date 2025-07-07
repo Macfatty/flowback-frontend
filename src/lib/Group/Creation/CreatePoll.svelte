@@ -290,7 +290,7 @@
 				<RadioButtons bind:Yes={isPublic} label="Public?" />
 			{/if}
 
-			{#if selectedPage === 'poll' && (permissions?.allow_fast_forward || $groupUserStore.is_admin)}
+			{#if selectedPage === 'poll' && (permissions?.allow_fast_forward || $groupUserStore?.is_admin)}
 				<RadioButtons bind:Yes={isFF} label="Fast Forward?" />
 			{/if}
 
