@@ -86,8 +86,8 @@
 				id={thread?.id}
 				labels={['comment']}
 			/>
-			{#if $groupUserStore.is_admin || thread?.pinned}
-				<button class:cursor-pointer={$groupUserStore.is_admin} on:click={() => pinThread(thread)}>
+			{#if $groupUserStore?.is_admin || thread?.pinned}
+				<button class:cursor-pointer={$groupUserStore?.is_admin} on:click={() => pinThread(thread)}>
 					<Fa
 						size="1.2x"
 						icon={faThumbTack}

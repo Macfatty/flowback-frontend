@@ -48,7 +48,6 @@
 			}
 		},
 		version = '0.2.2',
-		serverConfig: any = {},
 		reports: any = [];
 
 	const userUpdate = async () => {
@@ -62,7 +61,7 @@
 
 		if (!res.ok) return;
 
-		serverConfig = json;
+		// serverConfig = json;
 	};
 
 	const getUserConfig = async () => {

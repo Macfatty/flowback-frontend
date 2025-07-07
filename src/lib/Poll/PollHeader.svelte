@@ -63,7 +63,7 @@
 			bind:choicesOpen
 			labels={!(phase === 'result' || phase === 'prediction_vote') &&
 			poll?.allow_fast_forward &&
-			($groupUserPermissionStore?.poll_fast_forward || $groupUserStore.is_admin)
+			($groupUserPermissionStore?.poll_fast_forward || $groupUserStore?.is_admin)
 				? [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]
 				: [$_('Delete Poll'), $_('Report Poll')]}
 			functions={[

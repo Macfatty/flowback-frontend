@@ -150,8 +150,8 @@
 						Class="text-black dark:text-darkmodeText"
 						ClassOpen="right-0"
 					/>
-					{#if $groupUserStore.is_admin || poll?.pinned}
-						<button class:cursor-pointer={$groupUserStore.is_admin} on:click={pinPoll}>
+					{#if $groupUserStore?.is_admin || poll?.pinned}
+						<button class:cursor-pointer={$groupUserStore?.is_admin} on:click={pinPoll}>
 							<Fa
 								size="1.2x"
 								icon={faThumbtack}
@@ -165,7 +165,7 @@
 						bind:choicesOpen
 						labels={!(phase === 'result' || phase === 'prediction_vote') ||
 						(poll?.allow_fast_forward &&
-							(permissions?.poll_fast_forward || $groupUserStore.is_admin))
+							(permissions?.poll_fast_forward || $groupUserStore?.is_admin))
 							? [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]
 							: [$_('Delete Poll'), $_('Report Poll')]}
 						functions={[
@@ -202,8 +202,8 @@
 						Class="text-black dark:text-darkmodeText"
 						ClassOpen="right-0"
 					/>
-					{#if $groupUserStore.is_admin || poll?.pinned}
-						<button class:cursor-pointer={$groupUserStore.is_admin} on:click={pinPoll}>
+					{#if $groupUserStore?.is_admin || poll?.pinned}
+						<button class:cursor-pointer={$groupUserStore?.is_admin} on:click={pinPoll}>
 							<Fa
 								size="1.2x"
 								icon={faThumbtack}
@@ -217,7 +217,7 @@
 						bind:choicesOpen
 						labels={!(phase === 'result' || phase === 'prediction_vote') &&
 						(poll?.allow_fast_forward &&
-							(permissions?.poll_fast_forward || $groupUserStore.is_admin))
+							(permissions?.poll_fast_forward || $groupUserStore?.is_admin))
 							? [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]
 							: [$_('Delete Poll'), $_('Report Poll')]}
 						functions={[
