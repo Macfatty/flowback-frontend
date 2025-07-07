@@ -60,7 +60,10 @@
 		const id = json;
 		statusMessageFormatter(res, id);
 
-		if (!res.ok) return;
+		if (!res.ok)  {
+			poppup = { message: 'Failed to add proposal', success: false };
+			return;
+		}
 
 		poppup = { message: 'Successfully added proposal', success: true };
 
@@ -73,7 +76,8 @@
 			id,
 			created_by,
 			poll: Number($page.params.pollId),
-			attachments: []
+			attachments: [],
+			score:0
 		});
 		proposals = proposals;
 
