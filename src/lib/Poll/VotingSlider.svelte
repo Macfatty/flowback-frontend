@@ -101,7 +101,7 @@
 			<!-- Floating value shown only while dragging -->
 			{#if dragLinePosition !== null}
 				<div
-					class="absolute -top-6 z-30 text-sm bg-white px-1 py-0.5 rounded shadow -translate-x-1/2"
+					class="dark:text-black absolute -top-6 z-30 text-sm bg-white px-1 py-0.5 rounded shadow -translate-x-1/2"
 					style="left: {(currentSnapPosition / maxScore) * 100}%"
 				>
 					{#if $groupUserStore?.delegate}

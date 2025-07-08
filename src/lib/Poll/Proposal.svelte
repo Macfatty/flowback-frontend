@@ -15,6 +15,7 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { page } from '$app/stores';
 	import { commentsStore } from '$lib/Comments/commentStore';
+	import { darkModeStore } from '$lib/Generic/DarkMode';
 
 	export let proposal: proposal,
 		Class = '',
@@ -69,7 +70,8 @@
 <button
 	class={`dark:bg-darkobject bg-white w-full py-3 px-3 transition-all
 	 dark:border-gray-500 ${Class}`}
-	class:!bg-blue-100={selectedProposal === proposal}
+	class:!bg-blue-100={selectedProposal === proposal && !$darkModeStore}
+	class:!bg-slate-700={selectedProposal === proposal && $darkModeStore}
 	class:border-l-2={selectedProposal === proposal}
 	class:border-primary={selectedProposal === proposal}
 >
