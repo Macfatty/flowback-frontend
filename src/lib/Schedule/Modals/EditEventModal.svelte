@@ -11,7 +11,8 @@
 		loading = false,
 		type: 'user' | 'group',
 		poppup: poppup = { message: '', success: true, show: false },
-		showEvent = false;
+		showEvent = false,
+		events: scheduledEvent[] = [];
 
 	// Members list and selections
 	let members: { id: number; name: string }[] = [],
@@ -60,6 +61,14 @@
 
 		poppup = { message: 'Event successfully updated', success: true };
 		showEditScheduleEvent = false;
+		events = [
+			...events.filter(event => event.event_id !== selectedEvent.event_id),
+			selectedEvent
+		];
+		events = events;
+
+		console.log(events, "EVEN");
+		
 		loading = false;
 	};
 </script>
@@ -262,9 +271,8 @@
 					<button
 						type="button"
 						on:click={() => {
-						showEvent = true;
-						showEditScheduleEvent = false
-						
+							showEvent = true;
+							showEditScheduleEvent = false;
 						}}
 						class="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white rounded hover:bg-gray-400 dark:hover:bg-gray-600"
 					>

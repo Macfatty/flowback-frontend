@@ -149,7 +149,7 @@
 
 	const handleOutsideClick = (e: MouseEvent) => {
 		if (!browser) return;
-		
+
 		const modal = document.querySelector('.modal-content');
 		const membersRegion = document.querySelector('.members-clickable-region');
 		const remindersRegion = document.querySelector('.reminders-clickable-region');
@@ -196,7 +196,7 @@
 				}) || [];
 			selectedReminders = selectedEvent.reminders || [];
 		}
-	}
+	};
 
 	$: if (showCreateScheduleEvent || showEditScheduleEvent || showEvent) {
 		initializeModalValues();
@@ -302,7 +302,6 @@
 		{workGroups}
 		bind:showCreateScheduleEvent
 		on:submit={handleSubmit}
-
 	/>
 {/if}
 
@@ -315,6 +314,7 @@
 		bind:showEditScheduleEvent
 		on:submit={handleSubmit}
 		bind:showEvent
+		bind:events
 	/>
 {/if}
 
