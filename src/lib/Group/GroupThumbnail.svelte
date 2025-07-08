@@ -13,8 +13,7 @@
 
 	export let group: Group;
 
-	let pending: boolean = false,
-		poppup: poppup = { message: '', success: false };
+	let poppup: poppup = { message: '', success: false };
 
 	const goToGroup = () => {
 		if (group.joined) goto(`/groups/${group.id}`);
@@ -29,11 +28,9 @@
 		if (!res.ok) return;
 
 		if (!directJoin) {
-			pending = true;
+			group.pending_join = true;
 			poppup = { message: 'Pending invite', success: true };
-		}
-
-		group.joined = !group.joined;
+		} else group.joined = !group.joined;
 
 		if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') becomeMemberOfGroup(group.blockchain_id);
 	};
@@ -64,9 +61,7 @@
 		<h1 class="text-2xl p-4 mt-10 text-center break-words">
 			{group.name}
 		</h1>
-		<!-- <p class="pl-6 pr-6 pb-6 break-words">
-			{group.description}
-		</p> -->
+
 		{#if group.description.length > 0}
 			<div class="my-2 mx-auto w-[85%] min-w-72 grid-area-description break-words">
 				<p class="line-clamp-2">{group.description}</p>
@@ -75,25 +70,21 @@
 	</button>
 
 	<div class="flex justify-center mb-6">
-		{#if !group.joined && pending === false}
-			<Button
-				disabled={group.pending_join}
-				onClick={() => joinGroup(group.direct_join)}
-				Class="hover:bg-blue-800 bg-blue-600"
-			>
-				{$_(
-					group.joined
-						? 'Leave'
-						: group.direct_join
-						? 'Join'
-						: group.pending_join
-						? 'Request sent'
-						: 'Ask to join'
-				)}
-			</Button>
-		{:else if pending}
-			<div>{$_('Request sent')}</div>
-		{/if}
+		<Button
+			disabled={group.pending_join}
+			onClick={() => joinGroup(group.direct_join)}
+			Class="hover:bg-blue-800 bg-blue-600"
+		>
+			{$_(
+				group.joined
+					? 'Leave'
+					: group.direct_join
+					? 'Join'
+					: group.pending_join
+					? 'Request sent'
+					: 'Ask to join'
+			)}
+		</Button>
 	</div>
 </button>
 <Poppup bind:poppup />

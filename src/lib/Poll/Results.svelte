@@ -63,13 +63,15 @@
 
 	onMount(() => {
 		getProposals();
+		let k = 0;
 
 		if (poll?.status === 2 || poll?.status === 0) {
 			let time = setInterval(() => {
 				
-				if (poll.status === -1 || poll.status === 1) clearInterval(time);
+				if (poll.status === -1 || poll.status === 1 || k === 15) clearInterval(time);
 				getProposals();
 				getPollData();
+				k++;
 			}, 1000);
 		}
 	});
