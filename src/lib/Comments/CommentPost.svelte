@@ -235,11 +235,11 @@
 				bind:files
 				minimalist
 				disableCropping
-				Class="content-center p-2 rounded hover:bg-gray-100 h-10"
+				Class="content-center p-2 rounded hover:bg-gray-700 h-10"
 			/>
 			<div class="p-2 m-auto">
 				<Button
-					Class=" !rounded-none bg-white dark:bg-darkbackground hover:!brightness-100 hover:bg-gray-100"
+					Class=" bg-white dark:bg-darkbackground hover:!brightness-100 hover:!bg-gray-700"
 					type="submit"
 					label=""
 					><Fa icon={faPaperPlane} color={darkmode ? 'white' : 'black'} class="text-lg" /></Button
