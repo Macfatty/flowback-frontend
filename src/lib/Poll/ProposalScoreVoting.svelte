@@ -30,8 +30,14 @@
 			proposal: proposal.id
 		}));
 
-		await getDelegateVotes();
-		await getVotes();
+		if (phase === 'delegate_vote' || phase === 'vote' || phase === 'result') {
+			await getDelegateVotes();
+		}
+
+		if (phase === 'vote' || phase === 'result') {
+			await getVotes();
+		}
+
 		needsReload++;
 	});
 
@@ -74,7 +80,7 @@
 			return;
 		}
 
-		delegateVoting = json.results[0].vote.map((vote: any) => ({
+		delegateVoting = json.results[0]?.vote.map((vote: any) => ({
 			score: vote.raw_score,
 			proposal: vote.proposal_id
 		}));
@@ -161,7 +167,7 @@
 							{voting}
 						>
 							{#if phase === 'delegate_vote' || phase === 'vote'}
-								{@const score = voting.find((vote) => vote.proposal === proposal.id)?.score}
+								{@const score = voting?.find((vote) => vote.proposal === proposal.id)?.score}
 
 								<VotingSlider
 									bind:phase
@@ -172,7 +178,7 @@
 										else if (phase === 'vote') vote();
 									}}
 									{score}
-									delegateScore={delegateVoting.find((vote) => vote.proposal === proposal.id)
+									delegateScore={delegateVoting?.find((vote) => vote.proposal === proposal.id)
 										?.score}
 								/>
 							{/if}

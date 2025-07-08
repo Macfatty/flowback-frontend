@@ -258,7 +258,7 @@
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-[90%] overflow-y-auto">
-							<ProposalScoreVoting bind:comments bind:proposals bind:phase />
+							<ProposalScoreVoting bind:comments bind:proposals bind:phase bind:selectedProposal/>
 						</div>
 					</div>
 					<div slot="right">
