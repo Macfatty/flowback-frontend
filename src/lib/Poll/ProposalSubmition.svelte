@@ -117,11 +117,12 @@
 				bind:value={description}
 			/>
 		</div>
+		
 		{#if env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE'}
 			<RadioButtons bind:Yes={blockchain} label="Push to Blockchain" />
 		{/if}
 
-		<FileUploads bind:files={images} />
+		<FileUploads Class="mt-4" bind:files={images} />
 		<StatusMessage bind:status />
 
 		<Button

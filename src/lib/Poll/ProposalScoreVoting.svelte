@@ -87,7 +87,7 @@
 			proposal: vote.proposal_id
 		}));
 
-		voting = delegateVoting;
+		// voting = delegateVoting;
 	};
 
 	const delegateVote = async () => {
@@ -144,6 +144,7 @@
 	};
 
 	const changingVote = (score: number | string, proposalId: number) => {
+		if (!voting) return;
 		const i = voting.findIndex((vote) => vote.proposal === proposalId);
 		voting[i].score = Number(score);
 		voting = voting;
@@ -168,7 +169,6 @@
 						>
 							{#if phase === 'delegate_vote' || phase === 'vote'}
 								{@const score = voting?.find((vote) => vote.proposal === proposal.id)?.score}
-
 								<VotingSlider
 									bind:phase
 									onSelection={(pos) => {
