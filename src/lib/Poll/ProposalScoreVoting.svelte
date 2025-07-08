@@ -8,6 +8,7 @@
 	import Poppup from '$lib/Generic/Poppup.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import VotingSlider from './VotingSlider.svelte';
+	import { groupUserStore } from '$lib/Group/interface';
 
 	export let proposals: proposal[],
 		selectedProposal: proposal | null = null,
@@ -67,6 +68,7 @@
 			proposal: vote.proposal
 		}));
 		voting = voting;
+		console.log(voting);
 	};
 
 	const getDelegateVotes = async () => {
@@ -97,8 +99,6 @@
 				scores: voting.map((vote) => vote.score)
 			}
 		);
-
-		console.log(res, json);
 
 		if (!res.ok) {
 			if (json?.detail[0] === 'groupuserdelegatepool does not exist')
@@ -177,6 +177,9 @@
 										if (phase === 'delegate_vote') delegateVote();
 										else if (phase === 'vote') vote();
 									}}
+									disabled={(phase === 'delegate_vote' &&
+										$groupUserStore.delegate_pool_id === null) ||
+										(phase === 'vote' && $groupUserStore.delegate_pool_id !== null)}
 									{score}
 									delegateScore={delegateVoting?.find((vote) => vote.proposal === proposal.id)
 										?.score}
