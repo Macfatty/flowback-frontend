@@ -168,7 +168,7 @@
 			onSelection={handleChangeBetScore}
 			lineWidth={50}
 			score={prediction.user_prediction_bet}
-			isVoting={false}
+			bind:phase
 		/>
 		{#if env.PUBLIC_FLOWBACK_AI_MODULE === 'TRUE'}
 			<Button onClick={getAIPredictionBets}>

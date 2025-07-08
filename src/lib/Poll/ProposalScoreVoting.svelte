@@ -164,6 +164,7 @@
 								{@const score = voting.find((vote) => vote.proposal === proposal.id)?.score}
 
 								<VotingSlider
+									bind:phase
 									onSelection={(pos) => {
 										//@ts-ignore
 										changingVote(pos, proposal.id);
@@ -173,7 +174,6 @@
 									{score}
 									delegateScore={delegateVoting.find((vote) => vote.proposal === proposal.id)
 										?.score}
-									bind:phase
 								/>
 							{/if}
 						</Proposal>
