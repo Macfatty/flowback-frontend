@@ -1,13 +1,17 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import type { scheduledEvent } from '../interface';
 	import { _ } from 'svelte-i18n';
+	import { fetchRequest } from '$lib/FetchRequest';
+	import Poppup from '$lib/Generic/Poppup.svelte';
+	import type { poppup } from '$lib/Generic/Poppup';
 
 	export let showEditScheduleEvent = false,
 		selectedEvent: scheduledEvent,
 		workGroups: any[] = [],
 		loading = false,
-		type: 'user' | 'group';
+		type: 'user' | 'group',
+		poppup: poppup = { message: '', success: true, show: false },
+		showEvent = false;
 
 	// Members list and selections
 	let members: { id: number; name: string }[] = [],
@@ -35,7 +39,29 @@
 		}
 	};
 
-	const handleSubmit = () => {};
+	const handleSubmit = async () => {
+		loading = true;
+
+		let toSend = {
+			...selectedEvent,
+			event_id: selectedEvent.event_id
+		};
+
+		if (toSend.meeting_link === '') {
+			delete toSend.meeting_link;
+		}
+
+		const { res } = await fetchRequest('POST', `user/schedule/update`, toSend);
+
+		if (!res.ok) {
+			poppup = { message: 'Failed to update event', success: false };
+			return;
+		}
+
+		poppup = { message: 'Event successfully updated', success: true };
+		showEditScheduleEvent = false;
+		loading = false;
+	};
 </script>
 
 <!-- Modal 2: Edit Event Modal -->
@@ -235,7 +261,11 @@
 				<div class="flex justify-end gap-2">
 					<button
 						type="button"
-						on:click={() => (showEditScheduleEvent = false)}
+						on:click={() => {
+						showEvent = true;
+						showEditScheduleEvent = false
+						
+						}}
 						class="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white rounded hover:bg-gray-400 dark:hover:bg-gray-600"
 					>
 						{$_('Cancel')}
@@ -252,3 +282,5 @@
 		</button>
 	</button>
 {/if}
+
+<Poppup bind:poppup />

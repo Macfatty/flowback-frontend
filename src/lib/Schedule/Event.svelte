@@ -297,32 +297,35 @@
 <!-- Modal 1: Create Event Modal -->
 {#if showCreateScheduleEvent}
 	<CreateEventModal
-		{selectedEvent}
+		bind:selectedEvent
 		{type}
 		{workGroups}
 		bind:showCreateScheduleEvent
 		on:submit={handleSubmit}
+
 	/>
 {/if}
 
 <!-- Modal 2: Edit Event Modal -->
 {#if showEditScheduleEvent}
 	<EditEventModal
-		{selectedEvent}
+		bind:selectedEvent
 		{type}
 		{workGroups}
 		bind:showEditScheduleEvent
 		on:submit={handleSubmit}
+		bind:showEvent
 	/>
 {/if}
 
 <!-- Modal 3: View Event Modal -->
 {#if showEvent}
 	<ViewEventModal
-		{selectedEvent}
+		bind:selectedEvent
 		{type}
 		{scheduleEventDelete}
 		bind:showEvent
+		bind:showEditScheduleEvent
 		on:edit={() => {
 			showEvent = false;
 			showEditScheduleEvent = true;

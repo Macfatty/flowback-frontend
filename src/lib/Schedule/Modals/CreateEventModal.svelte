@@ -37,7 +37,7 @@
 </script>
 
 <!-- Modal 1: Create Event Modal -->
-{#if showCreateScheduleEvent}hiiii
+{#if showCreateScheduleEvent}
 	<button
 		class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
 		on:click={() => (showCreateScheduleEvent = false)}
