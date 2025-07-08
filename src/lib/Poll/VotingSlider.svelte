@@ -58,7 +58,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-	class="w-full bg-white dark:bg-darkobject py-3 px-1 rounded-lg relative"
+	class="w-full bg-white dark:bg-darkobject py-3 px-1 rounded-lg relative cursor-grab"
 	class:draggable={($groupUserStore?.delegate && phase === 'delegate_vote') ||
 		(!$groupUserStore?.delegate && phase === 'vote')}
 	on:mousedown={onMouseDown}

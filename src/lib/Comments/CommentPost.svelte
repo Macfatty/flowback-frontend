@@ -203,12 +203,14 @@
 				<ul class="divide-y divide-gray-200">
 					{#each proposals as proposal}
 						<li class="px-4 py-2">
-							<button type="button"
+							<button
+								type="button"
 								class="w-full text-left hover:bg-gray-100 dark:hover:bg-darkbackground dark:hover:brightness-125 cursor-pointer"
 								on:click={() => {
 									message = `${message}${proposal.title.replaceAll(' ', '-')} `;
 									recentlyTappedButton = '';
-								}}>
+								}}
+							>
 								{proposal.title}
 							</button>
 						</li>
@@ -235,11 +237,11 @@
 				bind:files
 				minimalist
 				disableCropping
-				Class="content-center p-2 rounded hover:bg-gray-700 h-10"
+				Class="content-center p-2 rounded dark:hover:bg-gray-700 hover:bg-gray-100 h-10"
 			/>
 			<div class="p-2 m-auto">
 				<Button
-					Class=" bg-white dark:bg-darkbackground hover:!brightness-100 hover:!bg-gray-700"
+					Class=" bg-white dark:bg-darkbackground hover:!brightness-100 dark:hover:!bg-gray-700 hover:bg-gray-100"
 					type="submit"
 					label=""
 					><Fa icon={faPaperPlane} color={darkmode ? 'white' : 'black'} class="text-lg" /></Button

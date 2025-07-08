@@ -128,13 +128,7 @@
 	};
 
 	const handleChangeBetScore = async (newScore: number | null) => {
-		console.log(newScore, 'SCORE');
-
-		// predictionBetCreate(newScore);
 		if (newScore === null || newScore === 2.5) predictionBetDelete();
-		// else if (score === null) {
-		// predictionBetCreate(newScore);
-		// }
 		else predictionBetUpdate(newScore);
 
 		if (
@@ -143,7 +137,7 @@
 			prediction.blockchain_id &&
 			score
 		)
-			createPredictionBetBlockchain(poll.blockchain_id, prediction.blockchain_id, score);
+			// createPredictionBetBlockchain(poll.blockchain_id, prediction.blockchain_id, score);
 
 		score = Number(newScore);
 	};
