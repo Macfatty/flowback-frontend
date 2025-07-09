@@ -56,8 +56,8 @@
 				startDate.setHours(0);
 				startDate.setMinutes(0);
 				startDate.setSeconds(0);
-				if (startDate <= date && new Date(event.end_date) >= date)
-					console.log(event, date, new Date().getTimezoneOffset());
+				// if (startDate <= date && new Date(event.end_date) >= date)
+				// 	console.log(event, date, new Date().getTimezoneOffset());
 				return startDate <= date && new Date(event.end_date) >= date;
 			})
 			.sort((a, b) => {

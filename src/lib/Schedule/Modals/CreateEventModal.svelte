@@ -120,7 +120,7 @@
 						{/each}
 					</select>
 				</div>
-                
+
 				{#if type === 'group'}
 					<div class="mb-4">
 						<label for="work_group" class="block mb-1 text-gray-700 dark:text-gray-300"
@@ -245,7 +245,7 @@
 						class="px-4 py-2 bg-secondary text-white rounded hover:bg-secondary-dark"
 						disabled={loading}
 					>
-						{loading ? $_('Loading...') : $_('Create')}
+						{$_('Create')}
 					</button>
 				</div>
 			</form>

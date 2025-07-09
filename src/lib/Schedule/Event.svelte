@@ -222,6 +222,7 @@
 			console.error('Error submitting event:', error);
 		}
 	};
+	
 </script>
 
 <!-- Calendar Day Display -->
@@ -304,17 +305,15 @@
 		on:submit={handleSubmit}
 	/>
 {/if}
-
 <!-- Modal 2: Edit Event Modal -->
 {#if showEditScheduleEvent}
 	<EditEventModal
 		bind:selectedEvent
-		{type}
-		{workGroups}
 		bind:showEditScheduleEvent
-		on:submit={handleSubmit}
 		bind:showEvent
 		bind:events
+		{type}
+		{workGroups}
 	/>
 {/if}
 
@@ -322,15 +321,11 @@
 {#if showEvent}
 	<ViewEventModal
 		bind:selectedEvent
-		{type}
-		{scheduleEventDelete}
 		bind:showEvent
 		bind:showEditScheduleEvent
-		on:edit={() => {
-			showEvent = false;
-			showEditScheduleEvent = true;
-		}}
 		on:delete={() => scheduleEventDelete(selectedEvent.event_id)}
+		{type}
+		{scheduleEventDelete}
 	/>
 {/if}
 
