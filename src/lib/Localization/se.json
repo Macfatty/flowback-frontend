@@ -668,5 +668,10 @@
     "Confirm Deletion": "Bekräfta borttagning",
     "Are you sure you want to delete this workgroup?": "Är du säker på att du vill ta bort den här arbetsgruppen?",
     "Direct Join?": "Ingen Inbjudan?",
-    "Consequences": "Konsekvenser"
+    "Consequences": "Konsekvenser",
+    "Once": "En gång",
+    "Daily": "Dagligen",
+    "Weekly": "Veckovis",
+    "Monthly": "Månatligen",
+    "Yearly": "Årligen"
 }

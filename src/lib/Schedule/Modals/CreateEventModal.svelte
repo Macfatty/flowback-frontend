@@ -14,11 +14,12 @@
 		selectedMembers: number[] = [],
 		selectedReminders: number[] = [],
 		// Default to Daily
-		selectedFrequency: number = 1,
+		selectedFrequency: number = 0,
 		choicesOpenMembers = false,
 		choicesOpenReminders = false;
 
 	let frequencyOptions = [
+		{ id: 0, name: 'Once' },
 		{ id: 1, name: 'Daily' },
 		{ id: 2, name: 'Weekly' },
 		{ id: 3, name: 'Monthly' },

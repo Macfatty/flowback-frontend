@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { scheduledEvent } from '../interface';
+	import { formatDate } from '$lib/Generic/DateFormatter';
+import type { scheduledEvent } from '../interface';
 	import { _ } from 'svelte-i18n';
 
 	export let showEvent = false,
@@ -28,11 +29,11 @@
 			</p>
 			<p>
 				<strong class="text-gray-700 dark:text-gray-300">{$_('Start')}:</strong>
-				{selectedEvent.start_date}
+				{formatDate(selectedEvent.start_date)}
 			</p>
 			<p>
 				<strong class="text-gray-700 dark:text-gray-300">{$_('End')}:</strong>
-				{selectedEvent.end_date}
+				{formatDate(selectedEvent.end_date)}
 			</p>
 			{#if selectedEvent.meeting_link}
 				<p>
