@@ -61,7 +61,7 @@
 	};
 
 	const getKanbanEntriesGroup = async () => {
-		let api = `group/${groupId}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
+		let api = `group/${$page.params.groupId || 1}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
 		if (filter.assignee !== null) api += `&assignee=${filter.assignee}`;
 		if (filter.search !== '') api += `&title__icontains=${filter.search}`;
 		if (filter.workgroup !== null) api += `&work_group_ids=${filter.workgroup}`;
