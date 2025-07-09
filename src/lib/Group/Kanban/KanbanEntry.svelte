@@ -9,7 +9,7 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
-  import StatusMessage from '$lib/Generic/StatusMessage.svelte';
+	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
 	import {
 		checkForLinks,
 		elipsis,
@@ -91,10 +91,7 @@
 			work_group: kanban.work_group || null,
 			images: kanban.attachments || []
 		};
-		console.log('Initialized kanbanEdited.end_date:', kanbanEdited.end_date);
 	};
-
-	$: console.log('Kanban end_date on modal open:', kanban.end_date);
 
 	const updateKanbanContent = async () => {
 		const formData = new FormData();
@@ -115,10 +112,7 @@
 		if (kanbanEdited.end_date) {
 			const _endDate = new Date(kanbanEdited.end_date);
 			const isoDate = _endDate.toISOString();
-			const dateString = `${isoDate.slice(
-				0,
-				10
-			)}T${_endDate.getHours()}:${_endDate.getMinutes()}`;
+			const dateString = `${isoDate.slice(0, 10)}T${_endDate.getHours()}:${_endDate.getMinutes()}`;
 			formData.append('end_date', dateString);
 		} else {
 			formData.append('end_date', '');
@@ -336,7 +330,7 @@
 			</button>
 
 			<button
-				class="cursor-pointer hover:dark:text-darkmodeText  hover:text-gray-400 px-3 py-0.5 transition-all"
+				class="cursor-pointer hover:dark:text-darkmodeText hover:text-gray-400 px-3 py-0.5 transition-all"
 				on:click={(event) => {
 					event.stopPropagation();
 					if (kanban.lane < lanes.length - 1) {
@@ -351,7 +345,7 @@
 </button>
 
 {#if kanban.id === selectedEntry}
-	<Modal bind:open={openModal} Class=" min-w-[400px] z-50">
+	<Modal bind:open={openModal} Class=" min-w-[400px] max-w-[500px] z-50">
 		<div slot="body">
 			{#if isEditing}
 				<StatusMessage bind:status disableSuccess />

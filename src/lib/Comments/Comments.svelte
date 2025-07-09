@@ -11,14 +11,14 @@
 	import Poppup from '$lib/Generic/Poppup.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import { commentsStore } from './commentStore';
-	import type { Comment as comment} from '$lib/Poll/interface';
+	import type { Comment as comment } from '$lib/Poll/interface';
 
 	export let proposals: proposal[] = [],
 		api: 'poll' | 'thread' | 'delegate-history',
 		delegate_pool_id: null | number = null,
 		Class = '';
-	
-  let offset = 0,
+
+	let offset = 0,
 		showReadMore = true,
 		sortBy: null | string = null,
 		searchString: string = '',
@@ -26,8 +26,8 @@
 
 	const setUpComments = async () => {
 		const { comments, next } = await getComments(getId(), api, offset, sortBy, searchString);
-		
-		comments.forEach((comment:comment) => {
+
+		comments.forEach((comment: comment) => {
 			comment.reply_depth = getCommentDepth(comment, comments);
 		});
 
@@ -50,7 +50,6 @@
 
 	onMount(async () => {
 		await setUpComments();
-
 	});
 
 	$: if (sortBy || searchString) setUpComments();
@@ -61,7 +60,6 @@
 		<!-- Add Comment -->
 
 		<CommentPost bind:proposals {api} {delegate_pool_id} />
-
 
 		<CommentFilter
 			bind:sortBy

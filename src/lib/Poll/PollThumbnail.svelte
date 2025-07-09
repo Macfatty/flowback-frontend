@@ -132,8 +132,8 @@
 					<img
 						class="h-6 w-6 mr-1 rounded-full break-all"
 						src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
-						on:error={(e) => onThumbnailError(e, DefaultBanner)}
 						alt={'Poll Thumbnail'}
+						on:error={(e) => onThumbnailError(e, DefaultBanner)}
 					/>
 					<span class="break-all text-sm text-gray-700 dark:text-darkmodeText"
 						>{poll?.group_name}</span

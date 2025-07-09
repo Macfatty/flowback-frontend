@@ -27,27 +27,6 @@
 		tags = json.results;
 	};
 
-	// const vote = async (tagId: number) => {
-	// 	const { json, res } = await fetchRequest(
-	// 		'POST',
-	// 		`group/poll/${$page.params.pollId}/area/update`,
-	// 		{
-	// 			tag: tagId,
-	// 			vote: true
-	// 		}
-	// 	);
-
-	// 	if (!res.ok) {
-	// 		poppup = { message: 'Could not vote on tag', success: false };
-	// 		return;
-	// 	}
-
-	// 	if (tagId === selectedTag) selectedTag = null;
-	// 	else selectedTag = tagId;
-
-	// 	poppup = { message: 'Successfully voted for area', success: true };
-	// };
-
 	const submitVote = async () => {
 		if (selectedTag === null) {
 			poppup = { message: 'Please select a tag before submitting.', success: false };

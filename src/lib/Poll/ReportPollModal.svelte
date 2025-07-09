@@ -1,20 +1,24 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { _ } from 'svelte-i18n';
-	import { page } from '$app/stores';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import TextArea from '$lib/Generic/TextArea.svelte';
+	import Poppup from '$lib/Generic/Poppup.svelte';
+	import type { poppup } from '$lib/Generic/Poppup';
+	import Loader from '$lib/Generic/Loader.svelte';
 
 	export let reportPollModalShow = false,
-		pollId: string|number;
-		
+		pollId: string | number;
+
 	let title: string,
-		description: string;
+		description: string,
+		poppup: poppup,
+		loading = false;
 
 	const reportPoll = async () => {
+		loading = true;
 		let _api = 'report/create';
 
 		let data = {
@@ -24,25 +28,48 @@
 
 		const { res, json } = await fetchRequest('POST', _api, data);
 
+		loading = false;
+
 		if (!res.ok) {
+			poppup = {
+				message: 'An error occurred while reporting the poll.',
+				success: false
+			};
 			return;
 		}
-        reportPollModalShow = false;
+
+		poppup = {
+			message: 'Poll reported successfully.',
+			success: true
+		};
+		reportPollModalShow = false;
+		title = '';
+		description = '';
 	};
 </script>
 
-<Modal bind:open={reportPollModalShow}>
+<Modal bind:open={reportPollModalShow} Class="max-w-[500px]">
 	<div slot="header">{$_('Report Poll')}</div>
 	<div class="flex flex-col gap-3" slot="body">
-		<TextInput inputClass="bg-white" required label="Title" bind:value={title} />
-		<TextArea label="Description" required bind:value={description} inputClass="whitespace-pre-wrap" />
+		<Loader bind:loading>
+			<TextInput inputClass="bg-white" required label="Title" bind:value={title} />
+
+			<TextArea
+				label="Description"
+				required
+				bind:value={description}
+				inputClass="whitespace-pre-wrap"
+			/>
+		</Loader>
 	</div>
 	<div slot="footer">
 		<div class="flex justify-center gap-2">
-			<Button onClick={reportPoll} Class="bg-red-500 w-1/2">{$_('Report')}</Button><Button
-				onClick={() => (reportPollModalShow = false)}
-				Class="bg-gray-400 w-1/2">{$_('Cancel')}</Button
+			<Button onClick={reportPoll} type="submit" Class="bg-red-500 w-1/2">{$_('Report')}</Button
+			><Button onClick={() => (reportPollModalShow = false)} Class="bg-gray-400 w-1/2"
+				>{$_('Cancel')}</Button
 			>
 		</div>
 	</div>
 </Modal>
+
+<Poppup bind:poppup />

@@ -95,7 +95,7 @@
 			>
 				<img
 					class="h-8 w-8 inline rounded-full break-all"
-					src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
+					src={poll?.group_image ? `${env.PUBLIC_API_URL}${poll?.group_image}` : DefaultBanner}
 					alt="group thumbnail"
 					on:error={(e) => onThumbnailError(e, DefaultBanner)}
 				/>

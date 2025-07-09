@@ -9,7 +9,8 @@
 		lineWidth = 0,
 		score: number | null = null,
 		delegateScore: number | null = null,
-		phase: Phase;
+		phase: Phase,
+		disabled = false;
 
 	const maxScore = 5;
 	const snapPoints = Array.from({ length: maxScore + 1 }, (_, i) => i); // [0,1,2,3,4,5]
@@ -42,6 +43,7 @@
 		};
 
 		const onMouseUp = () => {
+			if (disabled) return;
 			onSelection(currentSnapPosition!);
 			document.removeEventListener('mousemove', onMouseMove);
 			document.removeEventListener('mouseup', onMouseUp);
@@ -59,9 +61,15 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
 	class="w-full bg-white dark:bg-darkobject py-3 px-1 rounded-lg relative"
-	class:draggable={($groupUserStore?.delegate && phase === 'delegate_vote') ||
-		(!$groupUserStore?.delegate && phase === 'vote')}
-	on:mousedown={onMouseDown}
+	class:cursor-grab={!disabled}
+	class:cursor-not-allowed={disabled}
+	class:opacity-50={disabled}
+	class:draggable={!disabled &&
+		(($groupUserStore?.delegate_pool_id && phase === 'delegate_vote') ||
+			(!$groupUserStore?.delegate_pool_id && phase === 'vote'))}
+	on:mousedown={(e) => {
+		if (!disabled) onMouseDown(e);
+	}}
 >
 	<div id="track-container" class="p-1 relative w-full h-3 bg-purple-200 rounded-full">
 		<!-- Active bar -->
@@ -101,10 +109,10 @@
 			<!-- Floating value shown only while dragging -->
 			{#if dragLinePosition !== null}
 				<div
-					class="absolute -top-6 z-30 text-sm bg-white px-1 py-0.5 rounded shadow -translate-x-1/2"
+					class="dark:text-black absolute -top-6 z-30 text-sm bg-white px-1 py-0.5 rounded shadow -translate-x-1/2"
 					style="left: {(currentSnapPosition / maxScore) * 100}%"
 				>
-					{#if $groupUserStore?.delegate}
+					{#if $groupUserStore?.delegate_pool_id}
 						{currentSnapPosition}
 					{:else}
 						{currentSnapPosition * 20}%
@@ -120,11 +128,13 @@
 		Class="!p-0 border-none text-sm text-red-600 !bg-transparent cursor-pointer hover:underline hover:bg-transparent"
 		buttonStyle="warning-light"
 		onClick={() => {
+			if (disabled) return;
 			lineWidth = 0;
 			score = null;
 			currentSnapPosition = null;
 			onSelection(null);
 		}}
+		{disabled}
 	>
 		{$_(phase === 'prediction_bet' ? 'Clear probability' : 'Clear vote')}
 	</Button>

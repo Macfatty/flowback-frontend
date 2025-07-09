@@ -1,11 +1,9 @@
 import { fetchRequest } from '$lib/FetchRequest';
-import type { Permission } from '$lib/Group/Permissions/interface';
 import type { User } from '$lib/User/interfaces';
-import { writable, type Writable } from 'svelte/store';
-import { page } from '$app/stores';
+import { writable } from 'svelte/store';
 import { groupUserStore, type groupUser } from '$lib/Group/interface';
 
-let groupUserInfo:groupUser | null = null;
+let groupUserInfo: groupUser | null = null;
 
 groupUserStore.subscribe((value) => {
 	groupUserInfo = value;

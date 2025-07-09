@@ -393,6 +393,7 @@
     bind:selectedEvent
     bind:showEvent
     bind:type
+    bind:events
     {scheduleEventCreate}
     scheduleEventEdit={scheduleEventUpdate}
     scheduleEventDelete={scheduleEventDelete}

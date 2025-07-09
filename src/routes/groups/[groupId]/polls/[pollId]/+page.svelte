@@ -29,7 +29,7 @@
 		pollType = 1,
 		finished: boolean,
 		groupUser: groupUser,
-		phase: Phase = "pre_start",
+		phase: Phase = 'pre_start',
 		proposals: proposal[],
 		selectedProposal: proposal | null,
 		proposalsToPredictionMarket: proposal[] = [],
@@ -93,11 +93,7 @@
 <Layout centered>
 	{#if poll}
 		{#if pollType === 4}
-			<PollHeader
-				{poll}
-				bind:phase
-				displayTag={phase !== 'area_vote' && phase !== 'pre_start'}
-			/>
+			<PollHeader {poll} bind:phase displayTag={phase !== 'area_vote' && phase !== 'pre_start'} />
 		{:else}
 			<PollHeader {poll} bind:phase displayTag={false} />
 		{/if}
@@ -130,12 +126,7 @@
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-[80%] overflow-y-auto">
-							<ProposalScoreVoting
-								bind:selectedProposal
-								bind:proposals
-								bind:comments
-								bind:phase
-							/>
+							<ProposalScoreVoting bind:selectedProposal bind:proposals bind:comments bind:phase />
 						</div>
 						<Button
 							Class="w-full absolute bottom-0 mb-2"
@@ -235,18 +226,13 @@
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-full overflow-y-auto">
-							<ProposalScoreVoting
-								bind:comments
-								bind:phase	
-								bind:proposals
-								bind:selectedProposal
-							/>
+							<ProposalScoreVoting bind:comments bind:phase bind:proposals bind:selectedProposal />
 						</div>
 					</div>
 					<div slot="right">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
-								<div class="font-semibold text-primary dark:text-secondary text-lg">
+								 	<div class="font-semibold text-primary dark:text-secondary text-lg">
 									{selectedProposal.title}
 								</div>
 								<NewDescription
@@ -255,6 +241,7 @@
 									lengthLimit={130}
 								/>
 								<PredictionStatements bind:selectedProposal bind:phase bind:poll />
+								
 							</div>
 						{/if}
 					</div>
@@ -271,12 +258,7 @@
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-[90%] overflow-y-auto">
-							<ProposalScoreVoting
-								bind:comments
-								
-								bind:proposals
-								bind:phase
-							/>
+							<ProposalScoreVoting bind:comments bind:proposals bind:phase bind:selectedProposal/>
 						</div>
 					</div>
 					<div slot="right">
@@ -306,12 +288,7 @@
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-[90%] overflow-y-auto">
-							<ProposalScoreVoting
-								bind:comments
-								bind:proposals
-								bind:selectedProposal
-								bind:phase
-							/>
+							<ProposalScoreVoting bind:comments bind:proposals bind:selectedProposal bind:phase />
 						</div>
 					</div>
 					<div slot="right">

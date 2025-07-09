@@ -17,9 +17,11 @@
 	import KanbanFiltering from './KanbanFiltering.svelte';
 	import { env } from '$env/dynamic/public';
 	import { page } from '$app/stores';
-	import { userInfo } from '$lib/Generic/GenericFunctions';
 
 	const tags = ['', 'Backlog', 'To do', 'Current', 'Evaluation', 'Done'];
+
+	export let type: 'home' | 'group',
+		Class = '';
 
 	let kanbanEntries: kanban[] = [],
 		assignee: number | null = null,
@@ -36,12 +38,9 @@
 		},
 		workGroups: WorkGroup[] = [],
 		lane: number = 1,
-		groupId = '1',
 		// Add filteredKanbanEntries to store the client-side filtered result
-		filteredKanbanEntries: kanban[] = [];
-
-	export let type: 'home' | 'group',
-		Class = '';
+		filteredKanbanEntries: kanban[] = [],
+		groupId = env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId;
 
 	const changeNumberOfOpen = (addOrSub: 'Addition' | 'Subtraction') => {
 		if (numberOfOpen < 0) numberOfOpen = 0;
@@ -61,7 +60,9 @@
 	};
 
 	const getKanbanEntriesGroup = async () => {
-		let api = `group/${groupId}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
+		let api = `group/${
+			$page.params.groupId || 1
+		}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
 		if (filter.assignee !== null) api += `&assignee=${filter.assignee}`;
 		if (filter.search !== '') api += `&title__icontains=${filter.search}`;
 		if (filter.workgroup !== null) api += `&work_group_ids=${filter.workgroup}`;
@@ -73,7 +74,8 @@
 
 	const getKanbanEntriesHome = async () => {
 		let api = `user/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
-		if (filter.search !== '') api += `&title__icontains=${filter.search}&description__icontains=${filter.search}`;
+		if (filter.search !== '')
+			api += `&title__icontains=${filter.search}&description__icontains=${filter.search}`;
 
 		const { res, json } = await fetchRequest('GET', api);
 
@@ -92,6 +94,8 @@
 	const getWorkGroupList = async () => {
 		const { res, json } = await fetchRequest('GET', `group/${groupId}/list`);
 
+		console.log(res, json, 'HI');
+
 		if (!res.ok) return;
 		workGroups = json.results.filter((group: WorkGroup) => group.joined === true);
 	};
@@ -105,11 +109,11 @@
 	// New client-side filtering function
 	const filterKanbanEntries = () => {
 		filteredKanbanEntries = kanbanEntries.filter((entry) => {
-			const matchesSearch = !filter.search || 
-				(entry.title?.toLowerCase().includes(filter.search.toLowerCase()) || 
-				 entry.description?.toLowerCase().includes(filter.search.toLowerCase()));
-			const matchesWorkgroup = !filter.workgroup || 
-				(entry.work_group?.id === filter.workgroup);
+			const matchesSearch =
+				!filter.search ||
+				entry.title?.toLowerCase().includes(filter.search.toLowerCase()) ||
+				entry.description?.toLowerCase().includes(filter.search.toLowerCase());
+			const matchesWorkgroup = !filter.workgroup || entry.work_group?.id === filter.workgroup;
 			return matchesSearch && matchesWorkgroup;
 		});
 	};
@@ -123,8 +127,6 @@
 		interval = setInterval(async () => {
 			if (numberOfOpen === 0) await getKanbanEntries();
 		}, 20000);
-
-		groupId = env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId;
 	});
 
 	onDestroy(() => {
@@ -138,7 +140,7 @@
 	class={' dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words md:max-w-[calc(500px*5)]' +
 		Class}
 >
-	<KanbanFiltering bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" />
+	<KanbanFiltering bind:type bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" />
 
 	<div class="flex overflow-x-auto py-3">
 		{#each tags as _tag, i}

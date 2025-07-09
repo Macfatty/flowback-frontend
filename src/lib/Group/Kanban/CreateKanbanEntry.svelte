@@ -13,6 +13,7 @@
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import type { kanban } from './Kanban';
 	import Select from '$lib/Generic/Select.svelte';
+	import Poppup from '$lib/Generic/Poppup.svelte';
 
 	export let type: 'home' | 'group',
 		open: boolean = false,
@@ -247,3 +248,5 @@
 		>
 	</div>
 </Modal>
+
+<Poppup bind:poppup />

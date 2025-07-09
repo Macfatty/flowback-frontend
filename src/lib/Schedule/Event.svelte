@@ -149,7 +149,7 @@
 
 	const handleOutsideClick = (e: MouseEvent) => {
 		if (!browser) return;
-		
+
 		const modal = document.querySelector('.modal-content');
 		const membersRegion = document.querySelector('.members-clickable-region');
 		const remindersRegion = document.querySelector('.reminders-clickable-region');
@@ -196,7 +196,7 @@
 				}) || [];
 			selectedReminders = selectedEvent.reminders || [];
 		}
-	}
+	};
 
 	$: if (showCreateScheduleEvent || showEditScheduleEvent || showEvent) {
 		initializeModalValues();
@@ -222,6 +222,7 @@
 			console.error('Error submitting event:', error);
 		}
 	};
+	
 </script>
 
 <!-- Calendar Day Display -->
@@ -297,37 +298,35 @@
 <!-- Modal 1: Create Event Modal -->
 {#if showCreateScheduleEvent}
 	<CreateEventModal
-		{selectedEvent}
+		bind:selectedEvent
 		{type}
 		{workGroups}
+		{members}
 		bind:showCreateScheduleEvent
 		on:submit={handleSubmit}
 	/>
 {/if}
-
 <!-- Modal 2: Edit Event Modal -->
 {#if showEditScheduleEvent}
 	<EditEventModal
-		{selectedEvent}
+		bind:selectedEvent
+		bind:showEditScheduleEvent
+		bind:showEvent
+		bind:events
 		{type}
 		{workGroups}
-		bind:showEditScheduleEvent
-		on:submit={handleSubmit}
 	/>
 {/if}
 
 <!-- Modal 3: View Event Modal -->
 {#if showEvent}
 	<ViewEventModal
-		{selectedEvent}
+		bind:selectedEvent
+		bind:showEvent
+		bind:showEditScheduleEvent
+		on:delete={() => scheduleEventDelete(selectedEvent.event_id)}
 		{type}
 		{scheduleEventDelete}
-		bind:showEvent
-		on:edit={() => {
-			showEvent = false;
-			showEditScheduleEvent = true;
-		}}
-		on:delete={() => scheduleEventDelete(selectedEvent.event_id)}
 	/>
 {/if}
 

@@ -8,6 +8,7 @@
 	import Poppup from '$lib/Generic/Poppup.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import VotingSlider from './VotingSlider.svelte';
+	import { groupUserStore } from '$lib/Group/interface';
 
 	export let proposals: proposal[],
 		selectedProposal: proposal | null = null,
@@ -30,8 +31,14 @@
 			proposal: proposal.id
 		}));
 
-		await getDelegateVotes();
-		await getVotes();
+		if (phase === 'delegate_vote' || phase === 'vote' || phase === 'result') {
+			await getDelegateVotes();
+		}
+
+		if (phase === 'vote' || phase === 'result') {
+			await getVotes();
+		}
+
 		needsReload++;
 	});
 
@@ -61,6 +68,7 @@
 			proposal: vote.proposal
 		}));
 		voting = voting;
+		console.log(voting);
 	};
 
 	const getDelegateVotes = async () => {
@@ -74,12 +82,12 @@
 			return;
 		}
 
-		delegateVoting = json.results[0].vote.map((vote: any) => ({
+		delegateVoting = json.results[0]?.vote.map((vote: any) => ({
 			score: vote.raw_score,
 			proposal: vote.proposal_id
 		}));
 
-		voting = delegateVoting;
+		// voting = delegateVoting;
 	};
 
 	const delegateVote = async () => {
@@ -91,8 +99,6 @@
 				scores: voting.map((vote) => vote.score)
 			}
 		);
-
-		console.log(res, json);
 
 		if (!res.ok) {
 			if (json?.detail[0] === 'groupuserdelegatepool does not exist')
@@ -138,6 +144,7 @@
 	};
 
 	const changingVote = (score: number | string, proposalId: number) => {
+		if (!voting) return;
 		const i = voting.findIndex((vote) => vote.proposal === proposalId);
 		voting[i].score = Number(score);
 		voting = voting;
@@ -161,19 +168,21 @@
 							{voting}
 						>
 							{#if phase === 'delegate_vote' || phase === 'vote'}
-								{@const score = voting.find((vote) => vote.proposal === proposal.id)?.score}
-
+								{@const score = voting?.find((vote) => vote.proposal === proposal.id)?.score}
 								<VotingSlider
+									bind:phase
 									onSelection={(pos) => {
 										//@ts-ignore
 										changingVote(pos, proposal.id);
 										if (phase === 'delegate_vote') delegateVote();
 										else if (phase === 'vote') vote();
 									}}
+									disabled={(phase === 'delegate_vote' &&
+										$groupUserStore.delegate_pool_id === null) ||
+										(phase === 'vote' && $groupUserStore.delegate_pool_id !== null)}
 									{score}
-									delegateScore={delegateVoting.find((vote) => vote.proposal === proposal.id)
+									delegateScore={delegateVoting?.find((vote) => vote.proposal === proposal.id)
 										?.score}
-									bind:phase
 								/>
 							{/if}
 						</Proposal>

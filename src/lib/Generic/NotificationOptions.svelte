@@ -11,7 +11,7 @@
 
 	export let notificationOpen = false,
 		categories: string[],
-		type: 'poll' | 'group' | 'group_thread',
+		type: 'poll' | 'group' | 'thread',
 		labels: string[],
 		api: string,
 		id: number,

@@ -4,5 +4,10 @@ services:
     build: .
     ports:
       - ${PORT:-3000}:${PORT:-3000}
+      # - ${PORT:-5173}:${PORT:-5173}
     env_file:
       - .env
+    # volumes:
+    #   - ./src:/usr/src/app/src
+    #   - .:/app
+      
