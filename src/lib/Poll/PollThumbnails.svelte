@@ -12,14 +12,12 @@
 	import Poppup from '$lib/Generic/Poppup.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import type { DelegateMinimal } from '$lib/Group/interface';
-	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 
 	export let Class = '',
 		infoToGet: 'group' | 'home' | 'public' | 'delegate' | 'user',
 		delegate: DelegateMinimal = { id: 0, pool_id: 0, profile_image: '', tags: [], username: '' };
 
 	let polls: Poll[] = [],
-		workGroups: WorkGroup[] = [],
 		filter: Filter = {
 			search: '',
 			finishedSelection: 'all',
@@ -64,6 +62,8 @@
 
 		if (filter.workgroup) API += `&work_group_ids=${filter.workgroup}`;
 
+		console.log(API, 'API for polls');
+
 		return API;
 	};
 
@@ -90,12 +90,11 @@
 			//@ts-ignore
 			.map((poll) => (poll.related_model === 'poll' ? poll.id : undefined))
 			.filter((id) => id !== undefined);
-		//@ts-ignore
+
 		const threadIds = polls
 			//@ts-ignore
-			.map((poll) => (poll.related_model === 'group_thread' ? poll.id : undefined))
+			.map((poll) => (poll.related_model === 'thread' ? poll.id : undefined))
 			.filter((id) => id !== undefined);
-		//@ts-ignore
 
 		{
 			console.log(pollIds, 'pollz');
@@ -118,6 +117,8 @@
 	};
 
 	onMount(async () => {
+		console.log('HELLO?????');
+
 		await getPolls();
 		sharedThreadPollFixing();
 	});

@@ -54,9 +54,9 @@
 
 			<h1 class="text-left text-2xl text-primary dark:text-secondary font-semibold">{thread.title}</h1>
 
-			<div class="flex inline-flex gap-4 items-baseline">
+			<div class="inline-flex gap-4 items-baseline">
 				<NotificationOptions
-					type="group_thread"
+					type="thread"
 					id={thread.id}
 					api={`group/thread/${thread.id}`}
 					categories={['thread']}

@@ -101,7 +101,7 @@
 		const pollIds = posts.filter((post) => post.related_model === 'poll').map((post) => post.id);
 
 		const threadIds = posts
-			.filter((post) => post.related_model === 'group_thread')
+			.filter((post) => post.related_model === 'thread')
 			.map((post) => post.id);
 
 		if (pollIds.length) {
@@ -110,7 +110,6 @@
 					? await PollsApi.getHomePolls(filter.order_by)
 					: await PollsApi.getGroupPolls($page.params.groupId, pollIds, filter.order_by);
 			polls = response.results;
-			console.log(response, 'RESPONSE');
 		}
 
 		if (threadIds.length) {
@@ -129,8 +128,7 @@
 
 	function matchesFilter(post: Post): boolean {
 		// Find the corresponding thread (only needed for workgroup filtering on threads)
-		const thread =
-			post.related_model === 'group_thread' ? threads.find((t) => t.id === post.id) : null;
+		const thread = post.related_model === 'thread' ? threads.find((t) => t.id === post.id) : null;
 
 		// Check search filter (applies to both polls and threads, case-insensitive search on title)
 		const matchesSearch =
@@ -138,7 +136,7 @@
 
 		// Check workgroup filter (only for threads, skipped if both showThreads and showPolls are true)
 		const matchesWorkgroup =
-			post.related_model !== 'group_thread' || // Skip workgroup filter for polls
+			post.related_model !== 'thread' || // Skip workgroup filter for polls
 			(showThreads && showPolls) || // Skip workgroup filter if both showThreads and showPolls are true
 			!filter.workgroup || // If no workgroup filter, show all threads
 			(thread && thread.work_group?.id === Number(filter.workgroup)); // Match thread workgroup
@@ -177,7 +175,7 @@
 				</div>
 			{:else if posts?.length > 0 && (polls.length > 0 || threads.length > 0)}
 				{#each posts as post}
-					{#if post.related_model === 'group_thread' && showThreads && matchesFilter(post)}
+					{#if post.related_model === 'thread' && showThreads && matchesFilter(post)}
 						<ThreadThumbnail
 							thread={threads.find((thread) => thread.id === post.id) || threads[0]}
 						/>

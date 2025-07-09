@@ -80,7 +80,7 @@
 		>
 		<div class=" inline-flex gap-4 items-baseline">
 			<NotificationOptions
-				type="group_thread"
+				type="thread"
 				api={`group/thread/${thread?.id}`}
 				categories={['comment']}
 				id={thread?.id}
