@@ -50,7 +50,7 @@
 			<select
 				style="width:100%"
 				class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
-				on:change={(e) => onWorkGroupChange(e.target.value)}
+				on:change={(e) => onWorkGroupChange(e?.target?.value)}
 				id="work-group"
 			>
 				<option value="">{($_('All'))}</option>
