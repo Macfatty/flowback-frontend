@@ -301,6 +301,7 @@
 		bind:selectedEvent
 		{type}
 		{workGroups}
+		{members}
 		bind:showCreateScheduleEvent
 		on:submit={handleSubmit}
 	/>

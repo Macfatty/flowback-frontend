@@ -673,5 +673,11 @@
     "Daily": "Dagligen",
     "Weekly": "Veckovis",
     "Monthly": "Månatligen",
-    "Yearly": "Årligen"
+    "Yearly": "Årligen",
+    "Frequency": "Frekvens",
+    "Reminders": "Påminnelser",
+    "Assign Members": "Tilldela medlemmar",
+    "Select members": "Välj medlemmar",
+    "Meeting Link": "Möteslänk",
+    "Select reminders": "välj påminnelser"
 }

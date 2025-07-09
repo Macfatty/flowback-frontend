@@ -2,16 +2,17 @@
 	import { _ } from 'svelte-i18n';
 	import { createEventDispatcher } from 'svelte';
 	import type { scheduledEvent } from '../interface';
+	import type { GroupMembers } from '$lib/Chat/interfaces';
 
 	export let showCreateScheduleEvent = false,
 		selectedEvent: scheduledEvent,
 		workGroups: any[] = [],
 		loading = false,
-		type: 'user' | 'group';
+		type: 'user' | 'group',
+		members: { id: number; name: string }[] = [];
 
 	// Members list and selections
-	let members: { id: number; name: string }[] = [],
-		selectedMembers: number[] = [],
+	let selectedMembers: number[] = [],
 		selectedReminders: number[] = [],
 		// Default to Daily
 		selectedFrequency: number = 0,
@@ -33,7 +34,18 @@
 	};
 
 	const handleSubmit = () => {
+		selectedEvent = {
+			...selectedEvent,
+			assignee_ids: type === 'group' ? selectedMembers : undefined,
+			reminders: type === 'group' ? selectedReminders : undefined,
+			repeat_frequency: type === 'group' ? selectedFrequency : undefined
+		};
 		dispatch('submit');
+	};
+
+	const handleMemberSelect = (event: Event) => {
+		const select = event.target as HTMLSelectElement;
+		selectedMembers = Array.from(select.selectedOptions).map(option => Number(option.value));
 	};
 </script>
 
@@ -117,7 +129,7 @@
 						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 					>
 						{#each frequencyOptions as option}
-							<option value={option.id}>{option.name}</option>
+							<option value={option.id}>{$_(option.name)}</option>
 						{/each}
 					</select>
 				</div>
@@ -132,7 +144,7 @@
 							bind:value={selectedEvent.work_group}
 							class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 						>
-							<option value={undefined}>None</option>
+							<option value={undefined}>{$_('None')}</option>
 							{#each workGroups as group}
 								<option value={group}>{group.name}</option>
 							{/each}
@@ -141,48 +153,18 @@
 
 					<div class="mb-4 members-clickable-region relative">
 						<label for="assign_members" class="block mb-1 text-gray-700 dark:text-gray-300"
-							>{$_('Assign Members')}</label
-						>
-						<button
+							>{$_('Assign Members')}</label>
+						<select
 							id="assign_members"
-							type="button"
+							on:change={handleMemberSelect}
 							class="w-full p-2 border rounded flex justify-between items-center text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-							on:click|stopPropagation={() => (choicesOpenMembers = !choicesOpenMembers)}
 						>
-							<span
-								>{selectedMembers.length > 0
-									? `${selectedMembers.length} selected`
-									: 'Select members'}</span
-							>
-							<span>{choicesOpenMembers ? '▲' : '▼'}</span>
-						</button>
-						{#if choicesOpenMembers}
-							<button
-								class="absolute mt-2 bg-white dark:bg-darkobject shadow-xl text-sm w-full z-[90] border border-gray-300 dark:border-gray-600 rounded max-h-48 overflow-y-auto"
-								on:click|stopPropagation
-							>
-								<div class="text-xs p-2 border-b border-gray-200 dark:border-gray-600">
-									{$_('Select Members')}
-								</div>
-								{#each members as member}
-									<button
-										type="button"
-										on:click|stopPropagation={(e) => toggleSelection(member.id, 'members', e)}
-										class="w-full hover:bg-gray-300 active:bg-gray-400 dark:bg-slate-700 dark:hover:bg-slate-800 dark:active:bg-slate-900 p-2 px-5 flex justify-between items-center hover:cursor-pointer transition-all"
-										class:bg-secondary={selectedMembers.includes(member.id)}
-										class:text-white={selectedMembers.includes(member.id)}
-									>
-										{member.name}
-										<input
-											type="checkbox"
-											checked={selectedMembers.includes(member.id)}
-											on:change|stopPropagation={(e) => toggleSelection(member.id, 'members', e)}
-											class="ml-2"
-										/>
-									</button>
-								{/each}
-							</button>
-						{/if}
+							{#each members as member}
+								<option value={member.id} selected={selectedMembers.includes(member.id)}>
+									{member.name}
+								</option>
+							{/each}
+						</select>
 					</div>
 					{#if !choicesOpenMembers}
 						<div class="mb-4 reminders-clickable-region relative">
@@ -198,7 +180,7 @@
 								<span
 									>{selectedReminders.length > 0
 										? `${selectedReminders.length} selected`
-										: 'Select reminders'}</span
+										: $_('Select reminders')}</span
 								>
 								<span>{choicesOpenReminders ? '▲' : '▼'}</span>
 							</button>

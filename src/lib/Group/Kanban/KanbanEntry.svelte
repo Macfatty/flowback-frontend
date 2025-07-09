@@ -351,7 +351,7 @@
 </button>
 
 {#if kanban.id === selectedEntry}
-	<Modal bind:open={openModal} Class=" min-w-[400px] z-50">
+	<Modal bind:open={openModal} Class=" min-w-[400px] max-w-[500px] z-50">
 		<div slot="body">
 			{#if isEditing}
 				<StatusMessage bind:status disableSuccess />
