@@ -672,12 +672,14 @@
     "Once": "En gång",
     "Daily": "Dagligen",
     "Weekly": "Veckovis",
-    "Monthly": "Månatligen",
+    "Monthly": "Månadsvis",
     "Yearly": "Årligen",
     "Frequency": "Frekvens",
     "Reminders": "Påminnelser",
     "Assign Members": "Tilldela medlemmar",
     "Select members": "Välj medlemmar",
     "Meeting Link": "Möteslänk",
-    "Select reminders": "välj påminnelser"
+    "Select reminders": "Välj påminnelser",
+    "An error occurred while reporting the poll.": "Ett fel inträffade när omröstningen rapporterades.",
+    "Poll reported successfully.": "Omröstningen rapporterades framgångsrikt."
 }
