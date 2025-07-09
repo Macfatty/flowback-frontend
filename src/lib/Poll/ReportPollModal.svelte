@@ -43,6 +43,8 @@
 			success: true
 		};
 		reportPollModalShow = false;
+		title = '';
+		description = '';
 	};
 </script>
 

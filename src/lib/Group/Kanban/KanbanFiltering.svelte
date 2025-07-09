@@ -9,7 +9,8 @@
 	export let filter: Filter,
 		handleSearch: () => Promise<void>,
 		Class = '',
-		workGroups: WorkGroup[] = [];
+		workGroups: WorkGroup[] = [],
+		type: 'home' | 'group' = 'group';
 
 	let searched = true;
 
@@ -43,21 +44,23 @@
 			search={true}
 			bind:value={filter.search}
 		/>
-		<div class="flex flex-row gap-2 flex-1 items-center">
-			<label class="block text-md" for="work-group">
-				{$_('Work Group')}:
-			</label>
-			<select
-				style="width:100%"
-				class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
-				on:change={(e) => onWorkGroupChange(e?.target?.value)}
-				id="work-group"
-			>
-				<option value="">{($_('All'))}</option>
-				{#each workGroups as group}
-					<option value={group.id}>{elipsis(group.name)}</option>
-				{/each}
-			</select>
-		</div>
+		{#if type === 'group'}
+			<div class="flex flex-row gap-2 flex-1 items-center">
+				<label class="block text-md" for="work-group">
+					{$_('Work Group')}:
+				</label>
+				<select
+					style="width:100%"
+					class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
+					on:change={(e) => onWorkGroupChange(e?.target?.value)}
+					id="work-group"
+				>
+					<option value="">{$_('All')}</option>
+					{#each workGroups as group}
+						<option value={group.id}>{elipsis(group.name)}</option>
+					{/each}
+				</select>
+			</div>
+		{/if}
 	</div>
 </form>
