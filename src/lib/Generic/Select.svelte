@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n';
 	import { elipsis } from './GenericFunctions';
-	import { onMount } from 'svelte';
 
 	export let onInput: (
 			e: Event & {

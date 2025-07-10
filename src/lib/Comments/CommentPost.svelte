@@ -161,7 +161,7 @@
 
 	//TODO: Optimize so that this doesn't fire every time a comment is made
 	const subscribeToReplies = async () => {
-		const { res, json } = await fetchRequest('POST', `group/${getId()}/subscribe`, {
+		const { res, json } = await fetchRequest('POST', `group/${getId()}/notification/subscribe`, {
 			categories: ['comment_self']
 		});
 	};
