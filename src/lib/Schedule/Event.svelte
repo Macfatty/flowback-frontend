@@ -4,7 +4,6 @@
 	import { _ } from 'svelte-i18n';
 	import { browser } from '$app/environment';
 	import type { scheduledEvent } from '$lib/Schedule/interface';
-	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { page } from '$app/stores';
 	import CreateEventModal from './Modals/CreateEventModal.svelte';
@@ -69,6 +68,7 @@
 
 	// Frequency options
 	let frequencyOptions = [
+		{ id: 0, name: 'Once' },
 		{ id: 1, name: 'Daily' },
 		{ id: 2, name: 'Weekly' },
 		{ id: 3, name: 'Monthly' },
@@ -182,11 +182,13 @@
 {#if showCreateScheduleEvent}
 	<CreateEventModal
 		bind:selectedEvent
+		bind:showCreateScheduleEvent
+		on:submit={handleSubmit}
 		{type}
 		{workGroups}
 		{members}
-		bind:showCreateScheduleEvent
-		on:submit={handleSubmit}
+		{reminderOptions}
+		{frequencyOptions}
 	/>
 {/if}
 <!-- Modal 2: Edit Event Modal -->
@@ -198,6 +200,8 @@
 		bind:events
 		{type}
 		{workGroups}
+		{reminderOptions}
+		{frequencyOptions}
 	/>
 {/if}
 
