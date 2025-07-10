@@ -8,7 +8,6 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Notifications from './Notifications.svelte';
 	import { darkModeStore, initializeDarkMode, toggleDarkMode } from '$lib/Generic/DarkMode';
-	import type { Group, GroupUser } from '$lib/Group/interface';
 	import { pfpStore } from '$lib/Login/stores';
 	import {
 		faCalendarDays,
@@ -23,8 +22,6 @@
 	import Sun from './Sun.svelte';
 	import { env } from '$env/dynamic/public';
 	import Fa from 'svelte-fa';
-	import { getPermissionsFast } from '$lib/Generic/GenericFunctions';
-	import { page } from '$app/stores';
 
 	let sideHeaderOpen = false,
 		profileImage: string | null = DefaultPFP,

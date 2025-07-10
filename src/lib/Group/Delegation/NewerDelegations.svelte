@@ -132,7 +132,7 @@
 		const { json, res } = await fetchRequest('POST', `group/${group.id}/delegate/create`, {
 			delegate_pool_id
 		});
-		console.log('createDelegateRelation', res, res.ok);
+
 		if (!res.ok) {
 			poppup = { message: 'Failed to create delegation', success: false };
 			return;
@@ -157,8 +157,6 @@
 			delegate_pool_id,
 			tags: tags.map(({ id }) => id)
 		}));
-		console.log('saveDelegation delegateRelations', delegateRelations);
-		console.log('saveDelegation toSendDelegates', toSendDelegates);
 
 		const { res } = await fetchRequest(
 			'POST',

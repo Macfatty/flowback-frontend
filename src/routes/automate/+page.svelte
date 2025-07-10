@@ -53,17 +53,6 @@
 	 	Makes the currently logged in user into a delegate(pool)
 	 */
 	const createDelegationPool = async () => {
-		// let toSend: any = {};
-
-		// if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE')
-		// 	try {
-		// 		const blockchain_id = becomeDelegate($page.params.groupId);
-		// 		if (isNumber(blockchain_id)) toSend.blockchain_id = blockchain_id;
-		// 	} catch {
-		// 		toSend.blockchain_id = 4;
-		// 		console.warn('Error');
-		// 	}
-
 		const { res } = await fetchRequest('POST', `group/${group.id}/delegate/pool/create`, {});
 
 		if (!res.ok) {
