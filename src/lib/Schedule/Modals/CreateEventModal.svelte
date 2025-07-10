@@ -1,51 +1,30 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n';
 	import { createEventDispatcher } from 'svelte';
-	import type { scheduledEvent } from '../interface';
-	import type { GroupMembers } from '$lib/Chat/interfaces';
+	import type { options, scheduledEvent } from '../interface';
 
 	export let showCreateScheduleEvent = false,
 		selectedEvent: scheduledEvent,
 		workGroups: any[] = [],
 		loading = false,
 		type: 'user' | 'group',
-		members: { id: number; name: string }[] = [];
+		members: { id: number; name: string }[] = [],
+		frequencyOptions: options[] = [],
+		reminderOptions: options[] = [];
 
 	// Members list and selections
 	let selectedMembers: number[] = [],
-		selectedReminders: number[] = [],
-		// Default to Daily
-		selectedFrequency: number = 0,
-		choicesOpenMembers = false,
-		choicesOpenReminders = false;
-
-	let frequencyOptions = [
-		{ id: 0, name: 'Once' },
-		{ id: 1, name: 'Daily' },
-		{ id: 2, name: 'Weekly' },
-		{ id: 3, name: 'Monthly' },
-		{ id: 4, name: 'Yearly' }
-	];
+		selectedReminders: number[] = [];
 
 	const dispatch = createEventDispatcher();
 
-	const toggleSelection = (id: number, type: 'members' | 'reminders', event: Event) => {
-		// ...existing code for toggling selection...
-	};
-
 	const handleSubmit = () => {
-		selectedEvent = {
-			...selectedEvent,
-			assignee_ids: type === 'group' ? selectedMembers : undefined,
-			reminders: type === 'group' ? selectedReminders : undefined,
-			repeat_frequency: type === 'group' ? selectedFrequency : undefined
-		};
 		dispatch('submit');
 	};
 
 	const handleMemberSelect = (event: Event) => {
 		const select = event.target as HTMLSelectElement;
-		selectedMembers = Array.from(select.selectedOptions).map(option => Number(option.value));
+		selectedMembers = Array.from(select.selectedOptions).map((option) => Number(option.value));
 	};
 </script>
 
@@ -125,10 +104,25 @@
 					>
 					<select
 						id="frequency"
-						bind:value={selectedFrequency}
+						bind:value={selectedEvent.repeat_frequency}
 						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 					>
 						{#each frequencyOptions as option}
+							<option value={option.id}>{$_(option.name)}</option>
+						{/each}
+					</select>
+				</div>
+
+				<div class="mb-4">
+					<label for="reminder" class="block mb-1 text-gray-700 dark:text-gray-300"
+						>{$_('Reminder')}</label
+					>
+					<select
+						id="reminder"
+						bind:value={selectedEvent.reminders}
+						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+					>
+						{#each reminderOptions as option}
 							<option value={option.id}>{$_(option.name)}</option>
 						{/each}
 					</select>
@@ -153,7 +147,8 @@
 
 					<div class="mb-4 members-clickable-region relative">
 						<label for="assign_members" class="block mb-1 text-gray-700 dark:text-gray-300"
-							>{$_('Assign Members')}</label>
+							>{$_('Assign Members')}</label
+						>
 						<select
 							id="assign_members"
 							on:change={handleMemberSelect}
@@ -166,54 +161,6 @@
 							{/each}
 						</select>
 					</div>
-					{#if !choicesOpenMembers}
-						<div class="mb-4 reminders-clickable-region relative">
-							<label for="reminders" class="block mb-1 text-gray-700 dark:text-gray-300"
-								>{$_('Reminders')}</label
-							>
-							<button
-								id="reminders"
-								type="button"
-								class="w-full p-2 border rounded flex justify-between items-center text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-								on:click|stopPropagation={() => (choicesOpenReminders = !choicesOpenReminders)}
-							>
-								<span
-									>{selectedReminders.length > 0
-										? `${selectedReminders.length} selected`
-										: $_('Select reminders')}</span
-								>
-								<span>{choicesOpenReminders ? '▲' : '▼'}</span>
-							</button>
-							{#if choicesOpenReminders}
-								<button
-									class="absolute mt-2 bg-white dark:bg-darkobject shadow-xl text-sm w-full z-[90] border border-gray-300 dark:border-gray-600 rounded max-h-48 overflow-y-auto"
-									on:click|stopPropagation
-								>
-									<div class="text-xs p-2 border-b border-gray-200 dark:border-gray-600">
-										{$_('Select Reminders')}
-									</div>
-									<!-- {#each reminderOptions as reminder}
-											<button
-												type="button"
-												on:click|stopPropagation={(e) => toggleSelection(reminder.id, 'reminders', e)}
-												class="w-full hover:bg-gray-300 active:bg-gray-400 dark:bg-slate-700 dark:hover:bg-slate-800 dark:active:bg-slate-900 p-2 px-5 flex justify-between items-center hover:cursor-pointer transition-all"
-												class:bg-secondary={selectedReminders.includes(reminder.id)}
-												class:text-white={selectedReminders.includes(reminder.id)}
-											>
-												{reminder.name}
-												<input
-													type="checkbox"
-													checked={selectedReminders.includes(reminder.id)}
-													on:change|stopPropagation={(e) =>
-														toggleSelection(reminder.id, 'reminders', e)}
-													class="ml-2"
-												/>
-											</button>
-										{/each} -->
-								</button>
-							{/if}
-						</div>
-					{/if}
 				{/if}
 				<div class="flex justify-end gap-2">
 					<button

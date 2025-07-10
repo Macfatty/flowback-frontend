@@ -32,3 +32,8 @@ export interface WorkGroupScheduledEventCreate {
     repeat_frequency?: number;
     reminders?: number[];
 }
+
+export interface options {
+    id: number;
+    name: string;
+}

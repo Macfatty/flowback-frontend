@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n';
 	import { elipsis } from './GenericFunctions';
-	import { onMount } from 'svelte';
 
 	export let onInput: (
 			e: Event & {
@@ -11,8 +10,7 @@
 		label: string = '',
 		labels: string[] = [],
 		values: any[] = labels,
-		value: any = values[0],
-		defaultValue = values[0],
+		value: any = '',
 		Class = '',
 		classInner = '',
 		innerLabel: string | null = 'Select',
@@ -38,7 +36,7 @@
 		name={label}
 	>
 		{#if innerLabel}
-			<option value="" disabled={!innerLabelOn} selected>{$_(innerLabel)}</option>
+			<option value="" disabled selected>{$_(innerLabel)}</option>
 		{/if}
 
 		{#if labels}

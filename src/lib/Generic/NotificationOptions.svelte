@@ -55,7 +55,7 @@
 	};
 
 	const notificationSubscription = async (category: string) => {
-		const { res, json } = await fetchRequest('POST', `${api}/subscribe`, {
+		const { res, json } = await fetchRequest('POST', `${api}/notification/subscribe`, {
 			categories: [category]
 		});
 		if (res.ok) {
