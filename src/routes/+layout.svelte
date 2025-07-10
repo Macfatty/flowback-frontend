@@ -2,10 +2,10 @@
 	import '../app.css';
 	import { initializeLocalization } from '$lib/Localization/i18n';
 	import Header from '$lib/Header/Header.svelte';
-	import { beforeNavigate, goto, onNavigate } from '$app/navigation';
+	import { beforeNavigate, goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { groupUserPermissionStore, groupUserStore, type GroupUser } from '$lib/Group/interface';
+	import { groupUserPermissionStore, groupUserStore } from '$lib/Group/interface';
 	import Chat from '$lib/Chat/Chat.svelte';
 	import { _ } from 'svelte-i18n';
 	import { env } from '$env/dynamic/public';
@@ -113,12 +113,15 @@
 
 	const setUserGroupPermissionInfo = async () => {
 		if (!$page.params.groupId) return;
+		console.log("HERE PATH CHANGE");
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/permissions?id=${$groupUserStore?.permission_id}`
 		);
 		if (!res.ok) return;
 		const permissionInfo = json.results ? json.results[0] : null;
+		console.log('HERE WHERE I SHOULD BE', permissionInfo);
+
 		groupUserPermissionStore.set(permissionInfo);
 	};
 
@@ -141,19 +144,21 @@
 	$: if ($page.url.pathname && isBrowser) onPathChange();
 
 	const onPathChange = async () => {
+		
 		redirect();
 		getWorkingGroupList();
 		showUI = shouldShowUI();
-
+		
 		setTimeout(() => {
 			const html = document.getElementById(`poll-thumbnail-${scrolledY}`);
 			html?.scrollIntoView();
 		}, 200);
-
+		
 		checkSessionExpiration();
 		setUserInfo();
 		await setUserGroupInfo();
 		setUserGroupPermissionInfo();
+
 	};
 
 	//Initialize Translation, which should happen before any lifecycle hooks.
