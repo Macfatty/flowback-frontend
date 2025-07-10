@@ -166,10 +166,10 @@
 
 		try {
 			if (showCreateScheduleEvent) {
-				await scheduleEventCreate(updatedEvent);
+				await scheduleEventCreate(selectedEvent);
 				showCreateScheduleEvent = false;
 			} else if (showEditScheduleEvent) {
-				await scheduleEventEdit(updatedEvent);
+				await scheduleEventEdit(selectedEvent);
 				showEditScheduleEvent = false;
 			}
 		} catch (error) {

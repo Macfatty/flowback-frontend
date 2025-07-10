@@ -2,7 +2,6 @@
 	import { _ } from 'svelte-i18n';
 	import { createEventDispatcher } from 'svelte';
 	import type { options, scheduledEvent } from '../interface';
-	import type { GroupMembers } from '$lib/Chat/interfaces';
 
 	export let showCreateScheduleEvent = false,
 		selectedEvent: scheduledEvent,
@@ -15,25 +14,11 @@
 
 	// Members list and selections
 	let selectedMembers: number[] = [],
-		selectedReminders: number[] = [],
-		// Default to Daily
-		selectedFrequency: number = 0,
-		choicesOpenMembers = false,
-		choicesOpenReminders = false;
+		selectedReminders: number[] = [];
 
 	const dispatch = createEventDispatcher();
 
-	const toggleSelection = (id: number, type: 'members' | 'reminders', event: Event) => {
-		// ...existing code for toggling selection...
-	};
-
 	const handleSubmit = () => {
-		selectedEvent = {
-			...selectedEvent,
-			assignee_ids: type === 'group' ? selectedMembers : undefined,
-			reminders: type === 'group' ? selectedReminders : undefined,
-			repeat_frequency: type === 'group' ? selectedFrequency : undefined
-		};
 		dispatch('submit');
 	};
 
@@ -119,7 +104,7 @@
 					>
 					<select
 						id="frequency"
-						bind:value={selectedFrequency}
+						bind:value={selectedEvent.repeat_frequency}
 						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 					>
 						{#each frequencyOptions as option}
@@ -134,7 +119,7 @@
 					>
 					<select
 						id="reminder"
-						bind:value={selectedReminders}
+						bind:value={selectedEvent.reminders}
 						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 					>
 						{#each reminderOptions as option}

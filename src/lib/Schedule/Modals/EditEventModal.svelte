@@ -24,8 +24,7 @@
 		selectedReminders: number[] = [],
 		// Default to Daily
 		selectedFrequency: number = 1,
-		choicesOpenMembers = false,
-		choicesOpenReminders = false;
+		choicesOpenMembers = false;
 
 	const toggleSelection = (id: number, type: 'members' | 'reminders', event: Event) => {
 		event.stopPropagation();
@@ -178,7 +177,7 @@
 							{/each}
 						</select>
 					</div>
-					
+
 					{#if type === 'group'}
 						<div class="mb-4">
 							<label for="work_group" class="block mb-1 text-gray-700 dark:text-gray-300"

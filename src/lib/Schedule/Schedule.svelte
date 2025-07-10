@@ -127,15 +127,18 @@
 			end_date: newEvent.end_date
 		};
 
+        console.log('Creating event with payload:', newEvent);
+        
+
 		if (newEvent.description) payload.description = newEvent.description;
 		if (newEvent.meeting_link) payload.meeting_link = newEvent.meeting_link;
+		if (newEvent.repeat_frequency) payload.repeat_frequency = newEvent.repeat_frequency;
+		if (newEvent.reminders) payload.reminders = [newEvent.reminders];
 
 		if (type === 'group') {
 			payload.group_id = parseInt(groupId);
 			if (newEvent.work_group) payload.work_group_id = newEvent.work_group.id;
-			// if (newEvent.assignee_ids?.length) payload.assignee_ids = newEvent.assignee_ids;
-			// if (newEvent.reminders?.length) payload.reminders = newEvent.reminders;
-			// if (newEvent.repeat_frequency !== undefined) payload.repeat_frequency = newEvent.repeat_frequency;
+			if (newEvent.assignee_ids?.length) payload.assignee_ids = newEvent.assignee_ids;
 			API = `group/${groupId}/schedule/create`;
 		} else {
 			API = `user/schedule/create`;
@@ -186,12 +189,12 @@
 
 		if (updatedEvent.description) payload.description = updatedEvent.description;
 		if (updatedEvent.meeting_link) payload.meeting_link = updatedEvent.meeting_link;
+		if (updatedEvent.repeat_frequency) payload.repeat_frequency = updatedEvent.repeat_frequency;
+		if (updatedEvent.reminders) payload.reminders = updatedEvent.reminders;
 
 		if (type === 'group') {
 			if (updatedEvent.work_group) payload.work_group = updatedEvent.work_group;
 			if (updatedEvent.assignee_ids?.length) payload.assignee_ids = updatedEvent.assignee_ids;
-			if (updatedEvent.reminders?.length) payload.reminders = updatedEvent.reminders;
-			if (updatedEvent.repeat_frequency !== undefined) payload.repeat_frequency = 3; //updatedEvent.repeat_frequency;
 		}
 
 		const { res, json } = await fetchRequest(
