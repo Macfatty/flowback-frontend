@@ -47,7 +47,7 @@
 				voting: false
 			}
 		},
-		version = '0.2.4',
+		version = '0.2.5',
 		reports: any = [];
 
 	const userUpdate = async () => {
