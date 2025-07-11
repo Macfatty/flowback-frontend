@@ -104,15 +104,15 @@
 	$: if (chatOpen && selectedChat === null && selectedChatChannelId === null) {
 		if (selectedPage === 'direct' && previewDirect.length > 0) {
 			const firstDirectChat = previewDirect[0];
-			selectedChat = firstDirectChat.channel_id;
-			selectedChatChannelId = firstDirectChat.channel_id;
+			selectedChat = firstDirectChat.channel_id || null;
+			selectedChatChannelId = firstDirectChat.channel_id || null;
 			chatPartner.set(firstDirectChat.channel_id);
 			// Clear notification and update timestamp for the selected chat
 			clearChatNotification(firstDirectChat.channel_id, 'direct');
 		} else if (selectedPage === 'group' && previewGroup.length > 0) {
 			const firstGroupChat = previewGroup[0];
-			selectedChat = firstGroupChat.channel_id;
-			selectedChatChannelId = firstGroupChat.channel_id;
+			selectedChat = firstGroupChat.channel_id || null;
+			selectedChatChannelId = firstGroupChat.channel_id || null;
 			chatPartner.set(firstGroupChat.channel_id);
 			// Clear notification and update timestamp for the selected chat
 			clearChatNotification(firstGroupChat.channel_id, 'group');
