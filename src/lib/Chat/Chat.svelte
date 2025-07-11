@@ -104,15 +104,15 @@
 	$: if (chatOpen && selectedChat === null && selectedChatChannelId === null) {
 		if (selectedPage === 'direct' && previewDirect.length > 0) {
 			const firstDirectChat = previewDirect[0];
-			selectedChat = firstDirectChat.channel_id;
-			selectedChatChannelId = firstDirectChat.channel_id;
+			selectedChat = firstDirectChat.channel_id || null;
+			selectedChatChannelId = firstDirectChat.channel_id || null;
 			chatPartner.set(firstDirectChat.channel_id);
 			// Clear notification and update timestamp for the selected chat
 			clearChatNotification(firstDirectChat.channel_id, 'direct');
 		} else if (selectedPage === 'group' && previewGroup.length > 0) {
 			const firstGroupChat = previewGroup[0];
-			selectedChat = firstGroupChat.channel_id;
-			selectedChatChannelId = firstGroupChat.channel_id;
+			selectedChat = firstGroupChat.channel_id || null;
+			selectedChatChannelId = firstGroupChat.channel_id || null;
 			chatPartner.set(firstGroupChat.channel_id);
 			// Clear notification and update timestamp for the selected chat
 			clearChatNotification(firstGroupChat.channel_id, 'group');
@@ -142,7 +142,7 @@
 			isChatOpen.set(false);
 			goto('/user/settings');
 		}}
-		Class="absolute right-0 top-0 p-3 m-4 transition-all dark:bg-darkobject hover:brightness-95 active:brightness-90"
+		Class="absolute right-0 top-0 p-3 m-4 dark:bg-darkobject hover:brightness-95 active:brightness-90"
 	>
 		<div class="text-gray-800 dark:text-gray-200">
 			<Fa icon={faCog} />
@@ -154,7 +154,7 @@
 			chatOpen = false;
 			isChatOpen.set(false);
 		}}
-		Class="absolute left-0 top-0 p-3 m-4 transition-all dark:bg-darkobject hover:brightness-95 active:brightness-90"
+		Class="absolute left-0 top-0 p-3 m-4 dark:bg-darkobject hover:brightness-95 active:brightness-90"
 	>
 		<div class="text-gray-800 dark:text-gray-200">
 			<Fa icon={faX} />

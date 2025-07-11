@@ -27,7 +27,7 @@
 	let searched = true,
 		tags: Tag[] = [],
 		workGroups: WorkGroup[] = [],
-		groupId = '1';
+		groupId = env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId;
 
 	// Initialize content type state from localStorage
 	const initializeContentTypeState = () => {
@@ -99,6 +99,7 @@
 
 		if (!res.ok) return;
 		workGroups = json.results.filter((group: WorkGroup) => group.joined === true);
+		console.log(workGroups, json.results, 'Work Groups');
 	};
 
 	const resetFilter = () => {
@@ -108,7 +109,7 @@
 			public: false,
 			order_by: 'start_date_desc',
 			tag: null,
-			workgroup: null,
+			workgroup: null
 		};
 		// Reset content type checkboxes
 		showThreads = true;

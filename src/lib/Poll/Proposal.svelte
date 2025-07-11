@@ -19,21 +19,25 @@
 
 	export let proposal: proposal,
 		Class = '',
-		onChange = (e: Event) => {},
-		isVoting = true,
-		voting: { score: number; proposal: number }[] = [],
 		selectedProposal: proposal | null = null,
 		proposalsToPredictionMarket: proposal[] = [],
 		phase: Phase,
 		filteredComments: Comment[] = [],
 		allComments: Comment[] = [],
 		predictionCount = 0,
-		commentFilterProposalId: number | null = null,
-		selectedForCommentFiltering = false;
+		commentFilterProposalId: number | null = null;
 
 	export const id: number = 0;
 
-	const filterComments = () => {
+	const handleClickedCommentSymbol = () => {
+		// Scroll to the comments section
+		const comments = document.getElementById('comments');
+		scrollTo({
+			top: comments?.offsetTop,
+			behavior: 'smooth'
+		});
+
+		//Filtering comments by proposal
 		if (commentFilterProposalId === proposal.id) {
 			commentsStore.filterByProposal(null);
 			commentFilterProposalId = null;
@@ -119,7 +123,7 @@
 
 	<div class="flex justify-between w-full items-center">
 		<div class="flex justify-between gap-10">
-			<button class="flex" on:click={filterComments}>
+			<button class="flex" on:click={handleClickedCommentSymbol}>
 				<img
 					src={commentSymbol}
 					alt="Comment"

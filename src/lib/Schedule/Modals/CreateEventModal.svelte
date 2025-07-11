@@ -2,6 +2,7 @@
 	import { _ } from 'svelte-i18n';
 	import { createEventDispatcher } from 'svelte';
 	import type { options, scheduledEvent } from '../interface';
+	import Modal from '$lib/Generic/Modal.svelte';
 
 	export let showCreateScheduleEvent = false,
 		selectedEvent: scheduledEvent,
@@ -30,16 +31,10 @@
 
 <!-- Modal 1: Create Event Modal -->
 {#if showCreateScheduleEvent}
-	<button
-		class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-		on:click={() => (showCreateScheduleEvent = false)}
-	>
-		<button
-			class="bg-white dark:bg-darkobject p-6 rounded-lg w-full max-w-md overflow-y-auto max-h-[90vh] modal-content"
-			on:click|stopPropagation
-		>
-			<h2 class="text-xl mb-4 text-gray-900 dark:text-white">{$_('Create Event')}</h2>
-			<form on:submit|preventDefault={handleSubmit}>
+	<form on:submit|preventDefault={handleSubmit}>
+		<Modal bind:open={showCreateScheduleEvent} Class="max-w-[600px]">
+			<div slot="body">
+				<h2 class="text-xl mb-4 text-gray-900 dark:text-white">{$_('Create Event')}</h2>
 				<div class="mb-4">
 					<label for="title" class="block mb-1 text-gray-700 dark:text-gray-300"
 						>{$_('Title')}</label
@@ -162,6 +157,8 @@
 						</select>
 					</div>
 				{/if}
+			</div>
+			<div slot="footer">
 				<div class="flex justify-end gap-2">
 					<button
 						type="button"
@@ -172,13 +169,14 @@
 					</button>
 					<button
 						type="submit"
+						on:click={handleSubmit}
 						class="px-4 py-2 bg-secondary text-white rounded hover:bg-secondary-dark"
 						disabled={loading}
 					>
 						{$_('Create')}
 					</button>
 				</div>
-			</form>
-		</button>
-	</button>
+			</div>
+		</Modal>
+	</form>
 {/if}

@@ -385,7 +385,7 @@
 								>
 									<Fa size="lg" class="text-red-500" icon={faRunning} />
 								</Button>
-								<Modal bind:open={removeUserModalShow} Class="w-80">
+								<Modal bind:open={removeUserModalShow} Class="w-80 max-w-[400px]">
 									<div slot="header">{$_('Kick ') + user.user.username + "?"}</div>
 									<div slot="body" class="flex gap-4">
 										<Button buttonStyle="warning-light" Class="w-[50%]" onClick={() => userRemove(user.user.id)}

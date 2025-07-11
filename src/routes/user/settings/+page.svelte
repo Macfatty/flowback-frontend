@@ -47,7 +47,7 @@
 				voting: false
 			}
 		},
-		version = '0.2.4',
+		version = '0.2.5',
 		reports: any = [];
 
 	const userUpdate = async () => {
@@ -258,6 +258,8 @@
 					<div>Version: {version}</div>
 					<!-- <div>Version Backend: {serverConfig.GIT_HASH}</div> -->
 
+
+					<span class="mt-6">{$_("Reports")}</span>
 					{#each reports as reports}
 						<div class="flex justify-between p-2 rounded hover:bg-gray-100">
 							<span>{reports?.title}</span>

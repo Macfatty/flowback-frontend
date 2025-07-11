@@ -72,6 +72,7 @@
 			loading = true;
 			posts = [];
 
+			
 			const params = {
 				order_by: filter.order_by ? `pinned,${filter.order_by}` : 'pinned',
 				limit: pollThumbnailsLimit,

@@ -8,8 +8,6 @@
 	import { page } from '$app/stores';
 	import Button from '$lib/Generic/Button.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
 	import { checkForLinks, elipsis, type StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import type { GroupUser } from '../interface';
 	import { onMount } from 'svelte';
