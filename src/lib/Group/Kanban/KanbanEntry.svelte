@@ -10,12 +10,7 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
-	import {
-		checkForLinks,
-		elipsis,
-		getUserInfo,
-		type StatusMessageInfo
-	} from '$lib/Generic/GenericFunctions';
+	import { checkForLinks, elipsis, type StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import type { GroupUser } from '../interface';
 	import { onMount } from 'svelte';
 	import TimeAgo from 'javascript-time-ago';
@@ -28,6 +23,8 @@
 	import { env } from '$env/dynamic/public';
 	import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 	import Select from '$lib/Generic/Select.svelte';
+	import type { poppup } from '$lib/Generic/Poppup';
+	import Poppup from '$lib/Generic/Poppup.svelte';
 
 	export let kanban: kanban,
 		type: 'group' | 'home',
@@ -41,7 +38,6 @@
 
 	let openModal = false,
 		selectedEntry: number,
-		status: StatusMessageInfo,
 		priorities = [5, 4, 3, 2, 1],
 		priorityText = [
 			$_('Very high priority'),
@@ -63,7 +59,8 @@
 			work_group: kanban.work_group || null,
 			images: kanban.attachments || []
 		},
-		endDate: TimeAgo;
+		endDate: TimeAgo,
+		poppup: poppup;
 
 	// Helper function to format date for datetime-local input
 	function formatDateForInput(dateStr: string | null | undefined): string | null {
@@ -135,7 +132,7 @@
 		isEditing = false;
 
 		if (!res.ok) {
-			status = { message: 'Failed to update kanban task', success: false };
+			poppup = { message: 'Failed to update kanban task', success: false };
 			return;
 		}
 
@@ -171,8 +168,11 @@
 				entry_id: kanban.id
 			}
 		);
-		status = statusMessageFormatter(res, json);
-		if (!res.ok) return;
+
+		if (!res.ok) {
+			poppup = { message: 'Failed to update kanban lane', success: false };
+			return;
+		}
 
 		kanban.lane = lane;
 		await getKanbanEntries();
@@ -189,7 +189,7 @@
 
 	const deleteKanbanEntry = async () => {
 		if (kanban.origin_type === 'group' && !$page.params.groupId) {
-			status = { message: 'Cannot remove kanban tasks from groups in My Kanban', success: false };
+			poppup = { message: 'Cannot remove kanban tasks from groups in My Kanban', success: false };
 			return;
 		}
 
@@ -200,9 +200,14 @@
 				: 'user/kanban/entry/delete',
 			{ entry_id: kanban.id }
 		);
-		status = statusMessageFormatter(res, json);
-		if (!res.ok) return;
 
+		if (!res.ok) {
+			poppup = {
+				message: 'Failed to delete kanban task aaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+				success: false
+			};
+			return;
+		}
 		removeKanbanEntry(kanban.id);
 	};
 
@@ -348,7 +353,6 @@
 	<Modal bind:open={openModal} Class=" min-w-[400px] max-w-[500px] z-50">
 		<div slot="body">
 			{#if isEditing}
-				<StatusMessage bind:status disableSuccess />
 				<div class="pb-2">
 					<TextInput bind:value={kanbanEdited.title} required label="Title" />
 				</div>
@@ -513,3 +517,5 @@
 		</div>
 	</Modal>
 {/if}
+
+<Poppup bind:poppup />
