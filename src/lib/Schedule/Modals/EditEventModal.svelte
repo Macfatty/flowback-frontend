@@ -5,6 +5,7 @@
 	import Poppup from '$lib/Generic/Poppup.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import Loader from '$lib/Generic/Loader.svelte';
+	import Modal from '$lib/Generic/Modal.svelte';
 
 	export let showEditScheduleEvent = false,
 		selectedEvent: scheduledEvent,
@@ -80,16 +81,10 @@
 
 <!-- Modal 2: Edit Event Modal -->
 {#if showEditScheduleEvent}
-	<button
-		class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-		on:click={() => (showEditScheduleEvent = false)}
-	>
-		<button
-			class="bg-white dark:bg-darkobject p-6 rounded-lg w-full max-w-md overflow-y-auto max-h-[90vh] modal-content"
-			on:click|stopPropagation
-		>
-			<h2 class="text-xl mb-4 text-gray-900 dark:text-white">{$_('Edit Event')}</h2>
-			<form on:submit|preventDefault={handleSubmit}>
+	<form on:submit|preventDefault={handleSubmit}>
+		<Modal bind:open={showEditScheduleEvent} Class="max-w-[600px]">
+			<div slot="body">
+				<h2 class="text-xl mb-4 text-gray-900 dark:text-white">{$_('Edit Event')}</h2>
 				<Loader bind:loading>
 					<div class="mb-4">
 						<label for="title" class="block mb-1 text-gray-700 dark:text-gray-300"
@@ -255,6 +250,7 @@
 						</button>
 						<button
 							type="submit"
+							on:click={handleSubmit}
 							class="px-4 py-2 bg-secondary text-white rounded hover:bg-secondary-dark"
 							disabled={loading}
 						>
@@ -262,8 +258,8 @@
 						</button>
 					</div>
 				</Loader>
-			</form>
-		</button>
-	</button>
+			</div>
+		</Modal>
+	</form>
 {/if}
 <Poppup bind:poppup />

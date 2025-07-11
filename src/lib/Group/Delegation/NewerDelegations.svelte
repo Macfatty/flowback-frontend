@@ -156,7 +156,11 @@
 		const toSendDelegates = delegateRelations.map(({ tags, delegate_pool_id }) => ({
 			delegate_pool_id,
 			tags: tags.map(({ id }) => id)
-		}));
+		}))[0] ;
+
+
+		console.log(toSendDelegates);
+		
 
 		const { res } = await fetchRequest(
 			'POST',

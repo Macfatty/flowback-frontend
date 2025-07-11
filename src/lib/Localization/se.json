@@ -681,5 +681,9 @@
     "Meeting Link": "Möteslänk",
     "Select reminders": "Välj påminnelser",
     "An error occurred while reporting the poll.": "Ett fel inträffade när omröstningen rapporterades.",
-    "Poll reported successfully.": "Omröstningen rapporterades framgångsrikt."
+    "Poll reported successfully.": "Omröstningen rapporterades framgångsrikt.",
+    "Reports": "Rapporter",
+    "Report": "Rapportera",
+    "Report Thread": "Rapportera tråd",
+    "Delete Thread": "Ta bort tråd"
 }

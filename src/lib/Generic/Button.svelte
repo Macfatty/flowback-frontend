@@ -36,12 +36,11 @@
 <button
 	{type}
 	on:click={() => {
-		//The button used to only have action, but onClick is standard for svelte. TODO: Refactor so we only have onClick on all buttons in the code.
 		onClick();
 	}}
-	class={`text-center ${
+	class={`text-center transition-colors duration-50 ${
 		Class.includes('bg-') ? '' : 'bg-primary'
-	} ${Class} filter inline text-white rounded-md cursor-pointer p-2 transition-all duration-50 
+	} ${Class}  inline text-white rounded-md cursor-pointer p-2  
 	${buttonStyle === 'primary-light' && ' bg-white dark:bg-darkobject primary-light-inner-shadow'}
 	${
 		buttonStyle === 'warning-light' &&

@@ -55,7 +55,7 @@
 	$: if (sortBy || searchString) setUpComments();
 </script>
 
-<div class={`rounded dark:text-darktext ${Class}`} id="comments">
+<div class={`rounded dark:text-darktext min-h-[300px] ${Class}`} id="comments">
 	<div class="border-b border-gray-300">
 		<!-- Add Comment -->
 
@@ -78,7 +78,7 @@
 	</div>
 
 	{#if $commentsStore.filteredComments.length === 0}
-		<div class="text-center">{$_('There are currently no comments')}</div>
+		<div class="text-center mt-6">{$_('There are currently no comments')}</div>
 	{/if}
 </div>
 
