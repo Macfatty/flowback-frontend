@@ -21,7 +21,7 @@
 	import { getStores } from '$app/stores';
 	import { TelInput, normalizedCountries } from 'svelte-tel-input';
 	import type { DetailedValue, CountryCode, E164Number } from 'svelte-tel-input/types';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import { chatPartner, isChatOpen } from '$lib/Chat/ChatStore.svelte';
 	import { getUserChannelId } from '$lib/Chat/functions';
@@ -56,7 +56,7 @@
 		profileImagePreview = DefaultPFP,
 		bannerImagePreview = '',
 		currentlyEditing: null | 'bio' | 'web' | 'name' | 'phone' | 'email' = null,
-		poppup: poppup | null = null,
+		errorHandler: any,
 		currentlyCroppingProfile: boolean = false,
 		currentlyCroppingBanner = false,
 		oldProfileImagePreview = '',
@@ -90,7 +90,7 @@
 
 		const { res, json } = await fetchRequest('GET', isUser ? 'user' : `users?id=${userId}`);
 		if (!res.ok) {
-			poppup = { message: 'Could not fetch user', success: false };
+			errorHandler.addPopup({ message: 'Could not fetch user', success: false });
 			return;
 		}
 		user = isUser ? json : json.results[0];
@@ -130,14 +130,14 @@
 		if (!res.ok) {
 			const message = json.detail[Object.keys(json.detail)[0]][0] || 'Could not update profile';
 
-			poppup = { message, success: false };
+			errorHandler.addPopup({ message, success: false });
 			return;
 		}
 
 		user = userEdit;
 		isEditing = false;
 		pfpStore.set(`${imageToSend.name}${Math.floor(Math.random() * 1000000)}`);
-		poppup = { message: 'Profile successfully updated', success: true };
+		errorHandler.addPopup({ message: 'Profile successfully updated', success: true });
 	};
 
 	const handleCropProfileImage = async (e: any) => {
@@ -409,7 +409,7 @@
 	{/if}
 </Layout>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
 
 <style>
 	img.cover {

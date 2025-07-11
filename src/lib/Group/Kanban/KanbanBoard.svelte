@@ -7,7 +7,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import { kanban as kanbanLimit } from '../../Generic/APILimits.json';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import CreateKanbanEntry from './CreateKanbanEntry.svelte';
 	import type { WorkGroup } from '../WorkingGroups/interface';
@@ -27,7 +27,7 @@
 		assignee: number | null = null,
 		users: GroupUser[] = [],
 		status: StatusMessageInfo,
-		poppup: poppup,
+		errorHandler: any,
 		interval: any,
 		open = false,
 		numberOfOpen = 0,
@@ -134,7 +134,7 @@
 	});
 </script>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
 
 <div
 	class={' dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words md:max-w-[calc(500px*5)]' +

@@ -14,7 +14,7 @@
 	import { proposalCreate as proposalCreateBlockchain } from '$lib/Blockchain_v1_Ethereum/javascript/pollsBlockchain';
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
 	import FileUploads from '$lib/Generic/FileUploads.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import { env } from '$env/dynamic/public';
 
@@ -26,7 +26,7 @@
 		description: string,
 		loading = false,
 		status: StatusMessageInfo,
-		poppup: poppup = { message: '', success: true, show: true },
+		errorHandler: any,
 		blockchain = true,
 		images: File[];
 
@@ -60,12 +60,12 @@
 		const id = json;
 		statusMessageFormatter(res, id);
 
-		if (!res.ok)  {
-			poppup = { message: 'Failed to add proposal', success: false };
+		if (!res.ok)  {			
+			errorHandler.addPopup({ message: 'Failed to add proposal', success: false });
 			return;
 		}
-
-		poppup = { message: 'Successfully added proposal', success: true };
+				
+		errorHandler.addPopup({ message: 'Successfully added proposal', success: true });
 
 		let created_by = await getUserInfo();
 		loading = false;
@@ -152,4 +152,4 @@
 	</Loader>
 </form>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

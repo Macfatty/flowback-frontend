@@ -2,8 +2,8 @@
 	import { page } from '$app/stores';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { onMount } from 'svelte';
-	import Pagination from '$lib/Generic/Pagination.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import Pagination from '$lib/Generic/Pagination.svelte';	
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import { threads as threadsLimit } from '$lib/Generic/APILimits.json';
 	import { _ } from 'svelte-i18n';
@@ -14,7 +14,7 @@
 	let threads: Thread[] = [],
 		prev = '',
 		next = '',
-		poppup: poppup,
+		errorHandler: any,
 		searchQuery = '',
 		searched = true,
 		workGroups: any[] = [];
@@ -27,8 +27,8 @@
 
 		const { res, json } = await fetchRequest('GET', url);
 
-		if (!res.ok) {
-			poppup = { message: 'Could not get threads', success: false };
+		if (!res.ok) {			
+			errorHandler.addPopup({ message: 'Could not get threads', success: false });
 			return;
 		}
 
@@ -82,4 +82,4 @@
 	<Pagination bind:prev bind:next bind:iterable={threads} />
 </div>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

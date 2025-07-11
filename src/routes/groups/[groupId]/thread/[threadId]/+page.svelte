@@ -10,12 +10,12 @@
 	import { _ } from 'svelte-i18n';
 	import Comments from '$lib/Comments/Comments.svelte';
 	import Layout from '$lib/Generic/Layout.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
 
-	let thread: Thread, poppup: poppup;
+	let thread: Thread, errorHandler: any;
 
 	onMount(() => {
 		getThread();
@@ -28,7 +28,7 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: 'Could not get Thread', success: false };
+			errorHandler.addPopup({ message: 'Could not get Thread', success: false });
 			return;
 		}
 
@@ -91,7 +91,7 @@
 	<Comments api={'thread'} Class="w-full max-w-[1000px] bg-white dark:bg-darkobject p-6 mt-6" />
 </Layout>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
 
 <style>
 	.poll-header-grid {

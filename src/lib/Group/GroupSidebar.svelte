@@ -26,7 +26,7 @@
 	import { removeGroupMembership } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
 	import { env } from '$env/dynamic/public';
 	import type { poppup } from '$lib/Generic/Poppup';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 
 	export let selectedPage: SelectablePage = 'flow',
@@ -37,7 +37,7 @@
 		clickedExpandSidebar = false,
 		areYouSureModal = false,
 		userIsPermittedToCreatePost = false,
-		poppup: poppup;
+		errorHandler: any;
 
 	const leaveGroup = async () => {
 		const { res } = await fetchRequest('POST', `group/${$page.params.groupId}/leave`);
@@ -91,7 +91,7 @@
 								selectedPage === 'threads' ? 'thread' : 'poll'
 							}`
 						);
-					else poppup = { message: 'You do not have permission to create a post', success: false };
+					else errorHandler.addPopup({ message: 'You do not have permission to create a post', success: false });
 				}}
 				text="Create a post"
 				disabled={!$groupUserPermissionStore?.create_poll && !$groupUserStore?.is_admin}
@@ -228,4 +228,4 @@
 	</div>
 </Modal>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

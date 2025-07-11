@@ -24,7 +24,7 @@
 	import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 	import Select from '$lib/Generic/Select.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 
 	export let kanban: kanban,
 		type: 'group' | 'home',
@@ -60,7 +60,7 @@
 			images: kanban.attachments || []
 		},
 		endDate: TimeAgo,
-		poppup: poppup;
+		errorHandler: any;
 
 	// Helper function to format date for datetime-local input
 	function formatDateForInput(dateStr: string | null | undefined): string | null {
@@ -131,8 +131,8 @@
 
 		isEditing = false;
 
-		if (!res.ok) {
-			poppup = { message: 'Failed to update kanban task', success: false };
+		if (!res.ok) {		
+			errorHandler.addPopup({ message: 'Failed to update kanban task', success: false })
 			return;
 		}
 
@@ -170,7 +170,7 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to update kanban lane', success: false };
+			errorHandler.addPopup({ message: 'Failed to update kanban lane', success: false });
 			return;
 		}
 
@@ -189,7 +189,7 @@
 
 	const deleteKanbanEntry = async () => {
 		if (kanban.origin_type === 'group' && !$page.params.groupId) {
-			poppup = { message: 'Cannot remove kanban tasks from groups in My Kanban', success: false };
+			errorHandler.addPopup({ message: 'Cannot remove kanban tasks from groups in My Kanban', success: false });
 			return;
 		}
 
@@ -202,10 +202,10 @@
 		);
 
 		if (!res.ok) {
-			poppup = {
+			errorHandler.addPopup({
 				message: 'Failed to delete kanban task aaaaaaaaaaaaaaaaaaaaaaaaaaaa',
 				success: false
-			};
+			});
 			return;
 		}
 		removeKanbanEntry(kanban.id);
@@ -518,4 +518,4 @@
 	</Modal>
 {/if}
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

@@ -9,7 +9,7 @@
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { pollThumbnails as pollThumbnailsLimit } from '../Generic/APILimits.json';
 	import Pagination from '$lib/Generic/Pagination.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import type { DelegateMinimal } from '$lib/Group/interface';
 
@@ -29,7 +29,7 @@
 		loading = false,
 		next = '',
 		prev = '',
-		poppup: poppup;
+		errorHandler: any;
 
 	const getAPI = async () => {
 		let API = '';
@@ -76,7 +76,7 @@
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Could not get polls', success: false };
+			errorHandler.addPopup({ message: 'Could not get polls', success: false });
 			return;
 		}
 
@@ -164,4 +164,4 @@
 	</Loader>
 </div>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

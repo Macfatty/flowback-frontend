@@ -8,7 +8,7 @@
 	import { getCommentDepth, getComments } from './functions';
 	import { pollComments as pollCommentsLimit } from '../Generic/APILimits.json';
 	import CommentFilter from './CommentFilter.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import { commentsStore } from './commentStore';
 	import type { Comment as comment } from '$lib/Poll/interface';
@@ -22,7 +22,7 @@
 		showReadMore = true,
 		sortBy: null | string = null,
 		searchString: string = '',
-		poppup: poppup;
+		errorHandler: any;
 
 	const setUpComments = async () => {
 		const { comments, next } = await getComments(getId(), api, offset, sortBy, searchString);
@@ -82,4 +82,4 @@
 	{/if}
 </div>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

@@ -2,7 +2,7 @@
 	import type { options, scheduledEvent } from '../interface';
 	import { _ } from 'svelte-i18n';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import Loader from '$lib/Generic/Loader.svelte';
 
@@ -12,7 +12,7 @@
 		workGroups: any[] = [],
 		loading = false,
 		type: 'user' | 'group',
-		poppup: poppup = { message: '', success: true, show: false },
+		errorHandler: any,
 		showEvent = false,
 		events: scheduledEvent[] = [],
 		frequencyOptions: options[] = [],
@@ -63,12 +63,12 @@
 
 		loading = false;
 
-		if (!res.ok) {
-			poppup = { message: 'Failed to update event', success: false };
+		if (!res.ok) {			
+			errorHandler.addPopup({ message: 'Failed to update event', success: false });
 			return;
 		}
 
-		poppup = { message: 'Event successfully updated', success: true };
+		errorHandler.addPopup({ message: 'Event successfully updated', success: true });
 
 		showEditScheduleEvent = false;
 		showEvent = true;
@@ -266,4 +266,4 @@
 		</button>
 	</button>
 {/if}
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
