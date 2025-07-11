@@ -142,7 +142,7 @@
 			isChatOpen.set(false);
 			goto('/user/settings');
 		}}
-		Class="absolute right-0 top-0 p-3 m-4 transition-all dark:bg-darkobject hover:brightness-95 active:brightness-90"
+		Class="absolute right-0 top-0 p-3 m-4 dark:bg-darkobject hover:brightness-95 active:brightness-90"
 	>
 		<div class="text-gray-800 dark:text-gray-200">
 			<Fa icon={faCog} />
@@ -154,7 +154,7 @@
 			chatOpen = false;
 			isChatOpen.set(false);
 		}}
-		Class="absolute left-0 top-0 p-3 m-4 transition-all dark:bg-darkobject hover:brightness-95 active:brightness-90"
+		Class="absolute left-0 top-0 p-3 m-4 dark:bg-darkobject hover:brightness-95 active:brightness-90"
 	>
 		<div class="text-gray-800 dark:text-gray-200">
 			<Fa icon={faX} />
