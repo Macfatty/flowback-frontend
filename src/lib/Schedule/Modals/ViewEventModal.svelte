@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { formatDate } from '$lib/Generic/DateFormatter';
-import type { scheduledEvent } from '../interface';
+	import Modal from '$lib/Generic/Modal.svelte';
+	import type { scheduledEvent } from '../interface';
 	import { _ } from 'svelte-i18n';
 
 	export let showEvent = false,
@@ -14,14 +15,8 @@ import type { scheduledEvent } from '../interface';
 </script>
 
 {#if showEvent}
-	<button
-		class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-		on:click={() => (showEvent = false)}
-	>
-		<button
-			class="bg-white dark:bg-darkobject p-6 rounded-lg w-full max-w-md overflow-y-auto max-h-[90vh]"
-			on:click|stopPropagation
-		>
+	<Modal bind:open={showEvent} Class="max-w-[600px]">
+		<div slot="body">
 			<h2 class="text-xl mb-4 text-gray-900 dark:text-white">{selectedEvent.title}</h2>
 			<p>
 				<strong class="text-gray-700 dark:text-gray-300">{$_('Description')}:</strong>
@@ -93,6 +88,6 @@ import type { scheduledEvent } from '../interface';
 					{$_('Delete')}
 				</button>
 			</div>
-		</button>
-	</button>
+		</div>
+	</Modal>
 {/if}
