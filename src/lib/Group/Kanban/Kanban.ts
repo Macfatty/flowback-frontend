@@ -36,6 +36,7 @@ export interface kanbanEdited {
 
 export interface Filter {
 	assignee: number | null;
+	group: string | null;
 	workgroup: number | null;
 	search: string;
 }
