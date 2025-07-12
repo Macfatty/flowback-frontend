@@ -8,7 +8,7 @@
 	} from './interface';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import WorkingGroup from './WorkGroup.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
@@ -35,7 +35,7 @@
 			chat: 1,
 			requested_access: false
 		},
-		poppup: poppup,
+		errorHandler: any,
 		open = false,
 		search: string,
 		invites: WorkGroupInvite[] = [],
@@ -47,8 +47,8 @@
 			`group/${$page.params.groupId}/list?limit=100&name__icontains=${search}&order_by=name_asc`
 		);
 
-		if (!res.ok) {
-			poppup = { message: 'Could not fetch work groups', success: false };
+		if (!res.ok) {			
+			errorHandler.addPopup({ message: 'Could not fetch work groups', success: false });
 			return;
 		}
 
@@ -64,7 +64,7 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to create work group', success: false };
+			errorHandler.addPopup({ message: 'Failed to create work group', success: false });
 			return;
 		}
 
@@ -110,7 +110,7 @@
 		});
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to add user to group', success: false };
+			errorHandler.addPopup({ message: 'Failed to add user to group', success: false });
 			return;
 		}
 
@@ -196,7 +196,7 @@
 	</div>
 </Loader>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
 
 <Modal bind:open Class="max-w-[500px]">
 	<div slot="header" class="w-full"><span>{$_('Create work group')}</span></div>

@@ -143,7 +143,7 @@
 		</div>
 	{:else}
 		<div class="bg-white w-full text-center md:w-1/2 shadow rounded p-16 mt-8">
-			{$_('You are not a memeber of this group!')}
+			{$_('You are not a member of this group!')}
 		</div>
 	{/if}
 </Layout>

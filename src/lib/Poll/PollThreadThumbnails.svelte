@@ -15,7 +15,7 @@
 	import ThreadThumbnail from './Thread.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import Pagination from '$lib/Generic/Pagination.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 
 	// Props
 	export let Class = '';
@@ -36,7 +36,7 @@
 	let loading = false;
 	let next = '';
 	let prev = '';
-	let poppup: poppup;
+	let errorHandler: any;
 
 	let filter: Filter = {
 		search: '',
@@ -92,7 +92,7 @@
 			next = response.next ?? '';
 			prev = response.previous ?? '';
 		} catch (error) {
-			poppup = { message: 'Could not get polls', success: false };
+			errorHandler.addPopup({ message: 'Could not get polls', success: false });
 		} finally {
 			loading = false;
 		}
@@ -199,4 +199,4 @@
 	</Loader>
 </div>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

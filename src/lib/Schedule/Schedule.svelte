@@ -1,6 +1,7 @@
 <!-- Schedule.svelte -->
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 	import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft';
 	import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight';
 	import Fa from 'svelte-fa';
@@ -10,9 +11,16 @@
 	import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
 	import { page } from '$app/stores';
 	import Day from './Day.svelte';
+	import type { Group } from '$lib/Group/interface';
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
+	import Button from '$lib/Generic/Button.svelte';
 	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
+	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
+	import { elipsis } from '$lib/Generic/GenericFunctions';
+	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
+	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
 	import Event from './Event.svelte';
 
 	export let Class = '',
@@ -33,8 +41,7 @@
 		'Dec'
 	];
 
-	const currentDate = new Date(),
-		groupId = $page.params.groupId || '1';
+	const currentDate = new Date();
 
 	let month = currentDate.getMonth(),
 		year = currentDate.getFullYear(),
@@ -62,9 +69,14 @@
 		deleteSelection = () => {},
 		advancedTimeSettingsDates: Date[] = [],
 		notActivated = true,
+		groupId: string | null = $page.params.groupId || '1',
+		groupList: Group[] = [],
 		workGroups: WorkGroup[] = [],
 		workGroupFilter: number[] = [],
-		poppup: poppup;
+		status: StatusMessageInfo,
+		poppup: poppup,
+		errorHandler: any;
+
 
 	const resetSelectedEvent = () => {
 		selectedEvent = {
@@ -136,7 +148,7 @@
 		if (newEvent.reminders) payload.reminders = [newEvent.reminders];
 
 		if (type === 'group') {
-			payload.group_id = parseInt(groupId);
+			payload.group_id = parseInt(groupId ?? '1');
 			if (newEvent.work_group) payload.work_group_id = newEvent.work_group.id;
 			if (newEvent.assignee_ids?.length) payload.assignee_ids = newEvent.assignee_ids;
 			API = `group/${groupId}/schedule/create`;
@@ -149,11 +161,11 @@
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to create event', success: false };
+			errorHandler.addPopup({ message: 'Failed to create event', success: false });
 			return;
 		}
 
-		poppup = { message: 'Successfully created event', success: true };
+		errorHandler.addPopup({ message: 'Successfully created event', success: true });
 		showCreateScheduleEvent = false;
 
 		const createdEvent: scheduledEvent = {
@@ -205,8 +217,8 @@
 
 		loading = false;
 
-		if (!res.ok) {
-			poppup = { message: 'Failed to edit event', success: false };
+		if (!res.ok) {			
+			errorHandler.addPopup({ message: 'Failed to edit event', success: false });
 			return;
 		}
 
@@ -235,16 +247,35 @@
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to delete event', success: false };
+			errorHandler.addPopup({ message: 'Failed to delete event', success: false });
 			return;
 		}
-
-		poppup = { message: 'Event deleted', success: true };
+		
+		errorHandler.addPopup({ message: 'Event deleted', success: true });
 		events = events.filter((event) => event.event_id !== eventId);
 		showEvent = false;
 		resetSelectedEvent();
 
 		await setUpScheduledPolls();
+	};
+
+	const getGroups = async () => {
+		loading = true;
+		let urlFilter = '&joined=true';
+
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/list?limit=${groupMembersLimit}` + urlFilter
+		);
+		status = statusMessageFormatter(res, json);
+
+		if (!res.ok) return;
+
+		groupList = json.results
+			.reverse()
+			.sort((group1: any, group2: any) => +group2.joined - +group1.joined);
+
+		loading = false;
 	};
 
 	const getWorkGroupList = async () => {
@@ -253,12 +284,21 @@
 		workGroups = json.results.filter((group: WorkGroup) => group.joined === true);
 	};
 
-	const onFilterWorkGroup = (workGroup: WorkGroup) => {
-		if (workGroupFilter.find((groupId) => groupId === workGroup.id))
-			workGroupFilter = workGroupFilter.filter((groupId) => groupId !== workGroup.id);
-		else workGroupFilter.push(workGroup.id);
+	const onGroupChange = (id: string) => {
+		groupId = id ? id : null;
+	}
 
-		workGroupFilter = workGroupFilter;
+	const onWorkGroupChange = (workGroupId: string) => {
+		if (workGroupId === '') {
+			workGroupFilter = [];
+		} else {
+			const id = Number(workGroupId);
+			if (workGroupFilter.includes(id)) {
+				workGroupFilter = workGroupFilter.filter((groupId) => groupId !== id);
+			} else {
+				workGroupFilter.push(id);
+			}
+		}
 		setUpScheduledPolls();
 	};
 
@@ -277,6 +317,7 @@
 			document.getElementById(selectedDatePosition)?.classList.remove('selected');
 		};
 		setUpScheduledPolls();
+		getGroups();
 		getWorkGroupList();
 	});
 
@@ -286,13 +327,25 @@
 		notActivated = false;
 	}
 	$: if (!showCreateScheduleEvent) notActivated = true;
+	$: groupId && getWorkGroupList();
 </script>
 
 <div class={`flex bg-white dark:bg-darkobject dark:text-darkmodeText ${Class}`}>
 	<div class="border-right-2 border-black p-4 pl-6 pr-6 w-1/4">
-		{$_('Scheduled events for')}
-		{selectedDate.getDate()}/{selectedDate.getMonth() + 1}
-		{selectedDate.getFullYear()}
+		<Button
+			onClick={() => history.back()}
+			Class="p-3 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90"
+		>
+			<div class="text-gray-800 dark:text-gray-200">
+				<Fa icon={faArrowLeft} />
+			</div>
+		</Button>
+		
+		<div>
+			{$_('Scheduled events for')}
+			{selectedDate.getDate()}/{selectedDate.getMonth() + 1}
+			{selectedDate.getFullYear()}
+		</div>
 
 		<div class="pt-3 pb-3">
 			<button
@@ -323,20 +376,6 @@
 					icon={faPlus}
 				/>
 			</button>
-		</div>
-
-		<div class="flex flex-col">
-			{#each workGroups as workGroup}
-				<div class="flex items-center gap-2">
-					<input
-						type="checkbox"
-						id={workGroup.id.toString()}
-						checked={workGroupFilter.includes(workGroup.id)}
-						on:change={() => onFilterWorkGroup(workGroup)}
-					/>
-					<span>{workGroup.name}</span>
-				</div>
-			{/each}
 		</div>
 	</div>
 
@@ -372,6 +411,41 @@
 				>
 					<Fa icon={faChevronRight} size="1.5x" />
 				</button>
+			</div>
+
+			<div class="flex items-center justify-center gap-16 ml-6 px-2">
+				<div class="flex flex-row flex-1 gap-2 items-center">
+					<label class="block text-md whitespace-nowrap" for="group">
+						{$_('Group')}:
+					</label>
+					<select
+						style="width:100%"
+						class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
+						on:change={(e) => onGroupChange(e?.target?.value)}
+						id="group"
+					>
+						<option value="">{$_('All')}</option>
+						{#each groupList as group}
+							<option value={group.id}>{elipsis(group.name)}</option>
+						{/each}
+					</select>
+				</div>
+				<div class="flex flex-row flex-1 gap-2 items-center">
+					<label class="block text-md whitespace-nowrap" for="work-group">
+						{$_('Work Group')}:
+					</label>
+					<select
+						style="width:100%"
+						class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
+						on:change={(e) => onWorkGroupChange(e?.target?.value)}
+						id="work-group"
+					>
+						<option value="">{$_('All')}</option>
+						{#each workGroups as group}
+							<option value={group.id}>{elipsis(group.name)}</option>
+						{/each}
+					</select>
+				</div>
 			</div>
 		</div>
 		<div id="calendar" class="calendar w-full">
@@ -410,7 +484,7 @@
 	{year}
 />
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
 
 <style>
 	.calendar {

@@ -14,8 +14,8 @@
 	import TransactionFilter from '$lib/Ledger/TransactionFilter.svelte';
 	import formatDate from '$lib/Ledger/formatDate';
 	import { generateAndDownloadHTML } from '$lib/Ledger/HTML';
-	import Pagination from '$lib/Generic/Pagination.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import Pagination from '$lib/Generic/Pagination.svelte';	
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import { userStore } from '$lib/User/interfaces';
 
@@ -37,7 +37,7 @@
 		accounts: Account[] = [],
 		next: string,
 		prev: string,
-		poppup: poppup,
+		errorHandler: any,
 		totalBalance = 0,
 		filter: Filter = {
 			account_ids: [],
@@ -67,7 +67,7 @@
 		// loading = true;
 		const { res, json } = await fetchRequest('GET', `ledger/account/list`);
 		if (!res.ok) {
-			poppup = { message: 'Something went wrong', success: false };
+			errorHandler.addPopup({ message: 'Something went wrong', success: false });
 			return;
 		}
 		// loading = false;
@@ -104,7 +104,7 @@
 		const { res, json } = await fetchRequest('GET', api);
 
 		if (!res.ok) {
-			poppup = { message: 'Something went wrong', success: false };
+			errorHandler.addPopup({ message: 'Something went wrong', success: false });
 			return;
 		}
 
@@ -135,11 +135,11 @@
 
 		if (!res.ok) {
 			show_poppup = true;
-			poppup = { message: 'Something went wrong', success: false };
+			errorHandler.addPopup({ message: 'Something went wrong', success: false });
 			return;
 		} else {
 			show_poppup = true;
-			poppup = { message: 'Successfully created transaction', success: true };
+			errorHandler.addPopup({ message: 'Successfully created transaction', success: true });
 		}
 
 		transactions.push({
@@ -179,11 +179,11 @@
 
 		if (!res.ok) {
 			show_poppup = true;
-			poppup = { message: 'Something went wrong', success: false };
+			errorHandler.addPopup({ message: 'Something went wrong', success: false });
 			return;
 		} else {
-			show_poppup = true;
-			poppup = { message: 'Successfully created account', success: true };
+			show_poppup = true;			
+			errorHandler.addPopup({ message: 'Successfully created account', success: true });
 			accounts.push({
 				account_name,
 				account_number,
@@ -201,12 +201,12 @@
 		loading = false;
 
 		if (!res.ok) {
-			show_poppup = true;
-			poppup = { message: 'Something went wrong', success: false };
+			show_poppup = true;			
+			errorHandler.addPopup({ message: 'Something went wrong', success: false });
 			return;
 		} else {
 			show_poppup = true;
-			poppup = { message: 'Successfully deleted account', success: true };
+			errorHandler.addPopup({ message: 'Successfully deleted account', success: true });
 			accounts = accounts.filter((account) => account_id !== account.id);
 		}
 	};
@@ -465,7 +465,7 @@
 	</div>
 </Modal>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
 
 <Modal bind:open={showDeleteAccount}>
 	<div slot="body">

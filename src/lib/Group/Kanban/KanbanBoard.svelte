@@ -7,7 +7,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import { kanban as kanbanLimit } from '../../Generic/APILimits.json';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import CreateKanbanEntry from './CreateKanbanEntry.svelte';
 	import type { WorkGroup } from '../WorkingGroups/interface';
@@ -27,11 +27,12 @@
 		assignee: number | null = null,
 		users: GroupUser[] = [],
 		status: StatusMessageInfo,
-		poppup: poppup,
+		errorHandler: any,
 		interval: any,
 		open = false,
 		numberOfOpen = 0,
 		filter: Filter = {
+			group: null,
 			assignee: null,
 			search: '',
 			workgroup: null
@@ -132,15 +133,17 @@
 	onDestroy(() => {
 		clearInterval(interval);
 	});
+
+	$: groupId && getWorkGroupList();
 </script>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
 
 <div
 	class={' dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words md:max-w-[calc(500px*5)]' +
 		Class}
 >
-	<KanbanFiltering bind:type bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" />
+	<KanbanFiltering bind:type bind:groupId bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" />
 
 	<div class="flex overflow-x-auto py-3">
 		{#each tags as _tag, i}

@@ -5,7 +5,7 @@
 	import { _ } from 'svelte-i18n';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import TextArea from '$lib/Generic/TextArea.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import Loader from '$lib/Generic/Loader.svelte';
 
@@ -14,7 +14,7 @@
 
 	let title: string,
 		description: string,
-		poppup: poppup,
+		errorHandler: any,
 		loading = false;
 
 	const reportPoll = async () => {
@@ -30,18 +30,18 @@
 
 		loading = false;
 
-		if (!res.ok) {
-			poppup = {
+		if (!res.ok) {			
+			errorHandler.addPopup({
 				message: 'An error occurred while reporting the poll.',
 				success: false
-			};
+			});
 			return;
 		}
 
-		poppup = {
+		errorHandler.addPopup({
 			message: 'Poll reported successfully.',
 			success: true
-		};
+		});
 		reportPollModalShow = false;
 		title = '';
 		description = '';
@@ -72,4 +72,4 @@
 	</div>
 </Modal>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

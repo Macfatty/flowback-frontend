@@ -11,7 +11,7 @@
 	import Question from '$lib/Generic/Question.svelte';
 	import { maxDatePickerYear } from '$lib/Generic/DateFormatter';
 	import type { PredictionBet, PredictionStatement } from './interfaces';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
 	import { createPrediction as createPredictionBlockchain } from '$lib/Blockchain_v1_Ethereum/javascript/predictionsBlockchain';
@@ -39,7 +39,7 @@
 			end_date: new Date(new Date(poll.end_date).getTime() + 1 * 60 * 1000)
 		},
 		bets: PredictionBet[] = [],
-		poppup: poppup,
+		errorHandler: any,
 		pushingToBlockchain = true;
 
 	const getPredictionBets = async () => {
@@ -90,7 +90,8 @@
 			blockchain_id: 0,
 			title: ''
 		};
-		poppup = { message: 'Successfully created consequence', success: true };
+		
+		errorHandler.addPopup({ message: 'Successfully created consequence', success: true });
 	};
 
 	//Go through every proposal that the prediction statement is predicting on.
@@ -114,7 +115,7 @@
 				}
 				newPredictionStatement.blockchain_id = Number(`${prediction_blockchain_id}`);
 			} catch {
-				poppup = { message: 'Could not push to Blockchain', success: false };
+				errorHandler.addPopup({ message: 'Could not push to Blockchain', success: false });
 			}
 		}
 	};
@@ -228,4 +229,4 @@
 	</form>
 </Loader>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

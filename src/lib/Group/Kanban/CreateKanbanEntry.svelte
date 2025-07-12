@@ -13,7 +13,7 @@
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import type { kanban } from './Kanban';
 	import Select from '$lib/Generic/Select.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 
 	export let type: 'home' | 'group',
 		open: boolean = false,
@@ -38,7 +38,7 @@
 		priority: number | undefined = 3,
 		end_date: string | null = new Date().toISOString().slice(0, 16),
 		loading = false,
-		poppup: poppup,
+		errorHandler: any,
 		images: File[] = [],
 		workGroup: number | undefined;
 
@@ -82,11 +82,11 @@
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to create kanban task', success: false };
+			errorHandler.addPopup({ message: 'Failed to create kanban task', success: false });
 			return;
 		}
 
-		poppup = { message: 'Successfully created kanban task', success: true };
+		errorHandler.addPopup({ message: 'Successfully created kanban task', success: true });
 
 		const userAssigned = users.find((user) => assignee === user.user.id);
 		const _assignee = assignee
@@ -249,4 +249,4 @@
 	</div>
 </Modal>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

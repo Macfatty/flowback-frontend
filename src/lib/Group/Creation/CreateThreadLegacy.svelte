@@ -6,12 +6,12 @@
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { _ } from 'svelte-i18n';
 	import { goto } from '$app/navigation';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 
 	let loading = false,
 		title = '',
-		poppup: poppup;
+		errorHandler: any;
 
 	const createThread = async () => {
 		const { res, json } = await fetchRequest(
@@ -23,7 +23,7 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: "Couldn't create Thread", success: false };
+			errorHandler.addPopup({ message: "Couldn't create Thread", success: false });
 			return;
 		}
 
@@ -42,4 +42,4 @@
 		</Loader>
 	</form>
 </div>
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

@@ -5,7 +5,7 @@
 	import Proposal from './Proposal.svelte';
 	import { proposals as proposalsLimit } from '../Generic/APILimits.json';
 	import { onMount } from 'svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import VotingSlider from './VotingSlider.svelte';
 	import { groupUserStore } from '$lib/Group/interface';
@@ -19,7 +19,7 @@
 
 	let voting: { score: number; proposal: number }[] = [],
 		needsReload = 0,
-		poppup: poppup,
+		errorHandler: any,
 		commentFilterProposalId: number | null = null,
 		delegateVoting: { score: number; proposal: number }[] = [];
 
@@ -102,21 +102,21 @@
 
 		if (!res.ok) {
 			if (json?.detail[0] === 'groupuserdelegatepool does not exist')
-				poppup = {
+				errorHandler.addPopup({
 					message: 'You cannot vote on this poll since you are not a delegate',
 					success: false
-				};
+				});
 			else
-				poppup = {
+				errorHandler.addPopup({
 					message: 'Vote Failed',
 					success: false
-				};
+				});
 			return;
-		}
-		poppup = {
+		}		
+		errorHandler.addPopup({
 			message: 'Successfully voted',
 			success: true
-		};
+		});
 	};
 
 	const vote = async () => {
@@ -130,17 +130,17 @@
 		);
 
 		if (!res.ok) {
-			poppup = {
+			errorHandler.addPopup({
 				message: 'Vote Failed',
 				success: false
-			};
+			});
 			return;
 		}
-
-		poppup = {
+				
+		errorHandler.addPopup({
 			message: 'Successfully voted',
 			success: true
-		};
+		});
 	};
 
 	const changingVote = (score: number | string, proposalId: number) => {
@@ -193,4 +193,4 @@
 	</div>
 </div>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
