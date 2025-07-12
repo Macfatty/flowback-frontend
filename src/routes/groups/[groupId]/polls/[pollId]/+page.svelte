@@ -20,7 +20,7 @@
 	import Layout from '$lib/Generic/Layout.svelte';
 	import PredictionStatements from '$lib/Poll/PredictionStatements.svelte';
 	import { env } from '$env/dynamic/public';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { formatDate } from '$lib/Generic/DateFormatter';
@@ -33,7 +33,7 @@
 		proposals: proposal[],
 		selectedProposal: proposal | null,
 		proposalsToPredictionMarket: proposal[] = [],
-		poppup: poppup,
+		errorHandler: any,
 		displayForm: boolean,
 		comments: Comment[] = [];
 
@@ -54,8 +54,8 @@
 			`group/${$page.params.groupId}/poll/list?id=${$page.params.pollId}`
 		);
 
-		if (!res.ok) {
-			poppup = { message: json.detail[0], success: false };
+		if (!res.ok) {			
+			errorHandler.addPopup({ message: json.detail[0], success: false });
 			return;
 		}
 
@@ -344,4 +344,4 @@
 	{/if}
 </Layout>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

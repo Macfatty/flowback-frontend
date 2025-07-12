@@ -16,7 +16,7 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { onMount } from 'svelte';
 	import { env } from '$env/dynamic/public';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import Button from '$lib/Generic/Button.svelte';
@@ -31,7 +31,7 @@
 
 	let userUpVote: -1 | 0 | 1 = 0,
 		comments: Comment[],
-		poppup: poppup,
+		errorHandler: any,
 		isVoting = false,
 		ReportCommentModalShow = false,
 		reportTitle: string,
@@ -51,7 +51,7 @@
 		const { res, json } = await fetchRequest('POST', _api);
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to delete comment', success: false };
+			errorHandler.addPopup({ message: 'Failed to delete comment', success: false });
 			return;
 		}
 
@@ -77,7 +77,7 @@
 		const { res, json } = await fetchRequest('POST', _api, data);
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to report comment', success: false };
+			errorHandler.addPopup({ message: 'Failed to report comment', success: false });
 			return;
 		}
 
@@ -114,7 +114,7 @@
 		const { res, json } = await fetchRequest('POST', _api, vote);
 
 		if (!res.ok) {
-			poppup = { message: 'Comment vote failed', success: false };
+			errorHandler.addPopup({ message: 'Comment vote failed', success: false });
 			return;
 		}
 
@@ -321,4 +321,4 @@
 	/>
 {/if}
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

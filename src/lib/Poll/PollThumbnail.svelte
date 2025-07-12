@@ -17,7 +17,7 @@
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import Button from '$lib/Generic/Button.svelte';
 	import NewDescription from './NewDescription.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import { env } from '$env/dynamic/public';
 	import {
@@ -46,7 +46,7 @@
 		selectedTag: number,
 		darkMode: boolean,
 		voting = true,
-		poppup: poppup,
+		errorHandler: any,
 		choicesOpen = false,
 		deletePollModalShow = false,
 		reportPollModalShow = false,
@@ -69,7 +69,7 @@
 		});
 
 		if (!res.ok) {
-			poppup = { message: 'Could not submit tag vote', success: false };
+			errorHandler.addPopup({ message: 'Could not submit tag vote', success: false });
 			return;
 		}
 
@@ -421,7 +421,7 @@
 <DeletePollModal bind:deletePollModalShow pollId={poll?.id} />
 <ReportPollModal bind:reportPollModalShow pollId={$page.params.pollId} />
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
 
 <style>
 	.poll-thumbnail-shadow {

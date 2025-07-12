@@ -10,7 +10,7 @@
 	import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { groupMembers as groupMembersLimit } from '../Generic/APILimits.json';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { env } from '$env/dynamic/public';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import {
@@ -35,7 +35,7 @@
 		searchInvitationQuery = '',
 		searchedInvitationUsers: User[] = [],
 		searchedUsers: GroupUser[] = [],
-		poppup: poppup,
+		errorHandler: any,
 		showInvite = false,
 		searched = false,
 		delegates: Delegate[] = [],
@@ -118,14 +118,14 @@
 
 		loading = false;
 		if (!res.ok) {
-			poppup = { message: "Couldn't get invites list", success: false };
+			errorHandler.addPopup({ message: "Couldn't get invites list", success: false })
 			return;
 		}
 
-		poppup = {
+		errorHandler.addPopup({
 			success: true,
 			message: 'Successfully sent invite'
-		};
+		})
 
 		searchInvitationQuery = '';
 		searchedInvitationUsers = [];
@@ -139,7 +139,7 @@
 		usersAskingForInvite = usersAskingForInvite.filter((user) => user.id !== userId);
 
 		if (!res.ok) {
-			poppup = { message: "Couldn't accept user invite", success: false };
+			errorHandler.addPopup({ message: "Couldn't accept user invite", success: false });
 		}
 		
 		await getInvitesList();
@@ -177,12 +177,12 @@
 			target_user_id: userToRemove
 		});
 
-		if (!res.ok) {
-			poppup = { message: $_('Failed to remove user'), success: false };
+		if (!res.ok) {			
+			errorHandler.addPopup({ message: $_('Failed to remove user'), success: false });
 			return;
 		}
 
-		poppup = { message: $_('Successfully removed user'), success: true };
+		errorHandler.addPopup({ message: $_('Successfully removed user'), success: true });
 		searchedUsers = searchedUsers.filter((user) => user.user.id !== userToRemove);
 		removeUserModalShow = false;
 		await getUsers();
@@ -405,4 +405,4 @@
 	</div>
 </Loader>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

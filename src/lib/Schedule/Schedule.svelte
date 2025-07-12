@@ -15,6 +15,7 @@
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import Button from '$lib/Generic/Button.svelte';
 	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
@@ -73,7 +74,9 @@
 		workGroups: WorkGroup[] = [],
 		workGroupFilter: number[] = [],
 		status: StatusMessageInfo,
-		poppup: poppup;
+		poppup: poppup,
+		errorHandler: any;
+
 
 	const resetSelectedEvent = () => {
 		selectedEvent = {
@@ -158,11 +161,11 @@
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to create event', success: false };
+			errorHandler.addPopup({ message: 'Failed to create event', success: false });
 			return;
 		}
 
-		poppup = { message: 'Successfully created event', success: true };
+		errorHandler.addPopup({ message: 'Successfully created event', success: true });
 		showCreateScheduleEvent = false;
 
 		const createdEvent: scheduledEvent = {
@@ -214,8 +217,8 @@
 
 		loading = false;
 
-		if (!res.ok) {
-			poppup = { message: 'Failed to edit event', success: false };
+		if (!res.ok) {			
+			errorHandler.addPopup({ message: 'Failed to edit event', success: false });
 			return;
 		}
 
@@ -244,11 +247,11 @@
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to delete event', success: false };
+			errorHandler.addPopup({ message: 'Failed to delete event', success: false });
 			return;
 		}
-
-		poppup = { message: 'Event deleted', success: true };
+		
+		errorHandler.addPopup({ message: 'Event deleted', success: true });
 		events = events.filter((event) => event.event_id !== eventId);
 		showEvent = false;
 		resetSelectedEvent();
@@ -481,7 +484,7 @@
 	{year}
 />
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
 
 <style>
 	.calendar {

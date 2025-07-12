@@ -18,7 +18,7 @@
 	import { becomeMemberOfGroup } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
 	import { env } from '$env/dynamic/public';
 	import type { poppup } from '$lib/Generic/Poppup';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
 
 	export let Class = '';
@@ -32,7 +32,7 @@
 		publicGroup = true,
 		hiddenGroup = false,
 		loading = false,
-		poppup: poppup,
+		errorHandler: any,
 		oldGroup: any;
 
 	//This page also supports the edit of groups
@@ -85,7 +85,7 @@
 		const { res } = await fetchRequest('POST', `group/${groupToEdit}/delete`);
 
 		if (!res.ok) {
-			poppup = { message: 'Could not delete group', success: false };
+			errorHandler.addPopup({ message: 'Could not delete group', success: false });
 			return;
 		}
 
@@ -116,7 +116,7 @@
 		if (oldGroup.image) image = oldGroup.image;
 		if (oldGroup.cover_image) coverImage = oldGroup.coverImage;
 
-		poppup = { message: 'Successfully reverted edits', success: true };
+		errorHandler.addPopup({ message: 'Successfully reverted edits', success: true })
 	};
 
 	onMount(() => {
@@ -220,4 +220,4 @@
 	</Loader>
 </form>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

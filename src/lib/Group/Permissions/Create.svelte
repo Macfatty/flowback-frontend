@@ -6,7 +6,7 @@
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { _ } from 'svelte-i18n';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import { onMount } from 'svelte';
 	import type { Permissions } from './interface';
@@ -70,7 +70,7 @@
 	];
 
 	let loading = false,
-		poppup: poppup,
+		errorHandler: any,
 		roleName = '',
 		rolePerms = new Array(perms.length).fill(false);
 
@@ -104,10 +104,10 @@
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Could not create role', success: false };
+			errorHandler.addPopup({ message: 'Could not create role', success: false });
 			return;
-		}
-		poppup = { message: 'Successfully created role', success: true };
+		}		
+		errorHandler.addPopup({ message: 'Successfully created role', success: true });
 	};
 
 	const permissionUpdate = async () => {
@@ -141,10 +141,10 @@
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Could not update role', success: false };
+			errorHandler.addPopup({ message: 'Could not update role', success: false })
 			return;
 		}
-		poppup = { message: 'Successfully updated role', success: true };
+		errorHandler.addPopup({ message: 'Successfully updated role', success: true });
 		selectedRole = undefined;
 		selectedPage = 'list';
 	};
@@ -201,4 +201,4 @@
 	</div>
 </Loader>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

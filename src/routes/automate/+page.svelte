@@ -3,8 +3,8 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
 	import Layout from '$lib/Generic/Layout.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import type { poppup } from '$lib/Generic/Poppup';	
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import Select from '$lib/Generic/Select.svelte';
 	import Toggle from '$lib/Generic/Toggle.svelte';
 	import type { Delegate } from '$lib/Group/Delegation/interfaces';
@@ -21,13 +21,13 @@
 		loading = false,
 		delegates: Delegate[] = [],
 		selectedPage: 'become-delegate' | 'delegate' | 'none' = 'none',
-		poppup: poppup;
+		errorHandler: any;
 
 	const getGroups = async () => {
 		const { res, json } = await fetchRequest('GET', `group/list?limit=1000&joined=true`);
 
 		if (!res.ok) {
-			poppup = { message: 'Could not get groups', success: false };
+			errorHandler.addPopup({ message: 'Could not get groups', success: false });
 			return;
 		}
 		groups = json.results;
@@ -41,7 +41,7 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: 'Could not get user info', success: false };
+			errorHandler.addPopup({ message: 'Could not get user info', success: false });
 			return;
 		}
 
@@ -56,7 +56,7 @@
 		const { res } = await fetchRequest('POST', `group/${group.id}/delegate/pool/create`, {});
 
 		if (!res.ok) {
-			poppup = { message: 'Could not create delegation pool', success: false };
+			errorHandler.addPopup({ message: 'Could not create delegation pool', success: false });
 			return;
 		}
 		userIsDelegate = true;
@@ -71,7 +71,7 @@
 
 		const results = await Promise.all(promises);
 
-		poppup = { message: 'Removed delegations', success: true };
+		errorHandler.addPopup({ message: 'Removed delegations', success: true });
 	};
 
 	const getDelegatePools = async () => {
@@ -189,4 +189,4 @@
 	</div>
 </Layout>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

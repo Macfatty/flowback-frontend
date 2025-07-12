@@ -3,7 +3,7 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { poppup } from '$lib/Generic/Poppup';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { _ } from 'svelte-i18n';
 	import Fa from 'svelte-fa';
 	import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -15,7 +15,7 @@
 		handleRemoveGroup: (id: number) => void,
 		getWorkGroupInvite: () => {};
 
-	let poppup: poppup,
+	let errorHandler: any,
 		workGroupUserList: WorkGroupUser[] = [],
 		showDeleteModal = false;
 
@@ -34,8 +34,8 @@
 	const joinGroup = async () => {
 		const { res, json } = await fetchRequest('POST', `group/workgroup/${workGroup.id}/join`);
 
-		if (!res.ok) {
-			poppup = { message: 'Failed to join Group', success: false };
+		if (!res.ok) {			
+			errorHandler.addPopup({ message: 'Failed to join Group', success: false });
 			return;
 		}
 
@@ -55,13 +55,13 @@
 					? 'Already asked to join group'
 					: 'Failed to ask to join group';
 
-			poppup = { message, success: false };
+			errorHandler.addPopup({ message, success: false });
 			return;
 		}
 
 		if (!res.ok) return;
 
-		poppup = { message: 'Invite Sent', success: true };
+		errorHandler.addPopup({ message: 'Invite Sent', success: true });
 		workGroup.requested_access = true;
 		getWorkGroupInvite();
 	};
@@ -70,7 +70,7 @@
 		const { res, json } = await fetchRequest('POST', `group/workgroup/${workGroup.id}/leave`);
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to leave Group', success: false };
+			errorHandler.addPopup({ message: 'Failed to leave Group', success: false });
 			return;
 		}
 		workGroupUserList = workGroupUserList.filter(
@@ -87,10 +87,10 @@
 		const { res, json } = await fetchRequest('POST', `group/workgroup/${workGroup.id}/delete`);
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to delete workgroup', success: false };
+			errorHandler.addPopup({ message: 'Failed to delete workgroup', success: false });
 			return;
 		} else {
-			poppup = { message: 'Workgroup deleted', success: true };
+			errorHandler.addPopup({ message: 'Workgroup deleted', success: true });
 		}
 
 		handleRemoveGroup(workGroup.id);
@@ -150,4 +150,4 @@
 	</div>
 </Modal>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
