@@ -6,10 +6,11 @@
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import type { template } from './interface';
 	import { _ } from 'svelte-i18n';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import Fa from 'svelte-fa';
 	import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
+	import { error } from '@sveltejs/kit';
 
 	export let area_vote_time_delta: number,
 		proposal_time_delta: number,
@@ -23,7 +24,7 @@
 
 	let name: string,
 		templates: template[] = [],
-		poppup: poppup,
+		errorHandler: any,
 		isUpdating: boolean = false,
 		currentTemplateId: number | null = null;
 
@@ -33,7 +34,7 @@
 		const { res, json } = await fetchRequest('GET', `group/${groupId}/poll/template/list`);
 
 		if (!res.ok) {
-			poppup = { message: 'Could not get templates', success: false };
+			errorHandler.addPopup({ message: 'Could not get templates', success: false });
 			return;
 		}
 
@@ -62,12 +63,12 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: 'Could not create template', success: false };
+			errorHandler.addPopup({ message: 'Could not create template', success: false });
 			return;
 		}
 
-		templates = [...templates, json];
-		poppup = { message: 'Successfully saved timetemplate', success: true };
+		templates = [...templates, json];		
+		errorHandler.addPopup({ message: 'Successfully saved timetemplate', success: true });
 		await templateList();
 
 		name = '';
@@ -79,13 +80,13 @@
 			`group/poll/template/${template_id}/delete`
 		);
 
-		if (!res.ok) {
-			poppup = { message: 'Could not delete template', success: false };
+		if (!res.ok) {			
+			errorHandler.addPopup({ message: 'Could not delete template', success: false })
 			return;
 		}
 
 		templates = templates.filter(template => template.id !== template_id);
-		poppup = { message: 'Template deleted successfully', success: true };
+		errorHandler.addPopup({ message: 'Template deleted successfully', success: true });
 	};
 
 	//TODO: Fix a better templateUpdate using Update-API instead of Delete+Create
@@ -159,4 +160,4 @@
 	{/each}
 </div>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

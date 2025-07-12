@@ -4,7 +4,7 @@
 	import type { Group, Tag } from '../interface';
 	import type { Delegate, DelegateRelation } from './interfaces';
 	import type { poppup } from '$lib/Generic/Poppup';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import Fa from 'svelte-fa';
 	import { tick } from 'svelte';
@@ -18,7 +18,7 @@
 		expandedSection: any = null,
 		previousExpandedSection: any = null,
 		delegateRelations: DelegateRelation[] = [],
-		poppup: poppup,
+		errorHandler: any,
 		delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
 
 	onMount(async () => {
@@ -134,7 +134,7 @@
 		});
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to create delegation', success: false };
+			errorHandler.addPopup({ message: 'Failed to create delegation', success: false });
 			return;
 		}
 
@@ -168,11 +168,11 @@
 			toSendDelegates
 		);
 
-		if (!res.ok) {
-			poppup = { message: 'Failed to save new delegation', success: false };
+		if (!res.ok) {			
+			errorHandler.addPopup({ message: 'Failed to save new delegation', success: false });
 			return;
 		}
-		poppup = { message: 'Successfully saved delegation', success: true };
+		errorHandler.addPopup({ message: 'Successfully saved delegation', success: true });
 
 		// Refresh relations to ensure consistency with backend
 		await getDelegateRelations();
@@ -268,7 +268,7 @@
 	{/if}
 </div>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
 
 <style>
 	.section {

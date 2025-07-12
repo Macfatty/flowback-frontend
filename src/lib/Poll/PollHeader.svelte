@@ -16,7 +16,7 @@
 	import { _ } from 'svelte-i18n';
 	import NewDescription from './NewDescription.svelte';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import DeletePollModal from './DeletePollModal.svelte';
 	import ReportPollModal from './ReportPollModal.svelte';
@@ -30,7 +30,7 @@
 	let deletePollModalShow = false,
 		reportPollModalShow = false,
 		choicesOpen = false,
-		poppup: poppup;
+		errorHandler: any;
 </script>
 
 <div
@@ -141,7 +141,7 @@
 <DeletePollModal bind:deletePollModalShow pollId={$page.params.pollId} />
 <ReportPollModal bind:reportPollModalShow pollId={$page.params.pollId} />
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
 
 <style>
 	.poll-header-grid {

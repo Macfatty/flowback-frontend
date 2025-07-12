@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import Tag from '$lib/Group/Tag.svelte';
 	import Button from '$lib/Generic/Button.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import { _ } from 'svelte-i18n';
@@ -12,7 +12,7 @@
 
 	let tags: Tag[] = [],
 		selectedTag: number | null = null,
-		poppup: poppup;
+		errorHandler: any;
 
 	const getTags = async () => {
 		const { json, res } = await fetchRequest(
@@ -20,7 +20,7 @@
 			`group/${$page.params.groupId}/tags?limit=1000&active=true`
 		);
 		if (!res.ok) {
-			poppup = { message: 'Could not get tags', success: false };
+			errorHandler.addPopup({ message: 'Could not get tags', success: false });
 			return;
 		}
 
@@ -28,8 +28,8 @@
 	};
 
 	const submitVote = async () => {
-		if (selectedTag === null) {
-			poppup = { message: 'Please select a tag before submitting.', success: false };
+		if (selectedTag === null) {			
+			errorHandler.addPopup({ message: 'Please select a tag before submitting.', success: false });
 			return;
 		}
 
@@ -38,12 +38,12 @@
 			vote: true
 		});
 
-		if (!res.ok) {
-			poppup = { message: 'Could not vote on tag', success: false };
+		if (!res.ok) {			
+			errorHandler.addPopup({ message: 'Could not vote on tag', success: false });
 			return;
 		}
 
-		poppup = { message: 'Successfully voted for area', success: true };
+		errorHandler.addPopup({ message: 'Successfully voted for area', success: true });
 	};
 
 	const getAreaVote = async () => {
@@ -59,8 +59,8 @@
 	};
 
 	const cancelVote = () => {
-		selectedTag = null;
-		poppup = { message: 'Vote cancelled', success: true };
+		selectedTag = null;		
+		errorHandler.addPopup({ message: 'Vote cancelled', success: true });
 	};
 
 	onMount(async () => {
@@ -124,4 +124,4 @@
 	</div>
 </div>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

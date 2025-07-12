@@ -12,7 +12,7 @@
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import { onMount } from 'svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { commentsStore } from './commentStore';
 	import { getCommentDepth } from './functions';
 	import { onDestroy } from 'svelte';
@@ -32,7 +32,7 @@
 		showMessage = '',
 		recentlyTappedButton = '',
 		darkmode = false,
-		poppup: poppup,
+		errorHandler: any,
 		filteredProposal: proposal | null = null;
 
 	// Reactive subscription to the filtered proposal in the commentsStore
@@ -68,7 +68,7 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to post comment', success: false };
+			errorHandler.addPopup({ message: 'Failed to post comment', success: false });
 			return;
 		}
 
@@ -118,7 +118,7 @@
 		const formData = new FormData();
 
 		if (message === '' && files.length === 0) {
-			poppup = { message: 'Cannot create empty comment', success: false };
+			errorHandler.addPopup({ message: 'Cannot create empty comment', success: false });
 			return;
 		}
 
@@ -140,7 +140,7 @@
 		beingEdited = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to edit comment', success: false };
+			errorHandler.addPopup({ message: 'Failed to edit comment', success: false });
 			return;
 		}
 
@@ -251,4 +251,4 @@
 	</div>
 </form>
 
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />

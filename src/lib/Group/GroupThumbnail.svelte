@@ -9,11 +9,11 @@
 	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 	import { env } from '$env/dynamic/public';
 	import type { poppup } from '$lib/Generic/Poppup';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 
 	export let group: Group;
 
-	let poppup: poppup = { message: '', success: false };
+	let errorHandler: any;
 
 	const goToGroup = () => {
 		if (group.joined) goto(`/groups/${group.id}`);
@@ -29,7 +29,7 @@
 
 		if (!directJoin) {
 			group.pending_join = true;
-			poppup = { message: 'Pending invite', success: true };
+			errorHandler.addPopup({ message: 'Pending invite', success: true });
 		} else group.joined = !group.joined;
 
 		if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') becomeMemberOfGroup(group.blockchain_id);
@@ -87,7 +87,7 @@
 		</Button>
 	</div>
 </button>
-<Poppup bind:poppup />
+<ErrorHandler bind:this={errorHandler} />
 
 <style>
 	.vote-thumbnail:hover {
