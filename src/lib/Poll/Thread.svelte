@@ -66,6 +66,19 @@
 		thread.pinned = !thread?.pinned;
 		threads = threads;
 	};
+
+	const deleteThread = async () => {
+		const { res, json } = await fetchRequest('POST', `group/thread/${thread?.id}/delete`);
+
+		if (!res.ok) {
+			poppup = { message: 'Could not delete thread', success: false };
+			return;
+		}
+
+		poppup = { message: 'Thread deleted successfully', success: true };
+		threads = threads.filter((t) => t.id !== thread.id);
+	};
+
 	let threadIsBeingReported = false;
 	let reporting = false;
 </script>
@@ -100,7 +113,7 @@
 			<MultipleChoices
 				bind:choicesOpen
 				labels={[$_('Delete Thread'), $_('Report Thread')]}
-				functions={[_, () => ((reportThreadModalShow = true), (choicesOpen = false))]}
+				functions={[deleteThread, () => ((reportThreadModalShow = true), (choicesOpen = false))]}
 				Class="text-black justify-self-center"
 			/>
 		</div>

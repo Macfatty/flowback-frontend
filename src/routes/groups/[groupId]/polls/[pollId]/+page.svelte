@@ -22,10 +22,7 @@
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { formatDate } from '$lib/Generic/DateFormatter';
-	import {
-		predictionStatementsStore,
-		type PredictionStatement
-	} from '$lib/Poll/PredictionMarket/interfaces';
+	import { predictionStatementsStore } from '$lib/Poll/PredictionMarket/interfaces';
 
 	let poll: poll,
 		pollType = 1,

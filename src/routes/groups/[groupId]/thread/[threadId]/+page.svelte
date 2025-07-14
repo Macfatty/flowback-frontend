@@ -11,11 +11,15 @@
 	import Comments from '$lib/Comments/Comments.svelte';
 	import Layout from '$lib/Generic/Layout.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
+	import ReportThreadModal from '$lib/Poll/ReportThreadModal.svelte';
+	import DeletePollModal from '$lib/Poll/DeletePollModal.svelte';
 
-	let thread: Thread, errorHandler: any;
+	let thread: Thread,
+		errorHandler: any,
+		reportThreadModalShow = false,
+		deletePollModalShow = false;
 
 	onMount(() => {
 		getThread();
@@ -33,7 +37,18 @@
 		}
 
 		thread = json.results[0];
-		if (thread.description === null) thread.description = '';		
+		if (thread.description === null) thread.description = '';
+	};
+
+	const deleteThread = async () => {
+		const { res, json } = await fetchRequest('POST', `group/thread/${thread?.id}/delete`);
+
+		if (!res.ok) {
+			errorHandler.addPopup({ message: 'Could not delete thread', success: false });
+			return;
+		}
+
+		errorHandler.addPopup({ message: 'Thread deleted successfully', success: true });
 	};
 </script>
 
@@ -52,7 +67,9 @@
 				<Fa icon={faArrowLeft} />
 			</div>
 
-			<h1 class="text-left text-2xl text-primary dark:text-secondary font-semibold">{thread.title}</h1>
+			<h1 class="text-left text-2xl text-primary dark:text-secondary font-semibold">
+				{thread.title}
+			</h1>
 
 			<div class="inline-flex gap-4 items-baseline">
 				<NotificationOptions
@@ -63,15 +80,17 @@
 					labels={['thread']}
 				/>
 				<MultipleChoices
-					labels={[$_('Delete Thread,'), $_('Report Thread')]}
-					functions={[]}
+					labels={[$_('Delete Thread'), $_('Report Thread')]}
 					Class="text-black justify-self-center"
+					functions={[() => (deletePollModalShow = true), () => (reportThreadModalShow = true)]}
 				/>
 			</div>
 
 			<div class="grid-area-workgroup">
 				{#if thread.work_group}
-					<span class="text-sm text-gray-500 dark:text-darkmodeText">#{thread.work_group?.name}, </span>
+					<span class="text-sm text-gray-500 dark:text-darkmodeText"
+						>#{thread.work_group?.name},
+					</span>
 				{/if}
 				{#if thread.created_at}
 					<span class="text-sm text-gray-500 dark:text-darkmodeText">
@@ -92,6 +111,10 @@
 </Layout>
 
 <ErrorHandler bind:this={errorHandler} />
+
+<ReportThreadModal bind:reportThreadModalShow threadId={$page.params.threadId} />
+
+<DeletePollModal bind:deletePollModalShow pollId={$page.params.threadId} type="thread" />
 
 <style>
 	.poll-header-grid {

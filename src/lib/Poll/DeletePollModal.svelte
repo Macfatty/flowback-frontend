@@ -5,20 +5,30 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { _ } from 'svelte-i18n';
 	import { page } from '$app/stores';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 
 	export let deletePollModalShow = false,
-		pollId: string|number;
+		pollId: string | number,
+		type: 'poll' | 'thread' = 'poll';
+
+	let errorHandler: any;
 
 	const deletePoll = async () => {
-		const { res, json } = await fetchRequest('POST', `group/poll/${pollId}/delete`);
-        if (!res.ok) return;
+		let _api = type === 'poll' ? `group/poll/${pollId}/delete` : `group/thread/${pollId}/delete`;
+
+		const { res, json } = await fetchRequest('POST', _api);
+
+		if (!res.ok) {
+			errorHandler.addPopup({ message: 'Could not delete poll', success: false });
+			return;
+		}
 
 		goto(`/groups/${$page.params.groupId}`);
-        deletePollModalShow = false;
+		deletePollModalShow = false;
 	};
 </script>
 
-<Modal bind:open={deletePollModalShow}>
+<Modal bind:open={deletePollModalShow} Class="max-w-[400px]">
 	<div slot="header">{$_('Deleting Poll')}</div>
 	<div slot="body">
 		{$_('Are you sure you want to delete this poll?')}
@@ -32,3 +42,5 @@
 		</div>
 	</div>
 </Modal>
+
+<ErrorHandler bind:this={errorHandler} />
