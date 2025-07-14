@@ -189,7 +189,7 @@
 					</Button>
 				{/if}
 				{#if groupToEdit && !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
-					<Modal bind:open={DeleteGroupModalShow}>
+					<Modal bind:open={DeleteGroupModalShow} Class="max-w-[400px]">
 						<div slot="header">{$_('Deleting group')}</div>
 						<div slot="body">{$_('Are you sure you want to delete this group?')}</div>
 						<div slot="footer">
