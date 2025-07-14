@@ -31,7 +31,7 @@
 	};
 </script>
 
-<Modal bind:open={reportThreadModalShow}>
+<Modal bind:open={reportThreadModalShow} Class="max-w-[400px]">
 	<div slot="header">{$_('Report Thread')}</div>
 	<div class="flex flex-col gap-3" slot="body">
 		<TextInput inputClass="bg-white" required label="Title" bind:value={title} />

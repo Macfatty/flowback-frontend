@@ -11,12 +11,14 @@
 	import { groupUserStore, type Thread } from '$lib/Group/interface';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
 	import ReportThreadModal from './ReportThreadModal.svelte';
+	import DeletePollModal from './DeletePollModal.svelte';
 
 	export let thread: Thread;
 	let threads: Thread[] = [],
 		reportThreadModalShow = false,
 		choicesOpen = false,
-		poppup: poppup;
+		poppup: poppup,
+		deletePollModalShow = false;
 
 	//Launches whenever the user clicks upvote or downvote on a thread
 	const threadVote = async (_thread: Thread, clicked: 'down' | 'up') => {
@@ -66,6 +68,19 @@
 		thread.pinned = !thread?.pinned;
 		threads = threads;
 	};
+
+	const deleteThread = async () => {
+		const { res, json } = await fetchRequest('POST', `group/thread/${thread?.id}/delete`);
+
+		if (!res.ok) {
+			poppup = { message: 'Could not delete thread', success: false };
+			return;
+		}
+
+		poppup = { message: 'Thread deleted successfully', success: true };
+		threads = threads.filter((t) => t.id !== thread.id);
+	};
+
 	let threadIsBeingReported = false;
 	let reporting = false;
 </script>
@@ -100,7 +115,7 @@
 			<MultipleChoices
 				bind:choicesOpen
 				labels={[$_('Delete Thread'), $_('Report Thread')]}
-				functions={[_, () => ((reportThreadModalShow = true), (choicesOpen = false))]}
+				functions={[() => (deletePollModalShow = true), () => ((reportThreadModalShow = true), (choicesOpen = false))]}
 				Class="text-black justify-self-center"
 			/>
 		</div>
@@ -153,3 +168,5 @@
 </div>
 
 <ReportThreadModal bind:reportThreadModalShow threadId={$page.params.pollId} />
+
+<DeletePollModal bind:deletePollModalShow pollId={$page.params.pollId} type="thread" />
