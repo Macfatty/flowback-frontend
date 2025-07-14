@@ -7,7 +7,6 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 	import Results from '$lib/Poll/Results.svelte';
-	import type { groupUser } from '$lib/Group/interface';
 	import { checkForLinks } from '$lib/Generic/GenericFunctions';
 	import ProposalSubmition from '$lib/Poll/ProposalSubmition.svelte';
 	import Predictions from '$lib/Poll/PredictionMarket/PredictionCreate.svelte';
@@ -21,14 +20,16 @@
 	import PredictionStatements from '$lib/Poll/PredictionStatements.svelte';
 	import { env } from '$env/dynamic/public';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { formatDate } from '$lib/Generic/DateFormatter';
+	import {
+		predictionStatementsStore,
+		type PredictionStatement
+	} from '$lib/Poll/PredictionMarket/interfaces';
 
 	let poll: poll,
 		pollType = 1,
 		finished: boolean,
-		groupUser: groupUser,
 		phase: Phase = 'pre_start',
 		proposals: proposal[],
 		selectedProposal: proposal | null,
@@ -44,6 +45,7 @@
 		checkForLinks(poll?.description, 'poll-description');
 		document.title = poll.title;
 		getDisplayForm();
+		setUpPredictionStore();
 	});
 
 	const getPollData = async () => {
@@ -54,7 +56,7 @@
 			`group/${$page.params.groupId}/poll/list?id=${$page.params.pollId}`
 		);
 
-		if (!res.ok) {			
+		if (!res.ok) {
 			errorHandler.addPopup({ message: json.detail[0], success: false });
 			return;
 		}
@@ -79,6 +81,19 @@
 
 		if (display === null || display === undefined || display === '0') displayForm = false;
 		if (display === '1') displayForm = true;
+	};
+
+	const setUpPredictionStore = async () => {
+		const { json, res } = await fetchRequest(
+			'GET',
+			`group/${$page.params.groupId}/poll/prediction/statement/list?poll_id=${$page.params.pollId}`
+		);
+
+		if (!res.ok) {
+			return;
+		}
+
+		predictionStatementsStore.set(json.results);
 	};
 
 	// When fast forwarding from area phase to proposal phase, get tag info in real time
@@ -232,7 +247,7 @@
 					<div slot="right">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
-								 	<div class="font-semibold text-primary dark:text-secondary text-lg">
+								<div class="font-semibold text-primary dark:text-secondary text-lg">
 									{selectedProposal.title}
 								</div>
 								<NewDescription
@@ -241,7 +256,6 @@
 									lengthLimit={130}
 								/>
 								<PredictionStatements bind:selectedProposal bind:phase bind:poll />
-								
 							</div>
 						{/if}
 					</div>
@@ -258,7 +272,7 @@
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-[90%] overflow-y-auto">
-							<ProposalScoreVoting bind:comments bind:proposals bind:phase bind:selectedProposal/>
+							<ProposalScoreVoting bind:comments bind:proposals bind:phase bind:selectedProposal />
 						</div>
 					</div>
 					<div slot="right">

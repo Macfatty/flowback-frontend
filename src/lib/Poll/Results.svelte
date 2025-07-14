@@ -67,7 +67,6 @@
 
 		if (poll?.status === 2 || poll?.status === 0) {
 			let time = setInterval(() => {
-				
 				if (poll.status === -1 || poll.status === 1 || k === 15) clearInterval(time);
 				getProposals();
 				getPollData();
@@ -83,12 +82,12 @@
 	>
 
 	{#if pollType === 4}
-		<!-- If the winner has atleast one point, display statistics (otherwise it looks empty) -->
 		{#if poll?.status === 2 || poll?.status === 0}
 			{$_('Calculating results...')}
 		{:else if poll?.status === -1}
 			{$_('Vote calculation failed')}
-		{:else}
+		{:else if poll?.status === 1}
+			<!-- If the winner has atleast one point, display statistics (otherwise it looks empty) -->
 			{#if proposals[0]?.score > 0}
 				<Statistics bind:votes bind:labels />
 			{/if}

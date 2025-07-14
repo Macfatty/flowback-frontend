@@ -11,7 +11,6 @@
 	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import { onMount } from 'svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { commentsStore } from './commentStore';
 	import { getCommentDepth } from './functions';

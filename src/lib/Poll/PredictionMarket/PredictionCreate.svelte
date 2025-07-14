@@ -10,9 +10,8 @@
 	import type { poll, proposal } from '../interface';
 	import Question from '$lib/Generic/Question.svelte';
 	import { maxDatePickerYear } from '$lib/Generic/DateFormatter';
-	import type { PredictionBet, PredictionStatement } from './interfaces';
+	import { predictionStatementsStore, type PredictionBet, type PredictionStatement } from './interfaces';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
 	import { createPrediction as createPredictionBlockchain } from '$lib/Blockchain_v1_Ethereum/javascript/predictionsBlockchain';
 	import Fa from 'svelte-fa';
@@ -34,7 +33,7 @@
 				proposal_id: number;
 				is_true: boolean;
 			}[];
-		} = { 
+		} = {
 			segments: [],
 			end_date: new Date(new Date(poll.end_date).getTime() + 1 * 60 * 1000)
 		},
@@ -56,7 +55,8 @@
 
 	const createPredictionStatement = async () => {
 		loading = true;
-		if (newPredictionStatement.description === '') newPredictionStatement.description = "No description provided";
+		if (newPredictionStatement.description === '')
+			newPredictionStatement.description = 'No description provided';
 
 		if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE' && pushingToBlockchain)
 			await pushToBlockchain();
@@ -83,6 +83,11 @@
 		// 	return;
 		// }
 
+		predictionStatementsStore.update((statements) => [
+			...statements,
+			newPredictionStatement as PredictionStatement
+		]);
+
 		newPredictionStatement = {
 			segments: newPredictionStatement.segments,
 			description: '',
@@ -90,7 +95,7 @@
 			blockchain_id: 0,
 			title: ''
 		};
-		
+
 		errorHandler.addPopup({ message: 'Successfully created consequence', success: true });
 	};
 
@@ -178,9 +183,8 @@
 <div class="flex flex-row mb-4">
 	<span class="flex-1 font-semibold text-primary dark:text-secondary">{$_('New Consequence')}</span>
 	<div class="flex-1">
-		<Question 
-		 	message={`Predict on what will happen if a proposal is implemented in reality.`}
-		/><br />
+		<Question message={`Predict on what will happen if a proposal is implemented in reality.`} /><br
+		/>
 	</div>
 </div>
 
@@ -205,7 +209,11 @@
 	<form on:submit|preventDefault={createPredictionStatement} class="h-full">
 		<TextInput required label="Title" bind:value={newPredictionStatement.title} />
 		<div class="mt-3">
-			<TextArea label="Description" inputClass="whitespace-pre-wrap" bind:value={newPredictionStatement.description} />
+			<TextArea
+				label="Description"
+				inputClass="whitespace-pre-wrap"
+				bind:value={newPredictionStatement.description}
+			/>
 		</div>
 		{#if env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE'}
 			<RadioButtons Class="mt-3" bind:Yes={pushingToBlockchain} label="Push to Blockchain" />
@@ -221,7 +229,12 @@
 
 		<div class="flex gap-2 absolute bottom-0 w-full">
 			<Button type="submit" buttonStyle="primary-light" Class="w-full mt-5">{$_('Submit')}</Button>
-			<Button type="button" buttonStyle="warning-light" Class="w-full mt-5" onClick={() => proposalsToPredictionMarket = []}>{$_('Cancel')}</Button>
+			<Button
+				type="button"
+				buttonStyle="warning-light"
+				Class="w-full mt-5"
+				onClick={() => (proposalsToPredictionMarket = [])}>{$_('Cancel')}</Button
+			>
 			{#if env.PUBLIC_FLOWBACK_AI_MODULE === 'TRUE'}
 				<Button Class="w-full mt-5" onClick={getAIpredictionStatement}>{$_('Let AI help')}</Button>
 			{/if}

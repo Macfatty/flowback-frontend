@@ -1,4 +1,3 @@
-<!-- The new Proposal file, <Proposal/> is depricated. TODO: Remove Proposal, renmae ProposalNew to Proposal -->
 <script lang="ts">
 	import type { Comment, Phase, proposal } from './interface';
 	import { _ } from 'svelte-i18n';
@@ -12,10 +11,9 @@
 	import { faSquare } from '@fortawesome/free-regular-svg-icons';
 	import Fa from 'svelte-fa';
 	import commentSymbol from '$lib/assets/iconComment.svg';
-	import { fetchRequest } from '$lib/FetchRequest';
-	import { page } from '$app/stores';
 	import { commentsStore } from '$lib/Comments/commentStore';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
+	import { predictionStatementsStore } from './PredictionMarket/interfaces';
 
 	export let proposal: proposal,
 		Class = '',
@@ -24,7 +22,6 @@
 		phase: Phase,
 		filteredComments: Comment[] = [],
 		allComments: Comment[] = [],
-		predictionCount = 0,
 		commentFilterProposalId: number | null = null;
 
 	export const id: number = 0;
@@ -48,21 +45,9 @@
 		}
 	};
 
-	const getPredictionCount = async () => {
-		const { json } = await fetchRequest(
-			'GET',
-			`group/${$page.params.groupId}/poll/prediction/statement/list?poll_id=${$page.params.pollId}&proposals=${proposal.id}`
-		);
-		predictionCount = json.results.length;
-	};
-
-	const getAllComments = () => {
-		return commentsStore.getAll();
-	};
-
 	onMount(() => {
 		checkForLinks(proposal.description, `proposal-${proposal.id}-description`);
-		getPredictionCount();
+		// getPredictionCount();
 
 		allComments = filteredComments;
 	});
@@ -145,7 +130,9 @@
 					}}
 				>
 					<Fa icon={faMagnifyingGlassChart} class="mr-4 text-primary" size="md" />
-					{predictionCount}
+					{$predictionStatementsStore.filter((statement) =>
+						statement.segments.find((segment) => segment.proposal_id === proposal.id)
+					).length}
 				</button>
 			{/if}
 		</div>
