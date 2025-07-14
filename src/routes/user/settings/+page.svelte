@@ -6,7 +6,10 @@
 		faBell,
 		faPieChart,
 		faArrowLeft,
-		faInfo
+		faInfo,
+
+		faWarning
+
 	} from '@fortawesome/free-solid-svg-icons';
 	import { _ } from 'svelte-i18n';
 	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
@@ -15,7 +18,7 @@
 	import { configToReadable } from '$lib/utils/configToReadable';
 	import { env } from '$env/dynamic/public';
 
-	let selectedPage: 'profile' | 'notifications' | 'poll-process' | 'info' = 'profile',
+	let selectedPage: 'profile' | 'notifications' | 'poll-process' | 'info' | 'reports' = 'profile',
 		optionsDesign =
 			'flex items-center gap-3 w-full cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-2 transition-all',
 		userConfig = {
@@ -164,6 +167,15 @@
 				>
 					<Fa icon={faInfo} class="w-5 h-5" />{$_('Information')}
 				</button>
+				<button
+					on:click={() => (selectedPage = 'reports')}
+					class={`${optionsDesign}`}
+					class:bg-gray-100={selectedPage === 'reports'}
+					class:border-l-2={selectedPage === 'reports'}
+					class:border-primary={selectedPage === 'reports'}
+				>
+					<Fa icon={faWarning} class="w-5 h-5" />{$_('Reports')}
+				</button>
 			</div>
 		</div>
 		<div
@@ -255,17 +267,17 @@
 						{/each}
 					</ul>
 				{:else if selectedPage === 'info'}
-					<div>Version: {version}</div>
-					<!-- <div>Version Backend: {serverConfig.GIT_HASH}</div> -->
-
-
-					<span class="mt-6">{$_("Reports")}</span>
-					{#each reports as reports}
-						<div class="flex justify-between p-2 rounded hover:bg-gray-100">
-							<span>{reports?.title}</span>
-							<span>{reports?.description}</span>
-						</div>
-					{/each}
+					<div>{$_('Version')}: {version}</div>
+				{:else if selectedPage === 'reports'}
+					{#if reports?.length > 0}
+						<span>{$_('Reports')}</span>
+						{#each reports as reports}
+							<div class="flex justify-between p-2 rounded hover:bg-gray-100">
+								<span>{reports?.title}</span>
+								<span>{reports?.description}</span>
+							</div>
+						{/each}
+					{/if}
 				{/if}
 			</ul>
 		</div>
