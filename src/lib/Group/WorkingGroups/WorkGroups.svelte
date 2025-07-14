@@ -139,7 +139,7 @@
 </script>
 
 <div class="flex items-center gap-3 mb-4">
-	<div class="bg-white text-white dark:text-darkmodeText dark:bg-darkobject p-4 shadow rounded flex-1 flex flex-col gap-2">
+	<div class="bg-white text-black dark:text-darkmodeText dark:bg-darkobject p-4 shadow rounded flex-1 flex flex-col gap-2">
 		<span class="text-sm"
 			>{$_(
 				`Being a part of a work group means that you will join that work group's chat, have access to viewing and creating tasks, events, and posts assigned to that work group. Work groups have no individual pages.`
