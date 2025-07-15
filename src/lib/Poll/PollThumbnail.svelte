@@ -24,7 +24,13 @@
 		faThumbtack,
 		faAlignLeft,
 		faCalendarAlt,
-		faSlash
+		faSlash,
+
+		faGlobe,
+
+		faLock
+
+
 	} from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
@@ -236,6 +242,12 @@
 				<HeaderIcon Class="!p-0 !cursor-default" icon={faAlignLeft} text={'Text Poll'} />
 			{:else if poll?.poll_type === 3}
 				<HeaderIcon Class="!p-0 !cursor-default" icon={faCalendarAlt} text={'Date Poll'} />
+			{/if}
+
+			{#if poll.public}
+				<HeaderIcon Class="!p-0 !cursor-default" icon={faGlobe} text={'Public Poll'} />
+			{:else}
+				<HeaderIcon Class="!p-0 !cursor-default" icon={faLock} text={'Private Poll'} />
 			{/if}
 
 			<!-- Fast Forward Icon -->
