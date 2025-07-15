@@ -88,7 +88,7 @@
 	$: if (group) {
 		getUserInfo();
 
-		if (env.PUBLIC_ONE_GROUP_FLOWBACK === 'FALSE') {
+		if (env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE') {
 			getDelegatePools();
 			selectedPage = 'delegate';
 		} else {
