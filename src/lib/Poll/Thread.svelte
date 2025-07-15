@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import { fetchRequest } from '$lib/FetchRequest';
+	import DefaultBanner from '$lib/assets/default_banner_group.png';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
@@ -12,6 +12,7 @@
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
 	import ReportThreadModal from './ReportThreadModal.svelte';
 	import DeletePollModal from './DeletePollModal.svelte';
+	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 
 	export let thread: Thread;
 	let threads: Thread[] = [],
@@ -93,6 +94,23 @@
 			class="break-words cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
 			href={`/groups/${thread?.created_by?.group_id}/thread/${thread?.id}`}>{thread?.title}</a
 		>
+
+		<!-- <a
+			href={`groups/${thread?.group_id}`}
+			class:hover:underline={thread?.group_joined}
+			class="text-black dark:text-darkmodeText flex items-center"
+		>
+			<img
+				class="h-6 w-6 mr-1 rounded-full break-all"
+				src={`${env.PUBLIC_API_URL}${thread?.group_image}`}
+				alt={'thread Thumbnail'}
+				on:error={(e) => onThumbnailError(e, DefaultBanner)}
+			/>
+			<span class="break-all text-sm text-gray-700 dark:text-darkmodeText"
+				>{thread?.group_name}</span
+			>
+		</a> -->
+
 		<div class=" inline-flex gap-4 items-baseline">
 			<NotificationOptions
 				type="thread"
@@ -115,7 +133,10 @@
 			<MultipleChoices
 				bind:choicesOpen
 				labels={[$_('Delete Thread'), $_('Report Thread')]}
-				functions={[() => (deletePollModalShow = true), () => ((reportThreadModalShow = true), (choicesOpen = false))]}
+				functions={[
+					() => (deletePollModalShow = true),
+					() => ((reportThreadModalShow = true), (choicesOpen = false))
+				]}
 				Class="text-black justify-self-center"
 			/>
 		</div>

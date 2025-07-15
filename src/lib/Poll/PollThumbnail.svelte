@@ -18,7 +18,6 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import NewDescription from './NewDescription.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import { env } from '$env/dynamic/public';
 	import {
 		faAnglesRight,
@@ -216,8 +215,8 @@
 					<MultipleChoices
 						bind:choicesOpen
 						labels={!(phase === 'result' || phase === 'prediction_vote') &&
-						(poll?.allow_fast_forward &&
-							(permissions?.poll_fast_forward || $groupUserStore?.is_admin))
+						poll?.allow_fast_forward &&
+						(permissions?.poll_fast_forward || $groupUserStore?.is_admin)
 							? [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]
 							: [$_('Delete Poll'), $_('Report Poll')]}
 						functions={[
