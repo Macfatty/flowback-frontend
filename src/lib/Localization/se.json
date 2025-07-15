@@ -685,5 +685,7 @@
     "Reports": "Rapporter",
     "Report": "Rapportera",
     "Report Thread": "Rapportera tråd",
-    "Delete Thread": "Ta bort tråd"
+    "Delete Thread": "Ta bort tråd",
+    "Failed to create delegation": "Misslyckades att skapa delegering"
+
 }
