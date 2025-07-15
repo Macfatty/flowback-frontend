@@ -167,6 +167,6 @@
 	</div>
 </div>
 
-<ReportThreadModal bind:reportThreadModalShow threadId={$page.params.pollId} />
+<ReportThreadModal bind:reportThreadModalShow threadId={thread?.id} />
 
-<DeletePollModal bind:deletePollModalShow pollId={$page.params.pollId} type="thread" />
+<DeletePollModal bind:deletePollModalShow pollId={thread?.id} type="thread" />
