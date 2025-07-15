@@ -13,10 +13,11 @@
 	import ReportThreadModal from './ReportThreadModal.svelte';
 	import DeletePollModal from './DeletePollModal.svelte';
 	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
+	import ReportPollModal from './ReportPollModal.svelte';
 
 	export let thread: Thread;
 	let threads: Thread[] = [],
-		reportThreadModalShow = false,
+		reportModalShow = false,
 		choicesOpen = false,
 		poppup: poppup,
 		deletePollModalShow = false;
@@ -135,7 +136,7 @@
 				labels={[$_('Delete Thread'), $_('Report Thread')]}
 				functions={[
 					() => (deletePollModalShow = true),
-					() => ((reportThreadModalShow = true), (choicesOpen = false))
+					() => ((reportModalShow = true), (choicesOpen = false))
 				]}
 				Class="text-black justify-self-center"
 			/>
@@ -188,6 +189,6 @@
 	</div>
 </div>
 
-<ReportThreadModal bind:reportThreadModalShow threadId={thread?.id} />
+<ReportPollModal bind:reportModalShow id={thread?.id} type="thread" />
 
 <DeletePollModal bind:deletePollModalShow pollId={thread?.id} type="thread" />

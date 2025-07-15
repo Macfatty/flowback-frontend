@@ -418,7 +418,7 @@
 </div>
 
 <DeletePollModal bind:deletePollModalShow pollId={poll?.id} />
-<ReportPollModal bind:reportPollModalShow pollId={$page.params.pollId} />
+<ReportPollModal bind:reportModalShow={reportPollModalShow} id={$page.params.pollId} />
 
 <ErrorHandler bind:this={errorHandler} />
 
