@@ -18,14 +18,19 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import NewDescription from './NewDescription.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import { env } from '$env/dynamic/public';
 	import {
 		faAnglesRight,
 		faThumbtack,
 		faAlignLeft,
 		faCalendarAlt,
-		faSlash
+		faSlash,
+
+		faGlobe,
+
+		faLock
+
+
 	} from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
@@ -216,8 +221,8 @@
 					<MultipleChoices
 						bind:choicesOpen
 						labels={!(phase === 'result' || phase === 'prediction_vote') &&
-						(poll?.allow_fast_forward &&
-							(permissions?.poll_fast_forward || $groupUserStore?.is_admin))
+						poll?.allow_fast_forward &&
+						(permissions?.poll_fast_forward || $groupUserStore?.is_admin)
 							? [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]
 							: [$_('Delete Poll'), $_('Report Poll')]}
 						functions={[
@@ -237,6 +242,12 @@
 				<HeaderIcon Class="!p-0 !cursor-default" icon={faAlignLeft} text={'Text Poll'} />
 			{:else if poll?.poll_type === 3}
 				<HeaderIcon Class="!p-0 !cursor-default" icon={faCalendarAlt} text={'Date Poll'} />
+			{/if}
+
+			{#if poll.public}
+				<HeaderIcon Class="!p-0 !cursor-default" icon={faGlobe} text={'Public Poll'} />
+			{:else}
+				<HeaderIcon Class="!p-0 !cursor-default" icon={faLock} text={'Private Poll'} />
 			{/if}
 
 			<!-- Fast Forward Icon -->
@@ -419,7 +430,7 @@
 </div>
 
 <DeletePollModal bind:deletePollModalShow pollId={poll?.id} />
-<ReportPollModal bind:reportPollModalShow pollId={$page.params.pollId} />
+<ReportPollModal bind:reportModalShow={reportPollModalShow} id={$page.params.pollId} />
 
 <ErrorHandler bind:this={errorHandler} />
 

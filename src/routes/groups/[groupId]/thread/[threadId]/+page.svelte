@@ -13,12 +13,12 @@
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import ReportThreadModal from '$lib/Poll/ReportThreadModal.svelte';
 	import DeletePollModal from '$lib/Poll/DeletePollModal.svelte';
+	import ReportPollModal from '$lib/Poll/ReportPollModal.svelte';
 
 	let thread: Thread,
 		errorHandler: any,
-		reportThreadModalShow = false,
+		reportModalShow = false,
 		deletePollModalShow = false;
 
 	onMount(() => {
@@ -82,7 +82,7 @@
 				<MultipleChoices
 					labels={[$_('Delete Thread'), $_('Report Thread')]}
 					Class="text-black justify-self-center"
-					functions={[() => (deletePollModalShow = true), () => (reportThreadModalShow = true)]}
+					functions={[() => (deletePollModalShow = true), () => (reportModalShow = true)]}
 				/>
 			</div>
 
@@ -112,7 +112,7 @@
 
 <ErrorHandler bind:this={errorHandler} />
 
-<ReportThreadModal bind:reportThreadModalShow threadId={$page.params.threadId} />
+<ReportPollModal bind:reportModalShow id={$page.params.threadId} type="thread"/>
 
 <DeletePollModal bind:deletePollModalShow pollId={$page.params.threadId} type="thread" />
 

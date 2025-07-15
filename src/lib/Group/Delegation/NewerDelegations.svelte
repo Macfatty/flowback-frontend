@@ -134,7 +134,7 @@
 		});
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to create delegation', success: false });
+			// errorHandler.addPopup({ message: 'Failed to create delegation', success: false });
 			return;
 		}
 

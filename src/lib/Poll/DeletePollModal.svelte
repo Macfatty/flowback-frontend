@@ -6,14 +6,18 @@
 	import { _ } from 'svelte-i18n';
 	import { page } from '$app/stores';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { posts } from './stores';
+	import Loader from '$lib/Generic/Loader.svelte';
 
 	export let deletePollModalShow = false,
 		pollId: string | number,
+		loading = false,
 		type: 'poll' | 'thread' = 'poll';
 
 	let errorHandler: any;
 
 	const deletePoll = async () => {
+		loading = true;
 		let _api = type === 'poll' ? `group/poll/${pollId}/delete` : `group/thread/${pollId}/delete`;
 
 		const { res, json } = await fetchRequest('POST', _api);
@@ -23,7 +27,22 @@
 			return;
 		}
 
-		goto(`/groups/${$page.params.groupId}`);
+		loading = false;
+
+		// If looking at thread and poll thumbnails
+		if ($page.params.threadId === pollId || $page.params.pollId === pollId) {
+			// If the current page is the one being deleted, redirect to the group page
+			goto(`/groups/${$page.params.groupId}?page=flow`);
+			return;
+		} else {
+			// If at a thread or poll page
+			posts.update((currentPosts) => {
+				return currentPosts.filter((post) => post.id !== pollId);
+			});
+		}
+
+		errorHandler.addPopup({ message: 'Poll deleted successfully', success: true });
+
 		deletePollModalShow = false;
 	};
 </script>
@@ -31,7 +50,9 @@
 <Modal bind:open={deletePollModalShow} Class="max-w-[400px]">
 	<div slot="header">{$_('Deleting Poll')}</div>
 	<div slot="body">
-		{$_('Are you sure you want to delete this poll?')}
+		<Loader bind:loading>
+			{$_('Are you sure you want to delete this poll?')}
+		</Loader>
 	</div>
 	<div slot="footer">
 		<div class="flex justify-center gap-2">

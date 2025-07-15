@@ -17,11 +17,10 @@
 
 	export let filter: Filter,
 		handleSearch: () => void,
-		tagFiltering = false;
-
-	// Add new export for content type filtering
-	export let showThreads = true;
-	export let showPolls = true;
+		tagFiltering = false,
+		// Add new export for content type filtering
+		showThreads = true,
+		showPolls = true;
 
 	//Aesthethics only, changes the UI when searching would lead to different results.
 	let searched = true,
@@ -99,7 +98,6 @@
 
 		if (!res.ok) return;
 		workGroups = json.results.filter((group: WorkGroup) => group.joined === true);
-		console.log(workGroups, json.results, 'Work Groups');
 	};
 
 	const resetFilter = () => {
@@ -179,31 +177,29 @@
 			Class="flex items-center"
 		/>
 
-		{#if showThreads == true && showPolls == false}
-			<div class="flex flex-row gap-2 items-center">
-				<label class="block text-md whitespace-nowrap" for="work-group">
-					{$_('Work Group')}:
-				</label>
-				<select
-					style="width:100%"
-					class="rounded p-1 dark:border-gray-600 dark:bg-darkobject font-semibold"
-					on:input={(e) => {
-						//@ts-ignore
-						onWorkGroupChange(e?.target?.value);
-						handleSearch();
-					}}
-					id="work-group"
-				>
-					<option class="w-5" value={null}> {$_('All')} </option>
+		<div class="flex flex-row gap-2 items-center">
+			<label class="block text-md whitespace-nowrap" for="work-group">
+				{$_('Work Group')}:
+			</label>
+			<select
+				style="width:100%"
+				class="rounded p-1 dark:border-gray-600 dark:bg-darkobject font-semibold"
+				on:input={(e) => {
+					//@ts-ignore
+					onWorkGroupChange(e?.target?.value);
+					handleSearch();
+				}}
+				id="work-group"
+			>
+				<option class="w-5" value={null}> {$_('All')} </option>
 
-					{#each workGroups as group}
-						<option class="w-5" value={group.id}>
-							{elipsis(group.name)}
-						</option>
-					{/each}
-				</select>
-			</div>
-		{/if}
+				{#each workGroups as group}
+					<option class="w-5" value={group.id}>
+						{elipsis(group.name)}
+					</option>
+				{/each}
+			</select>
+		</div>
 
 		<div class="rounded p-1">
 			<Button

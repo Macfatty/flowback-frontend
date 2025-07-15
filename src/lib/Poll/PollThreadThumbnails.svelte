@@ -7,7 +7,6 @@
 	import type { Filter, poll, Post } from './interface';
 	import type { DelegateMinimal, Thread } from '$lib/Group/interface';
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import { env } from '$env/dynamic/public';
 	import { ThreadsApi } from '$lib/api/threads';
 	import PollThumbnail from './PollThumbnail.svelte';
@@ -16,6 +15,7 @@
 	import Loader from '$lib/Generic/Loader.svelte';
 	import Pagination from '$lib/Generic/Pagination.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { posts } from './stores';
 
 	// Props
 	export let Class = '';
@@ -29,7 +29,6 @@
 	};
 
 	// State
-	let posts: Post[] = [];
 	let polls: poll[] = [];
 	let threads: Thread[] = [];
 	let workGroups: WorkGroup[] = [];
@@ -52,8 +51,8 @@
 
 	// Local sorting as fallback since server sorting isn't working correctly
 	$: {
-		if (posts.length) {
-			const sortedPosts = [...posts].sort((a, b) => {
+		if ($posts.length) {
+			const sortedPosts = [...$posts].sort((a, b) => {
 				switch (filter.order_by) {
 					case 'start_date_desc':
 						return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
@@ -63,16 +62,15 @@
 						return 0;
 				}
 			});
-			posts = sortedPosts;
+			$posts = sortedPosts;
 		}
 	}
-
+	
 	async function fetchPolls() {
 		try {
 			loading = true;
-			posts = [];
+			$posts = [];
 
-			
 			const params = {
 				order_by: filter.order_by ? `pinned,${filter.order_by}` : 'pinned',
 				limit: pollThumbnailsLimit,
@@ -88,7 +86,7 @@
 			};
 
 			const response = await PollsApi.getPosts(infoToGet, params, delegate.pool_id);
-			posts = response.results;
+			$posts = response.results;
 			next = response.next ?? '';
 			prev = response.previous ?? '';
 		} catch (error) {
@@ -99,9 +97,9 @@
 	}
 
 	async function fetchRelatedContent() {
-		const pollIds = posts.filter((post) => post.related_model === 'poll').map((post) => post.id);
+		const pollIds = $posts.filter((post) => post.related_model === 'poll').map((post) => post.id);
 
-		const threadIds = posts
+		const threadIds = $posts
 			.filter((post) => post.related_model === 'thread')
 			.map((post) => post.id);
 
@@ -137,12 +135,13 @@
 
 		// Check workgroup filter (only for threads, skipped if both showThreads and showPolls are true)
 		const matchesWorkgroup =
-			post.related_model !== 'thread' || // Skip workgroup filter for polls
-			(showThreads && showPolls) || // Skip workgroup filter if both showThreads and showPolls are true
+			// post.related_model !== 'thread' || // Skip workgroup filter for polls
+			// (showThreads && showPolls) || // Skip workgroup filter if both showThreads and showPolls are true
 			!filter.workgroup || // If no workgroup filter, show all threads
 			(thread && thread.work_group?.id === Number(filter.workgroup)); // Match thread workgroup
 
-		return matchesSearch && matchesWorkgroup;
+		// return false;
+		return (matchesSearch && matchesWorkgroup) || false
 	}
 
 	onMount(async () => {
@@ -170,18 +169,21 @@
 				bind:showPolls
 			/>
 
-			{#if posts.length === 0 && !loading}
+			{#if $posts.length === 0 && !loading}
 				<div class="bg-white dark:bg-darkobject rounded shadow p-8 mt-6">
 					{$_('No posts currently here')}
 				</div>
-			{:else if posts?.length > 0 && (polls.length > 0 || threads.length > 0)}
-				{#each posts as post}
+			{:else if $posts?.length > 0 && (polls.length > 0 || threads.length > 0)}
+				{#each $posts as post}
 					{#if post.related_model === 'thread' && showThreads && matchesFilter(post)}
 						<ThreadThumbnail
 							thread={threads.find((thread) => thread.id === post.id) || threads[0]}
 						/>
 					{:else if post.related_model === 'poll' && showPolls && matchesFilter(post)}
-						<PollThumbnail poll={polls.find((poll) => poll.id === post.id) || polls[0]} />
+						<PollThumbnail
+							poll={polls.find((poll) => poll.id === post.id) || polls[0]}
+							
+						/>
 					{/if}
 				{/each}
 			{:else if !loading}
@@ -193,7 +195,7 @@
 		<Pagination
 			bind:next
 			bind:prev
-			bind:iterable={posts}
+			bind:iterable={$posts}
 			Class={'flex gap-2 justify-around w-full mt-6'}
 		/>
 	</Loader>

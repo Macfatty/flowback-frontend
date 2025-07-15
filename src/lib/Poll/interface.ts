@@ -59,6 +59,7 @@ export interface poll {
 	total_proposals: number;
 	total_predictions: number;
 	pinned: boolean;
+	public: boolean;
 
 	// Status on calculating predictions.  1 is done, 2 is in progress, 0 is not started
 	status_prediction: 0 | 1 | 2;

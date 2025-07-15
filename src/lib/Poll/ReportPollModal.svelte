@@ -6,11 +6,11 @@
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import Loader from '$lib/Generic/Loader.svelte';
 
-	export let reportPollModalShow = false,
-		pollId: string | number;
+	export let reportModalShow = false,
+		id: string | number,
+		type: 'poll' | 'thread' = 'poll';
 
 	let title: string,
 		description: string,
@@ -42,13 +42,13 @@
 			message: 'Poll reported successfully.',
 			success: true
 		});
-		reportPollModalShow = false;
+		reportModalShow = false;
 		title = '';
 		description = '';
 	};
 </script>
 
-<Modal bind:open={reportPollModalShow} Class="max-w-[500px]">
+<Modal bind:open={reportModalShow} Class="max-w-[500px]">
 	<div slot="header">{$_('Report Poll')}</div>
 	<div class="flex flex-col gap-3" slot="body">
 		<Loader bind:loading>
@@ -65,7 +65,7 @@
 	<div slot="footer">
 		<div class="flex justify-center gap-2">
 			<Button onClick={reportPoll} type="submit" Class="bg-red-500 w-1/2">{$_('Report')}</Button
-			><Button onClick={() => (reportPollModalShow = false)} Class="bg-gray-400 w-1/2"
+			><Button onClick={() => (reportModalShow = false)} Class="bg-gray-400 w-1/2"
 				>{$_('Cancel')}</Button
 			>
 		</div>
