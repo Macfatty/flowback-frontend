@@ -135,12 +135,13 @@
 
 		// Check workgroup filter (only for threads, skipped if both showThreads and showPolls are true)
 		const matchesWorkgroup =
-			post.related_model !== 'thread' || // Skip workgroup filter for polls
-			(showThreads && showPolls) || // Skip workgroup filter if both showThreads and showPolls are true
+			// post.related_model !== 'thread' || // Skip workgroup filter for polls
+			// (showThreads && showPolls) || // Skip workgroup filter if both showThreads and showPolls are true
 			!filter.workgroup || // If no workgroup filter, show all threads
 			(thread && thread.work_group?.id === Number(filter.workgroup)); // Match thread workgroup
 
-		return matchesSearch && matchesWorkgroup || false;
+		// return false;
+		return (matchesSearch && matchesWorkgroup) || false
 	}
 
 	onMount(async () => {

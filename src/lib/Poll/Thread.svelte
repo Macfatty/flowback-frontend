@@ -10,9 +10,7 @@
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { groupUserStore, type Thread } from '$lib/Group/interface';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import ReportThreadModal from './ReportThreadModal.svelte';
 	import DeletePollModal from './DeletePollModal.svelte';
-	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 	import ReportPollModal from './ReportPollModal.svelte';
 
 	export let thread: Thread;
