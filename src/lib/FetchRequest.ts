@@ -46,7 +46,10 @@ export async function fetchRequest(
 	);
 
 	const relativePath = new URL(location.href).pathname;
-	if (res.status === 401 && relativePath !== '/login') goto('/login')
+	if (res.status === 401 && relativePath !== '/login') {
+		localStorage.clear();
+		goto('/login')
+	}
 
 	try {
 		const json = await res.json();
