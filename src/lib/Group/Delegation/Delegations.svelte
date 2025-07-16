@@ -3,7 +3,6 @@
 	import { onMount } from 'svelte';
 	import type { Group, Tag } from '../interface';
 	import type { Delegate, DelegateRelation } from './interfaces';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import Fa from 'svelte-fa';
@@ -156,11 +155,7 @@
 		const toSendDelegates = delegateRelations.map(({ tags, delegate_pool_id }) => ({
 			delegate_pool_id,
 			tags: tags.map(({ id }) => id)
-		}))[0] ;
-
-
-		console.log(toSendDelegates);
-		
+		}))[0] ;		
 
 		const { res } = await fetchRequest(
 			'POST',

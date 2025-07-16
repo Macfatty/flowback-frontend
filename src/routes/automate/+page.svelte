@@ -3,12 +3,11 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
 	import Layout from '$lib/Generic/Layout.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import Select from '$lib/Generic/Select.svelte';
 	import Toggle from '$lib/Generic/Toggle.svelte';
 	import type { Delegate } from '$lib/Group/Delegation/interfaces';
-	import Delegations from '$lib/Group/Delegation/NewerDelegations.svelte';
+	import Delegations from '$lib/Group/Delegation/Delegations.svelte';
 	import StopBeingDelegate from '$lib/Group/Delegation/StopBeingDelegate.svelte';
 	import type { Group } from '$lib/Group/interface';
 	import { onMount } from 'svelte';
@@ -88,15 +87,15 @@
 	$: if (group) {
 		getUserInfo();
 
-		if (env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE') {
-			getDelegatePools();
-			selectedPage = 'delegate';
-		} else {
-			const parsed = localStorage.getItem('autovote');
-			autovote = parsed == 'delegate' ? true : false;
+		// if (env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE') {
+		getDelegatePools();
+		selectedPage = 'delegate';
+		// } else {
+		// const parsed = localStorage.getItem('autovote');
+		// autovote = parsed == 'delegate' ? true : false;
 
-			selectedPage = autovote ? 'delegate' : 'none';
-		}
+		// selectedPage = autovote ? 'delegate' : 'none';
+		// }
 	}
 </script>
 
