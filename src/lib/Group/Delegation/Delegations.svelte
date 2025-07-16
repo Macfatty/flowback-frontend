@@ -90,7 +90,12 @@
 		// Check if a relation exists for this delegate; if not, create one
 		let relation = delegateRelations.find((r) => r.delegate_pool_id === delegate.pool_id);
 		if (!relation) {
-			relation = { delegate_pool_id: delegate.pool_id, tags: [] };
+			relation = {
+				delegate_pool_id: delegate.pool_id,
+				tags: [],
+				id: delegate.pool_id,
+				delegates: []
+			};
 			delegateRelations = [...delegateRelations, relation];
 		}
 
@@ -116,7 +121,7 @@
 			tagStructure.tags.push(tag.id);
 		}
 		if (!relation.tags.some((t) => t.id === tag.id)) {
-			relation.tags.push({ ...tag, active: true, tag_name: tag.name });
+			relation.tags.push({ ...tag, active: true, name: tag.name });
 		}
 
 		// Update state
@@ -141,7 +146,10 @@
 
 		// Ensure a relation exists in delegateRelations
 		if (!delegateRelations.some((r) => r.delegate_pool_id === delegate_pool_id)) {
-			delegateRelations = [...delegateRelations, { delegate_pool_id, tags: [] }];
+			delegateRelations = [
+				...delegateRelations,
+				{ delegate_pool_id, tags: [], id: delegate_pool_id, delegates: [] }
+			];
 			setupDelegationTagStructure();
 		}
 
@@ -155,7 +163,7 @@
 		const toSendDelegates = delegateRelations.map(({ tags, delegate_pool_id }) => ({
 			delegate_pool_id,
 			tags: tags.map(({ id }) => id)
-		}))[0] ;		
+		}))[0];
 
 		const { res } = await fetchRequest(
 			'POST',
@@ -163,7 +171,7 @@
 			toSendDelegates
 		);
 
-		if (!res.ok) {			
+		if (!res.ok) {
 			errorHandler.addPopup({ message: 'Failed to save new delegation', success: false });
 			return;
 		}
@@ -221,7 +229,6 @@
 						{#each delegates as delegate}
 							<div class="voter-item">
 								<ProfilePicture
-									key={delegate.user.id}
 									displayName
 									username={delegate.user.username}
 									userId={delegate.user.id}
@@ -240,7 +247,6 @@
 											}, 1000);
 										}}
 										type="radio"
-										key={`${tag.id}-${delegate.pool_id}`}
 										name={tag.name}
 										checked={delegationTagsStructure
 											.find((relation) => relation.delegate_pool_id === delegate.pool_id)

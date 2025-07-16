@@ -43,9 +43,9 @@ export interface DelegatePool {
 
 
 export interface DelegateRelation {
-	blockchain_id: null | number;
+	blockchain_id?: null | number;
 	delegate_pool_id: number;
 	delegates: DelegateMinimal[];
 	id: number;
-	tags: { name: string; id: number }[]
+	tags: { name: string; id: number, active:boolean }[];
 }
