@@ -200,8 +200,8 @@
 	};
 
 	const initialSetup = async () => {
-		getGroupTags();
-		getDelegatePools();
+		await getGroupTags();
+		await getDelegatePools();
 		await getDelegateRelations();
 		setupDelegationTagStructure();
 	};

@@ -87,15 +87,15 @@
 	$: if (group) {
 		getUserInfo();
 
-		// if (env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE') {
-		getDelegatePools();
-		selectedPage = 'delegate';
-		// } else {
-		// const parsed = localStorage.getItem('autovote');
-		// autovote = parsed == 'delegate' ? true : false;
+		if (env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE') {
+			getDelegatePools();
+			selectedPage = 'delegate';
+		} else {
+			const parsed = localStorage.getItem('autovote');
+			autovote = parsed == 'delegate' ? true : false;
 
-		// selectedPage = autovote ? 'delegate' : 'none';
-		// }
+			selectedPage = autovote ? 'delegate' : 'none';
+		}
 	}
 </script>
 
