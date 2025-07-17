@@ -25,7 +25,7 @@
 		faChevronDown
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import Select from '$lib/Generic/Select.svelte';
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import { groupUserStore } from '$lib/Group/interface';
@@ -180,6 +180,19 @@
 		workGroups = workGroups.filter((workGroup) => workGroup.joined);
 	};
 
+	const handleKeyDown = (event: KeyboardEvent) => {
+		// Check for a specific key, e.g., the "k" key:
+		if (event.ctrlKey && event.key === 'Enter') {
+			selectedPage === 'poll' ? createPoll() : createThread();
+		}
+	};
+
+	document.addEventListener('keydown', handleKeyDown);
+
+	onDestroy(() => {
+		document.removeEventListener('keydown', handleKeyDown);
+	});
+
 	onMount(async () => {
 		getGroupTags();
 		getWorkGroupList();
@@ -229,7 +242,6 @@
 					bind:value={workGroup}
 					innerLabelOn={true}
 					innerLabel={$_('No workgroup assigned')}
-					defaultValue=""
 				/>
 			{/if}
 

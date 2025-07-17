@@ -16,9 +16,9 @@
 	export let thread: Thread;
 	let threads: Thread[] = [],
 		reportModalShow = false,
+		deleteModalShow = false,
 		choicesOpen = false,
-		poppup: poppup,
-		deletePollModalShow = false;
+		poppup: poppup;
 
 	//Launches whenever the user clicks upvote or downvote on a thread
 	const threadVote = async (_thread: Thread, clicked: 'down' | 'up') => {
@@ -133,7 +133,7 @@
 				bind:choicesOpen
 				labels={[$_('Delete Thread'), $_('Report Thread')]}
 				functions={[
-					() => (deletePollModalShow = true),
+					() => (deleteModalShow = true),
 					() => ((reportModalShow = true), (choicesOpen = false))
 				]}
 				Class="text-black justify-self-center"
@@ -188,6 +188,6 @@
 </div>
 
 <!-- TODO: Fix so group id is correct -->
-<ReportPollModal post_type="thread" group_id={$page.params.groupId} post_id={thread.id}/>
+<ReportPollModal post_type="thread" group_id={$page.params.groupId} post_id={thread?.id} bind:reportModalShow/>
 
-<DeletePollModal bind:deletePollModalShow pollId={thread?.id} type="thread" />
+<DeletePollModal bind:deletePollModalShow={deleteModalShow} pollId={thread?.id} type="thread" />

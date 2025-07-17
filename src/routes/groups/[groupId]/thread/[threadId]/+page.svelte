@@ -37,7 +37,7 @@
 		}
 
 		thread = json.results[0];
-		if (thread.description === null) thread.description = '';
+		if (thread?.description === null) thread.description = '';
 	};
 
 	const deleteThread = async () => {
@@ -68,14 +68,14 @@
 			</div>
 
 			<h1 class="text-left text-2xl text-primary dark:text-secondary font-semibold">
-				{thread.title}
+				{thread?.title}
 			</h1>
 
 			<div class="inline-flex gap-4 items-baseline">
 				<NotificationOptions
 					type="thread"
-					id={thread.id}
-					api={`group/thread/${thread.id}`}
+					id={thread?.id}
+					api={`group/thread/${thread?.id}`}
 					categories={['thread']}
 					labels={['thread']}
 				/>
@@ -87,19 +87,19 @@
 			</div>
 
 			<div class="grid-area-workgroup">
-				{#if thread.work_group}
+				{#if thread?.work_group}
 					<span class="text-sm text-gray-500 dark:text-darkmodeText"
-						>#{thread.work_group?.name},
+						>#{thread?.work_group?.name},
 					</span>
 				{/if}
-				{#if thread.created_at}
+				{#if thread?.created_at}
 					<span class="text-sm text-gray-500 dark:text-darkmodeText">
-						{new Date(thread.created_at).toISOString().split('T')[0].replace(/-/g, '.')}
+						{new Date(thread?.created_at).toISOString().split('T')[0].replace(/-/g, '.')}
 					</span>
 				{/if}
 			</div>
 
-			{#if thread.description.length > 0}
+			{#if thread?.description.length > 0}
 				<div class="grid-area-description py-2">
 					<NewDescription bind:description={thread.description} limit={3} lengthLimit={300} />
 				</div>
@@ -112,7 +112,7 @@
 
 <ErrorHandler bind:this={errorHandler} />
 
-<ReportPollModal post_type="thread" group_id={$page.params.groupId} post_id={thread.id} bind:reportModalShow/>
+<ReportPollModal post_type="thread" group_id={$page.params.groupId} post_id={thread?.id} bind:reportModalShow/>
 
 <DeletePollModal bind:deletePollModalShow pollId={$page.params.threadId} type="thread" />
 

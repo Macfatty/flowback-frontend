@@ -50,10 +50,12 @@
 		title = '';
 		description = '';
 	};
+
+	
 </script>
 
 <Modal bind:open={reportModalShow} Class="max-w-[500px]">
-	<div slot="header">{$_('Report Poll')}</div>
+	<div slot="header">{post_type === 'poll' ? $_('Report Poll') : $_('Report Thread')}</div>
 	<div class="flex flex-col gap-3" slot="body">
 		<Loader bind:loading>
 			<TextInput inputClass="bg-white" required label="Title" bind:value={title} />
