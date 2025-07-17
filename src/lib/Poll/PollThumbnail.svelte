@@ -34,7 +34,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import DeletePollModal from './DeletePollModal.svelte';
+	import DeletePollModal from './DeletePostModal.svelte';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import Timeline from './NewDesign/Timeline.svelte';
 	import ReportPollModal from './ReportPollModal.svelte';

@@ -13,7 +13,7 @@
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import DeletePollModal from '$lib/Poll/DeletePollModal.svelte';
+	import DeletePollModal from '$lib/Poll/DeletePostModal.svelte';
 	import ReportPollModal from '$lib/Poll/ReportPollModal.svelte';
 
 	let thread: Thread,
