@@ -15,11 +15,12 @@
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
 	import DeletePollModal from '$lib/Poll/DeletePostModal.svelte';
 	import ReportPollModal from '$lib/Poll/ReportPollModal.svelte';
+	import DeletePostModal from '$lib/Poll/DeletePostModal.svelte';
 
 	let thread: Thread,
 		errorHandler: any,
 		reportModalShow = false,
-		deletePollModalShow = false;
+		deleteModalShow = false;
 
 	onMount(() => {
 		getThread();
@@ -82,7 +83,7 @@
 				<MultipleChoices
 					labels={[$_('Delete Thread'), $_('Report Thread')]}
 					Class="text-black justify-self-center"
-					functions={[() => (deletePollModalShow = true), () => (reportModalShow = true)]}
+					functions={[() => (deleteModalShow = true), () => (reportModalShow = true)]}
 				/>
 			</div>
 
@@ -112,9 +113,14 @@
 
 <ErrorHandler bind:this={errorHandler} />
 
-<ReportPollModal post_type="thread" group_id={$page.params.groupId} post_id={thread?.id} bind:reportModalShow/>
+<ReportPollModal
+	post_type="thread"
+	group_id={$page.params.groupId}
+	post_id={thread?.id}
+	bind:reportModalShow
+/>
 
-<DeletePollModal bind:deletePollModalShow pollId={$page.params.threadId} type="thread" />
+<DeletePostModal bind:deleteModalShow pollId={thread?.id} post_type="thread" />
 
 <style>
 	.poll-header-grid {

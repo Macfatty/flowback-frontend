@@ -40,6 +40,7 @@
 	import ReportPollModal from './ReportPollModal.svelte';
 	import type { Permissions } from '$lib/Group/Permissions/interface';
 	import { groupUserStore } from '$lib/Group/interface';
+	import DeletePostModal from './DeletePostModal.svelte';
 
 	export let poll: poll;
 
@@ -429,7 +430,7 @@
 	</div>
 </div>
 
-<DeletePollModal bind:deletePollModalShow pollId={poll?.id} />
+<DeletePostModal bind:deleteModalShow={deletePollModalShow} pollId={poll?.id} />
 <ReportPollModal post_type="poll" group_id={poll.group_id} post_id={poll.id} bind:reportModalShow={reportPollModalShow} />
 
 <ErrorHandler bind:this={errorHandler} />

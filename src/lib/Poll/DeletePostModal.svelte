@@ -9,16 +9,17 @@
 	import { posts } from './stores';
 	import Loader from '$lib/Generic/Loader.svelte';
 
-	export let deletePollModalShow = false,
+	export let deleteModalShow = false,
 		pollId: string | number,
 		loading = false,
-		type: 'poll' | 'thread' = 'poll';
+		post_type: 'poll' | 'thread' = 'poll';
 
 	let errorHandler: any;
 
 	const deletePoll = async () => {
 		loading = true;
-		let _api = type === 'poll' ? `group/poll/${pollId}/delete` : `group/thread/${pollId}/delete`;
+		let _api =
+			post_type === 'poll' ? `group/poll/${pollId}/delete` : `group/thread/${pollId}/delete`;
 
 		const { res, json } = await fetchRequest('POST', _api);
 
@@ -43,12 +44,12 @@
 
 		errorHandler.addPopup({ message: 'Poll deleted successfully', success: true });
 
-		deletePollModalShow = false;
+		deleteModalShow = false;
 	};
 </script>
 
-<Modal bind:open={deletePollModalShow} Class="max-w-[400px]">
-	<div slot="header">{$_('Deleting Poll')}</div>
+<Modal bind:open={deleteModalShow} Class="max-w-[400px]">
+	<div slot="header">{post_type === 'poll' ? $_('Deleting Poll') : $_('Deleting Thread')}</div>
 	<div slot="body">
 		<Loader bind:loading>
 			{$_('Are you sure you want to delete this poll?')}
@@ -57,7 +58,7 @@
 	<div slot="footer">
 		<div class="flex justify-center gap-2">
 			<Button onClick={deletePoll} Class="bg-red-500 w-1/2">{$_('Yes')}</Button><Button
-				onClick={() => (deletePollModalShow = false)}
+				onClick={() => (deleteModalShow = false)}
 				Class="bg-gray-400 w-1/2">{$_('Cancel')}</Button
 			>
 		</div>

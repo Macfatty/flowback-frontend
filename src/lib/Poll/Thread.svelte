@@ -12,6 +12,7 @@
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
 	import DeletePollModal from './DeletePostModal.svelte';
 	import ReportPollModal from './ReportPollModal.svelte';
+	import DeletePostModal from './DeletePostModal.svelte';
 
 	export let thread: Thread;
 	let threads: Thread[] = [],
@@ -188,6 +189,11 @@
 </div>
 
 <!-- TODO: Fix so group id is correct -->
-<ReportPollModal post_type="thread" group_id={$page.params.groupId} post_id={thread?.id} bind:reportModalShow/>
+<ReportPollModal
+	post_type="thread"
+	group_id={$page.params.groupId}
+	post_id={thread?.id}
+	bind:reportModalShow
+/>
 
-<DeletePollModal bind:deletePollModalShow={deleteModalShow} pollId={thread?.id} type="thread" />
+<DeletePostModal bind:deleteModalShow pollId={thread?.id} post_type="thread" />

@@ -21,6 +21,7 @@
 	import DeletePollModal from './DeletePostModal.svelte';
 	import ReportPollModal from './ReportPollModal.svelte';
 	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
+	import DeletePostModal from './DeletePostModal.svelte';
 
 	export let poll: poll,
 		displayTag = false,
@@ -138,8 +139,14 @@
 	</div>
 {/if}
 
-<DeletePollModal bind:deletePollModalShow pollId={$page.params.pollId} />
-<ReportPollModal post_type="poll" group_id={poll.group_id} post_id={poll.id} bind:reportModalShow={reportPollModalShow} />
+<DeletePostModal bind:deleteModalShow={deletePollModalShow} pollId={$page.params.pollId} />
+
+<ReportPollModal
+	post_type="poll"
+	group_id={poll.group_id}
+	post_id={poll.id}
+	bind:reportModalShow={reportPollModalShow}
+/>
 
 <ErrorHandler bind:this={errorHandler} />
 
