@@ -689,5 +689,7 @@
     "Failed to create delegation": "Misslyckades att skapa delegering",
     "Deleting Thread": "Tar bort tråd",
     "Are you sure you want to delete this thread?": "Är du säker på att du vill ta bort denna tråd?",
-    "Successfully deleted thread": "Tråden har tagits bort"
+    "Successfully deleted thread": "Tråden har tagits bort",
+    "Could not pin poll": "Kunde inte fästa omröstning",
+    "Successfully pinned poll": "Omröstningen har fästs"
 }

@@ -25,12 +25,8 @@
 		faAlignLeft,
 		faCalendarAlt,
 		faSlash,
-
 		faGlobe,
-
 		faLock
-
-
 	} from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
@@ -65,7 +61,13 @@
 		const { json, res } = await fetchRequest('POST', `group/poll/${poll?.id}/update`, {
 			pinned: !poll?.pinned
 		});
-		if (res.ok) poll.pinned = !poll?.pinned;
+
+		if (!res.ok) {
+			errorHandler.addPopup({ message: 'Could not pin poll', success: false });
+			return;
+		}
+
+		poll.pinned = !poll?.pinned;
 	};
 
 	const submitTagVote = async (tag: number) => {
@@ -431,7 +433,12 @@
 </div>
 
 <DeletePostModal bind:deleteModalShow={deletePollModalShow} pollId={poll?.id} />
-<ReportPollModal post_type="poll" group_id={poll.group_id} post_id={poll.id} bind:reportModalShow={reportPollModalShow} />
+<ReportPollModal
+	post_type="poll"
+	group_id={poll.group_id}
+	post_id={poll.id}
+	bind:reportModalShow={reportPollModalShow}
+/>
 
 <ErrorHandler bind:this={errorHandler} />
 
