@@ -9,7 +9,6 @@
 	import { pollComments as pollCommentsLimit } from '../Generic/APILimits.json';
 	import CommentFilter from './CommentFilter.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import { commentsStore } from './commentStore';
 	import type { Comment as comment } from '$lib/Poll/interface';
 
@@ -65,6 +64,7 @@
 			bind:sortBy
 			bind:searchString
 			Class="flex flex-row-reverse items-center justify-end mb-2 gap-8"
+			bind:proposals
 		/>
 	</div>
 
