@@ -59,13 +59,13 @@
 		</div>
 
 		{#if max && displayMax}
-			<p class="inline text-right dark:brightness-50 dark:text-darkmodeText text-gray-400 text-xs">
+			<p class="inline text-right dark:brightness-50 dark:text-darkmodeText text-gray-400 dark:text-gray-700 text-xs">
 				{value?.length || 0}/{max}
 			</p>
 		{/if}
 	</div>
 	<textarea
-		class={`${areaClass} dark:bg-darkbackground border border-gray-300 border-solid rounded focus:bg-gray-100 p-0.5 w-full outline-none ${inputClass}`}
+		class={`${areaClass} dark:text-darkmodeText dark:bg-darkbackground border border-gray-300 border-solid rounded focus:bg-gray-100 p-0.5 w-full outline-none ${inputClass}`}
 		id={`textarea-${id}`}
 		{required}
 		{rows}
