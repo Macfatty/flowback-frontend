@@ -9,8 +9,9 @@
 	import Loader from '$lib/Generic/Loader.svelte';
 
 	export let reportModalShow = false,
-		id: string | number,
-		type: 'poll' | 'thread' = 'poll';
+		post_type: 'poll' | 'thread' = 'poll',
+		group_id: string | number = '',
+		post_id: string | number = '';		
 
 	let title: string,
 		description: string,
@@ -22,15 +23,18 @@
 		let _api = 'report/create';
 
 		let data = {
-			title: title,
-			description: description
+			title,
+			description,
+			post_type,
+			post_id,
+			group_id
 		};
 
 		const { res, json } = await fetchRequest('POST', _api, data);
 
 		loading = false;
 
-		if (!res.ok) {			
+		if (!res.ok) {
 			errorHandler.addPopup({
 				message: 'An error occurred while reporting the poll.',
 				success: false

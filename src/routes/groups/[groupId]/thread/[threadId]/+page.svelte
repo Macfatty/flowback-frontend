@@ -112,7 +112,7 @@
 
 <ErrorHandler bind:this={errorHandler} />
 
-<ReportPollModal bind:reportModalShow id={$page.params.threadId} type="thread"/>
+<ReportPollModal post_type="thread" group_id={$page.params.groupId} post_id={thread.id} bind:reportModalShow/>
 
 <DeletePollModal bind:deletePollModalShow pollId={$page.params.threadId} type="thread" />
 

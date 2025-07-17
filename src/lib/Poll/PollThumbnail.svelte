@@ -430,7 +430,7 @@
 </div>
 
 <DeletePollModal bind:deletePollModalShow pollId={poll?.id} />
-<ReportPollModal bind:reportModalShow={reportPollModalShow} id={$page.params.pollId} />
+<ReportPollModal post_type="poll" group_id={poll.group_id} post_id={poll.id} bind:reportModalShow={reportPollModalShow} />
 
 <ErrorHandler bind:this={errorHandler} />
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
-	import DefaultBanner from '$lib/assets/default_banner_group.png';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
+	import { page } from '$app/stores';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import Fa from 'svelte-fa';
@@ -187,6 +187,7 @@
 	</div>
 </div>
 
-<ReportPollModal bind:reportModalShow id={thread?.id} type="thread" />
+<!-- TODO: Fix so group id is correct -->
+<ReportPollModal post_type="thread" group_id={$page.params.groupId} post_id={thread.id}/>
 
 <DeletePollModal bind:deletePollModalShow pollId={thread?.id} type="thread" />
