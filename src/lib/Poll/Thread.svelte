@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
-	import DefaultBanner from '$lib/assets/default_banner_group.png';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
+	import { page } from '$app/stores';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import Fa from 'svelte-fa';
@@ -10,15 +10,16 @@
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { groupUserStore, type Thread } from '$lib/Group/interface';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import DeletePollModal from './DeletePollModal.svelte';
+	import DeletePollModal from './DeletePostModal.svelte';
 	import ReportPollModal from './ReportPollModal.svelte';
+	import DeletePostModal from './DeletePostModal.svelte';
 
 	export let thread: Thread;
 	let threads: Thread[] = [],
 		reportModalShow = false,
+		deleteModalShow = false,
 		choicesOpen = false,
-		poppup: poppup,
-		deletePollModalShow = false;
+		poppup: poppup;
 
 	//Launches whenever the user clicks upvote or downvote on a thread
 	const threadVote = async (_thread: Thread, clicked: 'down' | 'up') => {
@@ -133,7 +134,7 @@
 				bind:choicesOpen
 				labels={[$_('Delete Thread'), $_('Report Thread')]}
 				functions={[
-					() => (deletePollModalShow = true),
+					() => (deleteModalShow = true),
 					() => ((reportModalShow = true), (choicesOpen = false))
 				]}
 				Class="text-black justify-self-center"
@@ -187,6 +188,12 @@
 	</div>
 </div>
 
-<ReportPollModal bind:reportModalShow id={thread?.id} type="thread" />
+<!-- TODO: Fix so group id is correct -->
+<ReportPollModal
+	post_type="thread"
+	group_id={$page.params.groupId}
+	post_id={thread?.id}
+	bind:reportModalShow
+/>
 
-<DeletePollModal bind:deletePollModalShow pollId={thread?.id} type="thread" />
+<DeletePostModal bind:deleteModalShow pollId={thread?.id} post_type="thread" />

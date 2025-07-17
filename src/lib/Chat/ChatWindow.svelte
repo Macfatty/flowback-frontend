@@ -355,7 +355,7 @@
 	<div>{'No chat selected'}</div>
 {/if}
 
-<Modal bind:open={participantsModalOpen}>
+<Modal bind:open={participantsModalOpen} Class="max-w-[300px]">
 	<div slot="body">
 		{#if participants.length > 0}
 			<ul>

@@ -25,21 +25,18 @@
 		faAlignLeft,
 		faCalendarAlt,
 		faSlash,
-
 		faGlobe,
-
 		faLock
-
-
 	} from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import DeletePollModal from './DeletePollModal.svelte';
+	import DeletePollModal from './DeletePostModal.svelte';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import Timeline from './NewDesign/Timeline.svelte';
 	import ReportPollModal from './ReportPollModal.svelte';
 	import type { Permissions } from '$lib/Group/Permissions/interface';
 	import { groupUserStore } from '$lib/Group/interface';
+	import DeletePostModal from './DeletePostModal.svelte';
 
 	export let poll: poll;
 
@@ -64,7 +61,13 @@
 		const { json, res } = await fetchRequest('POST', `group/poll/${poll?.id}/update`, {
 			pinned: !poll?.pinned
 		});
-		if (res.ok) poll.pinned = !poll?.pinned;
+
+		if (!res.ok) {
+			errorHandler.addPopup({ message: 'Could not pin poll', success: false });
+			return;
+		}
+
+		poll.pinned = !poll?.pinned;
 	};
 
 	const submitTagVote = async (tag: number) => {
@@ -333,7 +336,6 @@
 							Class="w-[47%] "
 							classInner="w-full !p-2 bg-white p-4 border-gray-400 rounded-md border"
 							onInput={() => (voting = true)}
-							defaultValue=""
 						/>
 						{#if voting}
 							<Button type="submit" Class="w-[47%]" buttonStyle="primary-light"
@@ -429,8 +431,13 @@
 	</div>
 </div>
 
-<DeletePollModal bind:deletePollModalShow pollId={poll?.id} />
-<ReportPollModal bind:reportModalShow={reportPollModalShow} id={$page.params.pollId} />
+<DeletePostModal bind:deleteModalShow={deletePollModalShow} pollId={poll?.id} />
+<ReportPollModal
+	post_type="poll"
+	group_id={poll.group_id}
+	post_id={poll.id}
+	bind:reportModalShow={reportPollModalShow}
+/>
 
 <ErrorHandler bind:this={errorHandler} />
 

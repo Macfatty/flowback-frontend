@@ -71,7 +71,7 @@
 >
 	<div class="w-full items-end gap-4">
 		<TextInput
-			Class="flex-1 h-full placeholder-gray-600 rounded pr-6 text-gray-500 bg-gray-100 dark:bg-darkobject dark:text-darkmodeText"
+			Class="flex-1 h-full placeholder-gray-600 rounded text-gray-500 bg-gray-100 dark:bg-darkobject dark:text-darkmodeText"
 			inputClass="placeholder-gray-600 text-gray-500 border-0 bg-gray-100 dark:bg-darkobject dark:text-darkmodeText"
 			placeholder={$_('Search tasks')}
 			on:change={async () => {
@@ -84,7 +84,7 @@
 			bind:value={filter.search}
 		/>
 		{#if type === 'group'}
-			<div class="flex items-center justify-center gap-16 px-2">
+			<div class="flex items-center justify-center gap-16 px-2 mt-2">
 				<div class="flex flex-row flex-1 gap-2 items-center">
 					<label class="block text-md whitespace-nowrap" for="group">
 						{$_('Group')}:

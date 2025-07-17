@@ -35,6 +35,7 @@
 					on:click={() => (selectedPage = 'group')}
 					class={`${optionsDesign}`}
 					class:bg-gray-100={selectedPage === 'group'}
+					class:dark:bg-gray-700={selectedPage === 'group'}
 					class:border-l-2={selectedPage === 'group'}
 					class:border-primary={selectedPage === 'group'}
 				>
@@ -44,6 +45,7 @@
 					on:click={() => (selectedPage = 'areas')}
 					class={`${optionsDesign}`}
 					class:bg-gray-100={selectedPage === 'areas'}
+					class:dark:bg-gray-700={selectedPage === 'areas'}
 					class:border-l-2={selectedPage === 'areas'}
 					class:border-primary={selectedPage === 'areas'}
 				>
@@ -53,6 +55,7 @@
 					on:click={() => (selectedPage = 'perms')}
 					class={`${optionsDesign}`}
 					class:bg-gray-100={selectedPage === 'perms'}
+					class:dark:bg-gray-700={selectedPage === 'perms'}
 					class:border-l-2={selectedPage === 'perms'}
 					class:border-primary={selectedPage === 'perms'}
 				>

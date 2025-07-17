@@ -2,6 +2,7 @@ import { fetchRequest } from '$lib/FetchRequest';
 import type { User } from '$lib/User/interfaces';
 import { writable } from 'svelte/store';
 import { groupUserStore, type groupUser } from '$lib/Group/interface';
+import type { Permissions } from '$lib/Group/Permissions/interface';
 
 let groupUserInfo: groupUser | null = null;
 
@@ -53,7 +54,7 @@ export const onThumbnailError = (event: any, picture: string) => {
 
 interface UserInfo {
 	user: User;
-	permission?: Permission;
+	permission?: Permissions;
 	groupuser?: groupUser;
 	groupId?: number;
 }
@@ -110,3 +111,12 @@ export const elipsis = (label: string, charMax = 30) => {
 export const commaCleanup = (api: string) => {
 	return api?.replace('%2C', ',');
 };
+
+export const linkToPost = (postId: number, groupId: number, postType: 'poll' | 'thread') => {
+	let _postType = '';
+	if (postType === 'poll') _postType = 'polls';
+	if (postType === 'thread') _postType = 'thread';
+
+	return `/groups/${groupId}/${_postType}/${postId}`;
+}
+

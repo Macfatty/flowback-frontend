@@ -165,7 +165,7 @@
 	<!-- class:bg-gray-100={comment.reply_depth % 2 === 1} -->
 	<!-- class:dark:bg-darkbackground={comment.reply_depth % 2 === 1} -->
 	<div
-		class={`p-3 text-sm border-0 border-l-gray-400`}
+		class={`p-3 text-sm border-0 border-l-gray-400  dark:text-darkmodeText`}
 		style:margin-left={`${comment.reply_depth * 20}px`}
 		class:border-l-2={comment.reply_depth > 0}
 	>
