@@ -71,7 +71,7 @@
 >
 	<div class="w-full items-end gap-4">
 		<TextInput
-			Class="flex-1 h-full placeholder-gray-600 rounded pr-6 text-gray-500 bg-gray-100 dark:bg-darkobject dark:text-darkmodeText"
+			Class="flex-1 h-full placeholder-gray-600 rounded text-gray-500 bg-gray-100 dark:bg-darkobject dark:text-darkmodeText"
 			inputClass="placeholder-gray-600 text-gray-500 border-0 bg-gray-100 dark:bg-darkobject dark:text-darkmodeText"
 			placeholder={$_('Search tasks')}
 			on:change={async () => {
