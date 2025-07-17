@@ -121,6 +121,7 @@
 					bind:value={group}
 					values={groups}
 					innerLabelOn={true}
+					disableFirstChoice
 				/>
 			{/if}
 

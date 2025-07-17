@@ -177,7 +177,6 @@
 							labels={workGroups.map((group) => elipsis(group.name))}
 							values={workGroups.map((group) => group.id)}
 							bind:value={workGroup}
-							defaultValue=""
 							onInput={handleChangeWorkGroup}
 							innerLabel={$_('No workgroup assigned')}
 							innerLabelOn={true}

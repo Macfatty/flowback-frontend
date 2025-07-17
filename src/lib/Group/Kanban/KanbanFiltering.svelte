@@ -84,7 +84,7 @@
 			bind:value={filter.search}
 		/>
 		{#if type === 'group'}
-			<div class="flex items-center justify-center gap-16 px-2">
+			<div class="flex items-center justify-center gap-16 px-2 mt-2">
 				<div class="flex flex-row flex-1 gap-2 items-center">
 					<label class="block text-md whitespace-nowrap" for="group">
 						{$_('Group')}:

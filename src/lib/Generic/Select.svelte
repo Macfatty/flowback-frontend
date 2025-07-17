@@ -15,7 +15,8 @@
 		classInner = '',
 		innerLabel: string | null = 'Select',
 		innerLabelOn: boolean = false,
-		charlimit = 30;
+		charlimit = 30,
+		disableFirstChoice = false;
 
 	// onMount(() => {
 	// 	value = defaultValue;
@@ -36,7 +37,7 @@
 		name={label}
 	>
 		{#if innerLabel}
-			<option value="" disabled selected>{$_(innerLabel)}</option>
+			<option value="" disabled={disableFirstChoice} selected>{$_(innerLabel)}</option>
 		{/if}
 
 		{#if labels}
