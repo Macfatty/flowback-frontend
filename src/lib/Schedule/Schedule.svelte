@@ -282,6 +282,9 @@
 		const { res, json } = await fetchRequest('GET', `group/${groupId}/list`);
 		if (!res.ok) return;
 		workGroups = json.results.filter((group: WorkGroup) => group.joined === true);
+
+		console.log(workGroups, "GROUPIE");
+		
 	};
 
 	const onGroupChange = (id: string) => {
@@ -477,6 +480,7 @@
 	bind:showEvent
 	bind:type
 	bind:events
+	bind:workGroups
 	{scheduleEventCreate}
 	scheduleEventEdit={scheduleEventUpdate}
 	{scheduleEventDelete}

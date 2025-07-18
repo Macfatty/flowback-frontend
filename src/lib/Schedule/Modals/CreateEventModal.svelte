@@ -122,7 +122,6 @@
 						{/each}
 					</select>
 				</div>
-
 				{#if type === 'group'}
 					<div class="mb-4">
 						<label for="work_group" class="block mb-1 text-gray-700 dark:text-gray-300"
@@ -134,6 +133,7 @@
 							class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 						>
 							<option value={undefined}>{$_('None')}</option>
+						
 							{#each workGroups as group}
 								<option value={group}>{group.name}</option>
 							{/each}

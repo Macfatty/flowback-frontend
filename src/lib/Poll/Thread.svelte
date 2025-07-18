@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
+	import DefaultBanner from '$lib/assets/default_banner_group.png';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import { page } from '$app/stores';
 	import type { poppup } from '$lib/Generic/Poppup';
@@ -13,6 +14,8 @@
 	import DeletePollModal from './DeletePostModal.svelte';
 	import ReportPollModal from './ReportPollModal.svelte';
 	import DeletePostModal from './DeletePostModal.svelte';
+	import { env } from '$env/dynamic/public';
+	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 
 	export let thread: Thread;
 	let threads: Thread[] = [],
@@ -87,7 +90,7 @@
 </script>
 
 <div
-	class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow-[0_0_5px_rgb(203,203,203)] rounded-md"
+	class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow-[0_0_5px_rgb(203,203,203)] dark:shadow-[0_0_5px_rgb(103,103,103)] rounded-md"
 >
 	<div class="flex justify-between items-center">
 		<a
@@ -95,22 +98,22 @@
 			href={`/groups/${thread?.created_by?.group_id}/thread/${thread?.id}`}>{thread?.title}</a
 		>
 
-		<!-- <a
-			href={`groups/${thread?.group_id}`}
-			class:hover:underline={thread?.group_joined}
-			class="text-black dark:text-darkmodeText flex items-center"
-		>
-			<img
-				class="h-6 w-6 mr-1 rounded-full break-all"
-				src={`${env.PUBLIC_API_URL}${thread?.group_image}`}
-				alt={'thread Thumbnail'}
-				on:error={(e) => onThumbnailError(e, DefaultBanner)}
-			/>
-			<span class="break-all text-sm text-gray-700 dark:text-darkmodeText"
-				>{thread?.group_name}</span
+		{#if !$page.params.groupId}
+			<a
+				href={`/groups/${thread?.group_id}`}
+				class="text-black dark:text-darkmodeText flex items-center"
 			>
-		</a> -->
-
+				<img
+					class="h-6 w-6 mr-1 rounded-full break-all"
+					src={`${env.PUBLIC_API_URL}${thread?.group_image}`}
+					alt={'thread Thumbnail'}
+					on:error={(e) => onThumbnailError(e, DefaultBanner)}
+				/>
+				<span class="break-all text-sm text-gray-700 dark:text-darkmodeText"
+					>{thread?.group_name}</span
+				>
+			</a>
+		{/if}
 		<div class=" inline-flex gap-4 items-baseline">
 			<NotificationOptions
 				type="thread"

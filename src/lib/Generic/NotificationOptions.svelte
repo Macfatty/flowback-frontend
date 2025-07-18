@@ -54,6 +54,13 @@
 		);
 	};
 
+	const getNotificationList = async () => {
+		const { res, json } = await fetchRequest('GET', 'notification/list');
+		// notifications = json.results.filter(
+		// 	(notificationObject: any) => notificationObject.channel_sender_id === id
+		// );
+	};
+
 	const notificationSubscription = async (category: string) => {
 		const { res, json } = await fetchRequest('POST', `${api}/notification/subscribe`, {
 			categories: [category]
@@ -82,11 +89,21 @@
 		} else popupMessage = 'Something went wrong';
 	};
 
+	const groupSubcrube = async () => {
+		const { res, json } = await fetchRequest('POST', `group/${groupId}/notification/subscribe`, {
+			categories: ['group', 'group_user', 'kanban', 'poll', 'schedule_event', 'thread']
+		});
+	}
+
 	onMount(() => {
-		closeWindowWhenClickingOutside();
+		// closeWindowWhenClickingOutside();
+		// groupSubcrube();
 	});
 
-	$: if (notificationOpen) getNotifications();
+	$: if (notificationOpen) {
+		// getNotificationList();
+		// getNotifications();
+	}
 </script>
 
 <div class={`${Class} notifications-clickable-region`}>
@@ -108,7 +125,7 @@
 
 	{#if notificationOpen && categories}
 		<div class={`z-50 absolute mt-2 bg-white dark:bg-darkobject shadow-xl text-sm ${ClassOpen}`}>
-			<div class="text-xs p-2 ">{$_('Manage Subscriptions')}</div>
+			<div class="text-xs p-2">{$_('Manage Subscriptions')}</div>
 			{#each categories as category, i}
 				<button
 					class="bg-gray-200 dark:bg-gray-700 w-full p-2 px-5 flex justify-between items-center transition-all"

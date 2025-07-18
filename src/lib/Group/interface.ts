@@ -167,6 +167,9 @@ export interface Thread {
 		id: number;
 		name: string;
 	};
+	group_name: string;
+	group_id: number;
+	group_image: string;
 }
 
 export interface GroupFilter { joined: 'all' | 'member' | 'not-member', search: string }

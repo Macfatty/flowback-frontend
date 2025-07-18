@@ -54,7 +54,7 @@
 	$: if (sortBy || searchString) setUpComments();
 </script>
 
-<div class={`rounded dark:text-darktext min-h-[300px] ${Class}`} id="comments">
+<div class={`rounded dark:text-darktext min-h-[200px] ${Class}`} id="comments">
 	<div class="border-b border-gray-300">
 		<!-- Add Comment -->
 
