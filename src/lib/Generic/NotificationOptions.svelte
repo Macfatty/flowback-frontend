@@ -89,13 +89,20 @@
 		} else popupMessage = 'Something went wrong';
 	};
 
+	const groupSubcrube = async () => {
+		const { res, json } = await fetchRequest('POST', `group/${groupId}/notification/subscribe`, {
+			categories: ['group', 'group_user', 'kanban', 'poll', 'schedule_event', 'thread']
+		});
+	}
+
 	onMount(() => {
-		closeWindowWhenClickingOutside();
+		// closeWindowWhenClickingOutside();
+		// groupSubcrube();
 	});
 
 	$: if (notificationOpen) {
-		getNotificationList();
-		getNotifications();
+		// getNotificationList();
+		// getNotifications();
 	}
 </script>
 
