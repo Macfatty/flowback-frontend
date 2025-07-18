@@ -691,5 +691,7 @@
     "Are you sure you want to delete this thread?": "Är du säker på att du vill ta bort denna tråd?",
     "Successfully deleted thread": "Tråden har tagits bort",
     "Could not pin poll": "Kunde inte fästa omröstning",
-    "Successfully pinned poll": "Omröstningen har fästs"
+    "Successfully pinned poll": "Omröstningen har fästs",
+    "Public Poll": "Offentlig omröstning",
+    "Private Poll": "Privat omröstning"
 }
