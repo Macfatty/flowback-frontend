@@ -226,7 +226,7 @@
 	</div>
 </div>
 
-<div class="max-h-[100%] overflow-y-auto">
+<div class="max-h-[100%]">
 	<div class="border-b-2 w-full">
 		<TextInput
 			placeholder={selectedPage === 'direct' ? 'Search users' : 'Search groups'}
