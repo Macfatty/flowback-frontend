@@ -96,15 +96,15 @@
 		formData.append('poll_type', (selected_poll === 'Text Poll' ? 4 : 3).toString());
 		formData.append('dynamic', selected_poll === 'Text Poll' ? 'false' : 'true');
 		formData.append('public', isPublic.toString());
-		formData.append('public', isPublic.toString());
 		formData.append('pinned', 'false');
 		formData.append('tag', tags[0]?.id?.toString() || '1');
-		if (workGroup && selected_poll === 'Date Poll' && !isPublic)
-			// formData.append('work_group_id', workGroup.toString());
 
-			images.forEach((image) => {
-				formData.append('attachments', image);
-			});
+		images.forEach((image) => {
+			formData.append('attachments', image);
+		});
+
+		if (workGroup && selected_poll === 'Date Poll' && !isPublic)
+			formData.append('work_group_id', workGroup.toString());
 
 		const { res, json } = await fetchRequest(
 			'POST',
