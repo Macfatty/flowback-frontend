@@ -124,13 +124,15 @@
 	};
 
 	const createThread = async () => {
-		let thread: { title: string; description?: string; work_group_id?: number | null } = {
+		let thread: { title: string; description?: string; public?:boolean, work_group_id?: number | null } = {
 			title
 		};
 
 		if (description) thread.description = description;
 
 		if (workGroup) thread.work_group_id = workGroup;
+
+		if (isPublic) thread.public = isPublic;
 
 		const { res, json } = await fetchRequest(
 			'POST',

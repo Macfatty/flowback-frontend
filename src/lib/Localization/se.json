@@ -693,5 +693,7 @@
     "Could not pin poll": "Kunde inte fästa omröstning",
     "Successfully pinned poll": "Omröstningen har fästs",
     "Public Poll": "Offentlig omröstning",
-    "Private Poll": "Privat omröstning"
+    "Private Poll": "Privat omröstning",
+    "Group owner isn't allowed to leave, deleting the group is an option": "Gruppägaren får inte lämna, att ta bort gruppen är ett alternativ",
+    "An error occurred while leaving the group.": "Ett fel inträffade när du lämnade gruppen."
 }

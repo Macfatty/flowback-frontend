@@ -6,7 +6,7 @@
 	import type { poppup } from '$lib/Generic/Poppup';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import Fa from 'svelte-fa';
-	import { faThumbTack, faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
+	import { faThumbTack, faThumbsUp, faThumbsDown, faGlobe, faLock } from '@fortawesome/free-solid-svg-icons';
 	import { _ } from 'svelte-i18n';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { groupUserStore, type Thread } from '$lib/Group/interface';
@@ -16,6 +16,7 @@
 	import DeletePostModal from './DeletePostModal.svelte';
 	import { env } from '$env/dynamic/public';
 	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
+	import HeaderIcon from '$lib/Header/HeaderIcon.svelte';
 
 	export let thread: Thread;
 	let threads: Thread[] = [],
@@ -153,6 +154,13 @@
 			{new Date(thread.created_at).toISOString().split('T')[0].replace(/-/g, '.')}
 		</span>
 	{/if}
+
+	{#if thread?.public}
+		<HeaderIcon Class="!p-0 !cursor-default" icon={faGlobe} text={'Public Poll'} />
+	{:else}
+		<HeaderIcon Class="!p-0 !cursor-default" icon={faLock} text={'Private Poll'} />
+	{/if}
+
 	{#if thread?.description}
 		<NewDescription limit={2} lengthLimit={700} description={thread?.description} />
 	{/if}

@@ -8,7 +8,7 @@
 	import { threads as threadsLimit } from '$lib/Generic/APILimits.json';
 	import { _ } from 'svelte-i18n';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import ThreadThumbnail from './Thread.svelte';
+	import ThreadThumbnail from './ThreadThumbnail.svelte';
 	import type { Thread } from '$lib/Group/interface';
 
 	let threads: Thread[] = [],
