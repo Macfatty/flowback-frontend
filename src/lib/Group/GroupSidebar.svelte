@@ -25,7 +25,6 @@
 	import { goto } from '$app/navigation';
 	import { removeGroupMembership } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
 	import { env } from '$env/dynamic/public';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 
@@ -36,11 +35,21 @@
 	let innerWidth = 0,
 		clickedExpandSidebar = false,
 		areYouSureModal = false,
-		userIsPermittedToCreatePost = false,
 		errorHandler: any;
 
 	const leaveGroup = async () => {
-		const { res } = await fetchRequest('POST', `group/${$page.params.groupId}/leave`);
+		const { res, json } = await fetchRequest('POST', `group/${$page.params.groupId}/leave`);
+
+		console.log('leaveGroup res', res, json);
+		
+		if (!res.ok) {
+			errorHandler.addPopup({
+				message: json.detail[0] || json.detail || 'An error occurred while leaving the group',
+				success: false
+			});
+			return;
+		}
+
 		if (res.ok) {
 			removeGroupMembership(Number($page.params.groupId));
 			goto('/home');
@@ -91,7 +100,11 @@
 								selectedPage === 'threads' ? 'thread' : 'poll'
 							}`
 						);
-					else errorHandler.addPopup({ message: 'You do not have permission to create a post', success: false });
+					else
+						errorHandler.addPopup({
+							message: 'You do not have permission to create a post',
+							success: false
+						});
 				}}
 				text="Create a post"
 				disabled={!$groupUserPermissionStore?.create_poll && !$groupUserStore?.is_admin}

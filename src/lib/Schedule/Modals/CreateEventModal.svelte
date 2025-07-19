@@ -11,11 +11,11 @@
 		type: 'user' | 'group',
 		members: { id: number; name: string }[] = [],
 		frequencyOptions: options[] = [],
-		reminderOptions: options[] = [];
+		reminderOptions: options[] = [],
+		selectedReminders: number[] = [];
 
 	// Members list and selections
 	let selectedMembers: number[] = [],
-		selectedReminders: number[] = [];
 
 	const dispatch = createEventDispatcher();
 
@@ -112,10 +112,12 @@
 					<label for="reminder" class="block mb-1 text-gray-700 dark:text-gray-300"
 						>{$_('Reminder')}</label
 					>
+
 					<select
 						id="reminder"
-						bind:value={selectedEvent.reminders}
+						bind:value={selectedReminders}
 						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+						multiple
 					>
 						{#each reminderOptions as option}
 							<option value={option.id}>{$_(option.name)}</option>
@@ -133,7 +135,7 @@
 							class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 						>
 							<option value={undefined}>{$_('None')}</option>
-						
+
 							{#each workGroups as group}
 								<option value={group}>{group.name}</option>
 							{/each}

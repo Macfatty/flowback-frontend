@@ -170,6 +170,7 @@ export interface Thread {
 	group_name: string;
 	group_id: number;
 	group_image: string;
+	public:boolean;
 }
 
 export interface GroupFilter { joined: 'all' | 'member' | 'not-member', search: string }
