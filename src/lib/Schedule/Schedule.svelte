@@ -136,7 +136,7 @@
 		let payload: any = {
 			title: newEvent.title,
 			start_date: newEvent.start_date,
-			end_date: newEvent.end_date
+			end_date: newEvent.end_date,
 		};
 
         console.log('Creating event with payload:', newEvent);
