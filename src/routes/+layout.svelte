@@ -103,17 +103,23 @@
 		// )
 		// 	return;
 
+		console.log('MEEE2');
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/users?user_id=${localStorage.getItem('userId')}`
 		);
-		if (!res.ok) return;
+		
+		if (!res.ok || json?.results.length === 0) {
+			groupUserStore.set(null);
+			history.back();
+			return;
+		}
+
 		groupUserStore.set(json?.results[0]);
 	};
 
 	const setUserGroupPermissionInfo = async () => {
 		if (!$page.params.groupId) return;
-		console.log("HERE PATH CHANGE");
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/permissions?id=${$groupUserStore?.permission_id}`
@@ -144,21 +150,19 @@
 	$: if ($page.url.pathname && isBrowser) onPathChange();
 
 	const onPathChange = async () => {
-		
 		redirect();
 		getWorkingGroupList();
 		showUI = shouldShowUI();
-		
+
 		setTimeout(() => {
 			const html = document.getElementById(`poll-thumbnail-${scrolledY}`);
 			html?.scrollIntoView();
 		}, 200);
-		
+
 		checkSessionExpiration();
 		setUserInfo();
 		await setUserGroupInfo();
 		setUserGroupPermissionInfo();
-
 	};
 
 	//Initialize Translation, which should happen before any lifecycle hooks.
