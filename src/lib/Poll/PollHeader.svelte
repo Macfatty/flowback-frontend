@@ -20,6 +20,8 @@
 	import ReportPollModal from './ReportPollModal.svelte';
 	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 	import DeletePostModal from './DeletePostModal.svelte';
+	import { fetchRequest } from '$lib/FetchRequest';
+	import { onMount } from 'svelte';
 
 	export let poll: poll,
 		displayTag = false,

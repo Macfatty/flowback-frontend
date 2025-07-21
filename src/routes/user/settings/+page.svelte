@@ -50,8 +50,9 @@
 				voting: false
 			}
 		},
-		version = '0.2.12',
-		reports: report[] = [];
+		reports: report[] = [],
+		serverConfig: any = {},
+		version = '0.2.12';
 
 	const userUpdate = async () => {
 		const { res, json } = await fetchRequest('POST', 'user/update', {
@@ -64,7 +65,7 @@
 
 		if (!res.ok) return;
 
-		// serverConfig = json;
+		serverConfig = json;
 	};
 
 	const getUserConfig = async () => {
@@ -272,7 +273,8 @@
 						{/each}
 					</ul>
 				{:else if selectedPage === 'info'}
-					<div>{$_('Version')}: {version}</div>
+					<div>{$_('Frontend Version')}: {version}</div>
+					<div>{$_('Backend Version')}: {serverConfig.VERSION}</div>
 				{:else if selectedPage === 'reports'}
 					{#if reports?.length > 0}
 						<span>{$_('Reports')}</span>
