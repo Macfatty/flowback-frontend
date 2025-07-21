@@ -2,11 +2,6 @@
 	import Layout from '$lib/Generic/Layout.svelte';
 	import CreatePoll from '$lib/Group/Creation/CreatePoll.svelte';
 	import { _ } from 'svelte-i18n';
-	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-	import Fa from 'svelte-fa';
-	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
-
 
 </script>
 

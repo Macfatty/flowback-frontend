@@ -14,7 +14,6 @@
 	import type { Group } from '$lib/Group/interface';
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import Button from '$lib/Generic/Button.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
