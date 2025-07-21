@@ -6,7 +6,13 @@
 	import type { poppup } from '$lib/Generic/Poppup';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import Fa from 'svelte-fa';
-	import { faThumbTack, faThumbsUp, faThumbsDown, faGlobe, faLock } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faThumbTack,
+		faThumbsUp,
+		faThumbsDown,
+		faGlobe,
+		faLock
+	} from '@fortawesome/free-solid-svg-icons';
 	import { _ } from 'svelte-i18n';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { groupUserStore, type Thread } from '$lib/Group/interface';
@@ -94,11 +100,6 @@
 	class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow-[0_0_5px_rgb(203,203,203)] dark:shadow-[0_0_5px_rgb(103,103,103)] rounded-md"
 >
 	<div class="flex justify-between items-center">
-		<a
-			class="break-words cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
-			href={`/groups/${thread?.created_by?.group_id}/thread/${thread?.id}`}>{thread?.title}</a
-		>
-
 		{#if !$page.params.groupId}
 			<a
 				href={`/groups/${thread?.group_id}`}
@@ -115,6 +116,7 @@
 				>
 			</a>
 		{/if}
+
 		<div class=" inline-flex gap-4 items-baseline">
 			<NotificationOptions
 				type="thread"
@@ -146,14 +148,21 @@
 		</div>
 	</div>
 
-	{#if thread?.work_group}
-		<span class="text-sm text-gray-500 dark:text-darkmodeText">#{thread.work_group.name}, </span>
-	{/if}
-	{#if thread?.created_at}
-		<span class="text-sm text-gray-500 dark:text-darkmodeText">
-			{new Date(thread.created_at).toISOString().split('T')[0].replace(/-/g, '.')}
-		</span>
-	{/if}
+	<a
+		class="break-words cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
+		href={`/groups/${thread?.created_by?.group_id}/thread/${thread?.id}`}>{thread?.title}</a
+	>
+
+	<div>
+		{#if thread?.work_group}
+			<span class="text-sm text-gray-500 dark:text-darkmodeText">#{thread.work_group.name}, </span>
+		{/if}
+		{#if thread?.created_at}
+			<span class="text-sm text-gray-500 dark:text-darkmodeText">
+				{new Date(thread.created_at).toISOString().split('T')[0].replace(/-/g, '.')}
+			</span>
+		{/if}
+	</div>
 
 	{#if thread?.public}
 		<HeaderIcon Class="!p-0 !cursor-default" icon={faGlobe} text={'Public Poll'} />
@@ -207,4 +216,4 @@
 	bind:reportModalShow
 />
 
-<DeletePostModal bind:deleteModalShow pollId={thread?.id} post_type="thread" />
+<DeletePostModal bind:deleteModalShow postId={thread?.id} post_type="thread" />

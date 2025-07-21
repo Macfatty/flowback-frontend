@@ -22,6 +22,7 @@
 	import Sun from './Sun.svelte';
 	import { env } from '$env/dynamic/public';
 	import Fa from 'svelte-fa';
+	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 
 	let sideHeaderOpen = false,
 		profileImage: string | null = DefaultPFP,
@@ -173,6 +174,7 @@
 							sideHeaderOpen && 'ring-blue-500 ring-4'
 						}`}
 						alt="default pfp"
+						on:error={(e) => onThumbnailError(e, DefaultPFP)}
 					/>
 				{/key}
 			</button>
