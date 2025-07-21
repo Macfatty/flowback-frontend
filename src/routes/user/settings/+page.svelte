@@ -273,8 +273,8 @@
 						{/each}
 					</ul>
 				{:else if selectedPage === 'info'}
-					<div>{$_('Frontend Version')}: {version}</div>
-					<div>{$_('Backend Version')}: {serverConfig.VERSION}</div>
+					<div>{$_('Frontend version')}: {version}</div>
+					<div>{$_('Backend version')}: {serverConfig.VERSION}</div>
 				{:else if selectedPage === 'reports'}
 					{#if reports?.length > 0}
 						<span>{$_('Reports')}</span>
