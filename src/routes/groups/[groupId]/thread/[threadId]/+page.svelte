@@ -120,7 +120,7 @@
 	bind:reportModalShow
 />
 
-<DeletePostModal bind:deleteModalShow pollId={thread?.id} post_type="thread" />
+<DeletePostModal bind:deleteModalShow postId={thread?.id} post_type="thread" />
 
 <style>
 	.poll-header-grid {

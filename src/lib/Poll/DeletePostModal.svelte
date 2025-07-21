@@ -10,7 +10,7 @@
 	import Loader from '$lib/Generic/Loader.svelte';
 
 	export let deleteModalShow = false,
-		pollId: string | number,
+		postId: string | number,
 		loading = false,
 		post_type: 'poll' | 'thread' = 'poll';
 
@@ -19,32 +19,39 @@
 	const deletePoll = async () => {
 		loading = true;
 		let _api =
-			post_type === 'poll' ? `group/poll/${pollId}/delete` : `group/thread/${pollId}/delete`;
+			post_type === 'poll' ? `group/poll/${postId}/delete` : `group/thread/${postId}/delete`;
 
 		const { res, json } = await fetchRequest('POST', _api);
 
+		loading = false;
+
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not delete poll', success: false });
+			errorHandler.addPopup({
+				message: post_type === 'poll' ? 'Could not delete poll' : 'Could not delete thread',
+				success: false
+			});
 			return;
 		}
 
-		loading = false;
 
 		// If looking at thread and poll thumbnails
-		if ($page.params.threadId === pollId || $page.params.pollId === pollId) {
+		console.log($page.params.threadId, $page.params.pollId, postId, "IDs", postId);
+		
+		if ($page.params.threadId === postId || $page.params.pollId === postId) {
 			// If the current page is the one being deleted, redirect to the group page
 			goto(`/groups/${$page.params.groupId}?page=flow`);
 			return;
 		} else {
 			// If at a thread or poll page
 			posts.update((currentPosts) => {
-				return currentPosts.filter((post) => post.id !== pollId);
+				return currentPosts.filter((post) => post.id !== postId);
 			});
 		}
 
 		errorHandler.addPopup({ message: 'Poll deleted successfully', success: true });
 
 		deleteModalShow = false;
+		
 	};
 </script>
 

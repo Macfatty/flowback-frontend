@@ -139,7 +139,7 @@
 	</div>
 {/if}
 
-<DeletePostModal bind:deleteModalShow={deletePollModalShow} pollId={$page.params.pollId} />
+<DeletePostModal bind:deleteModalShow={deletePollModalShow} postId={$page.params.pollId} />
 
 <ReportPollModal
 	post_type="poll"

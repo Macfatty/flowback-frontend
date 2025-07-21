@@ -431,7 +431,8 @@
 	</div>
 </div>
 
-<DeletePostModal bind:deleteModalShow={deletePollModalShow} pollId={poll?.id} />
+<DeletePostModal bind:deleteModalShow={deletePollModalShow} postId={poll?.id} />
+
 <ReportPollModal
 	post_type="poll"
 	group_id={poll.group_id}
