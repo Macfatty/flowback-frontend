@@ -55,12 +55,11 @@
 			return;
 		}
 
-		comments.map((comment) => {
+		comments?.map((comment) => {
 			if (comment.id !== id) return comment;
 
 			comment.message = '[Deleted]';
 			comment.active = false;
-			console.log(comment, 'COMMNEt');
 			return comment;
 		});
 		comments = comments;

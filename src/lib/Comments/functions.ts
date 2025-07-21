@@ -6,8 +6,8 @@ import { fetchRequest } from '$lib/FetchRequest';
 export const commentSetup = async (comments: Comment[]) => {
 	if (!comments) return [];
 
-	comments.map((comment) => (comment.reply_depth = getCommentDepth(comment, comments)));
-	comments.forEach((comment) => {
+	comments?.map((comment) => (comment.reply_depth = getCommentDepth(comment, comments)));
+	comments?.forEach((comment) => {
 		checkForLinks(comment.message, `comment-${comment.id}`);
 	});
 
@@ -20,7 +20,7 @@ export const getCommentDepth = (comment: Comment, comments: Comment[]): number =
 
 	if (comment.parent_id === null) return 0;
 	else {
-		let parentComment = comments.find((_comment) => _comment.id === comment.parent_id);
+		let parentComment = comments?.find((_comment) => _comment.id === comment.parent_id);
 		if (parentComment)
 			if (parentComment.reply_depth) return parentComment.reply_depth + 1;
 			else return getCommentDepth(parentComment, comments) + 1;

@@ -145,8 +145,8 @@
 
 		show = true;
 		showMessage = $_('Edited Comment');
-		const index = comments.findIndex((comment) => comment.id === id);
-		let comment = comments.find((comment) => comment.id === id);
+		const index = comments?.findIndex((comment) => comment.id === id);
+		let comment = comments?.find((comment) => comment.id === id);
 		if (comment) {
 			comment.message = message;
 			comments.splice(index, 1, comment);
