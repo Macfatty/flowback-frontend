@@ -195,7 +195,7 @@
 		class:!block={recentlyTappedButton === '#'}
 	>
 		{#if proposals?.length > 0}
-			<div class="max-h-48 overflow-y-auto">
+			<div class="max-h-30 overflow-y-auto">
 				<div class="px-4 py-2 font-semibold text-sm text-gray-600 border-b border-gray-200">
 					{$_('All proposals')}
 				</div>
