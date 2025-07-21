@@ -8,7 +8,7 @@
 	import { page } from '$app/stores';
 	import Button from '$lib/Generic/Button.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import { checkForLinks, elipsis, type StatusMessageInfo } from '$lib/Generic/GenericFunctions';
+	import { checkForLinks, elipsis } from '$lib/Generic/GenericFunctions';
 	import type { GroupUser } from '../interface';
 	import { onMount } from 'svelte';
 	import TimeAgo from 'javascript-time-ago';
@@ -21,8 +21,8 @@
 	import { env } from '$env/dynamic/public';
 	import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 	import Select from '$lib/Generic/Select.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { browser } from '$app/environment';
 
 	export let kanban: kanban,
 		type: 'group' | 'home',
@@ -129,8 +129,8 @@
 
 		isEditing = false;
 
-		if (!res.ok) {		
-			errorHandler.addPopup({ message: 'Failed to update kanban task', success: false })
+		if (!res.ok) {
+			errorHandler.addPopup({ message: 'Failed to update kanban task', success: false });
 			return;
 		}
 
@@ -187,7 +187,10 @@
 
 	const deleteKanbanEntry = async () => {
 		if (kanban.origin_type === 'group' && !$page.params.groupId) {
-			errorHandler.addPopup({ message: 'Cannot remove kanban tasks from groups in My Kanban', success: false });
+			errorHandler.addPopup({
+				message: 'Cannot remove kanban tasks from groups in My Kanban',
+				success: false
+			});
 			return;
 		}
 
@@ -271,13 +274,14 @@
 	</div>
 	{#if kanban.end_date && endDate}
 		<div class="text-sm text-gray-700 dark:text-darkmodeText">
-			{new Intl.DateTimeFormat('sv-SE', {
+			{new Intl.DateTimeFormat(navigator?.language, {
 				weekday: 'short',
 				day: '2-digit',
 				month: 'long'
 			})
 				.format(new Date(kanban.end_date))
-				.replace(/\b\w/g, (char) => char.toUpperCase())}
+				.replace(/\b\w/g, (char) => char.toLowerCase())
+				.replace(/^\w/, (c) => c.toUpperCase())}
 		</div>
 	{/if}
 	<button
