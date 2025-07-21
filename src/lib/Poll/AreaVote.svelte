@@ -24,7 +24,7 @@
 			return;
 		}
 
-		tags = json.results;
+		tags = json?.results;
 	};
 
 	const submitVote = async () => {
@@ -51,7 +51,7 @@
 
 		if (!res.ok) return;
 
-		let selectedTagName = json.results.find((tag: Tag) => tag.user_vote === true)?.tags[0].tag_name;
+		let selectedTagName = json?.results.find((tag: Tag) => tag.user_vote === true)?.tags[0].tag_name;
 
 		if (selectedTagName) {
 			selectedTag = tags.find((tag) => tag.name === selectedTagName)?.id;

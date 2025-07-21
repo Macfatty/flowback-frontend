@@ -29,8 +29,8 @@
 			errorHandler.addPopup({ message: 'Could not get groups', success: false });
 			return;
 		}
-		groups = json.results;
-		group = json.results[0];
+		groups = json?.results;
+		group = json?.results[0];
 	};
 
 	const getUserInfo = async () => {
@@ -76,7 +76,7 @@
 	const getDelegatePools = async () => {
 		const { json, res } = await fetchRequest('GET', `group/${group.id}/delegate/pools?limit=1000`);
 
-		autovote = res.ok && json.results.length > 0;
+		autovote = res.ok && json?.results.length > 0;
 	};
 
 	onMount(async () => {

@@ -47,10 +47,10 @@
 		);
 		if (!res.ok) return [];
 
-		if (selectedPage === 'group') return json.results;
+		if (selectedPage === 'group') return json?.results;
 		else {
 			// Process messages to set notified based on last interaction timestamp
-			return json.results.map((message: PreviewMessage) => {
+			return json?.results.map((message: PreviewMessage) => {
 				const timestampKey = `lastInteraction_${message.channel_id}`;
 				const lastInteraction = localStorage.getItem(timestampKey);
 				// Set notified to true if message is newer than last interaction or no interaction exists
@@ -80,14 +80,14 @@
 	const groupList = async () => {
 		const { res, json } = await fetchRequest('GET', `group/list?joined=true&limit=${chatLimit}`);
 		if (!res.ok) return [];
-		return json.results;
+		return json?.results;
 	};
 
 	// Fetch list of users
 	const userList = async () => {
 		const { json, res } = await fetchRequest('GET', `users?limit=${chatLimit}`);
 		if (!res.ok) return [];
-		let chatters = json.results.filter((chatter: any) => chatter.id !== $userStore?.id);
+		let chatters = json?.results.filter((chatter: any) => chatter.id !== $userStore?.id);
 		chatters = await Promise.all(
 			chatters.map(async (chatter: any) => {
 				chatter.channel_id = await getChannelId(chatter.id);
@@ -150,7 +150,7 @@
 	const UserChatInviteList = async () => {
 		const { res, json } = await fetchRequest('GET', `user/chat/invite/list`);
 		if (!res.ok) return;
-		inviteList = json.results;
+		inviteList = json?.results;
 	};
 
 	// Accept or reject chat invites
@@ -170,7 +170,7 @@
 	const getWorkGroups = async () => {
 		const { res, json } = await fetchRequest('GET', 'group/1/list');
 		if (!res.ok) return;
-		workGroupList = json.results;
+		workGroupList = json?.results;
 	};
 
 	onMount(async () => {

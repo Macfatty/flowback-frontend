@@ -22,7 +22,7 @@
 			'GET',
 			`notification/list?order_by=timestamp_desc&limit=${notificationLimit}`
 		);
-		if (res.ok) notifications = json.results;
+		if (res.ok) notifications = json?.results;
 	};
 
 	const closeWindowWhenClickingOutside = () => {
@@ -66,7 +66,7 @@
 				'GET',
 				`home/polls?id=${notification.channel_sender_id}`
 			);
-			const groupId = json.results[0].group_id;
+			const groupId = json?.results[0].group_id;
 			goto(`/groups/${groupId}/polls/${notification.channel_sender_id}`);
 		}
 	};

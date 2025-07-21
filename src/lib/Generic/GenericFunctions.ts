@@ -80,7 +80,7 @@ export const getGroupUserInfo = async (groupId: number | string) => {
 	);
 
 	if (!res.ok) return;
-	return json.results[0];
+	return json?.results[0];
 };
 
 export const getPermissions = async (groupId: number | string, permissionId: number | string) => {
@@ -92,7 +92,7 @@ export const getPermissions = async (groupId: number | string, permissionId: num
 		`group/${groupId}/permissions?id=${permissionId}`
 	);
 
-	return json.results[0];
+	return json?.results[0];
 };
 
 export const getPermissionsFast = async (groupId: number | string) => {

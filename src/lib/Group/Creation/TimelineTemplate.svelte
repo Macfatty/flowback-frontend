@@ -38,7 +38,7 @@
 			return;
 		}
 
-		templates = json.results;
+		templates = json?.results;
 	};
 
 	const templateCreate = async () => {

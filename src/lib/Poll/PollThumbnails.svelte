@@ -82,7 +82,7 @@
 			return;
 		}
 
-		polls = json.results;
+		polls = json?.results;
 		next = json.next;
 		prev = json.previous;
 	};

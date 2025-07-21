@@ -68,7 +68,7 @@
 	const getGroupTags = async () => {
 		const { res, json } = await fetchRequest('GET', `group/${groupId}/tags`);
 		if (res.ok) {
-			tags = json.results;
+			tags = json?.results;
 		}
 	};
 
@@ -178,7 +178,7 @@
 		const { res, json } = await fetchRequest('GET', `group/${groupId}/list`);
 
 		if (!res.ok) return;
-		workGroups = json.results;
+		workGroups = json?.results;
 		workGroups = workGroups.filter((workGroup) => workGroup.joined);
 	};
 

@@ -21,7 +21,7 @@
 
 		next = commaCleanup(json.next);
 		prev = commaCleanup(json.previous);
-		iterable = json.results;
+		iterable = json?.results;
 
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	};

@@ -36,7 +36,7 @@
 
 	const getInvitations = async () => {
 		const { res, json } = await fetchRequest('GET', 'group/invites');
-		invitations = json.results;
+		invitations = json?.results;
 	};
 
 	const acceptInvitation = async (id: number) => {

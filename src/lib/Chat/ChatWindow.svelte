@@ -51,7 +51,7 @@
 			errorState = true;
 			return;
 		}
-		messages = json.results.reverse();
+		messages = json?.results.reverse();
 		olderMessages = json.next;
 		newerMessages = '';
 		// Update timestamp when viewing messages
@@ -137,7 +137,7 @@
 		if (!res.ok) return;
 		newerMessages = json.previous;
 		olderMessages = json.next;
-		messages = json.results.reverse();
+		messages = json?.results.reverse();
 	};
 
 	// Fetch newer messages
@@ -146,7 +146,7 @@
 		const { res, json } = await fetchRequest('GET', newerMessages);
 		olderMessages = json.next;
 		newerMessages = json.previous;
-		messages = json.results.reverse();
+		messages = json?.results.reverse();
 	};
 
 	// Handle incoming messages and set notifications
@@ -233,7 +233,7 @@
 			console.error('Failed to fetch channel participants:', json);
 			return;
 		}
-		participants = json.results;
+		participants = json?.results;
 		// console.log(`Participants for ${selectedPage} chat (channel ${selectedChatChannelId}):`, participants);
 	};
 

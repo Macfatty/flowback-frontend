@@ -41,7 +41,7 @@
 		console.log(res, 'Group List');
 
 		if (!res.ok) return;
-		else return json.results;
+		else return json?.results;
 	};
 
 	const redirect = async () => {
@@ -79,7 +79,7 @@
 
 		if (!res.ok) return;
 
-		workGroupsStore.set(json.results);
+		workGroupsStore.set(json?.results);
 	};
 
 	const checkSessionExpiration = () => {
@@ -108,7 +108,7 @@
 			`group/${$page.params.groupId}/users?user_id=${localStorage.getItem('userId')}`
 		);
 		if (!res.ok) return;
-		groupUserStore.set(json.results[0]);
+		groupUserStore.set(json?.results[0]);
 	};
 
 	const setUserGroupPermissionInfo = async () => {
@@ -119,7 +119,7 @@
 			`group/${$page.params.groupId}/permissions?id=${$groupUserStore?.permission_id}`
 		);
 		if (!res.ok) return;
-		const permissionInfo = json.results ? json.results[0] : null;
+		const permissionInfo = json?.results ? json?.results[0] : null;
 		console.log('HERE WHERE I SHOULD BE', permissionInfo);
 
 		groupUserPermissionStore.set(permissionInfo);
@@ -134,7 +134,7 @@
 
 		const { res, json } = await fetchRequest('GET', `users?id=${localStorage.getItem('userId')}`);
 		if (!res.ok) return;
-		userStore.set(json.results[0]);
+		userStore.set(json?.results[0]);
 	};
 
 	beforeNavigate(() => {

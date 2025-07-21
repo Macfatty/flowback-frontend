@@ -71,12 +71,12 @@
 			return;
 		}
 		// loading = false;
-		accounts = json.results;
+		accounts = json?.results;
 		setAccountFilter(json);
 	};
 
 	const setAccountFilter = (json: any) => {
-		filter.account_ids = json.results.map((result: Account) => {
+		filter.account_ids = json?.results.map((result: Account) => {
 			return { id: result.id, checked: false, label: result.account_name };
 		});
 	};
@@ -111,7 +111,7 @@
 		next = json.next;
 		prev = json.previous;
 
-		transactions = json.results.filter(
+		transactions = json?.results.filter(
 			(transaction: Transaction) => transaction.account.created_by.id === $userStore?.id
 		);
 		// loading = false;

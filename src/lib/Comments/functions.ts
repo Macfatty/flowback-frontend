@@ -51,7 +51,7 @@ export const getComments = async (
 	const { res, json } = await fetchRequest('GET', _api);
 
 	return {
-		comments: json.results?.map((comment: Comment) => {
+		comments: json?.results?.map((comment: Comment) => {
 			comment.being_edited = false;
 			comment.being_replied = false;
 			comment.being_reported = false;

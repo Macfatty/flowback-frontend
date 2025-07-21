@@ -25,14 +25,14 @@
 			`group/poll/${$page.params.pollId}/proposals?limit=1000&order_by=score_desc`
 		);
 
-		if (pollType === 4) proposals = json.results;
+		if (pollType === 4) proposals = json?.results;
 		else if (pollType === 3)
 			//Only one proposal wins in date poll
 			proposals = [
 				{
-					id: json.results[0].id,
-					title: formatDate(json.results[0].start_date),
-					description: formatDate(json.results[0].end_date)
+					id: json?.results[0].id,
+					title: formatDate(json?.results[0].start_date),
+					description: formatDate(json?.results[0].end_date)
 				}
 			];
 

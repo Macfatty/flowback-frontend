@@ -86,7 +86,7 @@
 
 		if (!res.ok) return;
 
-		reports = json.results;
+		reports = json?.results;
 	};
 
 	const a = (key1: string, key2: string = '') => {

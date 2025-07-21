@@ -38,7 +38,7 @@
 			'GET',
 			`group/${$page.params.groupId}/users?user_id=${localStorage.getItem('userId')}&is_delegate=true`
 		);
-		if (json.results.length === 1) userIsDelegate = true;
+		if (json?.results.length === 1) userIsDelegate = true;
 	};
 
 	const createDelegation = async () => {
@@ -81,7 +81,7 @@
 
 		if (!res.ok) return;
 
-		delegates = json.results.map((delegatePool: any) => {
+		delegates = json?.results.map((delegatePool: any) => {
 			return { ...delegatePool.delegates[0].group_user, pool_id: delegatePool.id };
 		});
 
@@ -144,13 +144,13 @@
 		loading = false;
 
 		//Determines whether to show the "remove as delegate" or "add as delegate" buttons, depening on if user already has delegated or not earlier.
-		json.results.forEach((relation: any) => {
+		json?.results.forEach((relation: any) => {
 			delegates.map((delegate) => {
 				if (delegate.pool_id === relation.delegate_pool_id) delegate.isInRelation = true;
 				return delegate;
 			});
 		});
-		delegateRelations = json.results;
+		delegateRelations = json?.results;
 	};
 
 	const createDelegateRelation = async (delegate_pool_id: number) => {
