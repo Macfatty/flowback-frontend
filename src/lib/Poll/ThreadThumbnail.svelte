@@ -18,7 +18,6 @@
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { groupUserStore, type Thread } from '$lib/Group/interface';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import DeletePollModal from './DeletePostModal.svelte';
 	import ReportPollModal from './ReportPollModal.svelte';
 	import DeletePostModal from './DeletePostModal.svelte';
 	import { env } from '$env/dynamic/public';
@@ -121,15 +120,15 @@
 				class="text-black dark:text-darkmodeText flex items-center"
 			>
 			<!-- if group doesn't hide displaying creators -->
-				<!-- <img
+				<img
 					class="h-6 w-6 mr-1 rounded-full break-all"
-					src={`${thread.created_by?.profile_image ? env.PUBLIC_API_URL + thread?.created_by?.profile_image : DefaultPFP}`}
+					src={`${thread?.created_by?.user?.profile_image ? env.PUBLIC_API_URL + thread?.created_by?.user?.profile_image : DefaultPFP}`}
 					alt={'thread Thumbnail'}
 					on:error={(e) => onThumbnailError(e, DefaultPFP)}
 				/>
 				<span class="break-all text-sm text-gray-700 dark:text-darkmodeText"
-					>{thread?.created_by.username}</span
-				> -->
+					>{thread?.created_by?.user?.username}</span
+				>
 			</div>
 		{/if}
 

@@ -197,7 +197,7 @@
 				<img
 					class="h-6 w-6 mr-1 rounded-full break-all"
 					src={`${
-						poll.created_by?.user?.profile_image
+						poll?.created_by?.user?.profile_image
 							? env.PUBLIC_API_URL + poll?.created_by?.user?.profile_image
 							: DefaultPFP
 					}`}

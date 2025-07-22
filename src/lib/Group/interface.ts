@@ -144,16 +144,7 @@ export const groupUserStore = writable<groupUser | null>({
 export const groupUserPermissionStore = writable<Permissions>();
 
 export interface Thread {
-	created_by: {
-		id: number;
-		username: string;
-		profile_image: null | string;
-		banner_image: null | string;
-		is_admin: boolean;
-		permission_id: number;
-		permission_name: string;
-		group_id: number;
-	};
+	created_by: GroupUser;
 	title: string;
 	id: number;
 	total_comments: number;
