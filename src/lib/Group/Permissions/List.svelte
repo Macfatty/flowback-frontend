@@ -19,7 +19,7 @@
 			'GET',
 			`group/${$page.params.groupId}/permissions?limit=${permissionsLimit}`
 		);
-		roles = json.results;
+		roles = json?.results;
 	};
 
 	const deletePermission = async (permission_id: number) => {

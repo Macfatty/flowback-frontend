@@ -24,7 +24,7 @@
 		selectedMembers: number[] = [],
 		selectedReminders: number[] = [],
 		// Default to Daily
-		selectedFrequency: number = 1,
+		selectedFrequency: number[] = [],
 		choicesOpenMembers = false;
 
 	const toggleSelection = (id: number, type: 'members' | 'reminders', event: Event) => {
@@ -49,6 +49,7 @@
 
 		let toSend = {
 			...editedEvent,
+			repeat_frequency: selectedFrequency,
 			event_id: editedEvent.event_id
 		};
 
@@ -59,6 +60,7 @@
 		if (toSend.description === '') {
 			delete toSend.description;
 		}
+
 
 		const { res } = await fetchRequest('POST', `user/schedule/update`, toSend);
 
@@ -166,6 +168,7 @@
 							id="reminder"
 							bind:value={selectedReminders}
 							class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+							multiple
 						>
 							{#each reminderOptions as option}
 								<option value={option.id}>{option.name}</option>

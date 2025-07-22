@@ -232,12 +232,12 @@
 	{/if}
 </nav>
 
-<Modal bind:open={areYouSureModal}>
+<Modal bind:open={areYouSureModal} Class="max-w-[400px]">
 	<div slot="header">{$_('Are you sure?')}</div>
 	<div slot="body">{$_('You are about to leave the group!')}</div>
-	<div slot="footer">
-		<Button onClick={leaveGroup} Class="bg-red-500">{$_('Yes')}</Button>
-		<Button onClick={() => (areYouSureModal = false)} Class="bg-gray-600 w-1/2">{$_('No')}</Button>
+	<div slot="footer" class="flex justify-between gap-2">
+		<Button onClick={leaveGroup} Class="bg-red-500 flex-1">{$_('Yes')}</Button>
+		<Button onClick={() => (areYouSureModal = false)} Class="flex-1 bg-gray-600">{$_('No')}</Button>
 	</div>
 </Modal>
 

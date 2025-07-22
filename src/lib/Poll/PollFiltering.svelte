@@ -90,14 +90,14 @@
 			`group/${$page.params.groupId}/tags?limit=${homePollsLimit}`
 		);
 		if (!res.ok) return;
-		tags = json.results;
+		tags = json?.results;
 	};
 
 	const getWorkGroupList = async () => {
 		const { res, json } = await fetchRequest('GET', `group/${groupId}/list`);
 
 		if (!res.ok) return;
-		workGroups = json.results.filter((group: WorkGroup) => group.joined === true);
+		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
 	};
 
 	const resetFilter = () => {

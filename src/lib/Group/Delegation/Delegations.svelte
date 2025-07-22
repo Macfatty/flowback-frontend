@@ -43,7 +43,7 @@
 	const getGroupTags = async () => {
 		const { res, json } = await fetchRequest('GET', `group/${group.id}/tags?limit=1000`);
 
-		tags = json.results;
+		tags = json?.results;
 
 		if (!res.ok) return;
 	};
@@ -56,7 +56,7 @@
 		const { json, res } = await fetchRequest('GET', `group/${group.id}/delegate/pools?limit=1000`);
 		if (!res.ok) return;
 
-		delegates = json.results.map((delegatePool: any) => {
+		delegates = json?.results.map((delegatePool: any) => {
 			return { ...delegatePool.delegates[0].group_user, pool_id: delegatePool.id };
 		});
 	};
@@ -74,13 +74,13 @@
 		const { json, res } = await fetchRequest('GET', `group/${group.id}/delegates?limit=1000`);
 
 		// Determines whether to show the "remove as delegate" or "add as delegate" buttons, depending on if user already has delegated or not earlier.
-		json.results.forEach((relation: any) => {
+		json?.results.forEach((relation: any) => {
 			delegates.map((delegate) => {
 				if (delegate.pool_id === relation.delegate_pool_id) delegate.isInRelation = true;
 				return delegate;
 			});
 		});
-		delegateRelations = json.results;
+		delegateRelations = json?.results;
 		if (res.ok) {
 			setupDelegationTagStructure();
 		}

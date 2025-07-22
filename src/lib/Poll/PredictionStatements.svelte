@@ -30,7 +30,7 @@
 		);
 
 		loading = false;
-		predictions = json.results;
+		predictions = json?.results;
 	};
 
 	const getProposals = async () => {
@@ -41,7 +41,7 @@
 
 		if (!res.ok) return;
 
-		proposals = json.results;
+		proposals = json?.results;
 	};
 
 	$: if (selectedProposal) getPredictionStatements(selectedProposal);

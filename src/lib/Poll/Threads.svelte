@@ -34,7 +34,7 @@
 
 		next = json.next;
 		prev = json.previous;
-		threads = json.results;
+		threads = json?.results;
 	};
 
 	const handleSearch = () => {

@@ -14,7 +14,6 @@
 	import type { Group } from '$lib/Group/interface';
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import Button from '$lib/Generic/Button.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
@@ -122,7 +121,7 @@
 		}
 
 		const { json, res } = await fetchRequest('GET', _api);
-		events = json.results.sort((a: scheduledEvent, b: scheduledEvent) => {
+		events = json?.results.sort((a: scheduledEvent, b: scheduledEvent) => {
 			const dateA = new Date(a.start_date).getTime();
 			const dateB = new Date(b.start_date).getTime();
 			return dateA === dateB ? a.event_id - b.event_id : dateA - dateB;
@@ -271,7 +270,7 @@
 
 		if (!res.ok) return;
 
-		groupList = json.results
+		groupList = json?.results
 			.reverse()
 			.sort((group1: any, group2: any) => +group2.joined - +group1.joined);
 
@@ -281,7 +280,7 @@
 	const getWorkGroupList = async () => {
 		const { res, json } = await fetchRequest('GET', `group/${groupId}/list`);
 		if (!res.ok) return;
-		workGroups = json.results.filter((group: WorkGroup) => group.joined === true);
+		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
 
 		console.log(workGroups, "GROUPIE");
 		

@@ -28,7 +28,7 @@
 			return;
 		}
 
-		workGroupUserList = json.results;
+		workGroupUserList = json?.results;
 	};
 
 	const joinGroup = async () => {

@@ -41,7 +41,7 @@
 		console.log(res, 'Group List');
 
 		if (!res.ok) return;
-		else return json.results;
+		else return json?.results;
 	};
 
 	const redirect = async () => {
@@ -79,7 +79,7 @@
 
 		if (!res.ok) return;
 
-		workGroupsStore.set(json.results);
+		workGroupsStore.set(json?.results);
 	};
 
 	const checkSessionExpiration = () => {
@@ -103,23 +103,29 @@
 		// )
 		// 	return;
 
+		console.log('MEEE2');
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/users?user_id=${localStorage.getItem('userId')}`
 		);
-		if (!res.ok) return;
-		groupUserStore.set(json.results[0]);
+		
+		if (!res.ok || json?.results.length === 0) {
+			groupUserStore.set(null);
+			history.back();
+			return;
+		}
+
+		groupUserStore.set(json?.results[0]);
 	};
 
 	const setUserGroupPermissionInfo = async () => {
 		if (!$page.params.groupId) return;
-		console.log("HERE PATH CHANGE");
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/permissions?id=${$groupUserStore?.permission_id}`
 		);
 		if (!res.ok) return;
-		const permissionInfo = json.results ? json.results[0] : null;
+		const permissionInfo = json?.results ? json?.results[0] : null;
 		console.log('HERE WHERE I SHOULD BE', permissionInfo);
 
 		groupUserPermissionStore.set(permissionInfo);
@@ -134,7 +140,7 @@
 
 		const { res, json } = await fetchRequest('GET', `users?id=${localStorage.getItem('userId')}`);
 		if (!res.ok) return;
-		userStore.set(json.results[0]);
+		userStore.set(json?.results[0]);
 	};
 
 	beforeNavigate(() => {
@@ -144,21 +150,19 @@
 	$: if ($page.url.pathname && isBrowser) onPathChange();
 
 	const onPathChange = async () => {
-		
 		redirect();
 		getWorkingGroupList();
 		showUI = shouldShowUI();
-		
+
 		setTimeout(() => {
 			const html = document.getElementById(`poll-thumbnail-${scrolledY}`);
 			html?.scrollIntoView();
 		}, 200);
-		
+
 		checkSessionExpiration();
 		setUserInfo();
 		await setUserGroupInfo();
 		setUserGroupPermissionInfo();
-
 	};
 
 	//Initialize Translation, which should happen before any lifecycle hooks.

@@ -19,7 +19,7 @@
 			'GET',
 			`group/${$page.params.groupId}/permissions?limit=${permissionsLimit}`
 		);
-		roles = json.results;
+		roles = json?.results;
 	};
 
 	const getUsers = async () => {
@@ -27,7 +27,7 @@
 			'GET',
 			`group/${$page.params.groupId}/users?limit=${permissionsLimit}`
 		);
-		users = json.results;
+		users = json?.results;
 	};
 
 	const updateUserRoles = async (roleId: number, userId: number) => {

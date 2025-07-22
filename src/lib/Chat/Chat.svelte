@@ -161,8 +161,8 @@
 		</div>
 	</Button>
 
-	<div class="flex w-full gap-6 max-w-[1200px] h-[85vh] overflow-y-auto">
-		<div class="bg-white w-[40%] flex-grow my-8 ml-6 dark:bg-darkobject p-2">
+	<div class="flex w-full gap-6 max-w-[1200px] h-[85vh]">
+		<div class="bg-white w-[40%] overflow-y-auto flex-grow my-8 ml-6 dark:bg-darkobject p-2">
 			{#key creatingGroup}
 				<Preview
 					bind:selectedChat

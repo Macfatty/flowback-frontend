@@ -52,7 +52,7 @@
 			return;
 		}
 
-		workGroups = json.results;
+		workGroups = json?.results;
 	};
 
 	const createWorkingGroup = async () => {
@@ -98,7 +98,7 @@
 
 			if (!res.ok) return;
 
-			if (json.results[0]) invites.push(json.results[0]);
+			if (json?.results[0]) invites.push(json?.results[0]);
 			invites = invites;
 		});
 	};

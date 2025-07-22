@@ -145,8 +145,8 @@
 
 		show = true;
 		showMessage = $_('Edited Comment');
-		const index = comments.findIndex((comment) => comment.id === id);
-		let comment = comments.find((comment) => comment.id === id);
+		const index = comments?.findIndex((comment) => comment.id === id);
+		let comment = comments?.find((comment) => comment.id === id);
 		if (comment) {
 			comment.message = message;
 			comments.splice(index, 1, comment);
@@ -195,7 +195,7 @@
 		class:!block={recentlyTappedButton === '#'}
 	>
 		{#if proposals?.length > 0}
-			<div class="max-h-48 overflow-y-auto">
+			<div class="max-h-30 overflow-y-auto">
 				<div class="px-4 py-2 font-semibold text-sm text-gray-600 border-b border-gray-200">
 					{$_('All proposals')}
 				</div>

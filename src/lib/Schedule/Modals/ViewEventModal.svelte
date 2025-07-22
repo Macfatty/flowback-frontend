@@ -65,6 +65,14 @@
 					</p>
 				{/if} -->
 			{/if}
+
+			{#if selectedEvent.reminders?.length}
+				<p>
+					<strong class="text-gray-700 dark:text-gray-300">{$_('Reminders')}:</strong>
+					{selectedEvent.reminders.map((time) => `${time} seconds`).join(', ')}
+				</p>
+			{/if}
+
 			<div class="flex justify-end gap-2 mt-4">
 				<button
 					on:click={() => (showEvent = false)}

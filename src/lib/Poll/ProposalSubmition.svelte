@@ -92,7 +92,7 @@
 			`group/${$page.params.groupId}/users?user_id=${Number(localStorage.getItem('userId'))}`
 		);
 		if (!res.ok) return;
-		return json.results[0].id;
+		return json?.results[0].id;
 	};
 
 	const cancelSubmission = () => {

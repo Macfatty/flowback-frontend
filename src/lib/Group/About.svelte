@@ -17,7 +17,7 @@
 			'GET',
 			`group/${$page.params.groupId}/users?user_id=${creatorId}`
 		);
-		if (res.ok) creator = json.results[0];
+		if (res.ok) creator = json?.results[0];
 	};
 </script>
 

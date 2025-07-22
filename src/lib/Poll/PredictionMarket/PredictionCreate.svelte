@@ -50,7 +50,7 @@
 		);
 
 		loading = false;
-		bets = json.results;
+		bets = json?.results;
 	};
 
 	const createPredictionStatement = async () => {

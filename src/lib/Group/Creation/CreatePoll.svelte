@@ -41,7 +41,7 @@
 		delegate_vote_end_date = new Date(),
 		vote_end_date = new Date(),
 		end_date = new Date(),
-		isPublic = true,
+		isPublic = false,
 		loading = false,
 		advancedTimeSettings = false,
 		daysBetweenPhases = 1,
@@ -68,7 +68,7 @@
 	const getGroupTags = async () => {
 		const { res, json } = await fetchRequest('GET', `group/${groupId}/tags`);
 		if (res.ok) {
-			tags = json.results;
+			tags = json?.results;
 		}
 	};
 
@@ -178,7 +178,7 @@
 		const { res, json } = await fetchRequest('GET', `group/${groupId}/list`);
 
 		if (!res.ok) return;
-		workGroups = json.results;
+		workGroups = json?.results;
 		workGroups = workGroups.filter((workGroup) => workGroup.joined);
 	};
 

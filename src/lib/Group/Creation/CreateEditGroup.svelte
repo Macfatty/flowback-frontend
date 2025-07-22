@@ -17,7 +17,6 @@
 	import { goto } from '$app/navigation';
 	import { becomeMemberOfGroup } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
 	import { env } from '$env/dynamic/public';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
 
@@ -116,7 +115,7 @@
 		if (oldGroup.image) image = oldGroup.image;
 		if (oldGroup.cover_image) coverImage = oldGroup.coverImage;
 
-		errorHandler.addPopup({ message: 'Successfully reverted edits', success: true })
+		errorHandler.addPopup({ message: 'Successfully reverted edits', success: true });
 	};
 
 	onMount(() => {
@@ -125,7 +124,9 @@
 		}
 	});
 
-	$: console.log(oldGroup?.image, 'oldGroup.image', image, 'image');
+	$: if (!publicGroup) {
+		useInvite = true;
+	}
 </script>
 
 <svelte:head>
@@ -143,21 +144,22 @@
 			{/if}
 
 			<TextInput label="Title" bind:value={name} required />
-			<TextArea label="Description" bind:value={description} inputClass="whitespace-pre-wrap"/>
+			<TextArea label="Description" bind:value={description} inputClass="whitespace-pre-wrap" />
 
 			<FIleUpload icon={faUser} isProfile bind:imageString={image} label="Upload Image" />
 			<FIleUpload icon={faFileImage} bind:imageString={coverImage} label="Upload Banner" />
 
 			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
 				<RadioButtons
-					bind:Yes={useInvite}
-					label={'Invitation Required?'}
-					Class="flex items-center justify-between gap-3 w-full"
-				/>
-				<RadioButtons
 					bind:Yes={publicGroup}
 					label={'Public?'}
 					Class="flex items-center justify-between gap-3 w-full"
+				/>
+				<RadioButtons
+					bind:Yes={useInvite}
+					label={'Invitation Required?'}
+					Class="flex items-center justify-between gap-3 w-full"
+					dislabed={!publicGroup}
 				/>
 				<RadioButtons
 					bind:Yes={hiddenGroup}
@@ -194,10 +196,11 @@
 						<div slot="body">{$_('Are you sure you want to delete this group?')}</div>
 						<div slot="footer">
 							<div class="flex justify-center gap-2">
-								<Button onClick={deleteGroup} Class="w-1/2" buttonStyle="warning">{$_('Yes')}</Button>
-								<Button
-									onClick={() => (DeleteGroupModalShow = false)}
-									Class="bg-gray-400 w-1/2">{$_('Cancel')}</Button
+								<Button onClick={deleteGroup} Class="w-1/2" buttonStyle="warning"
+									>{$_('Yes')}</Button
+								>
+								<Button onClick={() => (DeleteGroupModalShow = false)} Class="bg-gray-400 w-1/2"
+									>{$_('Cancel')}</Button
 								>
 							</div>
 						</div>
@@ -209,10 +212,8 @@
 					>
 				{/if}
 				{#if !groupToEdit && !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
-					<Button
-						buttonStyle="warning-light"
-						Class="w-1/2"
-						onClick={() => (goto(`/groups`))}>{$_('Cancel')}</Button
+					<Button buttonStyle="warning-light" Class="w-1/2" onClick={() => goto(`/groups`)}
+						>{$_('Cancel')}</Button
 					>
 				{/if}
 			</div>

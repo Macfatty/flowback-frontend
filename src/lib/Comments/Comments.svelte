@@ -26,7 +26,7 @@
 	const setUpComments = async () => {
 		const { comments, next } = await getComments(getId(), api, offset, sortBy, searchString);
 
-		comments.forEach((comment: comment) => {
+		comments?.forEach((comment: comment) => {
 			comment.reply_depth = getCommentDepth(comment, comments);
 		});
 

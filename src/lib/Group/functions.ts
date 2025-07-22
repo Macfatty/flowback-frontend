@@ -13,11 +13,11 @@ export const getTags = async (
 		'GET',
 		`group/${groupId}/tags?limit=${tagLimit}&${params}`
 	);
-	tags = json.results;
+	tags = json?.results;
 
 	if (res.ok && sort) {
 		//Sorts tags alphabetically
-		tags = json.results.sort((tag1: Tag, tag2: Tag) => tag1.name.localeCompare(tag2.name));
+		tags = json?.results.sort((tag1: Tag, tag2: Tag) => tag1.name.localeCompare(tag2.name));
 	}
 
 	// else if (!res.ok) {

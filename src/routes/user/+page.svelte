@@ -93,7 +93,7 @@
 			errorHandler.addPopup({ message: 'Could not fetch user', success: false });
 			return;
 		}
-		user = isUser ? json : json.results[0];
+		user = isUser ? json : json?.results[0];
 		userEdit = user;
 
 		if (userEdit.bio === null) userEdit.bio = '';

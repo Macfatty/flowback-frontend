@@ -157,7 +157,7 @@
 		loading = true;
 		const { json } = await fetchRequest('GET', `group/${groupId}/tags?limit=${9999}`);
 		loading = false;
-		tags = json.results;
+		tags = json?.results;
 		selectedTag = tags[0];
 	};
 

@@ -27,7 +27,7 @@ export interface timeProposal {
 export interface poll {
 	attachments: { file: string }[];
 	allow_fast_forward: boolean;
-	created_by: number;
+	created_by: GroupUser;
 	created_at: number;
 	description: string;
 	dynamic: boolean;

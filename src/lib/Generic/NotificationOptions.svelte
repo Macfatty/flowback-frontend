@@ -49,14 +49,14 @@
 
 	const getNotifications = async () => {
 		const { res, json } = await fetchRequest('GET', 'notification/subscription');
-		notifications = json.results.filter(
+		notifications = json?.results.filter(
 			(notificationObject: any) => notificationObject.channel_sender_id === id
 		);
 	};
 
 	const getNotificationList = async () => {
 		const { res, json } = await fetchRequest('GET', 'notification/list');
-		// notifications = json.results.filter(
+		// notifications = json?.results.filter(
 		// 	(notificationObject: any) => notificationObject.channel_sender_id === id
 		// );
 	};

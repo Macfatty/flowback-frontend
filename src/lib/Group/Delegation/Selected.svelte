@@ -57,7 +57,7 @@
 			return [];
 		}
 
-		return json.results;
+		return json?.results;
 	};
 
 	const setTagList = async () => {
@@ -66,7 +66,7 @@
 			'GET',
 			`group/${$page.params.groupId}/tags?limit=${delegationLimit}`
 		);
-		tags = json.results.map(({ active, ...args }: any) => args);
+		tags = json?.results.map(({ active, ...args }: any) => args);
 		loading = false;
 	};
 
@@ -77,7 +77,7 @@
 			`group/${$page.params.groupId}/users?limit=${delegationLimit}&is_delegate=true`
 		);
 		loading = false;
-		return json.results;
+		return json?.results;
 	};
 
 	const getDelegationPools = async () => {
@@ -86,7 +86,7 @@
 			`group/${$page.params.groupId}/delegate/pools?limit=${delegationLimit}`
 		);
 
-		return json.results;
+		return json?.results;
 	};
 
 	const setDelegators = async () => {

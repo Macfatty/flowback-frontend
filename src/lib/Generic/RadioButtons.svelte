@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n';
-	export let Yes: boolean = true, label:string, centering = false, Class=""
+	export let Yes: boolean = true, label:string, centering = false, Class="", dislabed = false;
 </script>
 
-<fieldset class={Class}>
+<fieldset class={Class} disabled={dislabed}>
 	<p class="text-left">{$_(label)}</p>
 	<div class={`${centering && "flex justify-center gap-2"}`}>
         <label>

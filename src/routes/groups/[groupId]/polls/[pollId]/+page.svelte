@@ -58,9 +58,9 @@
 			return;
 		}
 
-		poll = json.results[0];
-		pollType = json.results[0].poll_type;
-		finished = new Date(json.results[0].end_date) < new Date();
+		poll = json?.results[0];
+		pollType = json?.results[0].poll_type;
+		finished = new Date(json?.results[0].end_date) < new Date();
 	};
 
 	const scrollToSection = () => {
@@ -90,7 +90,7 @@
 			return;
 		}
 
-		predictionStatementsStore.set(json.results);
+		predictionStatementsStore.set(json?.results);
 	};
 
 	// When fast forwarding from area phase to proposal phase, get tag info in real time

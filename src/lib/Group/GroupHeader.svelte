@@ -11,7 +11,7 @@
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import Button from '$lib/Generic/Button.svelte';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-	import Description from '$lib/Poll/Description.svelte';
+	import { goto } from '$app/navigation';
 
 	export let selectedPage: SelectablePage, group: GroupDetails, memberCount: number;
 
@@ -38,7 +38,7 @@
 
 			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
 				<Button
-					onClick={() => history.back()}
+					onClick={() => goto(`/groups`)}
 					Class="absolute left-0 top-0 p-3 m-4 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90"
 				>
 					<div class="text-gray-800 dark:text-gray-200">

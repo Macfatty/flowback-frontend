@@ -31,8 +31,8 @@
 		const { json, res } = await fetchRequest('GET', `group/poll/pool/votes?group_id=${history}&include_details=true`);
 		loading = false;
 		if (res.ok) {
-			votingHistory = json.results;
-			filteredVotingHistory = [...json.results];
+			votingHistory = json?.results;
+			filteredVotingHistory = [...json?.results];
 			sortVoteHistory();
 		}
 	};
@@ -43,7 +43,7 @@
 			`group/${$page.params.groupId || groupId}/delegate/pools?id=${history}`
 		);
 
-		delegatePool = json.results[0];
+		delegatePool = json?.results[0];
 	};
 	
 	const sortVoteHistory = () => {

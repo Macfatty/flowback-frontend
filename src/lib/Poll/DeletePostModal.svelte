@@ -33,11 +33,12 @@
 			return;
 		}
 
+		errorHandler.addPopup({
+			message: post_type === 'poll' ? 'Successfully deleted poll' : 'Successfully deleted thread',
+			success: true
+		});
 
-		// If looking at thread and poll thumbnails
-		console.log($page.params.threadId, $page.params.pollId, postId, "IDs", postId);
-		
-		if ($page.params.threadId === postId || $page.params.pollId === postId) {
+		if (Number($page.params.threadId) === Number(postId) || Number($page.params.pollId) === Number(postId)) {
 			// If the current page is the one being deleted, redirect to the group page
 			goto(`/groups/${$page.params.groupId}?page=flow`);
 			return;
@@ -48,10 +49,7 @@
 			});
 		}
 
-		errorHandler.addPopup({ message: 'Poll deleted successfully', success: true });
-
 		deleteModalShow = false;
-		
 	};
 </script>
 

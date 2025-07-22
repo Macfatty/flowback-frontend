@@ -39,7 +39,7 @@
 
 		if (!res.ok) return;
 
-		delegates = json.results.map((delegatePool: any) => {
+		delegates = json?.results.map((delegatePool: any) => {
 			return { ...delegatePool.delegates[0].group_user, pool_id: delegatePool.id };
 		});
 
@@ -121,7 +121,7 @@
 			return [];
 		}
 
-		return json.results;
+		return json?.results;
 	};
 
 	const setDelegators = async () => {

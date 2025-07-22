@@ -60,7 +60,7 @@
 			'GET',
 			`group/${$page.params.groupId}/users?limit=${groupMembersLimit}`
 		);
-		users = json.results;
+		users = json?.results;
 		loading = false;
 	};
 
@@ -73,7 +73,7 @@
 		}
 
 		const { json } = await fetchRequest('GET', `users?username=${username}`);
-		searchedInvitationUsers = json.results;
+		searchedInvitationUsers = json?.results;
 	};
 
 	const searchUsers = async (username: string) => {
@@ -89,8 +89,8 @@
 			`group/${$page.params.groupId}/users?limit=${groupMembersLimit}&username__icontains=${username}`
 		);
 
-		searchedInvitationUsers = json.results;
-		searchedUsers = json.results;
+		searchedInvitationUsers = json?.results;
+		searchedUsers = json?.results;
 		
 		// Apply sorting based on sortOrder (always sort)
 		if (sortOrder === 'a-z') {
@@ -106,7 +106,7 @@
 
 	const getInvitesList = async () => {
 		const { res, json } = await fetchRequest('GET', `group/${$page.params.groupId}/invites`);
-		if (res.ok) usersAskingForInvite = json.results;
+		if (res.ok) usersAskingForInvite = json?.results;
 		// else poppup = { message: "Couldn't get invites list", success: false };
 	};
 
@@ -167,7 +167,7 @@
 
 		if (!res.ok) return;
 
-		delegates = json.results.map((delegatePool: any) => {
+		delegates = json?.results.map((delegatePool: any) => {
 			return { ...delegatePool.delegates[0].group_user, pool_id: delegatePool.id };
 		});
 	};

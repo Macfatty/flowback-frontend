@@ -70,7 +70,7 @@
 
 		const { res, json } = await fetchRequest('GET', api);
 		if (!res.ok) status = statusMessageFormatter(res, json);
-		return json.results || [];
+		return json?.results || [];
 	};
 
 	const getKanbanEntriesHome = async () => {
@@ -81,7 +81,7 @@
 		const { res, json } = await fetchRequest('GET', api);
 
 		if (!res.ok) status = statusMessageFormatter(res, json);
-		kanbanEntries = json.results || [];
+		kanbanEntries = json?.results || [];
 	};
 
 	const getGroupUsers = async () => {
@@ -89,7 +89,7 @@
 
 		const { json, res } = await fetchRequest('GET', api);
 		if (!res.ok) return [];
-		return json.results;
+		return json?.results;
 	};
 
 	const getWorkGroupList = async () => {
@@ -98,7 +98,7 @@
 		console.log(res, json, 'HI');
 
 		if (!res.ok) return;
-		workGroups = json.results.filter((group: WorkGroup) => group.joined === true);
+		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
 	};
 
 	const removeKanbanEntry = (id: number) => {

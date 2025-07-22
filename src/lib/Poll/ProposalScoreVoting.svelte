@@ -49,7 +49,7 @@
 
 		if (!res.ok) return;
 
-		proposals = json.results;
+		proposals = json?.results;
 	};
 
 	const getVotes = async () => {
@@ -61,7 +61,7 @@
 		if (!json?.results || json?.results?.length === 0) return;
 
 		voting = voting.map((vote) => ({
-			score: (vote.score = json.results.find(
+			score: (vote.score = json?.results.find(
 				(score: { score: number; proposal: number }) => score.proposal === vote.proposal
 			).raw_score),
 			proposal: vote.proposal
@@ -81,7 +81,7 @@
 			return;
 		}
 
-		delegateVoting = json.results[0]?.vote.map((vote: any) => ({
+		delegateVoting = json?.results[0]?.vote.map((vote: any) => ({
 			score: vote.raw_score,
 			proposal: vote.proposal_id
 		}));

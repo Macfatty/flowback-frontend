@@ -88,7 +88,7 @@
 		let api = `group/${groupId}/users?limit=100`;
 		const { json, res } = await fetchRequest('GET', api);
 		if (!res.ok) return [];
-		return json.results;
+		return json?.results;
 	};
 
 	const fetchMembers = async () => {

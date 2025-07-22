@@ -13,7 +13,6 @@
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import DeletePollModal from '$lib/Poll/DeletePostModal.svelte';
 	import ReportPollModal from '$lib/Poll/ReportPollModal.svelte';
 	import DeletePostModal from '$lib/Poll/DeletePostModal.svelte';
 
@@ -37,7 +36,7 @@
 			return;
 		}
 
-		thread = json.results[0];
+		thread = json?.results[0];
 		if (thread?.description === null) thread.description = '';
 	};
 
