@@ -17,7 +17,7 @@
 	import NewDescription from './NewDescription.svelte';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import ReportPollModal from './ReportPollModal.svelte';
+	import ReportPostModal from './ReportPostModal.svelte';
 	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 	import DeletePostModal from './DeletePostModal.svelte';
 
@@ -139,7 +139,7 @@
 
 <DeletePostModal bind:deleteModalShow={deletePollModalShow} postId={$page.params.pollId} />
 
-<ReportPollModal
+<ReportPostModal
 	post_type="poll"
 	group_id={poll.group_id}
 	post_id={poll.id}

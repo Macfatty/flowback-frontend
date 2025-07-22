@@ -18,7 +18,7 @@
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { groupUserStore, type Thread } from '$lib/Group/interface';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import ReportPollModal from './ReportPollModal.svelte';
+	import ReportPostModal from './ReportPostModal.svelte';
 	import DeletePostModal from './DeletePostModal.svelte';
 	import { env } from '$env/dynamic/public';
 	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
@@ -165,7 +165,7 @@
 
 	<a
 		class="break-words cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
-		href={`/groups/${thread?.created_by?.group_id}/thread/${thread?.id}`}>{thread?.title}</a
+		href={`/groups/${thread?.group_id}/thread/${thread?.id}`}>{thread?.title}</a
 	>
 
 	<div>
@@ -197,7 +197,7 @@
 		>
 			<a
 				class="text-black dark:text-darkmodeText flex justify-center gap-1"
-				href={`groups/${thread?.created_by?.group_id}/thread/${thread?.id}`}
+				href={`groups/${thread?.group_id}/thread/${thread?.id}`}
 			>
 				<img class="w-5" src={ChatIcon} alt="open chat" />
 				<span class="inline">{thread?.total_comments} {'comments'}</span>
@@ -224,9 +224,9 @@
 </div>
 
 <!-- TODO: Fix so group id is correct -->
-<ReportPollModal
+<ReportPostModal
 	post_type="thread"
-	group_id={$page.params.groupId}
+	group_id={thread?.group_id}
 	post_id={thread?.id}
 	bind:reportModalShow
 />

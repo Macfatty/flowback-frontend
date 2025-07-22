@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Button from '$lib/Generic/Button.svelte';
-	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import { groupUserStore } from '$lib/Group/interface';
 	import type { Phase } from './interface';
@@ -112,10 +111,10 @@
 					class="dark:text-black absolute -top-6 z-30 text-sm bg-white px-1 py-0.5 rounded shadow -translate-x-1/2"
 					style="left: {(currentSnapPosition / maxScore) * 100}%"
 				>
-					{#if $groupUserStore?.delegate_pool_id}
-						{currentSnapPosition}
-					{:else}
+					{#if phase === 'prediction_bet'}
 						{currentSnapPosition * 20}%
+					{:else}
+						{currentSnapPosition}
 					{/if}
 				</div>
 			{/if}

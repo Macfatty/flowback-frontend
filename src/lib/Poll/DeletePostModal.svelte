@@ -32,7 +32,7 @@
 			});
 			return;
 		}
-
+		
 		errorHandler.addPopup({
 			message: post_type === 'poll' ? 'Successfully deleted poll' : 'Successfully deleted thread',
 			success: true

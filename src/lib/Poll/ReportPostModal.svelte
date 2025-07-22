@@ -11,7 +11,7 @@
 	export let reportModalShow = false,
 		post_type: 'poll' | 'thread' = 'poll',
 		group_id: string | number = '',
-		post_id: string | number = '';		
+		post_id: string | number = '';
 
 	let title: string,
 		description: string,
@@ -30,6 +30,15 @@
 			group_id
 		};
 
+		if (description === '') {
+			errorHandler.addPopup({
+				message: 'Description is required',
+				success: false
+			});
+			loading = false;
+			return;
+		}
+
 		const { res, json } = await fetchRequest('POST', _api, data);
 
 		loading = false;
@@ -43,15 +52,14 @@
 		}
 
 		errorHandler.addPopup({
-			message: 'Poll reported successfully.',
+			message:
+				post_type === 'poll' ? 'Poll reported successfully.' : 'Thread reported successfully.',
 			success: true
 		});
 		reportModalShow = false;
 		title = '';
 		description = '';
 	};
-
-	
 </script>
 
 <Modal bind:open={reportModalShow} Class="max-w-[500px]">

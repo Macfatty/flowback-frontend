@@ -53,20 +53,15 @@
 			event_id: editedEvent.event_id
 		};
 
-		if (toSend.meeting_link === '') {
-			delete toSend.meeting_link;
-		}
+		if (toSend.meeting_link === '') delete toSend.meeting_link;
 
-		if (toSend.description === '') {
-			delete toSend.description;
-		}
-
+		if (toSend.description === '') delete toSend.description;
 
 		const { res } = await fetchRequest('POST', `user/schedule/update`, toSend);
 
 		loading = false;
 
-		if (!res.ok) {			
+		if (!res.ok) {
 			errorHandler.addPopup({ message: 'Failed to update event', success: false });
 			return;
 		}

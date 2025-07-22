@@ -33,7 +33,7 @@
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import Timeline from './NewDesign/Timeline.svelte';
-	import ReportPollModal from './ReportPollModal.svelte';
+	import ReportPostModal from './ReportPostModal.svelte';
 	import type { Permissions } from '$lib/Group/Permissions/interface';
 	import { groupUserStore } from '$lib/Group/interface';
 	import DeletePostModal from './DeletePostModal.svelte';
@@ -449,7 +449,7 @@
 
 <DeletePostModal bind:deleteModalShow={deletePollModalShow} postId={poll?.id} />
 
-<ReportPollModal
+<ReportPostModal
 	post_type="poll"
 	group_id={poll.group_id}
 	post_id={poll.id}
