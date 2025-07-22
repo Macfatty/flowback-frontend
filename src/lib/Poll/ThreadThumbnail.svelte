@@ -226,7 +226,7 @@
 <!-- TODO: Fix so group id is correct -->
 <ReportPostModal
 	post_type="thread"
-	group_id={thread.group_id}
+	group_id={thread?.group_id}
 	post_id={thread?.id}
 	bind:reportModalShow
 />

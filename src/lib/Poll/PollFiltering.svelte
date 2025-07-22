@@ -6,7 +6,7 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import type { Tag } from '$lib/Group/interface';
+	import { groupUserStore, type Tag } from '$lib/Group/interface';
 	import { homePolls as homePollsLimit } from '../Generic/APILimits.json';
 	import Select from '$lib/Generic/Select.svelte';
 	import CheckboxButtons from '$lib/Generic/CheckboxButtons.svelte';
@@ -176,30 +176,32 @@
 			onChange={handleContentTypeChange}
 			Class="flex items-center"
 		/>
+		
+		{#if groupId}
+			<div class="flex flex-row gap-2 items-center">
+				<label class="block text-md whitespace-nowrap" for="work-group">
+					{$_('Work Group')}:
+				</label>
+				<select
+					style="width:100%"
+					class="rounded p-1 dark:border-gray-600 dark:bg-darkobject font-semibold"
+					on:input={(e) => {
+						//@ts-ignore
+						onWorkGroupChange(e?.target?.value);
+						handleSearch();
+					}}
+					id="work-group"
+				>
+					<option class="w-5" value={null}> {$_('All')} </option>
 
-		<div class="flex flex-row gap-2 items-center">
-			<label class="block text-md whitespace-nowrap" for="work-group">
-				{$_('Work Group')}:
-			</label>
-			<select
-				style="width:100%"
-				class="rounded p-1 dark:border-gray-600 dark:bg-darkobject font-semibold"
-				on:input={(e) => {
-					//@ts-ignore
-					onWorkGroupChange(e?.target?.value);
-					handleSearch();
-				}}
-				id="work-group"
-			>
-				<option class="w-5" value={null}> {$_('All')} </option>
-
-				{#each workGroups as group}
-					<option class="w-5" value={group.id}>
-						{elipsis(group.name)}
-					</option>
-				{/each}
-			</select>
-		</div>
+					{#each workGroups as group}
+						<option class="w-5" value={group.id}>
+							{elipsis(group.name)}
+						</option>
+					{/each}
+				</select>
+			</div>
+		{/if}
 
 		<div class="rounded p-1">
 			<Button
