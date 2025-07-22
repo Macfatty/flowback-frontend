@@ -13,7 +13,7 @@
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import ReportPollModal from '$lib/Poll/ReportPollModal.svelte';
+	import ReportPostModal from '$lib/Poll/ReportPostModal.svelte';
 	import DeletePostModal from '$lib/Poll/DeletePostModal.svelte';
 
 	let thread: Thread,
@@ -112,7 +112,7 @@
 
 <ErrorHandler bind:this={errorHandler} />
 
-<ReportPollModal
+<ReportPostModal
 	post_type="thread"
 	group_id={$page.params.groupId}
 	post_id={thread?.id}
