@@ -365,7 +365,7 @@
 						work_group: undefined,
 						assignee_ids: [],
 						reminders: [],
-						repeat_frequency: 1
+						repeat_frequency: 0
 					};
 					showCreateScheduleEvent = true;
 					selectedEvent.start_date = formatDateToLocalTime(selectedDate).slice(0, 16);
