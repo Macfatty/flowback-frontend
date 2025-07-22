@@ -145,7 +145,7 @@
 					disableTextOnHover
 					icon={faPeopleArrows}
 					text={'Delegations'}
-					href="automate"
+					href="delegations"
 					bind:selectedHref
 				/>
 			{/if}
