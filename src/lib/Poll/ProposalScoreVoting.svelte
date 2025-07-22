@@ -175,8 +175,8 @@
 										else if (phase === 'vote') vote();
 									}}
 									disabled={(phase === 'delegate_vote' &&
-										$groupUserStore.delegate_pool_id === null) ||
-										(phase === 'vote' && $groupUserStore.delegate_pool_id !== null)}
+										$groupUserStore?.delegate_pool_id === null) ||
+										(phase === 'vote' && $groupUserStore?.delegate_pool_id !== null)}
 									{score}
 									delegateScore={delegateVoting?.find((vote) => vote.proposal === proposal.id)
 										?.score}
