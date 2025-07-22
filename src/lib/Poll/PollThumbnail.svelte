@@ -7,6 +7,7 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { _ } from 'svelte-i18n';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
+	import DefaultPFP from '$lib/assets/abstract-user-flat-4.svg';
 	import { onMount } from 'svelte';
 	import { getPhase, getPhaseUserFriendlyNameWithNumber, nextPhase } from './functions';
 	import DefaultBanner from '$lib/assets/default_banner_group.png';
@@ -30,7 +31,6 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import DeletePollModal from './DeletePostModal.svelte';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import Timeline from './NewDesign/Timeline.svelte';
 	import ReportPollModal from './ReportPollModal.svelte';
@@ -89,7 +89,8 @@
 
 		if (!res.ok) return;
 
-		let selectedTagName = json?.results.find((tag: Tag) => tag.user_vote === true)?.tags[0].tag_name;
+		let selectedTagName = json?.results.find((tag: Tag) => tag.user_vote === true)?.tags[0]
+			.tag_name;
 
 		if (selectedTagName) {
 			selectedTag = tags?.find((tag) => tag.name === selectedTagName)?.id || 0;
@@ -192,6 +193,21 @@
 				{poll?.title}
 			</a>
 		{:else}
+			<div class="text-black dark:text-darkmodeText flex items-center">
+				<img
+					class="h-6 w-6 mr-1 rounded-full break-all"
+					src={`${
+						poll.created_by?.user?.profile_image
+							? env.PUBLIC_API_URL + poll?.created_by?.user?.profile_image
+							: DefaultPFP
+					}`}
+					alt={'poll Thumbnail'}
+					on:error={(e) => onThumbnailError(e, DefaultPFP)}
+				/>
+				<span class="break-all text-sm text-gray-700 dark:text-darkmodeText"
+					>{poll?.created_by?.user?.username}</span
+				>
+			</div>
 			<div class="flex justify-between items-start gap-4 pb-2">
 				<a
 					class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"
