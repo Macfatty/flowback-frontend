@@ -64,9 +64,6 @@
 		}
 
 		thread.user_vote = vote;
-
-		//TODO: Make this more efficient by not having to reload threads.
-		// getThreads();
 	};
 
 	//When adminn presses the pin tack symbol, pin the thread

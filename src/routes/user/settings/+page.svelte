@@ -287,6 +287,8 @@
 								<span>{report?.description}</span>
 							</a>
 						{/each}
+						{:else}
+						{$_('There are currently no reports')}
 					{/if}
 				{/if}
 			</ul>
