@@ -74,7 +74,7 @@
 		<!-- Active bar -->
 		<div
 			class="absolute top-0 left-0 h-full"
-			style="width: {lineWidth}%; background-color: {isOverridden ? '#a78bfa' : '#BBBBBB'};"
+			style="width: {lineWidth}%; background-color: {true ? '#a78bfa' : '#BBBBBB'};"
 		/>
 
 		{#each snapPoints as point, index}
