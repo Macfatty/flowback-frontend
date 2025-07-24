@@ -186,24 +186,13 @@
 		console.log('once');
 
 		ErrorHandlerStore.subscribe((_errorhandler) => {
-			console.log(errorhandler, 'Error Handler Initialized');
-			// errorhandler = _errorhandler;
+			if (!_errorhandler) return;
+			if (_errorhandler.message === '') return;
 
 			errorhandler.addPopup({
 				message: _errorhandler.message,
 				success: _errorhandler.success
 			});
-			// errorhandler.addPopup({
-			// 	message: 'Error Handler Initialized',
-			// 	success: true
-			// });
-
-			// if (errorHandler) {
-			// 	errorHandler.addPopup({
-			// 		message: 'Error Handler Initialized',
-			// 		success: true
-			// 	});
-			// }
 		});
 	});
 </script>
