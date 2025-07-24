@@ -12,17 +12,22 @@
 	// Function to add new popup to queue
 	export function addPopup(popup: poppup) {
 		const id = popupId++; // Increment ID immediately
-		
-		popupQueue.update(queue => {
+
+		if ($popupQueue.length >= 5) {
+			// If queue is full, remove the oldest popup
+			popupQueue.update((queue) => queue.slice(1));
+		}
+
+		popupQueue.update((queue) => {
 			const newPopup = { ...popup, show: false, id };
 			return [...queue, newPopup];
 		});
 
 		// Trigger animation for the new popup
 		setTimeout(() => {
-			popupQueue.update(queue => {
+			popupQueue.update((queue) => {
 				const newQueue = [...queue];
-				const index = newQueue.findIndex(p => p.id === id);
+				const index = newQueue.findIndex((p) => p.id === id);
 				if (index === -1) {
 					console.warn('Popup not found for ID:', id); // Debug log
 					return queue;
@@ -33,9 +38,9 @@
 
 			// Remove popup after display duration
 			setTimeout(() => {
-				popupQueue.update(queue => {
+				popupQueue.update((queue) => {
 					const newQueue = [...queue];
-					const index = newQueue.findIndex(p => p.id === id);
+					const index = newQueue.findIndex((p) => p.id === id);
 					if (index === -1) {
 						console.warn('Popup not found for removal, ID:', id); // Debug log
 						return queue;
@@ -43,8 +48,8 @@
 					newQueue[index].show = false;
 					// Remove after transition
 					setTimeout(() => {
-						popupQueue.update(q => {
-							const newQueue = q.filter(p => p.id !== id);
+						popupQueue.update((q) => {
+							const newQueue = q.filter((p) => p.id !== id);
 							console.log('Removed popup with ID:', id, 'New queue:', newQueue); // Debug log
 							return newQueue;
 						});
