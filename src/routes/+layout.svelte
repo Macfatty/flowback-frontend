@@ -121,17 +121,47 @@
 	};
 
 	const setUserGroupPermissionInfo = async () => {
-		
 		if (!$page.params.groupId) return;
+
+		if ($groupUserStore?.is_admin) {
+			const permissionInfo = {
+				allow_delegate: true,
+				allow_vote: true,
+				ban_members: true,
+				create_kanban_task: true,
+				create_poll: true,
+				create_proposal: true,
+				delete_kanban_task: true,
+				delete_proposal: true,
+				force_delete_comment: true,
+				force_delete_poll: true,
+				force_delete_proposal: true,
+				id: 0,
+				invite_user: true,
+				kick_members: true,
+				poll_fast_forward: true,
+				poll_quorum: true,
+				prediction_bet_create: true,
+				prediction_bet_delete: true,
+				prediction_bet_update: true,
+				prediction_statement_create: true,
+				prediction_statement_delete: true,
+				role_name: 'Admin',
+				send_group_email: true,
+				update_kanban_task: true,
+				update_proposal: true
+			};
+
+			groupUserPermissionStore.set(permissionInfo);
+			return;
+		}
+
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/permissions?id=${$groupUserStore?.permission_id}`
 		);
-		console.log(res, json, "HIII", $groupUserStore);
-		
 		if (!res.ok) return;
 		const permissionInfo = json?.results ? json?.results[0] : null;
-
 		groupUserPermissionStore.set(permissionInfo);
 	};
 
@@ -191,8 +221,8 @@
 			if (!_errorhandler) return;
 			if (_errorhandler.message === '') return;
 
-			console.log("ONCE");
-			
+			console.log('ONCE');
+
 			errorhandler.addPopup({
 				message: _errorhandler.message,
 				success: _errorhandler.success

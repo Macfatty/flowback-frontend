@@ -24,17 +24,6 @@ export interface User {
 	user_id: number;
 }
 
-export interface GroupUser {
-	group_image: string;
-	group_name: string;
-	id: number;
-	is_admin: boolean;
-	delegate_pool_id: boolean;
-	permission_id: number | null;
-	permission_name: string;
-	user: { banner_image: string; id: number; profile_image: string; username: string };
-}
-
 export interface DelegatePools {
 	data: [
 		{
@@ -97,7 +86,7 @@ export interface Tag {
 	imac: number;
 }
 
-export interface groupUser {
+export interface GroupUser {
 	user: {
 		id: number;
 		username: string;
@@ -114,13 +103,15 @@ export interface groupUser {
 	group_name: string;
 	group_image: string;
 	delegate_pool_id: null | number;
+	role_name?: string;
+	role_id?: number;
 	id: number;
 	work_groups: any[];
 }
 
 export type SelectablePages = 'Members' | 'Pending Invites' | 'Invite';
 
-export const groupUserStore = writable<groupUser | null>({
+export const groupUserStore = writable<GroupUser | null>({
 	user: {
 		id: 0,
 		username: '',
