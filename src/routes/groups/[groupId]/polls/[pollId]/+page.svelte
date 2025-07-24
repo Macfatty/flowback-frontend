@@ -102,7 +102,7 @@
 	}
 </script>
 
-<Layout centered>
+<Layout centered bind:errorHandler>
 	{#if poll}
 		{#if pollType === 4}
 			<PollHeader {poll} bind:phase displayTag={phase !== 'area_vote' && phase !== 'pre_start'} />

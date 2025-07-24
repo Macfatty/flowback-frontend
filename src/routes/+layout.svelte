@@ -13,13 +13,16 @@
 	import { workGroupsStore } from '$lib/Group/WorkingGroups/interface';
 	import LogBackInModal from '$lib/Generic/LogBackInModal.svelte';
 	import { userStore } from '$lib/User/interfaces';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	export const prerender = true;
 
 	let showUI = false,
 		scrolledY = '',
 		openLoginModal = false,
-		isBrowser = false;
+		isBrowser = false,
+		errorhandler: any;
 
 	const shouldShowUI = () => {
 		let pathname = window?.location?.pathname;
@@ -103,12 +106,11 @@
 		// )
 		// 	return;
 
-		console.log('MEEE2');
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/users?user_id=${localStorage.getItem('userId')}`
 		);
-		
+
 		if (!res.ok || json?.results.length === 0) {
 			groupUserStore.set(null);
 			history.back();
@@ -180,6 +182,29 @@
 		}, 200);
 
 		checkSessionExpiration();
+
+		console.log('once');
+
+		ErrorHandlerStore.subscribe((_errorhandler) => {
+			console.log(errorhandler, 'Error Handler Initialized');
+			// errorhandler = _errorhandler;
+
+			errorhandler.addPopup({
+				message: _errorhandler.message,
+				success: _errorhandler.success
+			});
+			// errorhandler.addPopup({
+			// 	message: 'Error Handler Initialized',
+			// 	success: true
+			// });
+
+			// if (errorHandler) {
+			// 	errorHandler.addPopup({
+			// 		message: 'Error Handler Initialized',
+			// 		success: true
+			// 	});
+			// }
+		});
 	});
 </script>
 
@@ -196,6 +221,8 @@
 </div>
 
 <LogBackInModal bind:open={openLoginModal} />
+
+<ErrorHandler bind:this={errorhandler} />
 
 <style>
 	#mobile-support {

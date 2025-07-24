@@ -1,8 +1,12 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import Cookies from './Cookies.svelte';
 	import { TriggerDarkMode } from './DarkMode';
-	export let centered = false, Class = ""
+	import ErrorHandler from './ErrorHandler.svelte';
+
+	export let centered = false,
+		Class = '',
+		errorHandler: any = null;
 
 	onMount(() => {
 		TriggerDarkMode();
@@ -14,3 +18,5 @@
 </div>
 
 <Cookies />
+
+<ErrorHandler bind:this={errorHandler} />

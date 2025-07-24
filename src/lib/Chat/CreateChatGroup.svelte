@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
-	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { _ } from 'svelte-i18n';
 	import type { GroupMembers } from './interfaces';
 	import Poppup from '$lib/Generic/Poppup.svelte';
