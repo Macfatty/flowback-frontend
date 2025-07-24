@@ -10,7 +10,6 @@
 	import { _ } from 'svelte-i18n';
 	import Comments from '$lib/Comments/Comments.svelte';
 	import Layout from '$lib/Generic/Layout.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
 	import ReportPostModal from '$lib/Poll/ReportPostModal.svelte';
@@ -40,16 +39,7 @@
 		if (thread?.description === null) thread.description = '';
 	};
 
-	const deleteThread = async () => {
-		const { res, json } = await fetchRequest('POST', `group/thread/${thread?.id}/delete`);
 
-		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not delete thread', success: false });
-			return;
-		}
-
-		errorHandler.addPopup({ message: 'Thread deleted successfully', success: true });
-	};
 </script>
 
 <Layout centered>
@@ -109,8 +99,6 @@
 
 	<Comments api={'thread'} Class="w-full max-w-[1000px] bg-white dark:bg-darkobject p-6 mt-6" />
 </Layout>
-
-<ErrorHandler bind:this={errorHandler} />
 
 <ReportPostModal
 	post_type="thread"

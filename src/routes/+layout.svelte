@@ -13,18 +13,21 @@
 	import { workGroupsStore } from '$lib/Group/WorkingGroups/interface';
 	import LogBackInModal from '$lib/Generic/LogBackInModal.svelte';
 	import { userStore } from '$lib/User/interfaces';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	export const prerender = true;
 
 	let showUI = false,
 		scrolledY = '',
 		openLoginModal = false,
-		isBrowser = false;
+		isBrowser = false,
+		errorhandler: any;
 
 	const shouldShowUI = () => {
 		let pathname = window?.location?.pathname;
 
-		if (pathname === '/login') return false;
+		if (pathname.includes('/login')) return false;
 		else if (pathname === '/') return false;
 		else if (
 			window.localStorage.getItem('token') === undefined ||
@@ -51,15 +54,15 @@
 
 		let pathname = window?.location?.pathname;
 
-		const sessionExpirationTime = window.localStorage.getItem('sessionExpirationTime');
+		const sessionExpirationTime = window.localStorage.getItem('sessionExpirationTime');		
 		if (
 			sessionExpirationTime &&
-			relativePath !== '/login' &&
+			!relativePath.includes('/login') &&
 			sessionExpirationTime < new Date().getTime().toString()
 		) {
 			localStorage.removeItem('token');
 			goto('/login');
-		} else if (!window.localStorage.getItem('token') && relativePath !== '/login') goto('/login');
+		} else if (!window.localStorage.getItem('token') && !relativePath.includes('/login')) goto('/login');
 		else if (
 			//For one group flowback, if no group has been setup, redirect to create group.
 			env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' &&
@@ -103,12 +106,11 @@
 		// )
 		// 	return;
 
-		console.log('MEEE2');
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/users?user_id=${localStorage.getItem('userId')}`
 		);
-		
+
 		if (!res.ok || json?.results.length === 0) {
 			groupUserStore.set(null);
 			history.back();
@@ -120,14 +122,46 @@
 
 	const setUserGroupPermissionInfo = async () => {
 		if (!$page.params.groupId) return;
+
+		if ($groupUserStore?.is_admin) {
+			const permissionInfo = {
+				allow_delegate: true,
+				allow_vote: true,
+				ban_members: true,
+				create_kanban_task: true,
+				create_poll: true,
+				create_proposal: true,
+				delete_kanban_task: true,
+				delete_proposal: true,
+				force_delete_comment: true,
+				force_delete_poll: true,
+				force_delete_proposal: true,
+				id: 0,
+				invite_user: true,
+				kick_members: true,
+				poll_fast_forward: true,
+				poll_quorum: true,
+				prediction_bet_create: true,
+				prediction_bet_delete: true,
+				prediction_bet_update: true,
+				prediction_statement_create: true,
+				prediction_statement_delete: true,
+				role_name: 'Admin',
+				send_group_email: true,
+				update_kanban_task: true,
+				update_proposal: true
+			};
+
+			groupUserPermissionStore.set(permissionInfo);
+			return;
+		}
+
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/permissions?id=${$groupUserStore?.permission_id}`
 		);
 		if (!res.ok) return;
 		const permissionInfo = json?.results ? json?.results[0] : null;
-		console.log('HERE WHERE I SHOULD BE', permissionInfo);
-
 		groupUserPermissionStore.set(permissionInfo);
 	};
 
@@ -180,6 +214,20 @@
 		}, 200);
 
 		checkSessionExpiration();
+
+		console.log('once');
+
+		ErrorHandlerStore.subscribe((_errorhandler) => {
+			if (!_errorhandler) return;
+			if (_errorhandler.message === '') return;
+
+			console.log('ONCE');
+
+			errorhandler.addPopup({
+				message: _errorhandler.message,
+				success: _errorhandler.success
+			});
+		});
 	});
 </script>
 
@@ -196,6 +244,8 @@
 </div>
 
 <LogBackInModal bind:open={openLoginModal} />
+
+<ErrorHandler bind:this={errorhandler} />
 
 <style>
 	#mobile-support {

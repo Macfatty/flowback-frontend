@@ -20,7 +20,8 @@
 		if (location.pathname === '/login') return;
 		const { json, res } = await fetchRequest(
 			'GET',
-			`notification/list?order_by=timestamp_desc&limit=${notificationLimit}`
+			`notification/list`
+			//?order_by=timestamp_desc&limit=${notificationLimit}
 		);
 		if (res.ok) notifications = json?.results;
 	};

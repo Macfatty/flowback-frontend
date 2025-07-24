@@ -7,7 +7,7 @@
 	import { onMount } from 'svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import VotingSlider from './VotingSlider.svelte';
-	import { groupUserStore } from '$lib/Group/interface';
+	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 
 	export let proposals: proposal[],
 		selectedProposal: proposal | null = null,
@@ -176,7 +176,7 @@
 									}}
 									disabled={(phase === 'delegate_vote' &&
 										$groupUserStore?.delegate_pool_id === null) ||
-										(phase === 'vote' && $groupUserStore?.delegate_pool_id !== null)}
+										(phase === 'vote' && !$groupUserPermissionStore?.allow_vote)}
 									{score}
 									delegateScore={delegateVoting?.find((vote) => vote.proposal === proposal.id)
 										?.score}

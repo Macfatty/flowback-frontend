@@ -52,7 +52,7 @@
 		},
 		reports: report[] = [],
 		serverConfig: any = {},
-		version = '0.2.15';
+		version = '0.2.16';
 
 	const userUpdate = async () => {
 		const { res, json } = await fetchRequest('POST', 'user/update', {
@@ -287,6 +287,8 @@
 								<span>{report?.description}</span>
 							</a>
 						{/each}
+						{:else}
+						{$_('There are currently no reports')}
 					{/if}
 				{/if}
 			</ul>

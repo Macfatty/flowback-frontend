@@ -8,6 +8,7 @@
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { posts } from './stores';
 	import Loader from '$lib/Generic/Loader.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	export let deleteModalShow = false,
 		postId: string | number,
@@ -26,19 +27,23 @@
 		loading = false;
 
 		if (!res.ok) {
-			errorHandler.addPopup({
+			$ErrorHandlerStore = {
 				message: post_type === 'poll' ? 'Could not delete poll' : 'Could not delete thread',
 				success: false
-			});
+			};
+
 			return;
 		}
-		
-		errorHandler.addPopup({
+
+		$ErrorHandlerStore = {
 			message: post_type === 'poll' ? 'Successfully deleted poll' : 'Successfully deleted thread',
 			success: true
-		});
+		};
 
-		if (Number($page.params.threadId) === Number(postId) || Number($page.params.pollId) === Number(postId)) {
+		if (
+			Number($page.params.threadId) === Number(postId) ||
+			Number($page.params.pollId) === Number(postId)
+		) {
 			// If the current page is the one being deleted, redirect to the group page
 			goto(`/groups/${$page.params.groupId}?page=flow`);
 			return;

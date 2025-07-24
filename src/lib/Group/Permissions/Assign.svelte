@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
+	import { _ } from 'svelte-i18n';
 	import { page } from '$app/stores';
-	import type { Permission } from './interface';
-	import type { groupUser, User } from '../interface';
+	import type { GroupUser } from '../interface';
 	import Tag from '../Tag.svelte';
 	import Fa from 'svelte-fa';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
@@ -11,8 +11,8 @@
 	import { permissions as permissionsLimit } from '../../Generic/APILimits.json';
 	import Button from '$lib/Generic/Button.svelte';
 
-	let roles: Permission[] = [];
-	let users: groupUser[] = [];
+	let roles: GroupUser[] = [];
+	let users: GroupUser[] = [];
 
 	const getRoleList = async () => {
 		const { res, json } = await fetchRequest(
@@ -30,10 +30,11 @@
 		users = json?.results;
 	};
 
-	const updateUserRoles = async (roleId: number, userId: number) => {
+	const updateUserRoles = async (roleId: number, userId: number, is_admin: boolean) => {
 		const { json } = await fetchRequest('POST', `group/${$page.params.groupId}/user/update`, {
 			target_user_id: userId,
-			permission: roleId
+			permission: roleId,
+			is_admin
 		});
 
 		//@ts-ignore
@@ -43,9 +44,7 @@
 		users = users;
 	};
 
-	const makeAdmin = async (user: User) => {
-		console.log(user.user_id, 'user.user_id');
-
+	const makeAdmin = async (user: GroupUser) => {
 		const { json } = await fetchRequest('POST', `group/${$page.params.groupId}/user/update`, {
 			target_user_id: user.id,
 			is_admin: true
@@ -73,6 +72,11 @@
 				</div>
 				<div class="ml-6 flex gap-2 flex-wrap mt-4">
 					<Tag tag={{ active: true, id: 1, name: user.permission_name }} imac={false} />
+					{#if user?.is_admin}
+						<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700 mr-2">
+							{$_('Admin')}
+						</div>
+					{/if}
 				</div>
 				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
@@ -84,7 +88,7 @@
 					<Fa icon={faPlus} size="lg" />
 				</div>
 				<!-- {@debug user} -->
-				<Button onClick={() => makeAdmin(user)}>Make admin</Button>
+				<Button onClick={() => makeAdmin(user)}>{$_('Make admin')}</Button>
 			</div>
 			<div
 				class="p-6 mt-6 shadow rounded border border-gray-200 z-50 right-5"
@@ -97,7 +101,7 @@
 						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 						<li
 							class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4"
-							on:click={() => updateUserRoles(role.id, user.user.id)}
+							on:click={() => updateUserRoles(role.id, user.user.id, user.is_admin)}
 							on:keydown
 						>
 							<Tag

@@ -12,9 +12,7 @@
 	import { groupMembers as groupMembersLimit } from '../Generic/APILimits.json';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { env } from '$env/dynamic/public';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import {
-		faMagnifyingGlass,
 		faPaperPlane,
 		faRunning,
 		faUserPlus
@@ -30,7 +28,6 @@
 	let users: GroupUser[] = [],
 		usersAskingForInvite: any[] = [],
 		loading = true,
-		selectedPage: SelectablePages = 'Members',
 		searchUserQuery = '',
 		searchInvitationQuery = '',
 		searchedInvitationUsers: User[] = [],

@@ -29,7 +29,7 @@
 		coverImage: string,
 		useInvite = false,
 		publicGroup = true,
-		hiddenGroup = false,
+		hiddenGroup = true,
 		loading = false,
 		errorHandler: any,
 		oldGroup: any;

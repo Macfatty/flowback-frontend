@@ -1,10 +1,10 @@
 import { fetchRequest } from '$lib/FetchRequest';
 import type { User } from '$lib/User/interfaces';
 import { writable } from 'svelte/store';
-import { groupUserStore, type groupUser } from '$lib/Group/interface';
+import { groupUserStore, type GroupUser } from '$lib/Group/interface';
 import type { Permissions } from '$lib/Group/Permissions/interface';
 
-let groupUserInfo: groupUser | null = null;
+let groupUserInfo: GroupUser | null = null;
 
 groupUserStore.subscribe((value) => {
 	groupUserInfo = value;
@@ -55,7 +55,7 @@ export const onThumbnailError = (event: any, picture: string) => {
 interface UserInfo {
 	user: User;
 	permission?: Permissions;
-	groupuser?: groupUser;
+	groupuser?: GroupUser;
 	groupId?: number;
 }
 

@@ -1,8 +1,10 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import Cookies from './Cookies.svelte';
 	import { TriggerDarkMode } from './DarkMode';
-	export let centered = false, Class = ""
+
+	export let centered = false,
+		Class = '';
 
 	onMount(() => {
 		TriggerDarkMode();

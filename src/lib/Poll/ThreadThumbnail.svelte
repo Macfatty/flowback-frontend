@@ -64,9 +64,6 @@
 		}
 
 		thread.user_vote = vote;
-
-		//TODO: Make this more efficient by not having to reload threads.
-		// getThreads();
 	};
 
 	//When adminn presses the pin tack symbol, pin the thread
@@ -107,7 +104,7 @@
 			>
 				<img
 					class="h-6 w-6 mr-1 rounded-full break-all"
-					src={`${env.PUBLIC_API_URL}${thread?.group_image}`}
+					src={`${thread?.group_image ? `${env.PUBLIC_API_URL}${thread?.group_image}` : DefaultBanner}`}
 					alt={'thread Thumbnail'}
 					on:error={(e) => onThumbnailError(e, DefaultBanner)}
 				/>
@@ -115,14 +112,16 @@
 					>{thread?.group_name}</span
 				>
 			</a>
-			{:else}
-			 <div
-				class="text-black dark:text-darkmodeText flex items-center"
-			>
-			<!-- if group doesn't hide displaying creators -->
+		{:else}
+			<div class="text-black dark:text-darkmodeText flex items-center">
+				<!-- TODO: add "if group doesn't hide displaying creators" condition -->
 				<img
 					class="h-6 w-6 mr-1 rounded-full break-all"
-					src={`${thread?.created_by?.user?.profile_image ? env.PUBLIC_API_URL + thread?.created_by?.user?.profile_image : DefaultPFP}`}
+					src={`${
+						thread?.created_by?.user?.profile_image
+							? `${env.PUBLIC_API_URL}${thread?.created_by?.user?.profile_image}`
+							: DefaultPFP
+					}`}
 					alt={'thread Thumbnail'}
 					on:error={(e) => onThumbnailError(e, DefaultPFP)}
 				/>
