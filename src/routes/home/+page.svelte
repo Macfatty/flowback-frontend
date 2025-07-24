@@ -4,8 +4,6 @@
 	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import Layout from '$lib/Generic/Layout.svelte';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
-	import type { poll } from '$lib/Poll/interface';
-	import PollThumbnails from '$lib/Poll/PollThumbnails.svelte';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import { homePolls as homePollsLimit } from '$lib/Generic/APILimits.json';
