@@ -65,17 +65,18 @@
 
 		//For one group flowback, immediately join the list of groups
 		if (env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') {
-			const joinGroup = async () => {
-				const { res } = await fetchRequest('POST', `group/1/join`, { to: 1 });
-				if (res.ok) {
-					if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE')
-						becomeMemberOfGroup(group.blockchain_id);
+			const { res } = await fetchRequest('POST', `group/1/join`, { to: 1 });
+			if (!res.ok) return;
 
-					goto('/home');
-				}
-			};
-			//If multi-group flowback, just go to the list of groups
-		} else goto('/groups');
+			if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') becomeMemberOfGroup(group.blockchain_id);
+
+			goto('/home');
+
+			return;
+		}
+
+		//If multi-group flowback, just go to the list of groups
+		goto('/groups');
 	};
 
 	const getVerificationCodeFromURL = () => {
