@@ -189,6 +189,8 @@
 			if (!_errorhandler) return;
 			if (_errorhandler.message === '') return;
 
+			console.log("ONCE");
+			
 			errorhandler.addPopup({
 				message: _errorhandler.message,
 				success: _errorhandler.success
