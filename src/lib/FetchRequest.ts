@@ -23,7 +23,7 @@ export async function fetchRequest(
 		const relativePath = new URL(location.href).pathname;
 
 		if (token !== null) headers.Authorization = 'Token ' + (localStorage.getItem('token') || '');
-		else if (relativePath !== '/login') goto('/login');
+		else if (!relativePath.includes('/login')) goto('/login');
 	}
 
 	if (needs_json) {
@@ -46,7 +46,7 @@ export async function fetchRequest(
 	);
 
 	const relativePath = new URL(location.href).pathname;
-	if (res.status === 401 && relativePath !== '/login') {
+	if (res.status === 401 && !relativePath.includes('/login')) {
 		localStorage.clear();
 		goto('/login')
 	}

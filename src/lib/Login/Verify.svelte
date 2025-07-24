@@ -81,6 +81,15 @@
 				status = { message: json.detail.non_field_errors[0], success: false };
 		}
 	}
+
+	const getVerificationCodeFromURL = () => {
+		const urlParams = new URLSearchParams(window.location.search);
+		verification_code = urlParams.get('verification_code') || '';
+	};
+
+	onMount(() => {
+		getVerificationCodeFromURL();
+	})
 </script>
 
 <Loader bind:loading>
