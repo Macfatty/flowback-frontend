@@ -30,10 +30,12 @@
 		users = json?.results;
 	};
 
-	const updateUserRoles = async (roleId: number, userId: number) => {
+	const updateUserRoles = async (roleId: number, userId: number, is_admin:boolean) => {
 		const { json } = await fetchRequest('POST', `group/${$page.params.groupId}/user/update`, {
 			target_user_id: userId,
-			permission: roleId
+			permission: roleId,
+			is_admin
+
 		});
 
 		//@ts-ignore
@@ -44,8 +46,6 @@
 	};
 
 	const makeAdmin = async (user: User) => {
-		console.log(user.user_id, 'user.user_id');
-
 		const { json } = await fetchRequest('POST', `group/${$page.params.groupId}/user/update`, {
 			target_user_id: user.id,
 			is_admin: true
@@ -97,7 +97,7 @@
 						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 						<li
 							class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4"
-							on:click={() => updateUserRoles(role.id, user.user.id)}
+							on:click={() => updateUserRoles(role.id, user.user.id, user.is_admin)}
 							on:keydown
 						>
 							<Tag

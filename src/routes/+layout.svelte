@@ -121,14 +121,16 @@
 	};
 
 	const setUserGroupPermissionInfo = async () => {
+		
 		if (!$page.params.groupId) return;
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/permissions?id=${$groupUserStore?.permission_id}`
 		);
+		console.log(res, json, "HIII", $groupUserStore);
+		
 		if (!res.ok) return;
 		const permissionInfo = json?.results ? json?.results[0] : null;
-		console.log('HERE WHERE I SHOULD BE', permissionInfo);
 
 		groupUserPermissionStore.set(permissionInfo);
 	};
