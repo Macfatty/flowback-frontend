@@ -13,7 +13,6 @@
 	import { workGroupsStore, type WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import { env } from '$env/dynamic/public';
 	import { updateUserData } from './functions';
-	import { concat } from 'ethers/lib/utils';
 
 	let groups: Group[] = [],
 		directs: any[] = [],
@@ -200,6 +199,11 @@
 		}
 	};
 
+	onMount(() => {
+		console.log(groups[0].name, "HELLO");
+		
+	})
+
 	$: groups = sort(groups, previewGroup);
 	$: directs = sort(directs, previewDirect);
 	$: if (selectedChatChannelId) updateChatTitle();
@@ -299,6 +303,8 @@
 					class:bg-purple-300={selectedPage === 'direct'}
 				/>
 			{/if}
+
+			{chatter}
 			<ProfilePicture
 				username={chatter?.name || chatter?.username}
 				profilePicture={chatter?.profile_image}
@@ -316,7 +322,7 @@
 				</span>
 			</div>
 		</button>
-		{#if selectedPage === 'direct' && creatingGroup}
+		{#if creatingGroup}
 			<div>
 				<Button
 					onClick={() => {
