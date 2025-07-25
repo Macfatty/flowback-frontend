@@ -1,6 +1,5 @@
 import type { Comment, proposal } from '$lib/Poll/interface';
 import { writable } from 'svelte/store';
-import type Comments from './Comments.svelte';
 
 function createCommentStore() {
     const { subscribe, set, update } = writable<{
