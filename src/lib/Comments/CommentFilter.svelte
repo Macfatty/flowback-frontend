@@ -21,8 +21,6 @@
 			const proposal = proposals.find((_proposal) => _proposal.id === proposalId);
 			if (proposal) commentsStore.filterByProposal(proposal);
 		});
-
-	console.log('Hello?', selectedProposals, $commentsStore);
 </script>
 
 <div class={Class}>

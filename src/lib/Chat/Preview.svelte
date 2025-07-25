@@ -2,7 +2,6 @@
 	import { type GroupMembers, type invite, type PreviewMessage } from './interfaces';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { Group } from '$lib/Group/interface';
-	import Tab from '$lib/Generic/Tab.svelte';
 	import { userStore } from '$lib/User/interfaces';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { onMount } from 'svelte';
@@ -14,6 +13,7 @@
 	import { workGroupsStore, type WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import { env } from '$env/dynamic/public';
 	import { updateUserData } from './functions';
+	import { concat } from 'ethers/lib/utils';
 
 	let groups: Group[] = [],
 		directs: any[] = [],
@@ -28,10 +28,6 @@
 		previewGroup: PreviewMessage[] = [],
 		inviteList: invite[] = [],
 		groupMembers: GroupMembers[] = [];
-
-	// Reactive variables to track unread messages
-	$: hasUnreadDirect = previewDirect.some((p) => p.notified);
-	$: hasUnreadGroup = previewGroup.some((p) => p.notified);
 
 	// Fetch and set up preview messages
 	const setUpPreview = async () => {
@@ -209,23 +205,6 @@
 	$: if (selectedChatChannelId) updateChatTitle();
 </script>
 
-<div class="col-start-1 col-end-2 row-start-1 row-end-2 dark:bg-darkobject">
-	<div class="flex gap-2 relative">
-		<Tab
-			Class=""
-			bind:selectedPage
-			tabs={['direct', 'group']}
-			displayNames={['Direct', 'Groups']}
-		/>
-		{#if hasUnreadDirect}
-			<span class="absolute top-0 left-0 p-1 rounded-full bg-purple-300" style="left: 50px;" />
-		{/if}
-		{#if hasUnreadGroup}
-			<span class="absolute top-0 left-0 p-1 rounded-full bg-blue-300" style="left: 120px;" />
-		{/if}
-	</div>
-</div>
-
 <div class="max-h-[100%]">
 	<div class="border-b-2 w-full">
 		<TextInput
@@ -237,7 +216,7 @@
 		/>
 	</div>
 
-	{#if selectedPage === 'direct' && inviteList}
+	{#if inviteList}
 		{#each inviteList as groupChat}
 			{#if !groupChat.rejected && groupChat?.title?.split(',')?.length > 2}
 				{#if groupChat.rejected === null}
@@ -269,7 +248,7 @@
 		{/each}
 	{/if}
 
-	{#each previewDirect as previewObject}
+	<!-- {#each previewDirect as previewObject}
 		{#if selectedPage === 'direct' && previewObject?.channel_title?.split(',')?.length > 2 && previewObject.target_id}
 			<button
 				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
@@ -296,80 +275,76 @@
 				</div>
 			</button>
 		{/if}
-	{/each}
+	{/each} -->
 
-	{#each selectedPage === 'direct' ? directs : env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? workGroupList : groups as chatter (chatter.id)}
-		{#if (selectedPage === 'group' && chatter.joined) || (selectedPage === 'direct' && chatter.id !== Number(localStorage.getItem('userId')))}
-			{@const previewObject =
-				selectedPage === 'direct'
-					? previewDirect.find((direct) => direct.channel_id === chatter.channel_id)
-					: previewGroup.find((group) => group.channel_id === chatter.chat_id)}
-			<button
-				class:hidden={selectedPage === 'direct'
-					? !chatter.username.toLowerCase().includes(chatSearch.toLowerCase())
-					: !chatter.name.toLowerCase().includes(chatSearch.toLowerCase())}
-				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
-				class:bg-gray-200={selectedChat === (chatter.channel_id || chatter.chat_id)}
-				class:dark:bg-gray-700={selectedChat === (chatter.channel_id || chatter.chat_id)}
-				on:click={() =>
-					clickedChatter(selectedPage === 'direct' ? chatter.channel_id : chatter.chat_id)}
-			>
-				{#if previewObject?.notified}
-					<div
-						class="p-1 rounded-full"
-						class:bg-blue-300={selectedPage === 'group'}
-						class:bg-purple-300={selectedPage === 'direct'}
-					/>
-				{/if}
-				<ProfilePicture
-					username={chatter.name || chatter.username}
-					profilePicture={chatter.profile_image}
+	{#each groups.concat(directs) as chatter, id (id)}
+		{@const previewObject =
+			selectedPage === 'direct'
+				? previewDirect.find((direct) => direct.channel_id === chatter?.channel_id)
+				: previewGroup.find((group) => group.channel_id === chatter?.chat_id)}
+		<button
+			class:hidden={selectedPage === 'direct'
+				? !chatter?.username?.toLowerCase().includes(chatSearch?.toLowerCase())
+				: !chatter?.name?.toLowerCase().includes(chatSearch?.toLowerCase())}
+			class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
+			class:bg-gray-200={selectedChat === (chatter?.channel_id || chatter?.chat_id)}
+			class:dark:bg-gray-700={selectedChat === (chatter?.channel_id || chatter?.chat_id)}
+			on:click={() =>
+				clickedChatter(selectedPage === 'direct' ? chatter?.channel_id : chatter?.chat_id)}
+		>
+			{#if previewObject?.notified}
+				<div
+					class="p-1 rounded-full"
+					class:bg-blue-300={selectedPage === 'group'}
+					class:bg-purple-300={selectedPage === 'direct'}
 				/>
-				<div class="flex flex-col max-w-[40%]">
-					<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
-						{chatter.name || chatter.username}
-					</span>
-					<span class="text-gray-400 text-sm truncate h-[20px] overflow-x-hidden max-w-[10%]">
-						{#if previewObject && previewObject.user && previewObject.message}
-							{previewObject.user.username}: {previewObject.message}
-						{:else}
-							{' '}
-						{/if}
-					</span>
-				</div>
-			</button>
-			{#if selectedPage === 'direct' && creatingGroup}
-				<div>
-					<Button
-						onClick={() => {
-							if (groupMembers.some((member) => member.id === chatter.id)) {
-								return;
-							}
-							const newMember = {
-								id: chatter.id,
-								username: chatter.username || chatter.name || 'Unknown',
-								profile_image: chatter.profile_image || null
-							};
-							groupMembers = [...groupMembers, newMember];
-						}}
-					>
-						{$_('Add User')}
-					</Button>
-				</div>
 			{/if}
+			<ProfilePicture
+				username={chatter?.name || chatter?.username}
+				profilePicture={chatter?.profile_image}
+			/>
+			<div class="flex flex-col max-w-[40%]">
+				<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
+					{chatter?.name || chatter?.username}
+				</span>
+				<span class="text-gray-400 text-sm truncate h-[20px] overflow-x-hidden max-w-[10%]">
+					{#if previewObject && previewObject.user && previewObject.message}
+						{previewObject.user.username}: {previewObject.message}
+					{:else}
+						{' '}
+					{/if}
+				</span>
+			</div>
+		</button>
+		{#if selectedPage === 'direct' && creatingGroup}
+			<div>
+				<Button
+					onClick={() => {
+						if (groupMembers.some((member) => member.id === chatter.id)) {
+							return;
+						}
+						const newMember = {
+							id: chatter.id,
+							username: chatter.username || chatter.name || 'Unknown',
+							profile_image: chatter.profile_image || null
+						};
+						groupMembers = [...groupMembers, newMember];
+					}}
+				>
+					{$_('Add User')}
+				</Button>
+			</div>
 		{/if}
 	{/each}
 
-	{#if selectedPage === 'group'}
-		<Button
-			Class="mt-4"
-			onClick={() => {
-				creatingGroup = true;
-				selectedPage = 'direct';
-				groupMembers = []; // Reset groupMembers
-			}}
-		>
-			{$_('+ New Group')}
-		</Button>
-	{/if}
+	<Button
+		Class="mt-4"
+		onClick={() => {
+			creatingGroup = true;
+			selectedPage = 'direct';
+			groupMembers = []; // Reset groupMembers
+		}}
+	>
+		{$_('+ New Group')}
+	</Button>
 </div>
