@@ -4,21 +4,25 @@
 	import type { proposal } from '$lib/Poll/interface';
 	import { _ } from 'svelte-i18n';
 	import { commentsStore } from './commentStore';
+	import Modal from '$lib/Generic/Modal.svelte';
+	import Button from '$lib/Generic/Button.svelte';
 
 	export let sortBy: string | null = null,
 		Class = '',
 		searchString: string = '',
 		proposals: proposal[] = [];
 
-	let selectedProposal: string | null = null;
+	let selectedProposals: number[] = [],
+		displayProposalsModal = false;
 
-	const handleProposalChange = (proposalId: string | null) => {
-		if (proposalId === null) {
-			commentsStore.filterByProposal(null);
-		} else {
-			commentsStore.filterByProposal(proposals.find((p) => p.id === Number(proposalId)) || null);
-		}
-	};
+	$: if (selectedProposals.length === 0) commentsStore.filterByProposal(null);
+	else
+		selectedProposals.forEach((proposalId) => {
+			const proposal = proposals.find((_proposal) => _proposal.id === proposalId);
+			if (proposal) commentsStore.filterByProposal(proposal);
+		});
+
+	console.log('Hello?', selectedProposals, $commentsStore);
 </script>
 
 <div class={Class}>
@@ -52,15 +56,24 @@
 			Class="border-0 font-semibold"
 		/>
 
-		{#if proposals.length > 0}
-			<Select
-				onInput={(e) => handleProposalChange(e?.target?.value)}
-				bind:value={selectedProposal}
-				innerLabel={null}
-				values={[null, ...proposals.map((proposal) => proposal.id)]}
-				labels={[$_('All proposals'), ...proposals.map((proposal) => proposal.title)]}
-				Class="border-0 font-semibold"
-			/>
-		{/if}
+		<Button onClick={() => (displayProposalsModal = true)} Class="ml-2">{$_("Filter by Proposal")}</Button>
 	</div>
 </div>
+
+<Modal bind:open={displayProposalsModal}>
+	<div slot="body">
+		<!-- Being able to select arbitrary numbers of proposals to filter on -->
+		{#each proposals as proposal}
+			<div class="flex items-center gap-2">
+				<input
+					type="checkbox"
+					name="proposals"
+					id={`${proposal.id}`}
+					value={proposal.id}
+					bind:group={selectedProposals}
+				/>
+				<label for={`proposal-${proposal.id}`}>{proposal.title}</label>
+			</div>
+		{/each}
+	</div>
+</Modal>
