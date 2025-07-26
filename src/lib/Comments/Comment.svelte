@@ -206,6 +206,9 @@
 							class="text-primary dark:text-secondary hover:underline"
 						>
 							{$_('View File')}
+
+							<!-- {typeof attachment?.file}
+							{attachment?.file} -->
 						</a>
 					{:else}
 						<img
@@ -218,6 +221,8 @@
 							})()}
 							alt="Attachment to the comment"
 						/>
+						<!-- {typeof attachment?.file}
+						{attachment?.file} -->
 					{/if}
 				{/each}
 			</div>

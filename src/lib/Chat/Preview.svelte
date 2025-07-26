@@ -199,10 +199,9 @@
 		}
 	};
 
-	onMount(() => {
-		console.log(groups[0].name, "HELLO");
-		
-	})
+	onMount(() => {});
+
+	$: if (groups) console.log(groups[0]?.name, 'HELLO');
 
 	$: groups = sort(groups, previewGroup);
 	$: directs = sort(directs, previewDirect);
@@ -230,11 +229,11 @@
 				{/if}
 				<button
 					class="w-full transition transition-color p-3 flex items-center gap-3 cursor-pointer dark:bg-darkobject"
-					class:bg-gray-200={selectedChat === groupChat.message_channel_id}
 					class:dark:bg-gray-700={selectedChat === groupChat.message_channel_id}
 					class:dark:hover:bg-darkbackground={groupChat.rejected === false}
 					class:hover:bg-gray-200={groupChat.rejected === false}
 					class:active:bg-gray-500={groupChat.rejected === false}
+					class:bg-gray-200={selectedChat === groupChat.message_channel_id}
 					on:click={() => {
 						if (groupChat.rejected === false) clickedChatter(groupChat.message_channel_id);
 					}}
@@ -243,6 +242,7 @@
 					<ProfilePicture username={groupChat.message_channel_name} profilePicture={null} />
 					<div class="flex flex-col max-w-[40%]">
 						<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
+							{groups[0]?.name}
 							{groupChat.message_channel_name}
 						</span>
 						<span class="text-gray-400 text-sm truncate h-[20px] overflow-x-hidden max-w-[10%]" />
@@ -281,20 +281,17 @@
 		{/if}
 	{/each} -->
 
-	{#each groups.concat(directs) as chatter, id (id)}
+	{#each directs.concat(groups) as chatter, id (id)}
 		{@const previewObject =
-			selectedPage === 'direct'
-				? previewDirect.find((direct) => direct.channel_id === chatter?.channel_id)
-				: previewGroup.find((group) => group.channel_id === chatter?.chat_id)}
+			previewDirect.find((direct) => direct.channel_id === chatter?.channel_id) ||
+			previewGroup.find((group) => group.channel_id === chatter?.chat_id)}
 		<button
-			class:hidden={selectedPage === 'direct'
-				? !chatter?.username?.toLowerCase().includes(chatSearch?.toLowerCase())
-				: !chatter?.name?.toLowerCase().includes(chatSearch?.toLowerCase())}
+			class:hidden={!chatter?.username?.toLowerCase().includes(chatSearch?.toLowerCase()) &&
+				!chatter?.name?.toLowerCase().includes(chatSearch?.toLowerCase())}
 			class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
 			class:bg-gray-200={selectedChat === (chatter?.channel_id || chatter?.chat_id)}
 			class:dark:bg-gray-700={selectedChat === (chatter?.channel_id || chatter?.chat_id)}
-			on:click={() =>
-				clickedChatter(selectedPage === 'direct' ? chatter?.channel_id : chatter?.chat_id)}
+			on:click={() => clickedChatter(chatter?.channel_id || chatter?.chat_id)}
 		>
 			{#if previewObject?.notified}
 				<div
@@ -304,7 +301,6 @@
 				/>
 			{/if}
 
-			{chatter}
 			<ProfilePicture
 				username={chatter?.name || chatter?.username}
 				profilePicture={chatter?.profile_image}
