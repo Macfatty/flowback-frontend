@@ -54,8 +54,8 @@
 		if (message !== '') formData.append('message', message);
 		if (parent_id) formData.append('parent_id', parent_id.toString());
 		if (files)
-			files.forEach((image) => {
-				formData.append('attachments', image);
+			files.forEach((file) => {
+				formData.append('attachments', file);
 			});
 
 		const { res, json } = await fetchRequest(
