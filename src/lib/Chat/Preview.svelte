@@ -292,7 +292,7 @@
 			class:bg-gray-200={selectedChat === (chatter?.channel_id || chatter?.chat_id)}
 			class:dark:bg-gray-700={selectedChat === (chatter?.channel_id || chatter?.chat_id)}
 			on:click={() =>
-				clickedChatter(selectedPage === 'direct' ? chatter?.channel_id : chatter?.chat_id)}
+				clickedChatter(chatter?.channel_id || chatter?.chat_id)}
 		>
 			{#if previewObject?.notified}
 				<div
@@ -302,7 +302,6 @@
 				/>
 			{/if}
 
-			{chatter}
 			<ProfilePicture
 				username={chatter?.name || chatter?.username}
 				profilePicture={chatter?.profile_image}
