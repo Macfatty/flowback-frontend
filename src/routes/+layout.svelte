@@ -215,13 +215,9 @@
 
 		checkSessionExpiration();
 
-		console.log('once');
-
 		ErrorHandlerStore.subscribe((_errorhandler) => {
 			if (!_errorhandler) return;
 			if (_errorhandler.message === '') return;
-
-			console.log('ONCE');
 
 			errorhandler.addPopup({
 				message: _errorhandler.message,

@@ -5,10 +5,9 @@
 	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
 	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
-	import {initializeLocalization} from '$lib/Localization/i18n'
 	import { goto } from '$app/navigation';
 
-	let status: StatusMessageInfo, initializedLocale = false;
+	let status: StatusMessageInfo;
 
 	const logIn = async (username: string, password: string) => {
 		const { res, json } = await fetchRequest(
@@ -35,12 +34,6 @@
 		}
 	};
 
-	const setUpLocale = () => {
-		// if (!initializedLocale)
-		// initializeLocalization();
-		// else initializedLocale = true;
-	}
-
 	onMount(async () => {
 		let params = new URLSearchParams(window.location.search);
 		const username = params.getAll('username')[0];
@@ -52,4 +45,5 @@
 <svelte:head>
 	<title>{$_('Welcome to Flowback')}</title>
 </svelte:head>
+
 <StatusMessage bind:status />
