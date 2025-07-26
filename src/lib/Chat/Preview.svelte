@@ -291,8 +291,7 @@
 			class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
 			class:bg-gray-200={selectedChat === (chatter?.channel_id || chatter?.chat_id)}
 			class:dark:bg-gray-700={selectedChat === (chatter?.channel_id || chatter?.chat_id)}
-			on:click={() =>
-				clickedChatter(chatter?.channel_id || chatter?.chat_id)}
+			on:click={() => clickedChatter(chatter?.channel_id || chatter?.chat_id)}
 		>
 			{#if previewObject?.notified}
 				<div

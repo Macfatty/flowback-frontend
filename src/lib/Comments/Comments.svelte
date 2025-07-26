@@ -69,7 +69,7 @@
 	</div>
 
 	<div class="flex flex-col gap-1 mt-2">
-		{#each $commentsStore.filteredComments as comment}
+		{#each $commentsStore?.filteredComments as comment}
 			<Comment {delegate_pool_id} {comment} {api} {proposals} />
 		{/each}
 		{#if showReadMore}
@@ -78,7 +78,9 @@
 	</div>
 
 	{#if $commentsStore.filteredComments.length === 0}
-		<div class="text-center mt-6 dark:text-darkmodeText">{$_('There are currently no comments')}</div>
+		<div class="text-center mt-6 dark:text-darkmodeText">
+			{$_('There are currently no comments')}
+		</div>
 	{/if}
 </div>
 

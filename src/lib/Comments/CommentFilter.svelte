@@ -54,24 +54,30 @@
 			Class="border-0 font-semibold"
 		/>
 
-		<Button onClick={() => (displayProposalsModal = true)} Class="ml-2">{$_("Filter by Proposal")}</Button>
+		{#if proposals?.length > 0}
+			<Button onClick={() => (displayProposalsModal = true)} Class="ml-2"
+				>{$_('Filter by Proposal')}</Button
+			>
+		{/if}
 	</div>
 </div>
 
-<Modal bind:open={displayProposalsModal}>
-	<div slot="body">
-		<!-- Being able to select arbitrary numbers of proposals to filter on -->
-		{#each proposals as proposal}
-			<div class="flex items-center gap-2">
-				<input
-					type="checkbox"
-					name="proposals"
-					id={`${proposal.id}`}
-					value={proposal.id}
-					bind:group={selectedProposals}
-				/>
-				<label for={`proposal-${proposal.id}`}>{proposal.title}</label>
-			</div>
-		{/each}
-	</div>
-</Modal>
+ {#if proposals}
+	<Modal bind:open={displayProposalsModal}>
+		<div slot="body">
+			<!-- Being able to select arbitrary numbers of proposals to filter on -->
+			{#each proposals as proposal}
+				<div class="flex items-center gap-2 mt-4">
+					<input
+						type="checkbox"
+						name="proposals"
+						id={`${proposal.id}`}
+						value={proposal.id}
+						bind:group={selectedProposals}
+					/>
+					<label class="text-left" for={`proposal-${proposal.id}`}>{proposal.title}</label>
+				</div>
+			{/each}
+		</div>
+	</Modal>
+{/if} 
