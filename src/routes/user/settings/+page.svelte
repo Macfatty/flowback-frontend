@@ -52,7 +52,7 @@
 		},
 		reports: report[] = [],
 		serverConfig: any = {},
-		version = '0.2.18';
+		version = '0.2.19';
 
 	const userUpdate = async () => {
 		const { res, json } = await fetchRequest('POST', 'user/update', {
@@ -281,13 +281,13 @@
 						{#each reports as report}
 							<a
 								href={`${linkToPost(report.post_id, report.group_id, report.post_type)}`}
-								class="flex justify-between p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+								class="flex justify-between p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" 
 							>
 								<span>{report?.title}</span>
 								<span>{report?.description}</span>
 							</a>
 						{/each}
-						{:else}
+					{:else}
 						{$_('There are currently no reports')}
 					{/if}
 				{/if}

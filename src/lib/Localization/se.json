@@ -699,5 +699,6 @@
     "Thread reported successfully.": "Tråden rapporterades framgångsrikt.",
     "There are currently no reports": "Det finns för närvarande inga rapporter",
     "Could not delete poll": "Kunde inte ta bort omröstning",
-    "Filter by Proposal":"Filtrera per förslag"
+    "Filter by Proposal":"Filtrera per förslag",
+    "wants to join": "Vill gå med"
 }

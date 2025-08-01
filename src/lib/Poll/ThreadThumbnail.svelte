@@ -104,7 +104,9 @@
 			>
 				<img
 					class="h-6 w-6 mr-1 rounded-full break-all"
-					src={`${thread?.group_image ? `${env.PUBLIC_API_URL}${thread?.group_image}` : DefaultBanner}`}
+					src={`${
+						thread?.group_image ? `${env.PUBLIC_API_URL}${thread?.group_image}` : DefaultBanner
+					}`}
 					alt={'thread Thumbnail'}
 					on:error={(e) => onThumbnailError(e, DefaultBanner)}
 				/>
@@ -112,7 +114,7 @@
 					>{thread?.group_name}</span
 				>
 			</a>
-		{:else}
+		{:else if thread?.created_by?.user}
 			<div class="text-black dark:text-darkmodeText flex items-center">
 				<!-- TODO: add "if group doesn't hide displaying creators" condition -->
 				<img

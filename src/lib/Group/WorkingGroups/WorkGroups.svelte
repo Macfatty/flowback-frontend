@@ -47,7 +47,7 @@
 			`group/${$page.params.groupId}/list?limit=100&name__icontains=${search}&order_by=name_asc`
 		);
 
-		if (!res.ok) {			
+		if (!res.ok) {
 			errorHandler.addPopup({ message: 'Could not fetch work groups', success: false });
 			return;
 		}
@@ -90,17 +90,15 @@
 
 	const getWorkGroupInvite = async () => {
 		invites = [];
-		workGroups.forEach(async (workGroup) => {
-			const { res, json } = await fetchRequest(
-				'GET',
-				`group/workgroup/${workGroup.id}/joinrequest/list`
-			);
 
-			if (!res.ok) return;
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/${$page.params.groupId}/workgroup/joinrequest/list`
+		);
 
-			if (json?.results[0]) invites.push(json?.results[0]);
-			invites = invites;
-		});
+		if (!res.ok) return;
+
+		invites = json.results;
 	};
 
 	const addUserToGroup = async (groupUserId: number, workGroupId: number) => {
@@ -139,7 +137,9 @@
 </script>
 
 <div class="flex items-center gap-3 mb-4">
-	<div class="bg-white text-black dark:text-darkmodeText dark:bg-darkobject p-4 shadow rounded flex-1 flex flex-col gap-2">
+	<div
+		class="bg-white text-black dark:text-darkmodeText dark:bg-darkobject p-4 shadow rounded flex-1 flex flex-col gap-2"
+	>
 		<span class="text-sm"
 			>{$_(
 				`Being a part of a work group means that you will join that work group's chat, have access to viewing and creating tasks, events, and posts assigned to that work group. Work groups have no individual pages.`
@@ -164,7 +164,7 @@
 
 <Loader bind:loading>
 	{#if $groupUserStore?.is_admin && invites?.length > 0}
-		<div class="flex flex-col gap-4 mt-4">
+		<div class="flex flex-col gap-4 mt-4 dark:text-darkmodeText">
 			{#each invites as invite}
 				<div
 					class="bg-white w-full px-4 py-2 flex gap-2 shadow rounded dark:bg-darkobject min-h-14"

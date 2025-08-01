@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { fetchRequest } from '$lib/FetchRequest';
-	import { onMount } from 'svelte';
 	import type { Tag } from './interface';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 
@@ -8,20 +6,6 @@
 		Class: string = '',
 		onclick = () => {},
 		displayImac: boolean = true;
-
-	//Interval Mean Absolute Correctness
-	const getMeanAbsoluteError = async () => {
-		if (!displayImac) return;
-
-		const { res, json } = await fetchRequest('GET', `group/tag/${tag.id}/imac`);
-		if (!res.ok) return;
-
-		tag.imac = json;
-	};
-
-	onMount(() => {
-		getMeanAbsoluteError();
-	});
 </script>
 
 <div class="flex">

@@ -193,21 +193,23 @@
 				{poll?.title}
 			</a>
 		{:else}
-			<div class="text-black dark:text-darkmodeText flex items-center">
-				<img
-					class="h-6 w-6 mr-1 rounded-full break-all"
-					src={`${
-						poll?.created_by?.user?.profile_image
-							? env.PUBLIC_API_URL + poll?.created_by?.user?.profile_image
-							: DefaultPFP
-					}`}
-					alt={'poll Thumbnail'}
-					on:error={(e) => onThumbnailError(e, DefaultPFP)}
-				/>
-				<span class="break-all text-sm text-gray-700 dark:text-darkmodeText"
-					>{poll?.created_by?.user?.username}</span
-				>
-			</div>
+			{#if poll?.created_by?.user}
+				<div class="text-black dark:text-darkmodeText flex items-center">
+					<img
+						class="h-6 w-6 mr-1 rounded-full break-all"
+						src={`${
+							poll?.created_by?.user?.profile_image
+								? env.PUBLIC_API_URL + poll?.created_by?.user?.profile_image
+								: DefaultPFP
+						}`}
+						alt={'poll Thumbnail'}
+						on:error={(e) => onThumbnailError(e, DefaultPFP)}
+					/>
+					<span class="break-all text-sm text-gray-700 dark:text-darkmodeText"
+						>{poll?.created_by?.user?.username}</span
+					>
+				</div>
+			{/if}
 			<div class="flex justify-between items-start gap-4 pb-2">
 				<a
 					class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"

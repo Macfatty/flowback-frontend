@@ -41,6 +41,13 @@ function createCommentStore() {
                         comment.message?.includes(`#${proposal.title.replaceAll(' ', '-')}`))
                     : store.allComments
             })),
+        filterByProposals: (proposals: proposal[] | null, mode: 'and' | 'or' = 'or') =>
+            update(store => ({
+                ...store,
+                filterProposals: proposals,
+                filterMode: mode,
+                filteredComments: applyFilters(store.allComments, proposals, mode)
+            })),
         getAll: () => {
             let allComments: Comment[] = [];
             update(store => {
@@ -84,6 +91,25 @@ function insertFilteredComments(comments: Comment[], newComment: Comment) {
     }
 
     return comments;
+}
+
+function applyFilters(
+    comments: Comment[],
+    proposals: proposal[] | null,
+    mode: 'and' | 'or'
+): Comment[] {
+    if (!proposals || proposals.length === 0) return comments;
+
+    const tags = proposals.map(p => `#${p.title.replaceAll(' ', '-')}`);
+
+    return comments.filter(comment => {
+        const msg = comment.message || '';
+        if (mode === 'or') {
+            return tags.some(tag => msg.includes(tag));
+        } else {
+            return tags.every(tag => msg.includes(tag));
+        }
+    });
 }
 
 export const commentsStore = createCommentStore();
