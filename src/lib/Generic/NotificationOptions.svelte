@@ -63,7 +63,7 @@
 
 	const notificationSubscription = async (category: string) => {
 		const { res, json } = await fetchRequest('POST', `${api}/notification/subscribe`, {
-			categories: [category]
+			tags: [category]
 		});
 		if (res.ok) {
 			notifications.push({
@@ -91,7 +91,7 @@
 
 	const groupSubcrube = async () => {
 		const { res, json } = await fetchRequest('POST', `group/${groupId}/notification/subscribe`, {
-			categories: ['group', 'group_user', 'kanban', 'poll', 'schedule_event', 'thread']
+			tags: ['group', 'group_user', 'kanban', 'poll', 'schedule_event', 'thread']
 		});
 	}
 
