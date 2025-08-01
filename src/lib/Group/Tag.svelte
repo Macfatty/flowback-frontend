@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { fetchRequest } from '$lib/FetchRequest';
-	import { onMount } from 'svelte';
 	import type { Tag } from './interface';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 
