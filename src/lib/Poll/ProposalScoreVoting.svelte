@@ -165,7 +165,10 @@
 							{proposal}
 						>
 							{#if phase === 'delegate_vote' || phase === 'vote'}
-								{@const score = voting?.find((vote) => vote.proposal === proposal.id)?.score}
+								{@const score =
+									phase === 'vote'
+										? voting?.find((vote) => vote.proposal === proposal.id)?.score
+										: delegateVoting.find((vote) => vote.proposal === proposal.id)?.score}
 								<VotingSlider
 									bind:phase
 									onSelection={(pos) => {
@@ -179,7 +182,7 @@
 										(phase === 'vote' && !$groupUserPermissionStore?.allow_vote)}
 									{score}
 									delegateScore={delegateVoting?.find((vote) => vote.proposal === proposal.id)
-										?.score}
+										?.raw_score}
 								/>
 							{/if}
 						</Proposal>
