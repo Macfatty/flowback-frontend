@@ -16,11 +16,10 @@
 		displayProposalsModal = false;
 
 	$: if (selectedProposals.length === 0) commentsStore.filterByProposal(null);
-	else
-		selectedProposals.forEach((proposalId) => {
-			const proposal = proposals.find((_proposal) => _proposal.id === proposalId);
-			if (proposal) commentsStore.filterByProposal(proposal);
-		});
+	else {
+		const _proposals = proposals.filter((p) => selectedProposals.includes(p.id));
+		commentsStore.filterByProposals(_proposals, 'and');
+	}
 </script>
 
 <div class={Class}>
@@ -62,7 +61,7 @@
 	</div>
 </div>
 
- {#if proposals}
+{#if proposals}
 	<Modal bind:open={displayProposalsModal}>
 		<div slot="body">
 			<!-- Being able to select arbitrary numbers of proposals to filter on -->
@@ -80,4 +79,4 @@
 			{/each}
 		</div>
 	</Modal>
-{/if} 
+{/if}
