@@ -69,7 +69,6 @@
 		deleteSelection = () => {},
 		advancedTimeSettingsDates: Date[] = [],
 		notActivated = true,
-		groupId: string | null = $page.params.groupId || '1',
 		groupList: Group[] = [],
 		workGroups: WorkGroup[] = [],
 		workGroupFilter: number[] = [],
@@ -115,7 +114,7 @@
 		let _api = '';
 
 		if (filter.type === 'group') {
-			_api = `group/${groupId}/schedule?limit=1000&`;
+			_api = `group/${filter.group}/schedule?limit=1000&`;
 			if (workGroupFilter.length > 0) {
 				_api += 'work_group_ids=';
 				workGroupFilter.forEach((groupId) => {
@@ -144,18 +143,16 @@
 			end_date: newEvent.end_date
 		};
 
-		console.log('Creating event with payload:', newEvent);
-
 		if (newEvent.description) payload.description = newEvent.description;
 		if (newEvent.meeting_link) payload.meeting_link = newEvent.meeting_link;
 		if (newEvent.repeat_frequency) payload.repeat_frequency = newEvent.repeat_frequency;
 		if (newEvent.reminders) payload.reminders = [newEvent.reminders];
 
-		if (type === 'group') {
-			payload.group_id = parseInt(groupId ?? '1');
+		if (filter.type === 'group') {
+			payload.group_id = parseInt(filter.group ?? '1');
 			if (newEvent.work_group) payload.work_group_id = newEvent.work_group.id;
 			if (newEvent.assignee_ids?.length) payload.assignee_ids = newEvent.assignee_ids;
-			API = `group/${groupId}/schedule/create`;
+			API = `group/${filter.group}/schedule/create`;
 		} else {
 			API = `user/schedule/create`;
 		}
@@ -215,7 +212,7 @@
 
 		const { res, json } = await fetchRequest(
 			'POST',
-			type === 'group' ? `group/${groupId}/schedule/update` : `user/schedule/update`,
+			type === 'group' ? `group/${filter.group}/schedule/update` : `user/schedule/update`,
 			payload
 		);
 
@@ -244,7 +241,7 @@
 
 		const { res, json } = await fetchRequest(
 			'POST',
-			type === 'group' ? `group/${groupId}/schedule/delete` : `user/schedule/delete`,
+			type === 'group' ? `group/${filter.group}/schedule/delete` : `user/schedule/delete`,
 			{ event_id: eventId }
 		);
 
@@ -283,7 +280,7 @@
 	};
 
 	const getWorkGroupList = async () => {
-		const { res, json } = await fetchRequest('GET', `group/${groupId}/list`);
+		const { res, json } = await fetchRequest('GET', `group/${filter.group}/list`);
 		if (!res.ok) return;
 		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
 	};
@@ -404,46 +401,48 @@
 			</div>
 
 			<div class="flex items-center justify-center gap-16 ml-6 px-2">
-				<div class="flex flex-row flex-1 gap-2 items-center">
-					<Select
-						labels={['home', 'group']}
-						values={['home', 'group']}
-						bind:value={filter.type}
-						label="Select Type"
-						disableFirstChoice
-					/>
+				<Select
+					labels={['home', 'group']}
+					values={['home', 'group']}
+					bind:value={filter.type}
+					label="Select Type"
+					disableFirstChoice
+				/>
 
-					<label class="block text-md whitespace-nowrap" for="group">
-						{$_('Group')}:
-					</label>
-					<select
-						style="width:100%"
-						class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
-						on:change={(e) => (filter.group = e?.target?.value)}
-						id="group"
-					>
-						<option value={null}>{$_('None')}</option>
-						{#each groupList as group}
-							<option value={group.id}>{elipsis(group.name)}</option>
-						{/each}
-					</select>
-				</div>
-				<div class="flex flex-row flex-1 gap-2 items-center">
-					<label class="block text-md whitespace-nowrap" for="work-group">
-						{$_('Work Group')}:
-					</label>
-					<select
-						style="width:100%"
-						class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
-						on:change={(e) => (filter.workgroup = e?.target?.value)}
-						id="work-group"
-					>
-						<option value="">{$_('All')}</option>
-						{#each workGroups as group}
-							<option value={group.id}>{elipsis(group.name)}</option>
-						{/each}
-					</select>
-				</div>
+				{#if filter.type === 'group'}
+					<div class="flex flex-row flex-1 gap-2 items-center">
+						<label class="block text-md whitespace-nowrap" for="group">
+							{$_('Group')}:
+						</label>
+						<select
+							style="width:100%"
+							class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
+							on:change={(e) => (filter.group = e?.target?.value)}
+							id="group"
+						>
+							<option value={null}>{$_('None')}</option>
+							{#each groupList as group}
+								<option value={group.id}>{elipsis(group.name)}</option>
+							{/each}
+						</select>
+					</div>
+					<div class="flex flex-row flex-1 gap-2 items-center">
+						<label class="block text-md whitespace-nowrap" for="work-group">
+							{$_('Work Group')}:
+						</label>
+						<select
+							style="width:100%"
+							class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
+							on:change={(e) => (filter.workgroup = e?.target?.value)}
+							id="work-group"
+						>
+							<option value="">{$_('All')}</option>
+							{#each workGroups as group}
+								<option value={group.id}>{elipsis(group.name)}</option>
+							{/each}
+						</select>
+					</div>
+				{/if}
 			</div>
 		</div>
 		<div id="calendar" class="calendar w-full">

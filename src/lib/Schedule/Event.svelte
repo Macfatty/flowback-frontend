@@ -137,7 +137,6 @@
 		if (showCreateScheduleEvent) {
 			selectedFrequency = 1;
 			selectedMembers = [];
-
 		} else if (showEditScheduleEvent || showEvent) {
 			selectedFrequency =
 				selectedEvent.repeat_frequency &&
@@ -148,7 +147,6 @@
 				selectedEvent.assignee_ids?.map((member: any) => {
 					return member.id;
 				}) || [];
-
 		}
 	};
 
@@ -161,8 +159,7 @@
 			...selectedEvent,
 			assignee_ids: type === 'group' ? selectedMembers : undefined,
 			reminders: selectedReminders,
-			repeat_frequency: type === 'group' ? selectedFrequency : undefined,
-
+			repeat_frequency: type === 'group' ? selectedFrequency : undefined
 		};
 
 		try {
