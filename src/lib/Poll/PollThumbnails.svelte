@@ -118,8 +118,6 @@
 	};
 
 	onMount(async () => {
-		console.log('HELLO?????');
-
 		await getPolls();
 		sharedThreadPollFixing();
 	});

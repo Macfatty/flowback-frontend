@@ -8,7 +8,6 @@
 	import FileUploads from '$lib/Generic/FileUploads.svelte';
 	import type { GroupUser } from '../interface';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import type { kanban } from './Kanban';

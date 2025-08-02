@@ -8,7 +8,6 @@
 	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import { kanban as kanbanLimit } from '../../Generic/APILimits.json';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import CreateKanbanEntry from './CreateKanbanEntry.svelte';
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import Fa from 'svelte-fa';
@@ -40,8 +39,7 @@
 		workGroups: WorkGroup[] = [],
 		lane: number = 1,
 		// Add filteredKanbanEntries to store the client-side filtered result
-		filteredKanbanEntries: kanban[] = [],
-		groupId = env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId;
+		filteredKanbanEntries: kanban[] = [];
 
 	const changeNumberOfOpen = (addOrSub: 'Addition' | 'Subtraction') => {
 		if (numberOfOpen < 0) numberOfOpen = 0;
@@ -52,7 +50,7 @@
 
 	const getKanbanEntries = async () => {
 		if (type === 'group') {
-			kanbanEntries = await getKanbanEntriesGroup();
+			await getKanbanEntriesGroup();
 		} else if (type === 'home') {
 			await getKanbanEntriesHome();
 		}
@@ -62,7 +60,7 @@
 
 	const getKanbanEntriesGroup = async () => {
 		let api = `group/${
-			$page.params.groupId || 1
+			filter.group || 1
 		}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
 		if (filter.assignee !== null) api += `&assignee=${filter.assignee}`;
 		if (filter.search !== '') api += `&title__icontains=${filter.search}`;
@@ -70,7 +68,7 @@
 
 		const { res, json } = await fetchRequest('GET', api);
 		if (!res.ok) status = statusMessageFormatter(res, json);
-		return json?.results || [];
+		kanbanEntries = json?.results || [];
 	};
 
 	const getKanbanEntriesHome = async () => {
@@ -85,7 +83,7 @@
 	};
 
 	const getGroupUsers = async () => {
-		let api = `group/${groupId}/users?limit=${kanbanLimit}`;
+		let api = `group/${filter.group}/users?limit=${kanbanLimit}`;
 
 		const { json, res } = await fetchRequest('GET', api);
 		if (!res.ok) return [];
@@ -93,9 +91,7 @@
 	};
 
 	const getWorkGroupList = async () => {
-		const { res, json } = await fetchRequest('GET', `group/${groupId}/list`);
-
-		console.log(res, json, 'HI');
+		const { res, json } = await fetchRequest('GET', `group/${filter.group}/list`);
 
 		if (!res.ok) return;
 		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
@@ -134,7 +130,9 @@
 		clearInterval(interval);
 	});
 
-	$: groupId && getWorkGroupList();
+	$: filter.group && getWorkGroupList();
+
+	$: if (type) getKanbanEntries();
 </script>
 
 <ErrorHandler bind:this={errorHandler} />
@@ -143,7 +141,7 @@
 	class={' dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words md:max-w-[calc(500px*5)]' +
 		Class}
 >
-	<KanbanFiltering bind:type bind:groupId bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" />
+	<KanbanFiltering bind:type bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" />
 
 	<div class="flex overflow-x-auto py-3">
 		{#each tags as _tag, i}
@@ -196,7 +194,7 @@
 </div>
 
 <CreateKanbanEntry
-	{groupId}
+	groupId={filter.group || ''}
 	bind:open
 	{type}
 	bind:kanbanEntries

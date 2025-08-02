@@ -10,13 +10,13 @@
 	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
 	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
+	import Select from '$lib/Generic/Select.svelte';
 
 	export let filter: Filter,
 		handleSearch: () => Promise<void>,
 		Class = '',
-		groupId: string | null = null,
 		workGroups: WorkGroup[] = [],
-		type: 'home' | 'group' = 'group';
+		type: 'home' | 'group';
 
 	let searched = true;
 	let groupList: Group[] = [],
@@ -24,8 +24,7 @@
 		loading = false;
 
 	const onGroupChange = async (id: string) => {
-		groupId = id ? id : null
-		filter.group = groupId;
+		filter.group = id;
 		searched = false;
 		await handleSearch();
 	};
@@ -83,6 +82,15 @@
 			search={true}
 			bind:value={filter.search}
 		/>
+
+		<Select
+			labels={['home', 'group']}
+			values={['home', 'group']}
+			bind:value={type}
+			label="Select Type"
+			disableFirstChoice
+		/>
+
 		{#if type === 'group'}
 			<div class="flex items-center justify-center gap-16 px-2 mt-2">
 				<div class="flex flex-row flex-1 gap-2 items-center">
