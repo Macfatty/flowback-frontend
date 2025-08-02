@@ -12,6 +12,7 @@
 	import { env } from '$env/dynamic/public';
 	import { becomeMemberOfGroup } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 
 	let verification_code: string,
 		password: string,
@@ -80,8 +81,7 @@
 	};
 
 	const getVerificationCodeFromURL = () => {
-		const urlParams = new URLSearchParams(window.location.search);
-		verification_code = urlParams.get('verification_code') || '';
+		verification_code = $page.url.searchParams.get('verification_code') || '';
 	};
 
 	onMount(() => {
@@ -96,7 +96,9 @@
 				`We have sent a verification code to the provided email. Don't forget to check your junk mail!`
 			)}</span
 		>
-		<TextInput label={'Verification Code'} bind:value={verification_code} required />
+		{#if !$page.url.searchParams.get('verification_code')}
+			<TextInput label={'Verification Code'} bind:value={verification_code} required />
+		{/if}
 		<TextInput label={'Choose a Password'} bind:value={password} type={'password'} required />
 		<RadioButtons
 			label="Do you want to receive Email Notifications?"
