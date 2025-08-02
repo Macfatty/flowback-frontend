@@ -104,6 +104,7 @@
 						class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
 						on:change={(e) => onGroupChange(e?.target?.value)}
 						id="group"
+						value={Number(filter.group)}
 					>
 						<option value={null}>{$_('None')}</option>
 						{#each groupList as group}
