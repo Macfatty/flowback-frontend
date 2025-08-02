@@ -156,9 +156,7 @@
 		const { res, json } = await fetchRequest(
 			'POST',
 			kanban.origin_type === 'group'
-				? `group/${
-						env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId
-				  }/kanban/entry/update`
+				? `group/${filter.group}/kanban/entry/update`
 				: 'user/kanban/entry/update',
 			{
 				lane,

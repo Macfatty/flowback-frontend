@@ -12,6 +12,7 @@
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import type { kanban, Filter } from './Kanban';
 	import KanbanFiltering from './KanbanFiltering.svelte';
+	import { page } from '$app/stores';
 
 	const tags = ['', 'Backlog', 'To do', 'Current', 'Evaluation', 'Done'];
 
@@ -25,11 +26,11 @@
 		open = false,
 		numberOfOpen = 0,
 		filter: Filter = {
-			group: null,
+			group: $page.url.searchParams.get('groupId'),
 			assignee: null,
 			search: '',
 			workgroup: null,
-			type:'group'
+			type: 'group'
 		},
 		workGroups: WorkGroup[] = [],
 		lane: number = 1,

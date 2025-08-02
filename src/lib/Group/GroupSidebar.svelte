@@ -146,7 +146,7 @@
 			/> -->
 			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
 				<GroupSidebarButton
-					action={() => action('kanban')}
+					action={() => goto(`/kanban?groupId=${$page.params.groupId}`)}
 					isSelected={selectedPage === 'kanban'}
 					text="Group Tasks"
 					faIcon={faListCheck}

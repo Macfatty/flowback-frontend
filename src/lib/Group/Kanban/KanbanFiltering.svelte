@@ -60,8 +60,7 @@
 		loading = false;
 	};
 
-	$: console.log(filter, "TYPE");
-	
+	$: console.log(filter, 'TYPE');
 </script>
 
 <form
