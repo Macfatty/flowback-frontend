@@ -10,11 +10,11 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
-	import type { kanban } from './Kanban';
+	import type { Filter, kanban } from './Kanban';
 	import Select from '$lib/Generic/Select.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 
-	export let type: 'home' | 'group',
+	export let filter: Filter,
 		open: boolean = false,
 		users: GroupUser[] = [],
 		kanbanEntries: kanban[],
@@ -49,9 +49,11 @@
 		formData.append('title', title);
 		formData.append('tag', lane.toString());
 		formData.append('lane', lane.toString());
+
 		if (assignee) formData.append('assignee_id', assignee.toString());
 		if (priority) formData.append('priority', priority.toString());
 		if (workGroup) formData.append('work_group_id', workGroup.toString());
+
 		if (end_date) {
 			const _endDate = new Date(end_date);
 			const isoDate = _endDate.toISOString();
@@ -63,6 +65,7 @@
 		}
 
 		description = description.trim() === '' ? $_('No description provided') : description;
+
 		formData.append('description', description);
 		if (images) {
 			images.forEach((image) => {
@@ -72,7 +75,7 @@
 
 		const { res, json } = await fetchRequest(
 			'POST',
-			type === 'group' ? `group/${groupId}/kanban/entry/create` : 'user/kanban/entry/create',
+			filter.type === 'group' ? `group/${groupId}/kanban/entry/create` : 'user/kanban/entry/create',
 			formData,
 			true,
 			false
@@ -109,7 +112,7 @@
 				username: localStorage.getItem('userName') || ''
 			},
 			origin_id: 1,
-			origin_type: type === 'group' ? 'group' : 'user',
+			origin_type: filter.type === 'group' ? 'group' : 'user',
 			group_name: '',
 			priority,
 			end_date: end_date || null,
@@ -165,7 +168,7 @@
 					bind:value={description}
 				/>
 
-				{#if type === 'group' && workGroups?.length > 0}
+				{#if filter.type === 'group' && workGroups?.length > 0}
 					<div class="text-left">
 						<label class="block text-md" for="work-group">
 							{$_('Work Group')}
@@ -210,7 +213,7 @@
 					/>
 					<div class="flex gap-6 justify-between mt-2 flex-col" />
 
-					{#if type === 'group'}
+					{#if filter.type === 'group'}
 						<div class="text-left">
 							<label class="block text-md" for="handle-change-assignee">
 								{$_('Assignee')}

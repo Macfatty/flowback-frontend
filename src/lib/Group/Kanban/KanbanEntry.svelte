@@ -16,16 +16,15 @@
 	import PriorityIcons from './PriorityIcons.svelte';
 	import { goto } from '$app/navigation';
 	import TextArea from '$lib/Generic/TextArea.svelte';
-	import type { kanbanEdited, kanban } from './Kanban';
+	import type { kanbanEdited, kanban, Filter } from './Kanban';
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import { env } from '$env/dynamic/public';
 	import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 	import Select from '$lib/Generic/Select.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import { browser } from '$app/environment';
 
 	export let kanban: kanban,
-		type: 'group' | 'home',
+		filter: Filter,
 		users: GroupUser[],
 		removeKanbanEntry: (id: number) => void,
 		changeNumberOfOpen: (addOrSub: 'Addition' | 'Subtraction') => void,
@@ -115,7 +114,7 @@
 
 		const { res, json } = await fetchRequest(
 			'POST',
-			type === 'group'
+			filter.type === 'group'
 				? `group/${
 						env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId
 				  }/kanban/entry/update`
@@ -308,7 +307,7 @@
 			/>
 
 			<div class="break-all text-xs">
-				{#if type === 'group'}
+				{#if filter.type === 'group'}
 					{kanban.assignee?.username}
 				{:else}
 					{kanban.group_name}
@@ -322,7 +321,7 @@
 			{$_('Work Group')}: {elipsis(kanban.work_group.name || '', 20)}
 		</div>
 	{/if}
-	{#if (type === 'group' && kanban.origin_type === 'group') || (type === 'home' && kanban.origin_type === 'user')}
+	{#if (filter.type === 'group' && kanban.origin_type === 'group') || (filter.type === 'home' && kanban.origin_type === 'user')}
 		<div class="flex justify-between mt-3 align-middle">
 			<button
 				class="cursor-pointer hover:text-gray-400 px-3 py-0.5 transition-all"
@@ -364,7 +363,7 @@
 					rows={5}
 					Class="overflow-scroll"
 				/>
-				{#if type === 'group'}
+				{#if filter.type === 'group'}
 					<div class="text-left">
 						<div class="block text-md">
 							{$_('Work Group')}
@@ -433,7 +432,7 @@
 			{:else}
 				<div class="text-center">
 					<h2 class="pb-1 font-semibold break-words text-xl w-full">{kanban.title}</h2>
-					{#if type === 'group'}
+					{#if filter.type === 'group'}
 						<p class="w-full">{kanban?.work_group?.name || $_('No workgroup assigned')}</p>
 					{/if}
 				</div>

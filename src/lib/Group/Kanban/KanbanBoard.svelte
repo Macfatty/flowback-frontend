@@ -1,11 +1,9 @@
 <script lang="ts">
 	import KanbanEntry from './KanbanEntry.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import { _ } from 'svelte-i18n';
 	import type { GroupUser } from '../interface';
 	import { onDestroy, onMount } from 'svelte';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import { kanban as kanbanLimit } from '../../Generic/APILimits.json';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import CreateKanbanEntry from './CreateKanbanEntry.svelte';
@@ -14,18 +12,14 @@
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import type { kanban, Filter } from './Kanban';
 	import KanbanFiltering from './KanbanFiltering.svelte';
-	import { env } from '$env/dynamic/public';
-	import { page } from '$app/stores';
 
 	const tags = ['', 'Backlog', 'To do', 'Current', 'Evaluation', 'Done'];
 
-	export let type: 'home' | 'group',
-		Class = '';
+	export let Class = '';
 
 	let kanbanEntries: kanban[] = [],
 		assignee: number | null = null,
 		users: GroupUser[] = [],
-		status: StatusMessageInfo,
 		errorHandler: any,
 		interval: any,
 		open = false,
@@ -34,7 +28,8 @@
 			group: null,
 			assignee: null,
 			search: '',
-			workgroup: null
+			workgroup: null,
+			type:'group'
 		},
 		workGroups: WorkGroup[] = [],
 		lane: number = 1,
@@ -49,26 +44,35 @@
 	};
 
 	const getKanbanEntries = async () => {
-		if (type === 'group') {
+		if (filter.type === 'group') {
 			await getKanbanEntriesGroup();
-		} else if (type === 'home') {
+		} else if (filter.type === 'home') {
 			await getKanbanEntriesHome();
 		}
+
 		// Apply client-side filtering after fetching
 		filterKanbanEntries();
 	};
 
 	const getKanbanEntriesGroup = async () => {
-		let api = `group/${
-			filter.group || 1
-		}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
-		if (filter.assignee !== null) api += `&assignee=${filter.assignee}`;
+		if (!filter.group) {
+			kanbanEntries = [];
+			return;
+		}
+
+		let api = `group/${filter.group}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
+		if (filter.assignee) api += `&assignee=${filter.assignee}`;
 		if (filter.search !== '') api += `&title__icontains=${filter.search}`;
-		if (filter.workgroup !== null) api += `&work_group_ids=${filter.workgroup}`;
+		if (filter.workgroup) api += `&work_group_ids=${filter.workgroup}`;
 
 		const { res, json } = await fetchRequest('GET', api);
-		if (!res.ok) status = statusMessageFormatter(res, json);
-		kanbanEntries = json?.results || [];
+
+		if (!res.ok) {
+			errorHandler.addPopup({ message: 'Failed to fetch kanban tasks', success: false });
+			return;
+		}
+
+		kanbanEntries = json.results;
 	};
 
 	const getKanbanEntriesHome = async () => {
@@ -78,8 +82,8 @@
 
 		const { res, json } = await fetchRequest('GET', api);
 
-		if (!res.ok) status = statusMessageFormatter(res, json);
-		kanbanEntries = json?.results || [];
+		if (!res.ok) return;
+		kanbanEntries = json.results;
 	};
 
 	const getGroupUsers = async () => {
@@ -132,7 +136,7 @@
 
 	$: filter.group && getWorkGroupList();
 
-	$: if (type) getKanbanEntries();
+	$: if (filter.type) getKanbanEntries();
 </script>
 
 <ErrorHandler bind:this={errorHandler} />
@@ -141,7 +145,7 @@
 	class={' dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words md:max-w-[calc(500px*5)]' +
 		Class}
 >
-	<KanbanFiltering bind:type bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" />
+	<KanbanFiltering bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" />
 
 	<div class="flex overflow-x-auto py-3">
 		{#each tags as _tag, i}
@@ -166,8 +170,8 @@
 									<KanbanEntry
 										bind:workGroups
 										bind:kanban
+										bind:filter
 										{users}
-										{type}
 										{removeKanbanEntry}
 										{changeNumberOfOpen}
 										{getKanbanEntries}
@@ -196,10 +200,12 @@
 <CreateKanbanEntry
 	groupId={filter.group || ''}
 	bind:open
-	{type}
+	bind:filter
 	bind:kanbanEntries
 	{users}
 	bind:workGroups
 	bind:lane
 	{getKanbanEntries}
 />
+
+<ErrorHandler bind:this={errorHandler} />

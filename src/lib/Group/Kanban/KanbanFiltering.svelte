@@ -15,8 +15,7 @@
 	export let filter: Filter,
 		handleSearch: () => Promise<void>,
 		Class = '',
-		workGroups: WorkGroup[] = [],
-		type: 'home' | 'group';
+		workGroups: WorkGroup[] = [];
 
 	let searched = true;
 	let groupList: Group[] = [],
@@ -25,6 +24,7 @@
 
 	const onGroupChange = async (id: string) => {
 		filter.group = id;
+		filter.workgroup = null;
 		searched = false;
 		await handleSearch();
 	};
@@ -59,6 +59,9 @@
 
 		loading = false;
 	};
+
+	$: console.log(filter, "TYPE");
+	
 </script>
 
 <form
@@ -86,12 +89,12 @@
 		<Select
 			labels={['home', 'group']}
 			values={['home', 'group']}
-			bind:value={type}
+			bind:value={filter.type}
 			label="Select Type"
 			disableFirstChoice
 		/>
 
-		{#if type === 'group'}
+		{#if filter.type === 'group'}
 			<div class="flex items-center justify-center gap-16 px-2 mt-2">
 				<div class="flex flex-row flex-1 gap-2 items-center">
 					<label class="block text-md whitespace-nowrap" for="group">
@@ -103,7 +106,7 @@
 						on:change={(e) => onGroupChange(e?.target?.value)}
 						id="group"
 					>
-						<option value="">{$_('All')}</option>
+						<option value={null}>{$_('None')}</option>
 						{#each groupList as group}
 							<option value={group.id}>{elipsis(group.name)}</option>
 						{/each}
