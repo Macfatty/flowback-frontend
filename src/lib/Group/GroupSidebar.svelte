@@ -41,7 +41,7 @@
 		const { res, json } = await fetchRequest('POST', `group/${$page.params.groupId}/leave`);
 
 		console.log('leaveGroup res', res, json);
-		
+
 		if (!res.ok) {
 			errorHandler.addPopup({
 				message: json.detail[0] || json.detail || 'An error occurred while leaving the group',
@@ -151,8 +151,9 @@
 					text="Group Tasks"
 					faIcon={faListCheck}
 				/>
+
 				<GroupSidebarButton
-					action={() => action('schedule')}
+					action={() => goto(`/schedule?groupId=${$page.params.groupId}`)}
 					isSelected={selectedPage === 'schedule'}
 					text="Group schedule"
 					faIcon={faCalendarAlt}
@@ -242,3 +243,4 @@
 </Modal>
 
 <ErrorHandler bind:this={errorHandler} />
++

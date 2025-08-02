@@ -7,7 +7,7 @@
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import type { scheduledEvent } from '$lib/Schedule/interface';
+	import type { Filter, scheduledEvent } from '$lib/Schedule/interface';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
 	import { page } from '$app/stores';
 	import Day from './Day.svelte';
@@ -21,6 +21,7 @@
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
 	import Event from './Event.svelte';
+	import Select from '$lib/Generic/Select.svelte';
 
 	export let Class = '',
 		type: 'user' | 'group';
@@ -73,9 +74,14 @@
 		workGroups: WorkGroup[] = [],
 		workGroupFilter: number[] = [],
 		status: StatusMessageInfo,
-		poppup: poppup,
-		errorHandler: any;
-
+		errorHandler: any,
+		filter: Filter = {
+			assignee: null,
+			group: $page.url.searchParams.get('groupId'),
+			search: '',
+			type: 'group',
+			workgroup: null
+		};
 
 	const resetSelectedEvent = () => {
 		selectedEvent = {
@@ -108,7 +114,7 @@
 	const setUpScheduledPolls = async () => {
 		let _api = '';
 
-		if (type === 'group') {
+		if (filter.type === 'group') {
 			_api = `group/${groupId}/schedule?limit=1000&`;
 			if (workGroupFilter.length > 0) {
 				_api += 'work_group_ids=';
@@ -135,11 +141,10 @@
 		let payload: any = {
 			title: newEvent.title,
 			start_date: newEvent.start_date,
-			end_date: newEvent.end_date,
+			end_date: newEvent.end_date
 		};
 
-        console.log('Creating event with payload:', newEvent);
-        
+		console.log('Creating event with payload:', newEvent);
 
 		if (newEvent.description) payload.description = newEvent.description;
 		if (newEvent.meeting_link) payload.meeting_link = newEvent.meeting_link;
@@ -216,7 +221,7 @@
 
 		loading = false;
 
-		if (!res.ok) {			
+		if (!res.ok) {
 			errorHandler.addPopup({ message: 'Failed to edit event', success: false });
 			return;
 		}
@@ -249,7 +254,7 @@
 			errorHandler.addPopup({ message: 'Failed to delete event', success: false });
 			return;
 		}
-		
+
 		errorHandler.addPopup({ message: 'Event deleted', success: true });
 		events = events.filter((event) => event.event_id !== eventId);
 		showEvent = false;
@@ -281,27 +286,6 @@
 		const { res, json } = await fetchRequest('GET', `group/${groupId}/list`);
 		if (!res.ok) return;
 		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
-
-		console.log(workGroups, "GROUPIE");
-		
-	};
-
-	const onGroupChange = (id: string) => {
-		groupId = id ? id : null;
-	}
-
-	const onWorkGroupChange = (workGroupId: string) => {
-		if (workGroupId === '') {
-			workGroupFilter = [];
-		} else {
-			const id = Number(workGroupId);
-			if (workGroupFilter.includes(id)) {
-				workGroupFilter = workGroupFilter.filter((groupId) => groupId !== id);
-			} else {
-				workGroupFilter.push(id);
-			}
-		}
-		setUpScheduledPolls();
 	};
 
 	const formatDateToLocalTime = (date: Date): string => {
@@ -325,11 +309,15 @@
 
 	$: month && year && deleteSelection();
 	$: month && updateMonth();
+
 	$: if (showCreateScheduleEvent && notActivated) {
 		notActivated = false;
 	}
+
 	$: if (!showCreateScheduleEvent) notActivated = true;
-	$: groupId && getWorkGroupList();
+
+	$: filter && setUpScheduledPolls();
+	$: filter.group && getWorkGroupList();
 </script>
 
 <div class={`flex bg-white dark:bg-darkobject dark:text-darkmodeText ${Class}`}>
@@ -342,7 +330,7 @@
 				<Fa icon={faArrowLeft} />
 			</div>
 		</Button>
-		
+
 		<div>
 			{$_('Scheduled events for')}
 			{selectedDate.getDate()}/{selectedDate.getMonth() + 1}
@@ -417,16 +405,24 @@
 
 			<div class="flex items-center justify-center gap-16 ml-6 px-2">
 				<div class="flex flex-row flex-1 gap-2 items-center">
+					<Select
+						labels={['home', 'group']}
+						values={['home', 'group']}
+						bind:value={filter.type}
+						label="Select Type"
+						disableFirstChoice
+					/>
+
 					<label class="block text-md whitespace-nowrap" for="group">
 						{$_('Group')}:
 					</label>
 					<select
 						style="width:100%"
 						class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
-						on:change={(e) => onGroupChange(e?.target?.value)}
+						on:change={(e) => (filter.group = e?.target?.value)}
 						id="group"
 					>
-						<option value="">{$_('All')}</option>
+						<option value={null}>{$_('None')}</option>
 						{#each groupList as group}
 							<option value={group.id}>{elipsis(group.name)}</option>
 						{/each}
@@ -439,7 +435,7 @@
 					<select
 						style="width:100%"
 						class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
-						on:change={(e) => onWorkGroupChange(e?.target?.value)}
+						on:change={(e) => (filter.workgroup = e?.target?.value)}
 						id="work-group"
 					>
 						<option value="">{$_('All')}</option>
