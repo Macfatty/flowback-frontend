@@ -199,10 +199,6 @@
 		}
 	};
 
-	onMount(() => {});
-
-	$: if (groups) console.log(groups[0]?.name, 'HELLO');
-
 	$: groups = sort(groups, previewGroup);
 	$: directs = sort(directs, previewDirect);
 	$: if (selectedChatChannelId) updateChatTitle();

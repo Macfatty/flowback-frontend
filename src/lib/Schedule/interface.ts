@@ -37,3 +37,11 @@ export interface options {
     id: number;
     name: string;
 }
+
+export interface Filter {
+	assignee: number | null;
+	group: string | null;
+	workgroup: number | null;
+	search: string;
+	type: 'home' | 'group'
+}

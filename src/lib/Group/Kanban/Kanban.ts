@@ -39,4 +39,5 @@ export interface Filter {
 	group: string | null;
 	workgroup: number | null;
 	search: string;
+	type: 'home' | 'group'
 }

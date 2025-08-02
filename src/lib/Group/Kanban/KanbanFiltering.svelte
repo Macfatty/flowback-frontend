@@ -10,13 +10,12 @@
 	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
 	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
+	import Select from '$lib/Generic/Select.svelte';
 
 	export let filter: Filter,
 		handleSearch: () => Promise<void>,
 		Class = '',
-		groupId: string | null = null,
-		workGroups: WorkGroup[] = [],
-		type: 'home' | 'group' = 'group';
+		workGroups: WorkGroup[] = [];
 
 	let searched = true;
 	let groupList: Group[] = [],
@@ -24,8 +23,8 @@
 		loading = false;
 
 	const onGroupChange = async (id: string) => {
-		groupId = id ? id : null
-		filter.group = groupId;
+		filter.group = id;
+		filter.workgroup = null;
 		searched = false;
 		await handleSearch();
 	};
@@ -60,6 +59,8 @@
 
 		loading = false;
 	};
+
+	$: console.log(filter, 'TYPE');
 </script>
 
 <form
@@ -83,7 +84,16 @@
 			search={true}
 			bind:value={filter.search}
 		/>
-		{#if type === 'group'}
+
+		<Select
+			labels={['home', 'group']}
+			values={['home', 'group']}
+			bind:value={filter.type}
+			label="Select Type"
+			disableFirstChoice
+		/>
+
+		{#if filter.type === 'group'}
 			<div class="flex items-center justify-center gap-16 px-2 mt-2">
 				<div class="flex flex-row flex-1 gap-2 items-center">
 					<label class="block text-md whitespace-nowrap" for="group">
@@ -94,8 +104,9 @@
 						class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
 						on:change={(e) => onGroupChange(e?.target?.value)}
 						id="group"
+						value={Number(filter.group)}
 					>
-						<option value="">{$_('All')}</option>
+						<option value={null}>{$_('None')}</option>
 						{#each groupList as group}
 							<option value={group.id}>{elipsis(group.name)}</option>
 						{/each}

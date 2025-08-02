@@ -15,7 +15,7 @@
 		selectedReminders: number[] = [];
 
 	// Members list and selections
-	let selectedMembers: number[] = [],
+	let selectedMembers: number[] = [];
 
 	const dispatch = createEventDispatcher();
 
