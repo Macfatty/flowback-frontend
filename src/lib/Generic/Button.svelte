@@ -38,7 +38,7 @@
 	on:click={() => {
 		onClick();
 	}}
-	class={`text-center dark:saturate-50 transition-colors duration-50 ${
+	class={`text-center dark:saturate-[60%] transition-colors duration-50 ${
 		Class.includes('bg-') ? '' : 'bg-primary'
 	} ${Class}  inline text-white rounded-md cursor-pointer p-2  
 	${buttonStyle === 'primary-light' && ' bg-white dark:bg-darkobject primary-light-inner-shadow'}

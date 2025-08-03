@@ -271,6 +271,17 @@
 			</div>
 		{/if}
 
+		{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
+			<div
+				class="p-4 shadow w-full bg-white dark:bg-darkobject flex items-center hover:bg-gray-100 dark:hover:bg-darkmodeObject transition-colors"
+			>
+				<button on:click={() => (showInvite = true)} class="flex items-center gap-4 w-full">
+					<ProfilePicture />
+					<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700">+ Invite user</div>
+				</button>
+			</div>
+		{/if}
+
 		<!-- Members List -->
 		{#if searchedUsers.length > 0}
 			<div class="w-full p-4 flex flex-col gap-6 bg-white rounded shadow dark:bg-darkobject">
@@ -348,16 +359,6 @@
 					</div>
 				{/each}
 			</div>
-			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
-				<div
-					class="p-4 shadow w-full bg-white flex items-center hover:bg-gray-100 dark:hover:bg-darkmodeObject transition-colors"
-				>
-					<button on:click={() => (showInvite = true)} class="flex items-center gap-4 w-full">
-						<ProfilePicture />
-						<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700">+ Invite user</div>
-					</button>
-				</div>
-			{/if}
 		{/if}
 	</div>
 </Loader>
