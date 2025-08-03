@@ -126,7 +126,7 @@
 		}
 
 		const { json, res } = await fetchRequest('GET', _api);
-		events = json?.results.sort((a: scheduledEvent, b: scheduledEvent) => {
+		events = json?.results?.sort((a: scheduledEvent, b: scheduledEvent) => {
 			const dateA = new Date(a.start_date).getTime();
 			const dateB = new Date(b.start_date).getTime();
 			return dateA === dateB ? a.event_id - b.event_id : dateA - dateB;
@@ -180,7 +180,7 @@
 			repeat_frequency: newEvent.repeat_frequency || 0
 		};
 
-		events = [...events, createdEvent].sort((a, b) => {
+		events = [...events, createdEvent]?.sort((a, b) => {
 			const dateA = new Date(a.start_date).getTime();
 			const dateB = new Date(b.start_date).getTime();
 			return dateA === dateB ? a.event_id - b.event_id : dateA - dateB;
@@ -225,7 +225,7 @@
 
 		events = events
 			.map((event) => (event.event_id === updatedEvent.event_id ? { ...updatedEvent } : event))
-			.sort((a, b) => {
+			?.sort((a, b) => {
 				const dateA = new Date(a.start_date).getTime();
 				const dateB = new Date(b.start_date).getTime();
 				return dateA === dateB ? a.event_id - b.event_id : dateA - dateB;
@@ -274,7 +274,7 @@
 
 		groupList = json?.results
 			.reverse()
-			.sort((group1: any, group2: any) => +group2.joined - +group1.joined);
+			?.sort((group1: any, group2: any) => +group2.joined - +group1.joined);
 
 		loading = false;
 	};
