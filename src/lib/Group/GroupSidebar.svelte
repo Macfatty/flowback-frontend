@@ -110,7 +110,7 @@
 				disabled={!$groupUserPermissionStore?.create_poll && !$groupUserStore?.is_admin}
 				faIcon={faCheckToSlot}
 				isSelected={false}
-				Class="text-white hover:!bg-blue-800 active:!bg-blue-900 bg-primary shadow rounded w-full"
+				Class="text-white hover:!bg-blue-800 active:!bg-blue-900 bg-primary dark:saturate-50 shadow rounded w-full"
 			/>
 		</div>
 		<div class="bg-white dark:bg-darkobject shadow rounded flex flex-col">
