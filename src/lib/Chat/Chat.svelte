@@ -14,6 +14,7 @@
 	import { goto } from '$app/navigation';
 	import CreateChatGroup from '$lib/Chat/CreateChatGroup.svelte';
 	import { updateUserData } from './functions';
+	import CrossButton from '$lib/Generic/CrossButton.svelte';
 
 	let chatOpen = env.PUBLIC_MODE === 'DEV' ? false : false,
 		selectedPage: 'direct' | 'group' = 'direct',
@@ -150,17 +151,13 @@
 			</div>
 		</Button>
 
-		<Button
-			onClick={() => {
+		<Button Class="px-6 my-3 dark:bg-darkobject hover:brightness-95 active:brightness-90" />
+		<CrossButton
+			action={() => {
 				chatOpen = false;
 				isChatOpen.set(false);
 			}}
-			Class="px-6 my-3 dark:bg-darkobject hover:brightness-95 active:brightness-90"
-		>
-			<div class="text-gray-800 dark:text-gray-200 ">
-				<Fa icon={faX} />
-			</div>
-		</Button>
+		/>
 	</div>
 	<div class="flex w-full gap-6 max-w-[1200px] h-[80vh]">
 		<div class="bg-white w-[40%] overflow-y-auto flex-grow ml-6 dark:bg-darkobject p-2">
