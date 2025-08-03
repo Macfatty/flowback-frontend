@@ -23,13 +23,16 @@
 	import { env } from '$env/dynamic/public';
 	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 	import HeaderIcon from '$lib/Header/HeaderIcon.svelte';
+	import { darkModeStore } from '$lib/Generic/DarkMode';
+	import { onMount } from 'svelte';
 
 	export let thread: Thread;
 	let threads: Thread[] = [],
 		reportModalShow = false,
 		deleteModalShow = false,
 		choicesOpen = false,
-		poppup: poppup;
+		poppup: poppup,
+		darkMode: boolean = false;
 
 	//Launches whenever the user clicks upvote or downvote on a thread
 	const threadVote = async (_thread: Thread, clicked: 'down' | 'up') => {
@@ -77,31 +80,19 @@
 		threads = threads;
 	};
 
-	const deleteThread = async () => {
-		const { res, json } = await fetchRequest('POST', `group/thread/${thread?.id}/delete`);
-
-		if (!res.ok) {
-			poppup = { message: 'Could not delete thread', success: false };
-			return;
-		}
-
-		poppup = { message: 'Thread deleted successfully', success: true };
-		threads = threads.filter((t) => t.id !== thread.id);
-	};
-
-	let threadIsBeingReported = false;
-	let reporting = false;
+	onMount(() => {
+		darkModeStore.subscribe((dark) => (darkMode = dark));
+	});
 </script>
 
 <div
-	class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow-[0_0_5px_rgb(203,203,203)] dark:shadow-[0_0_5px_rgb(103,103,103)] rounded-md"
+	class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6"
+	class:poll-thumbnail-shadow={!darkMode}
+	class:poll-thumbnail-shadow-dark={darkMode}
 >
 	<div class="flex justify-between items-center">
 		{#if !$page.params.groupId}
-			<a
-				href={`/groups/${thread?.group_id}`}
-				class="text-black dark:text-darkmodeText flex items-center"
-			>
+			<a href={`/groups/${thread?.group_id}`} class="text-black flex items-center">
 				<img
 					class="h-6 w-6 mr-1 rounded-full break-all"
 					src={`${
@@ -110,12 +101,10 @@
 					alt={'thread Thumbnail'}
 					on:error={(e) => onThumbnailError(e, DefaultBanner)}
 				/>
-				<span class="break-all text-sm text-gray-700 dark:text-darkmodeText"
-					>{thread?.group_name}</span
-				>
+				<span class="break-all text-sm text-gray-700">{thread?.group_name}</span>
 			</a>
 		{:else if thread?.created_by?.user}
-			<div class="text-black dark:text-darkmodeText flex items-center">
+			<div class="text-black flex items-center">
 				<!-- TODO: add "if group doesn't hide displaying creators" condition -->
 				<img
 					class="h-6 w-6 mr-1 rounded-full break-all"
@@ -233,3 +222,13 @@
 />
 
 <DeletePostModal bind:deleteModalShow postId={thread?.id} post_type="thread" />
+
+<style>
+	.poll-thumbnail-shadow {
+		box-shadow: 0 0 5px rgb(203, 203, 203);
+	}
+
+	.poll-thumbnail-shadow-dark {
+		box-shadow: 0 0 5px rgb(77, 77, 77);
+	}
+</style>
