@@ -700,5 +700,6 @@
     "There are currently no reports": "Det finns för närvarande inga rapporter",
     "Could not delete poll": "Kunde inte ta bort omröstning",
     "Filter by Proposal":"Filtrera per förslag",
-    "wants to join": "Vill gå med"
+    "wants to join": "Vill gå med",
+    "Participants": "Deltagare"
 }
