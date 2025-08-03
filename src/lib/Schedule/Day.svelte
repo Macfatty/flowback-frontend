@@ -156,16 +156,7 @@
 
 <style>
 	.selected {
-		box-shadow: inset 0 0 10px 1px rgba(0, 0, 0, 0.4) !important;
-	}
-
-	.today {
-		box-shadow: inset 0 0 4px 1px var(--secondary) !important;
-		background-color: var(--secondary);
-	}
-
-	.today.selected {
-		box-shadow: inset 0 0 10px 1px var(--secondary) !important;
+		box-shadow: inset 0 0 10px 1px rgba(145, 145, 145, 0.4) !important;
 	}
 
 	.calendar-day {

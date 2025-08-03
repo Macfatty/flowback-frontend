@@ -155,6 +155,9 @@
 </script>
 
 <Modal bind:open Class="min-w-[400px] max-w-[500px]" onSubmit={createKanbanEntry}>
+	<div slot="header">
+		<h2 class="text-xl">{$_('Create Kanban Entry')}</h2>
+	</div>
 	<div slot="body">
 		<Loader bind:loading>
 			<div on:submit|preventDefault={createKanbanEntry}>

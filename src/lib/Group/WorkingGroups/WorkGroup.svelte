@@ -119,7 +119,7 @@
 			>{$_('Ask to join')}</Button
 		>
 	{:else if workGroup.requested_access}
-		<div Class="px-3 py-1 w-[20%]">{$_('Already asked to join')}</div>
+		<div Class="px-3 py-1 w-[20%]">{$_('Pending')}</div>
 	{/if}
 
 	{#if $groupUserStore?.is_admin}

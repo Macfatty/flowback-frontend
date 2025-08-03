@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
+	import DefaultPFP from '$lib/assets/abstract-user-flat-4.svg';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
@@ -12,11 +13,7 @@
 	import { groupMembers as groupMembersLimit } from '../Generic/APILimits.json';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { env } from '$env/dynamic/public';
-	import {
-		faPaperPlane,
-		faRunning,
-		faUserPlus
-	} from '@fortawesome/free-solid-svg-icons';
+	import { faPaperPlane, faRunning, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/Generic/Button.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
@@ -38,8 +35,7 @@
 		delegates: Delegate[] = [],
 		removeUserModalShow = false;
 
-
-	let sortOrder: 'a-z' | 'z-a' = 'a-z';  // Default to a-z sort
+	let sortOrder: 'a-z' | 'z-a' = 'a-z'; // Default to a-z sort
 
 	onMount(async () => {
 		getUsers();
@@ -74,28 +70,20 @@
 	};
 
 	const searchUsers = async (username: string) => {
-		//TODO: Search users
-		//This code can be used to not show every user unless the user has typed in something
-		// if (username === '') {
-		// 	searchedInvitationUsers = [];
-		// 	return;
-		// }
-
 		const { json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/users?limit=${groupMembersLimit}&username__icontains=${username}`
 		);
 
-		searchedInvitationUsers = json?.results;
 		searchedUsers = json?.results;
-		
+
 		// Apply sorting based on sortOrder (always sort)
 		if (sortOrder === 'a-z') {
-			searchedUsers = searchedUsers.sort((a, b) => 
+			searchedUsers = searchedUsers.sort((a, b) =>
 				a.user.username.toLowerCase().localeCompare(b.user.username.toLowerCase())
 			);
 		} else if (sortOrder === 'z-a') {
-			searchedUsers = searchedUsers.sort((a, b) => 
+			searchedUsers = searchedUsers.sort((a, b) =>
 				b.user.username.toLowerCase().localeCompare(a.user.username.toLowerCase())
 			);
 		}
@@ -115,30 +103,34 @@
 
 		loading = false;
 		if (!res.ok) {
-			errorHandler.addPopup({ message: "Couldn't get invites list", success: false })
+			errorHandler.addPopup({ message: "Couldn't get invites list", success: false });
 			return;
 		}
 
 		errorHandler.addPopup({
 			success: true,
 			message: 'Successfully sent invite'
-		})
+		});
 
 		searchInvitationQuery = '';
 		searchedInvitationUsers = [];
 	};
 
 	const acceptInviteUser = async (userId: number) => {
-		const {res, json } = await fetchRequest('POST', `group/${$page.params.groupId}/invite/accept`, {
-			to: userId
-		});
+		const { res, json } = await fetchRequest(
+			'POST',
+			`group/${$page.params.groupId}/invite/accept`,
+			{
+				to: userId
+			}
+		);
 
 		usersAskingForInvite = usersAskingForInvite.filter((user) => user.id !== userId);
 
 		if (!res.ok) {
 			errorHandler.addPopup({ message: "Couldn't accept user invite", success: false });
 		}
-		
+
 		await getInvitesList();
 		await getUsers();
 		await searchUsers(searchUserQuery);
@@ -174,7 +166,7 @@
 			target_user_id: userToRemove
 		});
 
-		if (!res.ok) {			
+		if (!res.ok) {
 			errorHandler.addPopup({ message: $_('Failed to remove user'), success: false });
 			return;
 		}
@@ -186,51 +178,10 @@
 	};
 
 	const resetFilter = () => {
-		sortOrder = 'a-z';  // Reset to default a-z sort instead of null
+		sortOrder = 'a-z'; // Reset to default a-z sort instead of null
 		searchUsers(searchUserQuery);
 	};
 </script>
-
-<Modal bind:open={showInvite}>
-	<div slot="body">
-		<!-- Inviting -->
-		<div class="w-full bg-white dark:bg-darkobject">
-			<TextInput
-				onInput={() => searchUser(searchInvitationQuery)}
-				bind:value={searchInvitationQuery}
-				label={$_('User to invite')}
-				placeholder="Username"
-			/>
-			<ul>
-				{#each searchedInvitationUsers as searchedUser}
-					<li
-						class="text-black flex justify-between bg-white p-2 w-full mt-6 dark:bg-darkobject dark:text-darkmodeText"
-					>
-						<div class="flex">
-							<ProfilePicture
-								displayName
-								username={searchedUser.username}
-								profilePicture={searchedUser.profile_image}
-							/>
-						</div>
-
-						<div class="flex">
-							<div
-								class="ml-2 cursor-pointer"
-								on:click={() => inviteUser(searchedUser.id)}
-								on:keydown
-								tabindex="0"
-								role="button"
-							>
-								<Fa size="2x" icon={faEnvelope} />
-							</div>
-						</div>
-					</li>
-				{/each}
-			</ul>
-		</div>
-	</div>
-</Modal>
 
 <Loader bind:loading>
 	<div
@@ -285,21 +236,14 @@
 					</div>
 				</div>
 			</form>
-
-			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
-				<Button
-					Class="w-10 h-10 flex items-center justify-center"
-					onClick={() => (showInvite = true)}
-				>
-					<Fa size="lg" icon={faUserPlus} />
-				</Button>
-			{/if}
 		</div>
 
 		<!-- Invites -->
 		{#if usersAskingForInvite.length > 0}
 			<div class="w-full flex-col gap-6 shadow rounded bg-white p-2 mb-4 dark:bg-darkobject">
-				<span class="font-semibold text-sm text-gray-700 dark:text-darkmodeText">{$_('Users requesting invite')}</span>
+				<span class="font-semibold text-sm text-gray-700 dark:text-darkmodeText"
+					>{$_('Users requesting invite')}</span
+				>
 				{#each usersAskingForInvite as user}
 					{#if user.external === true}
 						<div
@@ -327,10 +271,23 @@
 			</div>
 		{/if}
 
+		{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
+			<div
+				class="p-4 shadow w-full bg-white dark:bg-darkobject flex items-center hover:bg-gray-100 dark:hover:bg-darkmodeObject transition-colors"
+			>
+				<button on:click={() => (showInvite = true)} class="flex items-center gap-4 w-full">
+					<ProfilePicture />
+					<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700">+ Invite user</div>
+				</button>
+			</div>
+		{/if}
+
 		<!-- Members List -->
 		{#if searchedUsers.length > 0}
 			<div class="w-full p-4 flex flex-col gap-6 bg-white rounded shadow dark:bg-darkobject">
-				<span class="font-semibold text-sm text-gray-700 dark:text-darkmodeText">{$_('All members')}</span>
+				<span class="font-semibold text-sm text-gray-700 dark:text-darkmodeText"
+					>{$_('All members')}</span
+				>
 				{#each searchedUsers as user}
 					{@const delegationId = delegates.find(
 						(delegate) => delegate.user.id === user.user.id
@@ -383,13 +340,17 @@
 									<Fa size="lg" class="text-red-500" icon={faRunning} />
 								</Button>
 								<Modal bind:open={removeUserModalShow} Class="w-80 max-w-[400px]">
-									<div slot="header">{$_('Kick ') + user.user.username + "?"}</div>
+									<div slot="header">{$_('Kick ') + user.user.username + '?'}</div>
 									<div slot="body" class="flex gap-4">
-										<Button buttonStyle="warning-light" Class="w-[50%]" onClick={() => userRemove(user.user.id)}
-											>{$_('Yes')}</Button
+										<Button
+											buttonStyle="warning-light"
+											Class="w-[50%]"
+											onClick={() => userRemove(user.user.id)}>{$_('Yes')}</Button
 										>
-										<Button buttonStyle="primary" Class="w-[50%]" onClick={() => (removeUserModalShow = false)}
-											>{$_('No')}</Button
+										<Button
+											buttonStyle="primary"
+											Class="w-[50%]"
+											onClick={() => (removeUserModalShow = false)}>{$_('No')}</Button
 										>
 									</div>
 								</Modal>
@@ -401,5 +362,46 @@
 		{/if}
 	</div>
 </Loader>
+
+<Modal bind:open={showInvite}>
+	<div slot="body">
+		<!-- Inviting -->
+		<div class="w-full bg-white dark:bg-darkobject">
+			<TextInput
+				onInput={() => searchUser(searchInvitationQuery)}
+				bind:value={searchInvitationQuery}
+				label={$_('User to invite')}
+				placeholder="Username"
+			/>
+			<ul>
+				{#each searchedInvitationUsers as searchedUser}
+					<li
+						class="text-black flex justify-between bg-white p-2 w-full mt-6 dark:bg-darkobject dark:text-darkmodeText"
+					>
+						<div class="flex">
+							<ProfilePicture
+								displayName
+								username={searchedUser.username}
+								profilePicture={searchedUser.profile_image}
+							/>
+						</div>
+
+						<div class="flex">
+							<div
+								class="ml-2 cursor-pointer"
+								on:click={() => inviteUser(searchedUser.id)}
+								on:keydown
+								tabindex="0"
+								role="button"
+							>
+								<Fa size="2x" icon={faEnvelope} />
+							</div>
+						</div>
+					</li>
+				{/each}
+			</ul>
+		</div>
+	</div>
+</Modal>
 
 <ErrorHandler bind:this={errorHandler} />

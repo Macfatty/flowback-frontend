@@ -125,9 +125,8 @@
 </script>
 
 <div
-	class="bg-white dark:bg-darkobject dark:text-darkmodeText poll-thumbnail-shadow rounded-md p-4"
+	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded-sm p-4"
 	class:poll-thumbnail-shadow={!darkMode}
-	class:poll-thumbnail-shadow-dark={darkMode}
 	id={`poll-thumbnail-${poll?.id.toString()}`}
 >
 	<div class="mx-2">
@@ -148,7 +147,6 @@
 						>{poll?.group_name}</span
 					>
 				</a>
-
 				<div class="flex gap-4 items-baseline">
 					<NotificationOptions
 						type="poll"
@@ -466,6 +464,6 @@
 	}
 
 	.poll-thumbnail-shadow-dark {
-		box-shadow: 0 0 10px rgb(24, 24, 24);
+		box-shadow: 0 0 5px rgb(77, 77, 77);
 	}
 </style>

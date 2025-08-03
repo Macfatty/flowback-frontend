@@ -9,7 +9,7 @@
 	import Results from '$lib/Poll/Results.svelte';
 	import { checkForLinks } from '$lib/Generic/GenericFunctions';
 	import ProposalSubmition from '$lib/Poll/ProposalSubmition.svelte';
-	import Predictions from '$lib/Poll/PredictionMarket/PredictionCreate.svelte';
+	import Predictions from '$lib/Poll/PredictionMarket/CreatePrediction.svelte';
 	import PollHeader from '$lib/Poll/PollHeader.svelte';
 	import { getPhase } from '$lib/Poll/functions';
 	import AreaVote from '$lib/Poll/AreaVote.svelte';

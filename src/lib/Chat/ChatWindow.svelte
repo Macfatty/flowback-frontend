@@ -8,7 +8,7 @@
 	import { browser } from '$app/environment';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import Fa from 'svelte-fa';
-	import { faPaperPlane, faSmile } from '@fortawesome/free-solid-svg-icons';
+	import { faPaperPlane, faSmile, faUsers } from '@fortawesome/free-solid-svg-icons';
 	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
 	import { messageStore } from './Socket';
 	import { onMount, onDestroy } from 'svelte';
@@ -64,7 +64,8 @@
 
 	// Send a message and update localStorage timestamp
 	const postMessage = async () => {
-		if (!selectedChat || !selectedChatChannelId || message.length === 0 || message.match(/^\s+$/)) return;
+		if (!selectedChat || !selectedChatChannelId || message.length === 0 || message.match(/^\s+$/))
+			return;
 
 		if (newerMessages) await getRecentMessages();
 
@@ -88,7 +89,12 @@
 				notified: false,
 				profile_image: $userStore?.profile_image || '',
 				user_id: $userStore?.id,
-				user: { id: $userStore?.id, username: $userStore?.username, profile_image: $userStore?.profile_image, banner_image: '' },
+				user: {
+					id: $userStore?.id,
+					username: $userStore?.username,
+					profile_image: $userStore?.profile_image,
+					banner_image: ''
+				},
 				channel_id: selectedChatChannelId,
 				...(selectedPage === 'direct' ? { target_id: selectedChat } : { group_id: selectedChat })
 			};
@@ -108,7 +114,11 @@
 		messages.push({
 			id: Date.now(),
 			message,
-			user: { username: $userStore?.username, id: $userStore?.id, profile_image: $userStore?.profile_image || '' },
+			user: {
+				username: $userStore?.username,
+				id: $userStore?.id,
+				profile_image: $userStore?.profile_image || ''
+			},
 			created_at: new Date().toString(),
 			active: true,
 			channel_id: selectedChatChannelId,
@@ -150,7 +160,7 @@
 	};
 
 	// Handle incoming messages and set notifications
-	const handleReceiveMessage = (preview: PreviewMessage[], message: Message1) => {	
+	const handleReceiveMessage = (preview: PreviewMessage[], message: Message1) => {
 		if (message.channel_id === selectedChatChannelId) {
 			if (messages.some((m) => m.id === message.id)) return;
 
@@ -188,7 +198,9 @@
 					user_id: message.user?.id,
 					user: message.user,
 					channel_id: message.channel_id,
-					...(message.channel_origin_name === 'group' ? { group_id: message.channel_id } : { target_id: message.user?.id })
+					...(message.channel_origin_name === 'group'
+						? { group_id: message.channel_id }
+						: { target_id: message.user?.id })
 				};
 				preview.push(previewMessage);
 			} else {
@@ -326,6 +338,7 @@
 							}
 						}}
 						max={3000}
+						displayMax={false}
 						rows={1}
 						bind:value={message}
 						placeholder={$_('Write a message...')}
@@ -342,20 +355,25 @@
 					{/if}
 					<Button
 						type="submit"
-						Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2"
+						Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2 hover:bg-gray-100 active:bg-gray-200"
 					>
 						<Fa class="text-blue-600 text-lg" icon={faPaperPlane} />
 					</Button>
+					<Button
+						Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2 hover:bg-gray-100 active:bg-gray-200"
+						onClick={() => (participantsModalOpen = true)}
+						><Fa class="text-blue-600 text-lg" icon={faUsers} /></Button
+					>
 				</form>
 			</div>
 		{/if}
 	</div>
-	<Button onClick={() => (participantsModalOpen = true)}>{$_("Show users")}</Button>
 {:else}
 	<div>{'No chat selected'}</div>
 {/if}
 
-<Modal bind:open={participantsModalOpen} Class="max-w-[300px]">
+<Modal bind:open={participantsModalOpen} Class="max-w-[200px]">
+	<div slot="header">{$_('Participants')}</div>
 	<div slot="body">
 		{#if participants.length > 0}
 			<ul>
