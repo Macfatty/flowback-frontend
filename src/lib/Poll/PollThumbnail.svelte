@@ -127,7 +127,6 @@
 <div
 	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded-sm p-4"
 	class:poll-thumbnail-shadow={!darkMode}
-	class:poll-thumbnail-shadow-dark={darkMode}
 	id={`poll-thumbnail-${poll?.id.toString()}`}
 >
 	<div class="mx-2">
