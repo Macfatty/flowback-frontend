@@ -86,7 +86,7 @@
 </script>
 
 <div
-	class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6"
+	class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 rounded-sm"
 	class:poll-thumbnail-shadow={!darkMode}
 	class:poll-thumbnail-shadow-dark={darkMode}
 >

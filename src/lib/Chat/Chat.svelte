@@ -134,35 +134,36 @@
 <div
 	bind:this={chatDiv}
 	class:invisible={!chatOpen}
-	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-40 w-full h-[100vh] !flex justify-center"
+	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-40 w-full h-[100vh] justify-center"
 >
-	<Button
-		onClick={() => {
-			chatOpen = false;
-			isChatOpen.set(false);
-			goto('/user/settings');
-		}}
-		Class="absolute right-0 top-0 p-3 m-4 dark:bg-darkobject hover:brightness-95 active:brightness-90"
-	>
-		<div class="text-gray-800 dark:text-gray-200">
-			<Fa icon={faCog} />
-		</div>
-	</Button>
+	<div class="w-full flex justify-between">
+		<Button
+			onClick={() => {
+				chatOpen = false;
+				isChatOpen.set(false);
+				goto('/user/settings');
+			}}
+			Class="px-6 my-3 dark:bg-darkobject hover:brightness-95 active:brightness-90"
+		>
+			<div class="text-gray-800 dark:text-gray-200">
+				<Fa icon={faCog} />
+			</div>
+		</Button>
 
-	<Button
-		onClick={() => {
-			chatOpen = false;
-			isChatOpen.set(false);
-		}}
-		Class="absolute left-0 top-0 p-3 m-4 dark:bg-darkobject hover:brightness-95 active:brightness-90"
-	>
-		<div class="text-gray-800 dark:text-gray-200">
-			<Fa icon={faX} />
-		</div>
-	</Button>
-
-	<div class="flex w-full gap-6 max-w-[1200px] h-[85vh]">
-		<div class="bg-white w-[40%] overflow-y-auto flex-grow my-8 ml-6 dark:bg-darkobject p-2">
+		<Button
+			onClick={() => {
+				chatOpen = false;
+				isChatOpen.set(false);
+			}}
+			Class="px-6 my-3 dark:bg-darkobject hover:brightness-95 active:brightness-90"
+		>
+			<div class="text-gray-800 dark:text-gray-200 ">
+				<Fa icon={faX} />
+			</div>
+		</Button>
+	</div>
+	<div class="flex w-full gap-6 max-w-[1200px] h-[80vh]">
+		<div class="bg-white w-[40%] overflow-y-auto flex-grow ml-6 dark:bg-darkobject p-2">
 			{#key creatingGroup}
 				<Preview
 					bind:selectedChat
@@ -175,7 +176,7 @@
 				/>
 			{/key}
 		</div>
-		<div class="bg-white w-[60%] flex-grow my-8 mr-6 dark:bg-darkobject p-2">
+		<div class="bg-white w-[60%] flex-grow mr-6 dark:bg-darkobject p-2">
 			{#if creatingGroup}
 				<CreateChatGroup bind:creatingGroup bind:groupMembers />
 			{:else}
