@@ -58,20 +58,20 @@
 	};
 </script>
 
-<Modal bind:open={deleteModalShow} Class="max-w-[400px]">
+<Modal
+	bind:open={deleteModalShow}
+	Class="max-w-[400px]"
+	buttons={[
+		{ label: 'Remove', type: 'warning', onClick: deletePoll },
+		{ label: 'Cancel', type: 'secondary', onClick: () => (deleteModalShow = false) }
+	]}
+>
+	>
 	<div slot="header">{post_type === 'poll' ? $_('Deleting Poll') : $_('Deleting Thread')}</div>
 	<div slot="body">
 		<Loader bind:loading>
 			{$_('Are you sure you want to delete this poll?')}
 		</Loader>
-	</div>
-	<div slot="footer">
-		<div class="flex justify-center gap-2">
-			<Button onClick={deletePoll} Class="bg-red-500 w-1/2">{$_('Yes')}</Button><Button
-				onClick={() => (deleteModalShow = false)}
-				Class="bg-gray-400 w-1/2">{$_('Cancel')}</Button
-			>
-		</div>
 	</div>
 </Modal>
 

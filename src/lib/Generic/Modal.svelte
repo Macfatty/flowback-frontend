@@ -1,12 +1,15 @@
 <script lang="ts">
+	import Button from './Button.svelte';
 	import CrossButton from './CrossButton.svelte';
+	import type { ModalButton } from './interface';
 	//TODO: Make the design nicer and larger, make it draggable, add more options
 
 	export let open = false,
 		Class = '',
 		onOpen = () => {},
 		onClose = () => {},
-		onSubmit = () => {};
+		onSubmit = () => {},
+		buttons: ModalButton[] = [];
 
 	const closeModal = (event: MouseEvent) => {
 		event.stopPropagation();
@@ -76,6 +79,13 @@
 				</div>
 				<slot name="footer" />
 			{/if}
+			<div class="flex justify-center gap-2">
+				{#each buttons as button}
+					<Button buttonStyle={button.type} Class={`flex-1 ${button.class || ''}`} on:click={button.onClick}>
+						{button.label}
+					</Button>
+				{/each}
+			</div>
 		</div>
 	</div>
 </div>

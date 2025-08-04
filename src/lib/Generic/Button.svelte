@@ -27,6 +27,7 @@
 		| 'accent-secondary'
 		| 'accent'
 		| 'primary-light'
+		| 'default'
 		| 'inactive';
 
 	type buttontypes = 'button' | 'submit';
@@ -54,6 +55,7 @@
 	class:!text-gray-300={disabled}
 	class:!bg-secondary={buttonStyle == 'secondary'}
 	class:!bg-red-500={buttonStyle === 'warning'}
+	class:!bg-gray-700={buttonStyle === 'default'}
 	class:!bg-accent={buttonStyle === 'accent'}
 	class:!bg-accentSecondary={buttonStyle === 'accent-secondary'}
 	{disabled}

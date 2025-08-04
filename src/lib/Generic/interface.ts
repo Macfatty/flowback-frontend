@@ -5,3 +5,10 @@ export interface report {
     post_id: number;
     post_type: 'poll' | 'thread'
 }
+
+export interface ModalButton {
+    label: string;
+    type: 'primary' | 'secondary' | 'warning' | 'default';
+    class?: string;
+    onClick: () => void;
+}
