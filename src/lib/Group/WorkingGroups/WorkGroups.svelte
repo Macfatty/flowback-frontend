@@ -164,11 +164,11 @@
 
 <Loader bind:loading>
 	{#if $groupUserStore?.is_admin && invites?.length > 0}
-		<div class="flex flex-col gap-4 mt-4 dark:text-darkmodeText">
+		<div
+			class="bg-white shadow rounded flex flex-col dark:bg-darkobject gap-4 dark:text-darkmodeText"
+		>
 			{#each invites as invite}
-				<div
-					class="bg-white w-full px-4 py-2 flex gap-2 shadow rounded dark:bg-darkobject min-h-14"
-				>
+				<div class="w-full px-4 py-2 flex gap-2 min-h-14">
 					<div class="flex justify-between w-full">
 						<div>
 							<b class="font-semibold">{invite.group_user.user.username}</b>
@@ -184,7 +184,7 @@
 			{/each}
 		</div>
 	{/if}
-	<div class="flex flex-col gap-4 mt-4">
+	<div class="bg-white shadow rounded dark:bg-darkobject flex flex-col gap-4 mt-4">
 		{#each workGroups as workingGroup}
 			<WorkingGroup
 				{getWorkGroupInvite}
