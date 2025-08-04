@@ -284,7 +284,17 @@
 					</button>
 				{/if}
 
-				<Modal bind:open={ReportCommentModalShow}>
+				<Modal
+					bind:open={ReportCommentModalShow}
+					buttons={[
+						{
+							label: 'Report',
+							type: 'warning',
+							onClick: () => commentReport(comment.id, comment.message || '')
+						},
+						{ label: 'Cancel', type: 'secondary', onClick: () => (ReportCommentModalShow = false) }
+					]}
+				>
 					<div slot="header">{$_('Report Comment')}</div>
 					<div class="flex flex-col gap-3" slot="body">
 						<TextInput inputClass="bg-white" required label="Title" bind:value={reportTitle} />
@@ -294,18 +304,6 @@
 							bind:value={reportDescription}
 							inputClass="whitespace-pre-wrap"
 						/>
-					</div>
-					<div slot="footer">
-						<div class="flex justify-center gap-2">
-							<Button
-								onClick={() => commentReport(comment.id, comment.message || '')}
-								Class="w-1/2"
-								buttonStyle="warning">{$_('Report')}</Button
-							>
-							<Button onClick={() => (ReportCommentModalShow = false)} Class="bg-gray-400 w-1/2"
-								>{$_('Cancel')}</Button
-							>
-						</div>
 					</div>
 				</Modal>
 			</div>
