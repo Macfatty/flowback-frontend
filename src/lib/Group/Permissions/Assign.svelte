@@ -48,7 +48,7 @@
 
 	const makeAdmin = async (user: GroupUser) => {
 		const { json, res } = await fetchRequest('POST', `group/${$page.params.groupId}/user/update`, {
-			target_user_id: user.id,
+			target_user_id: user.user.id,
 			is_admin: true
 		});
 		if (!res.ok) {
