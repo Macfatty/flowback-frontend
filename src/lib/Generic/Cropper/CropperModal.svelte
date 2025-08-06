@@ -48,13 +48,16 @@
 	<div class="prof-pic-wrapper hidden">
 		<!-- <img bind:this={profilePicture} class="prof-pic" src={image} alt="Profile example" {style} /> -->
 	</div>
+
 	{#if croppedImage}
 		<!-- <h2 class="hidden">{$_('Cropped Output')}</h2>
 		<img src={croppedImage} class="hidden" alt="Cropped profile" /><br /> -->
 	{/if}
-	<div class="mt-6 mb-2">
-		<Button buttonStyle="primary" onClick={handleCrop}>{$_('Confirm')}</Button>
-		<Button buttonStyle="secondary" onClick={cancelAction} Class="bg-gray-500">{$_('Cancel')}</Button
+
+	<div class="mt-6 mb-2 flex gap-2">
+		<Button Class="flex-1" buttonStyle="primary" onClick={handleCrop}>{$_('Confirm')}</Button>
+		<Button Class="flex-1 bg-gray-500" buttonStyle="default" onClick={cancelAction}
+			>{$_('Cancel')}</Button
 		>
 	</div>
 </div>
