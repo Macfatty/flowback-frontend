@@ -188,7 +188,7 @@
 		class="flex flex-col items-center gap-2 mb-24 relative dark:bg-darkobject dark:text-darkmodeText pb-2"
 	>
 		<!-- Search in Members list -->
-		<div class="flex items-center gap-3 mb-4 w-full">
+		<div class="flex items-center gap-3 w-full">
 			<form
 				class="bg-white dark:bg-darkobject dark:text-darkmodeText shadow rounded p-4 flex flex-1 items-end gap-4"
 				on:input|preventDefault={() => searchUsers(searchUserQuery)}
@@ -339,20 +339,13 @@
 								>
 									<Fa size="lg" class="text-red-500" icon={faRunning} />
 								</Button>
-								<Modal bind:open={removeUserModalShow} Class="w-80 max-w-[400px]">
+								<Modal bind:open={removeUserModalShow} Class="w-80 max-w-[400px]"
+								buttons={[
+									{ label: 'Yes', type: 'warning', onClick: () => userRemove(user.user.id) },
+									{ label: 'No', type: 'default', onClick: () => (removeUserModalShow = false) }
+								]}
+								>
 									<div slot="header">{$_('Kick ') + user.user.username + '?'}</div>
-									<div slot="body" class="flex gap-4">
-										<Button
-											buttonStyle="warning-light"
-											Class="w-[50%]"
-											onClick={() => userRemove(user.user.id)}>{$_('Yes')}</Button
-										>
-										<Button
-											buttonStyle="primary"
-											Class="w-[50%]"
-											onClick={() => (removeUserModalShow = false)}>{$_('No')}</Button
-										>
-									</div>
 								</Modal>
 							{/if}
 						</div>

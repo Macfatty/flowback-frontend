@@ -11,4 +11,5 @@ export interface ModalButton {
     type: 'primary' | 'secondary' | 'warning' | 'default';
     class?: string;
     onClick: () => void;
+    submit?: boolean;
 }

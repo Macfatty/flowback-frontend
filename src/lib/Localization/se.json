@@ -701,5 +701,6 @@
     "Could not delete poll": "Kunde inte ta bort omröstning",
     "Filter by Proposal":"Filtrera per förslag",
     "wants to join": "Vill gå med",
-    "Participants": "Deltagare"
+    "Participants": "Deltagare",
+    "Remove": "Ta bort"
 }

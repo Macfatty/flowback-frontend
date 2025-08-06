@@ -59,10 +59,10 @@
 
 <Modal
 	bind:open={deleteModalShow}
-	Class="max-w-[400px]"
+	Class="max-w-[500px]"
 	buttons={[
 		{ label: 'Remove', type: 'warning', onClick: deletePoll },
-		{ label: 'Cancel', type: 'secondary', onClick: () => (deleteModalShow = false) }
+		{ label: 'Cancel', type: 'default', onClick: () => (deleteModalShow = false) }
 	]}
 >
 	>

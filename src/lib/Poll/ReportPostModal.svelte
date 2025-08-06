@@ -67,7 +67,7 @@
 	Class="max-w-[500px]"
 	buttons={[
 		{ label: 'Report', type: 'warning', onClick: reportPoll },
-		{ label: 'Cancel', type: 'secondary', onClick: () => (reportModalShow = false) }
+		{ label: 'Cancel', type: 'default', onClick: () => (reportModalShow = false) }
 	]}
 >
 	>
