@@ -30,7 +30,7 @@
 			assignee: null,
 			search: '',
 			workgroup: null,
-			type: 'group'
+			type: $page.url.searchParams.get('groupId') ? 'group' : 'home'
 		},
 		workGroups: WorkGroup[] = [],
 		lane: number = 1,
@@ -69,7 +69,7 @@
 		const { res, json } = await fetchRequest('GET', api);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to fetch kanban tasks', success: false });
+			// errorHandler.addPopup({ message: 'Failed to fetch kanban tasks', success: false });
 			return;
 		}
 
@@ -139,8 +139,6 @@
 
 	$: if (filter.type) getKanbanEntries();
 </script>
-
-<ErrorHandler bind:this={errorHandler} />
 
 <div
 	class={' dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words md:max-w-[calc(500px*5)]' +

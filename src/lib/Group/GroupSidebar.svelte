@@ -18,7 +18,6 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Modal from '$lib/Generic/Modal.svelte';
-	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 	import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons/faCalendarAlt';
 	import { faCoins } from '@fortawesome/free-solid-svg-icons';
@@ -233,13 +232,17 @@
 	{/if}
 </nav>
 
-<Modal bind:open={areYouSureModal} Class="max-w-[400px]">
+<Modal
+	bind:open={areYouSureModal}
+	Class="max-w-[400px]"
+	buttons={[
+		{ label: 'Yes', type: 'warning', onClick: leaveGroup },
+		{ label: 'No', type: 'default', onClick: () => (areYouSureModal = false) }
+	]}
+>
+	>
 	<div slot="header">{$_('Are you sure?')}</div>
 	<div slot="body">{$_('You are about to leave the group!')}</div>
-	<div slot="footer" class="flex justify-between gap-2">
-		<Button onClick={leaveGroup} Class="bg-red-500 flex-1">{$_('Yes')}</Button>
-		<Button onClick={() => (areYouSureModal = false)} Class="flex-1 bg-gray-600">{$_('No')}</Button>
-	</div>
 </Modal>
 
 <ErrorHandler bind:this={errorHandler} />

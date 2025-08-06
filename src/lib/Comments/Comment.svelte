@@ -1,14 +1,7 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { Comment, proposal } from '$lib/Poll/interface';
-	import {
-		faArrowDown,
-		faArrowUp,
-		faReply,
-		faThumbsUp,
-		faThumbsDown,
-		faSpinner
-	} from '@fortawesome/free-solid-svg-icons';
+	import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
 	import { page } from '$app/stores';
@@ -17,9 +10,7 @@
 	import { onMount } from 'svelte';
 	import { env } from '$env/dynamic/public';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import Modal from '$lib/Generic/Modal.svelte';
-	import Button from '$lib/Generic/Button.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import { commentsStore } from './commentStore';
@@ -284,7 +275,17 @@
 					</button>
 				{/if}
 
-				<Modal bind:open={ReportCommentModalShow}>
+				<Modal
+					bind:open={ReportCommentModalShow}
+					buttons={[
+						{
+							label: 'Report',
+							type: 'warning',
+							onClick: () => commentReport(comment.id, comment.message || '')
+						},
+						{ label: 'Cancel', type: 'secondary', onClick: () => (ReportCommentModalShow = false) }
+					]}
+				>
 					<div slot="header">{$_('Report Comment')}</div>
 					<div class="flex flex-col gap-3" slot="body">
 						<TextInput inputClass="bg-white" required label="Title" bind:value={reportTitle} />
@@ -294,18 +295,6 @@
 							bind:value={reportDescription}
 							inputClass="whitespace-pre-wrap"
 						/>
-					</div>
-					<div slot="footer">
-						<div class="flex justify-center gap-2">
-							<Button
-								onClick={() => commentReport(comment.id, comment.message || '')}
-								Class="w-1/2"
-								buttonStyle="warning">{$_('Report')}</Button
-							>
-							<Button onClick={() => (ReportCommentModalShow = false)} Class="bg-gray-400 w-1/2"
-								>{$_('Cancel')}</Button
-							>
-						</div>
 					</div>
 				</Modal>
 			</div>

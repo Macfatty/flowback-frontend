@@ -99,16 +99,17 @@
 					<label class="block text-md whitespace-nowrap" for="group">
 						{$_('Group')}:
 					</label>
+					
 					<select
 						style="width:100%"
 						class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
 						on:change={(e) => onGroupChange(e?.target?.value)}
 						id="group"
-						value={Number(filter.group)}
+						bind:value={filter.group}
 					>
 						<option value={null}>{$_('None')}</option>
 						{#each groupList as group}
-							<option value={group.id}>{elipsis(group.name)}</option>
+							<option value={group.id.toString()}>{elipsis(group.name)}</option>
 						{/each}
 					</select>
 				</div>

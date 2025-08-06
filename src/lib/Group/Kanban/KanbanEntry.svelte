@@ -226,7 +226,6 @@
 
 	const cancelUpdateKanban = () => {
 		initializeKanbanEdited();
-		openModal = false;
 		isEditing = false;
 	};
 
@@ -349,7 +348,20 @@
 </button>
 
 {#if kanban.id === selectedEntry}
-	<Modal bind:open={openModal} Class=" min-w-[400px] max-w-[500px] z-50">
+	<Modal
+		bind:open={openModal}
+		Class=" min-w-[400px] max-w-[500px] z-50"
+		buttons={isEditing
+			? [
+					{ label: 'Update', type: 'primary', onClick: updateKanbanContent },
+					{ label: 'Cancel', type: 'default', onClick: cancelUpdateKanban },
+					{ label: 'Delete', type: 'warning', onClick: deleteKanbanEntry }
+			  ]
+			: [
+					{ label: 'Edit', type: 'primary', onClick: () => (isEditing = true) },
+					{ label: 'Close', type: 'default', onClick: () => (openModal = false) }
+			  ]}
+	>
 		<div slot="body">
 			{#if isEditing}
 				<div class="pb-2">
@@ -491,27 +503,6 @@
 						{kanban?.description}
 					</p>
 				</div>
-			{/if}
-		</div>
-		<div slot="footer" class="w-full flex gap-4">
-			{#if isEditing}
-				<Button Class="w-full py-1" buttonStyle="primary-light" onClick={updateKanbanContent}
-					>{$_('Update')}</Button
-				>
-				<Button
-					Class="w-full bg-red-500  py-1"
-					buttonStyle="warning-light"
-					onClick={cancelUpdateKanban}>{$_('Cancel')}</Button
-				>
-			{:else}
-				<Button Class="w-full py-1" buttonStyle="primary-light" onClick={() => (isEditing = true)}
-					>{$_('Edit')}</Button
-				>
-				<Button
-					Class="bg-red-500 w-full  py-1"
-					buttonStyle="warning-light"
-					onClick={deleteKanbanEntry}>{$_('Delete')}</Button
-				>
 			{/if}
 		</div>
 	</Modal>

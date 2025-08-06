@@ -237,22 +237,22 @@
 					{/if}
 					<div class="flex justify-end gap-2">
 						<button
+							type="submit"
+							on:click={handleSubmit}
+							class="flex-1 px-4 py-2 bg-secondary text-white rounded hover:bg-secondary-dark"
+							disabled={loading}
+						>
+							{$_('Update')}
+						</button>
+						<button
 							type="button"
 							on:click={() => {
 								showEvent = true;
 								showEditScheduleEvent = false;
 							}}
-							class="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white rounded hover:bg-gray-400 dark:hover:bg-gray-600"
+							class="flex-1 px-4 py-2 bg-gray-300 dark:bg-gray-800 text-gray-900 dark:text-white rounded hover:bg-gray-400 dark:hover:bg-gray-600"
 						>
 							{$_('Cancel')}
-						</button>
-						<button
-							type="submit"
-							on:click={handleSubmit}
-							class="px-4 py-2 bg-secondary text-white rounded hover:bg-secondary-dark"
-							disabled={loading}
-						>
-							{$_('Update')}
 						</button>
 					</div>
 				</Loader>

@@ -136,7 +136,7 @@
 	});
 </script>
 
-<div class="flex items-center gap-3 mb-4">
+<div class="flex items-center gap-4 mb-2">
 	<div
 		class="bg-white text-black dark:text-darkmodeText dark:bg-darkobject p-4 shadow rounded flex-1 flex flex-col gap-2"
 	>
@@ -154,21 +154,15 @@
 			onInput={getWorkingGroupList}
 		/>
 	</div>
-
-	{#if $groupUserStore?.is_admin}
-		<Button onClick={() => (open = true)} Class="w-10 h-10 flex items-center justify-center">
-			<Fa icon={faPlus} class="text-lg" />
-		</Button>
-	{/if}
 </div>
 
 <Loader bind:loading>
 	{#if $groupUserStore?.is_admin && invites?.length > 0}
-		<div class="flex flex-col gap-4 mt-4 dark:text-darkmodeText">
+		<div
+			class="bg-white shadow rounded flex flex-col dark:bg-darkobject gap-4 dark:text-darkmodeText"
+		>
 			{#each invites as invite}
-				<div
-					class="bg-white w-full px-4 py-2 flex gap-2 shadow rounded dark:bg-darkobject min-h-14"
-				>
+				<div class="w-full px-4 py-2 flex gap-2 min-h-14">
 					<div class="flex justify-between w-full">
 						<div>
 							<b class="font-semibold">{invite.group_user.user.username}</b>
@@ -184,7 +178,19 @@
 			{/each}
 		</div>
 	{/if}
-	<div class="flex flex-col gap-4 mt-4">
+
+	{#if $groupUserStore?.is_admin}
+		<button
+			on:click={() => (open = true)}
+			class="mt-2 text-left bg-white hover:bg-gray-100 cursor-pointer active:bg-gray-200 dark:bg-darkobject shadow rounded-sm dark:text-darkmodeText w-full px-4 py-2 flex justify-between items-center min-h-14"
+		>
+			<span class="text-primary dark:text-secondary w-[40%] font-semibold break-words"
+				>{$_("+ Add Group")}</span
+			>
+		</button>
+	{/if}
+
+	<div class="bg-white shadow rounded-sm dark:bg-darkobject flex flex-col gap-4 mt-2">
 		{#each workGroups as workingGroup}
 			<WorkingGroup
 				{getWorkGroupInvite}
@@ -198,7 +204,14 @@
 
 <ErrorHandler bind:this={errorHandler} />
 
-<Modal bind:open Class="max-w-[500px]">
+<Modal
+	bind:open
+	Class="max-w-[500px]"
+	buttons={[
+		{ label: 'Create', type: 'primary', onClick: createWorkingGroup },
+		{ label: 'Cancel', type: 'default', onClick: () => (open = false) }
+	]}
+>
 	<div slot="header" class="w-full"><span>{$_('Create work group')}</span></div>
 	<form slot="body" class="w-full" on:submit|preventDefault={createWorkingGroup}>
 		<TextInput label="Name" required bind:value={workGroupEdit.name} />
@@ -210,6 +223,5 @@
 			label="Direct Join?"
 			name="direct_join"
 		/>
-		<Button Class="px-2" type="submit">{$_('Create')}</Button>
 	</form>
 </Modal>

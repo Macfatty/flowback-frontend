@@ -62,7 +62,15 @@
 	};
 </script>
 
-<Modal bind:open={reportModalShow} Class="max-w-[500px]">
+<Modal
+	bind:open={reportModalShow}
+	Class="max-w-[500px]"
+	buttons={[
+		{ label: 'Report', type: 'warning', onClick: reportPoll },
+		{ label: 'Cancel', type: 'default', onClick: () => (reportModalShow = false) }
+	]}
+>
+	>
 	<div slot="header">{post_type === 'poll' ? $_('Report Poll') : $_('Report Thread')}</div>
 	<div class="flex flex-col gap-3" slot="body">
 		<Loader bind:loading>
@@ -76,14 +84,14 @@
 			/>
 		</Loader>
 	</div>
-	<div slot="footer">
+	<!-- <div slot="footer">
 		<div class="flex justify-center gap-2">
 			<Button onClick={reportPoll} type="submit" Class="bg-red-500 w-1/2">{$_('Report')}</Button
 			><Button onClick={() => (reportModalShow = false)} Class="bg-gray-400 w-1/2"
 				>{$_('Cancel')}</Button
 			>
 		</div>
-	</div>
+	</div> -->
 </Modal>
 
 <ErrorHandler bind:this={errorHandler} />
