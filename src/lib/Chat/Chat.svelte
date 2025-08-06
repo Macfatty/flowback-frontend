@@ -7,7 +7,7 @@
 	import { env } from '$env/dynamic/public';
 	import Fa from 'svelte-fa';
 	import Button from '$lib/Generic/Button.svelte';
-	import { faCog, faX } from '@fortawesome/free-solid-svg-icons';
+	import { faCog } from '@fortawesome/free-solid-svg-icons';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import { darkModeStore, getIconFilter } from '$lib/Generic/DarkMode';
 	import { chatPartner, isChatOpen } from './ChatStore.svelte';
@@ -137,21 +137,21 @@
 	class:invisible={!chatOpen}
 	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-40 w-full h-[100vh] justify-center"
 >
-	<div class="w-full flex justify-between">
+	<div class="w-full flex justify-between mr-6">
 		<Button
 			onClick={() => {
 				chatOpen = false;
 				isChatOpen.set(false);
 				goto('/user/settings');
 			}}
-			Class="px-6 my-3 dark:bg-darkobject hover:brightness-95 active:brightness-90"
+			Class="px-6 my-3 dark:bg-darkbackground hover:brightness-95 active:brightness-90"
 		>
 			<div class="text-gray-800 dark:text-gray-200">
 				<Fa icon={faCog} />
 			</div>
 		</Button>
 
-		<Button Class="px-6 my-3 dark:bg-darkobject hover:brightness-95 active:brightness-90" />
+		<Button Class="px-6 my-3 dark:bg-darkbackground hover:brightness-95 active:brightness-90" />
 		<CrossButton
 			action={() => {
 				chatOpen = false;
