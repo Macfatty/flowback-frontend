@@ -51,6 +51,7 @@
 			target_user_id: user.user.id,
 			is_admin: true
 		});
+
 		if (!res.ok) {
 			errorHandler.addPopup({ message: 'Failed to make user admin', success: false });
 			return;
