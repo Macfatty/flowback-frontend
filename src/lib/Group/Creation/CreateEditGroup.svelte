@@ -179,7 +179,7 @@
 				{#if groupToEdit}
 					<Button
 						onClick={resetEdits}
-						buttonStyle="primary"
+						buttonStyle="secondary"
 						disabled={oldGroup?.name === name &&
 							oldGroup?.description === description &&
 							oldGroup?.image === image &&
