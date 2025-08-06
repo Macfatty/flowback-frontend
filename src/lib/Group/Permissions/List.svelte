@@ -8,6 +8,7 @@
 	import Fa from 'svelte-fa';
 	import { faTrash } from '@fortawesome/free-solid-svg-icons';
 	import Button from '$lib/Generic/Button.svelte';
+	import Modal from '$lib/Generic/Modal.svelte';
 
 	export let selectedPage: 'assign' | 'create' | 'list', selectedRole: any;
 
@@ -23,6 +24,7 @@
 	};
 
 	const deletePermission = async (permission_id: number) => {
+		showDeleteModal = false;
 		const { res, json } = await fetchRequest(
 			'POST',
 			`group/${$page.params.groupId}/permission/delete`,
@@ -50,32 +52,25 @@
 					selectedPage = 'create';
 				}}>{role.role_name}</button
 			>
-			<Button onClick={() => (showDeleteModal = true)} Class="p-2 text-lg cursor-pointer bg-white">
+			<Button
+				onClick={() => (showDeleteModal = true)}
+				Class="p-2 text-lg cursor-pointer bg-white dark:bg-darkobject"
+			>
 				<Fa class="text-red-500" icon={faTrash} />
 			</Button>
 		</li>
 
 		{#if showDeleteModal}
-			<div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-				<div class="bg-white dark:bg-darkobject p-6 rounded shadow-lg w-96">
-					<h2 class="text-xl font-semibold mb-4">{$_('Confirm Deletion')}</h2>
-					<p class="mb-6">{$_('Are you sure you want to delete this workgroup?')}</p>
-					<div class="flex justify-end space-x-2">
-						<Button buttonStyle="primary-light" onClick={() => (showDeleteModal = false)}>
-							{$_('Cancel')}
-						</Button>
-						<Button
-							buttonStyle="warning-light"
-							onClick={() => {
-								deletePermission(role.id);
-								showDeleteModal = false;
-							}}
-						>
-							{$_('Delete')}
-						</Button>
-					</div>
-				</div>
-			</div>
+			<Modal
+				bind:open={showDeleteModal}
+				buttons={[
+					{ label: 'Delete', type: 'warning', onClick: () => deletePermission(role.id) },
+					{ label: 'Cancel', type: 'default', onClick: () => (showDeleteModal = false) }
+				]}
+			>
+				<h2 slot="header">{$_('Confirm Deletion')}</h2>
+				<p slot="body">{$_('Are you sure you want to delete this workgroup?')}</p>
+			</Modal>
 		{/if}
 	{/each}
 </ul>
