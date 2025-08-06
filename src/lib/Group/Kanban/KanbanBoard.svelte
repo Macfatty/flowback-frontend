@@ -30,7 +30,7 @@
 			assignee: null,
 			search: '',
 			workgroup: null,
-			type: 'group'
+			type: $page.url.searchParams.get('groupId') ? 'group' : 'home'
 		},
 		workGroups: WorkGroup[] = [],
 		lane: number = 1,
