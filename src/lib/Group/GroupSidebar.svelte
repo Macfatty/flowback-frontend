@@ -237,7 +237,7 @@
 	Class="max-w-[400px]"
 	buttons={[
 		{ label: 'Yes', type: 'warning', onClick: leaveGroup },
-		{ label: 'No', type: 'secondary', onClick: () => (areYouSureModal = false) }
+		{ label: 'No', type: 'default', onClick: () => (areYouSureModal = false) }
 	]}
 >
 	>
