@@ -1,14 +1,7 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { Comment, proposal } from '$lib/Poll/interface';
-	import {
-		faArrowDown,
-		faArrowUp,
-		faReply,
-		faThumbsUp,
-		faThumbsDown,
-		faSpinner
-	} from '@fortawesome/free-solid-svg-icons';
+	import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
 	import { page } from '$app/stores';
@@ -17,9 +10,7 @@
 	import { onMount } from 'svelte';
 	import { env } from '$env/dynamic/public';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import Modal from '$lib/Generic/Modal.svelte';
-	import Button from '$lib/Generic/Button.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import { commentsStore } from './commentStore';

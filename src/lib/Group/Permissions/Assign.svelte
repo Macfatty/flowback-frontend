@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { _ } from 'svelte-i18n';
 	import { page } from '$app/stores';
 	import type { GroupUser } from '../interface';
@@ -11,8 +12,9 @@
 	import { permissions as permissionsLimit } from '../../Generic/APILimits.json';
 	import Button from '$lib/Generic/Button.svelte';
 
-	let roles: GroupUser[] = [];
-	let users: GroupUser[] = [];
+	let roles: GroupUser[] = [],
+		users: GroupUser[] = [],
+		errorHandler: any;
 
 	const getRoleList = async () => {
 		const { res, json } = await fetchRequest(
@@ -45,10 +47,18 @@
 	};
 
 	const makeAdmin = async (user: GroupUser) => {
-		const { json } = await fetchRequest('POST', `group/${$page.params.groupId}/user/update`, {
+		const { json, res } = await fetchRequest('POST', `group/${$page.params.groupId}/user/update`, {
 			target_user_id: user.id,
 			is_admin: true
 		});
+		if (!res.ok) {
+			errorHandler.addPopup({ message: 'Failed to make user admin', success: false });
+			return;
+		}
+
+		users.find((u) => u.user.id === user.user.id)!.is_admin = true;
+		users = users;
+		errorHandler.addPopup({ message: 'User is now admin', success: true });
 	};
 
 	onMount(() => {
@@ -87,8 +97,9 @@
 				>
 					<Fa icon={faPlus} size="lg" />
 				</div>
-				<!-- {@debug user} -->
-				<Button onClick={() => makeAdmin(user)}>{$_('Make admin')}</Button>
+				{#if !user.is_admin}
+					<Button onClick={() => makeAdmin(user)}>{$_('Make admin')}</Button>
+				{/if}
 			</div>
 			<div
 				class="p-6 mt-6 shadow rounded border border-gray-200 z-50 right-5"
@@ -115,3 +126,5 @@
 		</li>
 	{/each}
 </ul>
+
+<ErrorHandler bind:this={errorHandler} />

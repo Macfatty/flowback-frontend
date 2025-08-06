@@ -163,7 +163,7 @@
 				/>
 				<RadioButtons
 					bind:Yes={hiddenGroup}
-					label={'Hide proposal creator?'}
+					label={'Hide creators?'}
 					Class="flex items-center justify-between gap-3 w-full"
 				/>
 			{/if}
