@@ -39,8 +39,6 @@
 	const leaveGroup = async () => {
 		const { res, json } = await fetchRequest('POST', `group/${$page.params.groupId}/leave`);
 
-		console.log('leaveGroup res', res, json);
-
 		if (!res.ok) {
 			errorHandler.addPopup({
 				message: json.detail[0] || json.detail || 'An error occurred while leaving the group',
@@ -49,10 +47,8 @@
 			return;
 		}
 
-		if (res.ok) {
-			removeGroupMembership(Number($page.params.groupId));
-			goto('/home');
-		}
+		removeGroupMembership(Number($page.params.groupId));
+		goto('/home');
 	};
 
 	const action = (page: SelectablePage) => {
