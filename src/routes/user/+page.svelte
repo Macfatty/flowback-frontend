@@ -15,15 +15,14 @@
 	import { pfpStore } from '$lib/Login/stores';
 	import { env } from '$env/dynamic/public';
 	import Fa from 'svelte-fa';
-	import { faArrowLeft, faPen, faPaperPlane, faUser } from '@fortawesome/free-solid-svg-icons';
+	import { faArrowLeft, faPen, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import History from '$lib/Group/Delegation/History.svelte';
 	import { goto } from '$app/navigation';
 	import { getStores } from '$app/stores';
 	import { TelInput, normalizedCountries } from 'svelte-tel-input';
 	import type { DetailedValue, CountryCode, E164Number } from 'svelte-tel-input/types';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
-	import { chatPartner, isChatOpen } from '$lib/Chat/ChatStore.svelte';
+	import { chatPartner, isChatOpen } from '$lib/Chat/functions';
 	import { getUserChannelId } from '$lib/Chat/functions';
 	import Loader from '$lib/Generic/Loader.svelte';
 

@@ -7,7 +7,7 @@
 	import { onMount } from 'svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { chatPreview as chatLimit } from '../Generic/APILimits.json';
-	import { chatPartner } from './ChatStore.svelte';
+	import { chatPartner } from './functions';
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 	import { workGroupsStore, type WorkGroup } from '$lib/Group/WorkingGroups/interface';

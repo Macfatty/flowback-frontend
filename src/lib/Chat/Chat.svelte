@@ -2,7 +2,7 @@
 	import ChatWindow from './ChatWindow.svelte';
 	import Preview from './Preview.svelte';
 	import { onMount } from 'svelte';
-	import type { GroupMembers, Message, PreviewMessage } from './interfaces';
+	import type { GroupMembers, PreviewMessage } from './interfaces';
 	import { _ } from 'svelte-i18n';
 	import { env } from '$env/dynamic/public';
 	import Fa from 'svelte-fa';
@@ -10,7 +10,7 @@
 	import { faCog } from '@fortawesome/free-solid-svg-icons';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import { darkModeStore, getIconFilter } from '$lib/Generic/DarkMode';
-	import { chatPartner, isChatOpen } from './ChatStore.svelte';
+	import { chatPartner, isChatOpen } from './functions';
 	import { goto } from '$app/navigation';
 	import CreateChatGroup from '$lib/Chat/CreateChatGroup.svelte';
 	import { updateUserData } from './functions';
