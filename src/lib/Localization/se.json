@@ -706,5 +706,7 @@
     "+ Add Group": "+ Lägg till grupp",
     "Hide creators": "Dölj skapare",
     "Hide creators?": "Dölj skapare?",
-    "An error occurred while leaving the group" : "Ett fel inträffade när du lämnade gruppen"
+    "An error occurred while leaving the group" : "Ett fel inträffade när du lämnade gruppen",
+    "Select Type": "Välj typ",
+    "Select a type": "Välj en typ"
 }

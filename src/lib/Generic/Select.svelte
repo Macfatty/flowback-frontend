@@ -25,7 +25,7 @@
 
 <div class={`${Class} `}>
 	{#if label}
-		<label for={label}>{label}</label> <br />
+		<label for={label}>{$_(label)}</label> <br />
 	{/if}
 	<select
 		bind:value
@@ -42,7 +42,7 @@
 
 		{#if labels}
 			{#each labels as label, i}
-				<option value={values[i]} class="dark:bg-darkobject"> {elipsis(label)} </option>
+				<option value={values[i]} class="dark:bg-darkobject"> {elipsis($_(label))} </option>
 			{/each}
 		{/if}
 	</select>
