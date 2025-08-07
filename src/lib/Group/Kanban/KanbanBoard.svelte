@@ -162,7 +162,7 @@
 							}}><Fa icon={faPlus} size="12px" /></button
 						>
 					</div>
-					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
+					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto max-w-[144px]">
 						{#if filteredKanbanEntries?.length > 0}
 							{#each filteredKanbanEntries as kanban}
 								{#if kanban.lane === i}
