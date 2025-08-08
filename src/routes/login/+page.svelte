@@ -49,6 +49,8 @@
 				<Register bind:selectedPage />
 			{:else if selectedPage === 'Verify'}
 				<Verify />
+			{:else if selectedPage === 'GotMail'}
+				{$_("A link has been sent to your email. Check the spam folder if you don't see it.")}
 			{:else if selectedPage === 'ForgotPassword'}
 				<ForgotPassword bind:selectedPage bind:email />
 			{:else if selectedPage === 'NewPassword'}

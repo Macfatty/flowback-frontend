@@ -4,7 +4,6 @@
 	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
 	import { _ } from 'svelte-i18n';
 	import TextInput from '../Generic/TextInput.svelte';
