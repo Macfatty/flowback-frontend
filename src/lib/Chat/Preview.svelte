@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type GroupMembers, type invite, type PreviewMessage } from './interfaces';
+	import { type Direct, type GroupMembers, type invite, type PreviewMessage } from './interfaces';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { Group } from '$lib/Group/interface';
 	import { userStore } from '$lib/User/interfaces';
@@ -7,7 +7,7 @@
 	import { onMount } from 'svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { chatPreview as chatLimit } from '../Generic/APILimits.json';
-	import { chatPartner } from './ChatStore.svelte';
+	import { chatPartner } from './functions';
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 	import { workGroupsStore, type WorkGroup } from '$lib/Group/WorkingGroups/interface';
@@ -15,14 +15,13 @@
 	import { updateUserData } from './functions';
 
 	let groups: Group[] = [],
-		directs: any[] = [],
+		directs: Direct[] = [],
 		chatSearch = '',
 		workGroupList: WorkGroup[] = [];
 
 	export let selectedChat: number | null,
 		selectedChatChannelId: number | null,
 		creatingGroup: boolean,
-		selectedPage: 'direct' | 'group' = 'direct',
 		previewDirect: PreviewMessage[] = [],
 		previewGroup: PreviewMessage[] = [],
 		inviteList: invite[] = [],
@@ -95,34 +94,34 @@
 	// Handle chat selection and clear notifications
 	const clickedChatter = async (chatterId: any) => {
 		// Update server-side timestamp
-		await updateUserData(chatterId, new Date(), new Date());
+		// await updateUserData(chatterId, new Date(), new Date());
 
 		// Update localStorage timestamp to mark chat as read
 		const timestampKey = `lastInteraction_${chatterId}`;
 		localStorage.setItem(timestampKey, new Date().toISOString());
 
-		if (selectedPage === 'direct') {
+		// if (selectedPage === 'direct') {
 			let message = previewDirect.find((message) => message.channel_id === chatterId);
 			if (message) {
 				message.timestamp = new Date().toString();
 				message.notified = false;
 				previewDirect = [...previewDirect];
 			}
-			selectedChat = chatterId;
-			selectedChatChannelId = chatterId;
-			chatPartner.set(chatterId);
-		} else if (selectedPage === 'group') {
-			let message = previewGroup.find((message) => message.channel_id === chatterId);
-			if (message) {
-				message.timestamp = new Date().toString();
-				message.notified = false;
-				previewGroup = [...previewGroup];
-			}
-			selectedChat = chatterId;
-			chatPartner.set(chatterId);
-			selectedChatChannelId = chatterId;
-			selectedPage = 'group';
-		}
+		// 	selectedChat = chatterId;
+		// 	selectedChatChannelId = chatterId;
+		// 	chatPartner.set(chatterId);
+		// } else if (selectedPage === 'group') {
+		// 	let message = previewGroup.find((message) => message.channel_id === chatterId);
+		// 	if (message) {
+		// 		message.timestamp = new Date().toString();
+		// 		message.notified = false;
+		// 		previewGroup = [...previewGroup];
+		// 	}
+		selectedChat = chatterId;
+		chatPartner.set(chatterId);
+		selectedChatChannelId = chatterId;
+		// 	selectedPage = 'group';
+		// }
 	};
 
 	// Sort chats by notification status
@@ -161,11 +160,39 @@
 		});
 	};
 
-	// Fetch work groups
+	// Fetch work groups for one group flowback
 	const getWorkGroups = async () => {
 		const { res, json } = await fetchRequest('GET', 'group/1/list');
 		if (!res.ok) return;
 		workGroupList = json?.results;
+	};
+
+	// Update chat title
+	const updateChatTitle = async () => {
+		if (selectedChatChannelId) {
+			await fetchRequest('POST', 'user/chat/update', {
+				channel_id: selectedChatChannelId,
+				title: 'chat example'
+			});
+		}
+	};
+
+	const compressChatListIntoOneList = () => {
+		const combinedList = [...directs]; // Create a new array with spread operator
+
+		groups.forEach((group) => {
+			combinedList.push({
+				id: group.id,
+				profile_image: group.image,
+				username: group.name,
+				banner_image: group.cover_image,
+				chat_status: group.public ? 'public' : 'private',
+				channel_id: group.chat_id,
+				public_status: group.public ? 'public' : 'private'
+			});
+		});
+
+		return combinedList;
 	};
 
 	onMount(async () => {
@@ -182,22 +209,12 @@
 
 		chatPartner.subscribe((partner) => {
 			if (partner === null) return;
-			selectedPage = 'direct';
+			// selectedPage = 'direct';
 			selectedChat = partner;
 			selectedChatChannelId = partner;
 			clickedChatter(partner);
 		});
 	});
-
-	// Update chat title
-	const updateChatTitle = async () => {
-		if (selectedChatChannelId) {
-			await fetchRequest('POST', 'user/chat/update', {
-				channel_id: selectedChatChannelId,
-				title: 'chat example'
-			});
-		}
-	};
 
 	$: groups = sort(groups, previewGroup);
 	$: directs = sort(directs, previewDirect);
@@ -207,7 +224,7 @@
 <div class="max-h-[100%]">
 	<div class="border-b-2 w-full">
 		<TextInput
-			placeholder={selectedPage === 'direct' ? 'Search users' : 'Search groups'}
+			placeholder={'Search chatters'}
 			label=""
 			max={null}
 			bind:value={chatSearch}
@@ -248,62 +265,26 @@
 		{/each}
 	{/if}
 
-	<!-- {#each previewDirect as previewObject}
-		{#if selectedPage === 'direct' && previewObject?.channel_title?.split(',')?.length > 2 && previewObject.target_id}
-			<button
-				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
-				class:bg-gray-200={selectedChat === previewObject.channel_id}
-				class:dark:bg-gray-700={selectedChat === previewObject.channel_id}
-				on:click={() => clickedChatter(previewObject.channel_id)}
-			>
-				{#if previewObject.notified}
-					<div class="p-1 rounded-full bg-purple-300" />
-				{/if}
-				<ProfilePicture
-					username={previewObject.channel_title}
-					profilePicture={previewObject.profile_image}
-				/>
-				<div class="flex flex-col max-w-[40%]">
-					<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
-						{previewObject.channel_title}
-					</span>
-					<span class="text-gray-400 text-sm truncate h-[20px] overflow-x-hidden max-w-[10%]">
-						{#if previewObject}
-							{previewObject.user.username}: {previewObject.message}
-						{/if}
-					</span>
-				</div>
-			</button>
-		{/if}
-	{/each} -->
+	{#each compressChatListIntoOneList() as chatter}
+		{@const previewObject = previewDirect.find(
+			(direct) => direct.channel_id === chatter?.channel_id
+		)}
 
-	{#each directs.concat(groups) as chatter, id (id)}
-		{@const previewObject =
-			previewDirect.find((direct) => direct.channel_id === chatter?.channel_id) ||
-			previewGroup.find((group) => group.channel_id === chatter?.chat_id)}
 		<button
-			class:hidden={!chatter?.username?.toLowerCase().includes(chatSearch?.toLowerCase()) &&
-				!chatter?.name?.toLowerCase().includes(chatSearch?.toLowerCase())}
+			class:hidden={!chatter?.username?.toLowerCase().includes(chatSearch?.toLowerCase())}
 			class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
-			class:bg-gray-200={selectedChat === (chatter?.channel_id || chatter?.chat_id)}
-			class:dark:bg-gray-700={selectedChat === (chatter?.channel_id || chatter?.chat_id)}
-			on:click={() => clickedChatter(chatter?.channel_id || chatter?.chat_id)}
+			class:bg-gray-200={selectedChat === chatter.channel_id}
+			class:dark:bg-gray-700={selectedChat === chatter.channel_id}
+			on:click={() => clickedChatter(chatter.channel_id)}
 		>
 			{#if previewObject?.notified}
-				<div
-					class="p-1 rounded-full"
-					class:bg-blue-300={selectedPage === 'group'}
-					class:bg-purple-300={selectedPage === 'direct'}
-				/>
+				<div class="p-1 rounded-full bg-purple-300" />
 			{/if}
 
-			<ProfilePicture
-				username={chatter?.name || chatter?.username}
-				profilePicture={chatter?.profile_image}
-			/>
+			<ProfilePicture username={chatter?.username} profilePicture={chatter?.profile_image} />
 			<div class="flex flex-col max-w-[40%]">
 				<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
-					{chatter?.name || chatter?.username}
+					{chatter?.username}
 				</span>
 				<span class="text-gray-400 text-sm truncate h-[20px] overflow-x-hidden max-w-[10%]">
 					{#if previewObject && previewObject.user && previewObject.message}
@@ -339,7 +320,7 @@
 		Class="mt-4"
 		onClick={() => {
 			creatingGroup = true;
-			selectedPage = 'direct';
+			// selectedPage = 'direct';
 			groupMembers = []; // Reset groupMembers
 		}}
 	>

@@ -1,4 +1,5 @@
 import { fetchRequest } from "$lib/FetchRequest";
+import { writable } from 'svelte/store';
 
 export const updateUserData = async (selectedChat:number, timestamp?: Date | null, closed?: Date | null) => {
     let data: any = {
@@ -19,3 +20,8 @@ export const getUserChannelId = async (userId: number) => {
     }
     return json.id;
 };
+
+export const isChatOpen = writable(false);
+
+// Store to hold the chat_id or message_id of the chatter being talked to.
+export const chatPartner = writable(0);

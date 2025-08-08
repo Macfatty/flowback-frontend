@@ -26,12 +26,22 @@
 	};
 </script>
 
-<Modal bind:open>
+<Modal
+	bind:open
+	buttons={[
+		{
+			label: 'Log Out',
+			onClick: logOut,
+			type: 'warning'
+		},
+		{
+			label: 'Stay logged in',
+			onClick: logBackIn,
+			type: 'primary'
+		}
+	]}
+>
 	<div slot="body" class="py-4 px-2 text-lg">
 		{$_('Your session is about to expire, stay logged in?')}
-	</div>
-	<div slot="footer" class="flex justify-end gap-4">
-		<Button onClick={logOut} buttonStyle="warning-light">{$_('Log Out')}</Button>
-		<Button onClick={logBackIn}>{$_('Stay logged in')}</Button>
 	</div>
 </Modal>

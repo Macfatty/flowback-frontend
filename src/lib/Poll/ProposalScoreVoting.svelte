@@ -61,7 +61,7 @@
 		if (!json?.results || json?.results?.length === 0) return;
 
 		voting = voting.map((vote) => ({
-			score: (vote.score = json?.results.find(
+			score: (vote.score = json?.results?.find(
 				(score: { score: number; proposal: number }) => score.proposal === vote.proposal
 			).raw_score),
 			proposal: vote.proposal
@@ -144,9 +144,17 @@
 
 	const changingVote = (score: number | string, proposalId: number) => {
 		if (!voting) return;
-		const i = voting.findIndex((vote) => vote.proposal === proposalId);
+		const i = voting?.findIndex((vote) => vote.proposal === proposalId);
 		voting[i].score = Number(score);
 		voting = voting;
+	};
+
+	const getScore = (proposal: proposal) => {
+		if (phase === 'delegate_vote') {
+			return delegateVoting?.find((vote) => vote.proposal === proposal.id)?.score;
+		} else if (phase === 'vote') {
+			return voting?.find((vote) => vote.proposal === proposal.id)?.score;
+		}
 	};
 </script>
 
@@ -165,10 +173,8 @@
 							{proposal}
 						>
 							{#if phase === 'delegate_vote' || phase === 'vote'}
-								{@const score =
-									phase === 'vote'
-										? voting?.find((vote) => vote.proposal === proposal.id)?.score
-										: delegateVoting.find((vote) => vote.proposal === proposal.id)?.score}
+								{@const score = getScore(proposal)}
+
 								<VotingSlider
 									bind:phase
 									onSelection={(pos) => {

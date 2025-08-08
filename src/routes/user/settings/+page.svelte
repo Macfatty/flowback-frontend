@@ -17,6 +17,7 @@
 	import { env } from '$env/dynamic/public';
 	import type { report } from '$lib/Generic/interface';
 	import { linkToPost } from '$lib/Generic/GenericFunctions';
+	import Modal from '$lib/Generic/Modal.svelte';
 
 	let selectedPage: 'profile' | 'notifications' | 'poll-process' | 'info' | 'reports' = 'profile',
 		optionsDesign =
@@ -52,7 +53,17 @@
 		},
 		reports: report[] = [],
 		serverConfig: any = {},
-		version = '1';
+		version = '2',
+		open = false,
+		selectedRepport: report = {
+			description: '',
+			group_id: 0,
+			post_id: 0,
+			post_type: 'poll',
+			post_title: '',
+			post_description: '',
+			title: ''
+		};
 
 	const userUpdate = async () => {
 		const { res, json } = await fetchRequest('POST', 'user/update', {
@@ -279,13 +290,16 @@
 					{#if reports?.length > 0}
 						<span>{$_('Reports')}</span>
 						{#each reports as report}
-							<a
-								href={`${linkToPost(report.post_id, report.group_id, report.post_type)}`}
-								class="flex justify-between p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" 
+							<button
+								on:click={() => {
+									selectedRepport = report;
+									open = true;
+								}}
+								class="flex justify-between p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
 							>
 								<span>{report?.title}</span>
 								<span>{report?.description}</span>
-							</a>
+							</button>
 						{/each}
 					{:else}
 						{$_('There are currently no reports')}
@@ -295,3 +309,20 @@
 		</div>
 	</div>
 </Layout>
+
+<Modal bind:open>
+	<div slot="header">{$_('Report Details')}</div>
+	<div slot="body" class="flex flex-col gap-2">
+		<span>{selectedRepport?.post_title}</span>
+		<span>{selectedRepport?.post_description}</span>
+		<span>{selectedRepport?.title}</span>
+		<span>{selectedRepport?.description}</span>
+		<a
+			href={`${linkToPost(
+				selectedRepport.post_id,
+				selectedRepport.group_id,
+				selectedRepport.post_type
+			)}`}>goto</a
+		>
+	</div>
+</Modal>

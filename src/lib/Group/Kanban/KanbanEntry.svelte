@@ -319,9 +319,9 @@
 		</div>
 	{/if}
 	{#if (filter.type === 'group' && kanban.origin_type === 'group') || (filter.type === 'home' && kanban.origin_type === 'user')}
-		<div class="flex justify-between mt-3 align-middle">
+		<div class="flex justify-between mt-3">
 			<button
-				class="cursor-pointer hover:text-gray-400 px-3 py-0.5 transition-all"
+				class="cursor-pointer hover:text-gray-400 py-0.5 transition-all"
 				on:click={(event) => {
 					event.stopPropagation();
 					if (kanban.lane > 1) {
@@ -329,11 +329,11 @@
 					}
 				}}
 			>
-				<Fa icon={faArrowLeft} size="sm" />
+				<Fa icon={faArrowLeft} size="md" />
 			</button>
 
 			<button
-				class="cursor-pointer hover:dark:text-darkmodeText hover:text-gray-400 px-3 py-0.5 transition-all"
+				class="cursor-pointer hover:dark:text-darkmodeText hover:text-gray-400 py-0.5 transition-all"
 				on:click={(event) => {
 					event.stopPropagation();
 					if (kanban.lane < lanes.length - 1) {
@@ -341,7 +341,7 @@
 					}
 				}}
 			>
-				<Fa icon={faArrowRight} size="sm" />
+				<Fa icon={faArrowRight} size="md" />
 			</button>
 		</div>
 	{/if}

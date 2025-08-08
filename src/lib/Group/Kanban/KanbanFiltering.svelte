@@ -85,21 +85,29 @@
 			bind:value={filter.search}
 		/>
 
-		<Select
-			labels={['home', 'group']}
-			values={['home', 'group']}
-			bind:value={filter.type}
-			label="Select Type"
-			disableFirstChoice
-		/>
+		<div class="flex items-center justify-center gap-16 px-2 mt-2">
+			<div class="flex flex-row flex-1 gap-2 items-center">
+				<label class="block text-md whitespace-nowrap" for="group">
+					{$_('Select Type')}:
+				</label>
 
-		{#if filter.type === 'group'}
-			<div class="flex items-center justify-center gap-16 px-2 mt-2">
+				<select
+					style="width:100%"
+					class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
+					id="group"
+					bind:value={filter.type}
+				>
+					<option value={'home'}>{$_('Home')}</option>
+					<option value={'group'}>{$_('Group')}</option>
+				</select>
+			</div>
+
+			{#if filter.type === 'group'}
 				<div class="flex flex-row flex-1 gap-2 items-center">
 					<label class="block text-md whitespace-nowrap" for="group">
 						{$_('Group')}:
 					</label>
-					
+
 					<select
 						style="width:100%"
 						class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
@@ -129,7 +137,7 @@
 						{/each}
 					</select>
 				</div>
-			</div>
-		{/if}
+			{/if}
+		</div>
 	</div>
 </form>

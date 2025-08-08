@@ -150,7 +150,7 @@
 		{#each tags as _tag, i}
 			{#if i !== 0}
 				<div
-					class="bg-white min-w-[160px] md:min-w[170px] lg:min-w-[200px] max-w-[230px] p-2 m-1 dark:bg-darkbackground dark:text-darkmodeText border-gray-200 rounded shadow flex flex-col"
+					class="bg-white w-[100px] md:w-[150px] p-2 m-1 dark:bg-darkbackground dark:text-darkmodeText border-gray-200 rounded shadow flex flex-col"
 				>
 					<div class="flex justify-between pb-3">
 						<span class="xl:text-md md:text-sm p-1 font-medium">{$_(_tag)}</span>
@@ -162,6 +162,7 @@
 							}}><Fa icon={faPlus} size="12px" /></button
 						>
 					</div>
+					<!-- max-w-[144px] -->
 					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
 						{#if filteredKanbanEntries?.length > 0}
 							{#each filteredKanbanEntries as kanban}

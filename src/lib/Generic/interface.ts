@@ -4,6 +4,8 @@ export interface report {
     group_id: number;
     post_id: number;
     post_type: 'poll' | 'thread'
+    post_title?: string;
+    post_description?: string;
 }
 
 export interface ModalButton {

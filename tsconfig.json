@@ -13,5 +13,6 @@
 		// "verbatimModuleSyntax":true,
 		// "allowImportingTsExtensions":true
 		// "moduleResolution": "NodeNext"
+		"allowImportingTsExtensions":true
 	}	
 }

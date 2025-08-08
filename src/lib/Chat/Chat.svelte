@@ -2,7 +2,7 @@
 	import ChatWindow from './ChatWindow.svelte';
 	import Preview from './Preview.svelte';
 	import { onMount } from 'svelte';
-	import type { GroupMembers, Message, PreviewMessage } from './interfaces';
+	import type { GroupMembers, PreviewMessage } from './interfaces';
 	import { _ } from 'svelte-i18n';
 	import { env } from '$env/dynamic/public';
 	import Fa from 'svelte-fa';
@@ -10,7 +10,7 @@
 	import { faCog } from '@fortawesome/free-solid-svg-icons';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import { darkModeStore, getIconFilter } from '$lib/Generic/DarkMode';
-	import { chatPartner, isChatOpen } from './ChatStore.svelte';
+	import { chatPartner, isChatOpen } from './functions';
 	import { goto } from '$app/navigation';
 	import CreateChatGroup from '$lib/Chat/CreateChatGroup.svelte';
 	import { updateUserData } from './functions';
@@ -44,7 +44,7 @@
 		// console.log("clear timestampKey", localStorage.getItem(timestampKey));
 
 		// Update server-side timestamp
-		await updateUserData(chatterId, new Date(), new Date());
+		// await updateUserData(chatterId, new Date(), new Date());
 
 		// Clear notification for direct messages
 		if (page === 'direct') {
@@ -135,8 +135,9 @@
 <div
 	bind:this={chatDiv}
 	class:invisible={!chatOpen}
-	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-40 w-full h-[100vh] justify-center"
+	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-40 w-full h-[100vh]"
 >
+
 	<div class="w-full flex justify-between mr-6">
 		<Button
 			onClick={() => {
