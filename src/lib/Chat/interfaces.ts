@@ -91,3 +91,13 @@ export interface GroupMembers {
 	public_status: string;
 	username: string;
 }
+
+export interface Direct {
+	id: number;
+	profile_image: string | null;
+	username: string;
+	banner_image: string | null;
+	chat_status: string;
+	channel_id: number;
+	public_status: string;
+}
