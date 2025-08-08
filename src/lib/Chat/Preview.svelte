@@ -94,7 +94,7 @@
 	// Handle chat selection and clear notifications
 	const clickedChatter = async (chatterId: any) => {
 		// Update server-side timestamp
-		await updateUserData(chatterId, new Date(), new Date());
+		// await updateUserData(chatterId, new Date(), new Date());
 
 		// Update localStorage timestamp to mark chat as read
 		const timestampKey = `lastInteraction_${chatterId}`;

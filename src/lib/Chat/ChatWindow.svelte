@@ -137,7 +137,7 @@
 		const timestampKey = `lastInteraction_${selectedChat}`;
 		localStorage.setItem(timestampKey, new Date().toISOString());
 
-		await updateUserData(selectedChat, new Date());
+		// await updateUserData(selectedChat, new Date());
 	};
 
 	// Fetch older messages
@@ -184,7 +184,7 @@
 				topic_id: message.topic_id
 			});
 			messages = messages;
-			updateUserData(selectedChatChannelId, new Date());
+			// updateUserData(selectedChatChannelId, new Date());
 		} else {
 			let previewMessage = preview.find((p) => p.channel_id === message.channel_id);
 			if (!previewMessage) {
@@ -274,9 +274,10 @@
 			const d = document.querySelector('#chat-window');
 			d?.scroll(0, 100000);
 		}, 100);
-	$: if (selectedChatChannelId) {
-		updateUserData(selectedChatChannelId, new Date());
-	}
+
+	// $: if (selectedChatChannelId) {
+	// 	updateUserData(selectedChatChannelId, new Date());
+	// }
 </script>
 
 {#if selectedChatChannelId !== null}

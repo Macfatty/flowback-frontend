@@ -44,7 +44,7 @@
 		// console.log("clear timestampKey", localStorage.getItem(timestampKey));
 
 		// Update server-side timestamp
-		await updateUserData(chatterId, new Date(), new Date());
+		// await updateUserData(chatterId, new Date(), new Date());
 
 		// Clear notification for direct messages
 		if (page === 'direct') {
