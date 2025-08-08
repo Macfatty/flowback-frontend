@@ -87,13 +87,13 @@
 
 <Layout>
 	{#if loading}
-		<Loader bind:loading Class="mt-24" />
+		<Loader bind:loading />
 	{:else if userInGroup}
 		<div class="flex flex-col items-center">
 			<GroupHeader bind:selectedPage {group} {memberCount} />
-			<div class="flex justify-center mt-4 md:mt-10 lg:mt-16 gap-4 md:gap-10 lg:gap-16 mb-16">
+			<div class="flex justify-center gap-6 mt-12">
 				<main
-					class={`w-full sm:w-[400px] md:w-[500px] lg:w-[760px] xl:w-[1000px] 
+					class={`w-[70vw] max-w-[800px] 
 				`}
 				>
 					<!-- Here is where the different pages on a group are selected and switched around with, such as "Flow" page which is 
@@ -102,11 +102,6 @@
 					<!-- TODO: Simplify this, look in SideBarButtons file to simplify more there -->
 
 					{#if selectedPage === 'flow'}
-						<!-- <PollThumbnails
-							infoToGet={env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? 'user' : 'group'}
-							Class={`w-full mx-auto my-0`}
-						/> -->
-
 						<PollThreadThumbnails
 							infoToGet={env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? 'user' : 'group'}
 							Class={`w-full mx-auto my-0`}
