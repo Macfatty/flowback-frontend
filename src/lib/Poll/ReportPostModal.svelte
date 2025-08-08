@@ -11,7 +11,9 @@
 	export let reportModalShow = false,
 		post_type: 'poll' | 'thread' = 'poll',
 		group_id: string | number = '',
-		post_id: string | number = '';
+		post_id: string | number = '',
+		post_title: string = '',
+		post_description: string = '';
 
 	let title: string,
 		description: string,
@@ -27,7 +29,9 @@
 			description,
 			post_type,
 			post_id,
-			group_id
+			group_id,
+			post_title,
+			post_description
 		};
 
 		if (description === '') {

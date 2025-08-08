@@ -217,6 +217,8 @@
 	post_type="thread"
 	group_id={thread?.group_id}
 	post_id={thread?.id}
+	post_title={thread.title}
+	post_description={thread.description}
 	bind:reportModalShow
 />
 

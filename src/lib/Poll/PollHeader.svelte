@@ -143,6 +143,8 @@
 	post_type="poll"
 	group_id={poll.group_id}
 	post_id={poll.id}
+	post_title={poll.title}
+	post_description={poll.description}
 	bind:reportModalShow={reportPollModalShow}
 />
 

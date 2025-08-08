@@ -40,7 +40,7 @@
 		phase = getPhase(poll);
 		scrollToSection();
 		checkForLinks(poll?.description, 'poll-description');
-		document.title = poll.title;
+		document.title = poll?.title;
 		getDisplayForm();
 		setUpPredictionStore();
 	});
@@ -59,8 +59,8 @@
 		}
 
 		poll = json?.results[0];
-		pollType = json?.results[0].poll_type;
-		finished = new Date(json?.results[0].end_date) < new Date();
+		pollType = json?.results[0]?.poll_type;
+		finished = new Date(json?.results[0]?.end_date) < new Date();
 	};
 
 	const scrollToSection = () => {
