@@ -148,6 +148,14 @@
 		voting[i].score = Number(score);
 		voting = voting;
 	};
+
+	const getScore = (proposal: proposal) => {
+		if (phase === 'delegate_vote') {
+			return delegateVoting?.find((vote) => vote.proposal === proposal.id)?.score;
+		} else if (phase === 'vote') {
+			return voting?.find((vote) => vote.proposal === proposal.id)?.score;
+		}
+	};
 </script>
 
 <div class={`box-border ${Class}`}>
@@ -165,10 +173,8 @@
 							{proposal}
 						>
 							{#if phase === 'delegate_vote' || phase === 'vote'}
-								{@const score =
-									phase === 'vote'
-										? voting?.find((vote) => vote.proposal === proposal.id)?.score
-										: delegateVoting?.find((vote) => vote.proposal === proposal.id)?.score}
+								{@const score = getScore(proposal)}
+
 								<VotingSlider
 									bind:phase
 									onSelection={(pos) => {
