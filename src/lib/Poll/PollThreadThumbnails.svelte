@@ -65,7 +65,7 @@
 			$posts = sortedPosts;
 		}
 	}
-	
+
 	async function fetchPolls() {
 		try {
 			loading = true;
@@ -141,7 +141,7 @@
 			(thread && thread.work_group?.id === Number(filter.workgroup)); // Match thread workgroup
 
 		// return false;
-		return (matchesSearch && matchesWorkgroup) || false
+		return (matchesSearch && matchesWorkgroup) || false;
 	}
 
 	onMount(async () => {
@@ -169,21 +169,18 @@
 				bind:showPolls
 			/>
 
-			{#if $posts.length === 0 && !loading}
+			{#if $posts?.length === 0 && !loading}
 				<div class="bg-white dark:bg-darkobject rounded shadow p-8 mt-6">
 					{$_('No posts currently here')}
 				</div>
-			{:else if $posts?.length > 0 && (polls.length > 0 || threads.length > 0)}
+			{:else if $posts?.length > 0 && (polls?.length > 0 || threads?.length > 0)}
 				{#each $posts as post}
-					{#if post.related_model === 'thread' && showThreads && matchesFilter(post)}
+					{#if post?.related_model === 'thread' && showThreads && matchesFilter(post)}
 						<ThreadThumbnail
-							thread={threads.find((thread) => thread.id === post.id) || threads[0]}
+							thread={threads?.find((thread) => thread?.id === post?.id) || threads[0]}
 						/>
-					{:else if post.related_model === 'poll' && showPolls && matchesFilter(post)}
-						<PollThumbnail
-							poll={polls.find((poll) => poll.id === post.id) || polls[0]}
-							
-						/>
+					{:else if post?.related_model === 'poll' && showPolls && matchesFilter(post)}
+						<PollThumbnail poll={polls?.find((poll) => poll?.id === post?.id) || polls[0]} />
 					{/if}
 				{/each}
 			{:else if !loading}
