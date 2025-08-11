@@ -47,7 +47,9 @@
 			return;
 		}
 
-		removeGroupMembership(Number($page.params.groupId));
+		if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE')
+			removeGroupMembership(Number($page.params.groupId));
+
 		goto('/home');
 	};
 
