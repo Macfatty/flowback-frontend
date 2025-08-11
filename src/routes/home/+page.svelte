@@ -65,16 +65,16 @@
 </script>
 
 <Layout centered>
-	{#if invitations && invitations?.length > 0}
+	{#if invitations && invitations.length > 0}
 		<ul class="w-full mt-6 flex flex-col gap-6 max-w-[700px]">
 			{#each invitations as invite}
-				{#if !invite.external}
+				{#if !invite?.external}
 					<li class="bg-white p-6 shadow rounded dark:bg-darkobject dark:text-darkmodeText">
-						<span>{$_('You have been invited to')} {invite.group_name}</span>
+						<span>{$_('You have been invited to')} {invite?.group_name}</span>
 
 						<div class="mt-4">
-							<Button onClick={() => acceptInvitation(invite.group)}>{$_('Accept')}</Button>
-							<Button onClick={() => rejectInvitation(invite.group)}>{$_('Reject')}</Button>
+							<Button onClick={() => acceptInvitation(invite?.group)}>{$_('Accept')}</Button>
+							<Button onClick={() => rejectInvitation(invite?.group)}>{$_('Reject')}</Button>
 						</div>
 					</li>
 				{/if}

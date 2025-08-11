@@ -6,7 +6,6 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { page } from '$app/stores';
-	import Button from '$lib/Generic/Button.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { checkForLinks, elipsis } from '$lib/Generic/GenericFunctions';
 	import type { GroupUser } from '../interface';
@@ -22,6 +21,7 @@
 	import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 	import Select from '$lib/Generic/Select.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import EveryProperty from '$lib/Generic/EveryProperty.svelte';
 
 	export let kanban: kanban,
 		filter: Filter,
@@ -262,6 +262,7 @@
 		>
 			{kanban.title}
 		</div>
+
 		<div class="cursor-pointer hover:underline p-1">
 			{#if kanban.priority}
 				<KanbanIcons Class="text-sm" bind:priority={kanban.priority} />
