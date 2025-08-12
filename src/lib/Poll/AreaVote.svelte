@@ -69,15 +69,7 @@
 	});
 </script>
 
-<!-- <RadioButtons2
-		name="vote"
-		labels={tags.map((tag) => tag.name)}
-		values={tags.map((tag) => tag.id)}
-		ClassInner="block"
-		bind:value={selectedTag}
-	/>  -->
-
-<div class="m-4 flex flex-col h-[800px]">
+<div class="flex flex-col h-[40vh] md:h-[50vh] lg:h-[60vh] xl:h-[70vh] max-h-[800px]">
 	<h2 class="text-xl font-semibold mb-4 text-primary dark:text-secondary">
 		{$_('Areas')} ({tags.length})
 	</h2>

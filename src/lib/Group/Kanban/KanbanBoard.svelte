@@ -140,17 +140,14 @@
 	$: if (filter.type) getKanbanEntries();
 </script>
 
-<div
-	class={' dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words md:max-w-[calc(500px*5)]' +
-		Class}
->
+<div class={'dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words' + Class}>
 	<KanbanFiltering bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" />
 
 	<div class="flex overflow-x-auto py-3">
 		{#each tags as _tag, i}
 			{#if i !== 0}
 				<div
-					class="bg-white w-[100px] md:w-[150px] p-2 m-1 dark:bg-darkbackground dark:text-darkmodeText border-gray-200 rounded shadow flex flex-col"
+					class="bg-white w-[15vw] max-w-[250px] p-2 m-1 dark:bg-darkbackground dark:text-darkmodeText border-gray-200 rounded shadow flex flex-col"
 				>
 					<div class="flex justify-between pb-3">
 						<span class="xl:text-md md:text-sm p-1 font-medium">{$_(_tag)}</span>

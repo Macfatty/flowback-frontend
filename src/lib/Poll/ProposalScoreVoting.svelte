@@ -20,7 +20,8 @@
 		needsReload = 0,
 		errorHandler: any,
 		commentFilterProposalId: number | null = null,
-		delegateVoting: { score: number; proposal: number }[] = [];
+		delegateVoting: { score: number; proposal: number }[] = [],
+		style: 'purple' | 'gray' = 'purple';
 
 	onMount(async () => {
 		await getProposals();
@@ -53,12 +54,17 @@
 	};
 
 	const getVotes = async () => {
-		const { json } = await fetchRequest(
+		const { json, res } = await fetchRequest(
 			'GET',
 			`group/poll/${$page.params.pollId}/proposal/votes?limit=${proposalsLimit}`
 		);
 
-		if (!json?.results || json?.results?.length === 0) return;
+		if (!res.ok) return;
+
+		if (json.results.length === 0) {
+			voting = delegateVoting;
+			return;
+		}
 
 		voting = voting.map((vote) => ({
 			score: (vote.score = json?.results?.find(
@@ -67,7 +73,6 @@
 			proposal: vote.proposal
 		}));
 		voting = voting;
-		console.log(voting);
 	};
 
 	const getDelegateVotes = async () => {
@@ -189,6 +194,10 @@
 									{score}
 									delegateScore={delegateVoting?.find((vote) => vote.proposal === proposal.id)
 										?.raw_score}
+									style={(() => {
+										if (phase === 'vote' && voting === delegateVoting) return 'gray';
+										else return 'purple';
+									})()}
 								/>
 							{/if}
 						</Proposal>
