@@ -2,7 +2,7 @@
 	import { env } from '$env/dynamic/public';
 	import Button from '$lib/Generic/Button.svelte';
 	import Layout from '$lib/Generic/Layout.svelte';
-	import Kanban from '$lib/Group/Kanban/KanbanBoard.svelte';
+	import KanbanBoard from '$lib/Group/Kanban/KanbanBoard.svelte';
 	import { _ } from 'svelte-i18n';
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -24,9 +24,8 @@
 			</div>
 		</Button>
 		<div class="flex justify-center">
-			<Kanban
+			<KanbanBoard
 				type={env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? 'group' : 'group'}
-				Class="w-[1000px] z-10"
 			/>
 		</div>
 	</div>

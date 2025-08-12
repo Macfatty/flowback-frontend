@@ -8,7 +8,7 @@
 		phase: Phase = 'area_vote';
 
 	let genericStyle =
-		'bg-white dark:bg-darkobject dark:text-darkmodeText p-4 h-[100%] h-full rounded shadow-md';
+		'bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md';
 
 	onMount(() => {});
 </script>

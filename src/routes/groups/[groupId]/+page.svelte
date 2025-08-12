@@ -13,7 +13,7 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { page } from '$app/stores';
 	import Tags from '$lib/Group/Tags.svelte';
-	import Kanban from '$lib/Group/Kanban/KanbanBoard.svelte';
+	import KanbanBoard from '$lib/Group/Kanban/KanbanBoard.svelte';
 	import { _ } from 'svelte-i18n';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import Permissions from '$lib/Group/Permissions/Permissions.svelte';
@@ -121,7 +121,7 @@
 					{:else if selectedPage === 'tags'}
 						<Tags />
 					{:else if selectedPage === 'kanban'}
-						<Kanban type="group" />
+						<KanbanBoard type="group" />
 					{:else if selectedPage === 'perms'}
 						<Permissions />
 					{:else if selectedPage === 'schedule'}
