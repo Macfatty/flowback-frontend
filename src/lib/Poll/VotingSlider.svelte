@@ -9,7 +9,8 @@
 		score: number | null = null,
 		delegateScore: number | null = null,
 		phase: Phase,
-		disabled = false;
+		disabled = false,
+		style: 'purple' | 'gray' = 'purple';
 
 	const maxScore = 5;
 	const snapPoints = Array.from({ length: maxScore + 1 }, (_, i) => i); // [0,1,2,3,4,5]
@@ -54,7 +55,7 @@
 	};
 
 	$: score !== null ? snapToSnapPoint(score) : snapToSnapPoint(0);
-	$: isOverridden = delegateScore !== null && score !== null && score !== delegateScore;
+	// $: isOverridden = delegateScore !== null && score !== null && score !== delegateScore;
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -74,6 +75,8 @@
 		<!-- Active bar -->
 		<div
 			class="absolute top-0 left-0 h-full"
+			class:!dark:bg-gray-500={style === 'gray'}
+			class:!bg-gray-300={style === 'gray'}
 			style="width: {lineWidth}%; background-color: {true ? '#a78bfa' : '#BBBBBB'};"
 		/>
 
