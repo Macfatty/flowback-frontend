@@ -116,7 +116,7 @@
 			'POST',
 			filter.type === 'group'
 				? `group/${
-						env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId
+						env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : filter.group
 				  }/kanban/entry/update`
 				: 'user/kanban/entry/update',
 			formData,
