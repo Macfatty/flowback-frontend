@@ -25,7 +25,7 @@
 	
 	const updateChart = () => {
 		labels.forEach(label => {
-			chart.data.labels.push(label);
+			chart?.data?.labels?.push(label);
 		});
 	
 		console.log(votes)

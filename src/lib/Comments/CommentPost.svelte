@@ -172,16 +172,15 @@
 		}
 	};
 
-	document.addEventListener('keydown', handleKeyDown);
-
 	onMount(() => {
+		document.addEventListener('keydown', handleKeyDown);
 		darkModeStore.subscribe((value) => {
 			darkmode = value;
 		});
 	});
 
 	onDestroy(() => {
-		document.removeEventListener('keydown', handleKeyDown);
+		// document.removeEventListener('keydown', handleKeyDown);
 	});
 </script>
 
@@ -194,7 +193,7 @@
 		class="hidden absolute z-50 bg-white dark:bg-darkbackground shadow w-full top-full border-gray-300 rounded"
 		class:!block={recentlyTappedButton === '#'}
 	>
-		{#if proposals?.length > 0}
+		{#if proposals?.length > 0 && api === 'poll'}
 			<div class="max-h-30 overflow-y-auto">
 				<div class="px-4 py-2 font-semibold text-sm text-gray-600 border-b border-gray-200">
 					{$_('All proposals')}

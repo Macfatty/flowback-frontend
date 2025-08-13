@@ -102,8 +102,8 @@
 	post_type="thread"
 	group_id={$page.params.groupId}
 	post_id={thread?.id}
-	post_title={thread.title}
-	post_description={thread.description}
+	post_title={thread?.title}
+	post_description={thread?.description}
 	bind:reportModalShow
 />
 

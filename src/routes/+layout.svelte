@@ -229,7 +229,7 @@
 
 <main class="">
 	{#if showUI}
-		<Chat />
+		<!-- <Chat /> -->
 		<Header />
 	{/if}
 

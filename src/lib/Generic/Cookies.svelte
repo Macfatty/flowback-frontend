@@ -32,5 +32,5 @@
 	class:hidden={hasClicked !== false}
 >
 	<span class="text-center">{$_('We use cookies to improve the experience of Flowback')} </span>
-	<Button onClick={acceptCookies} Class="mt-2 py-1">{$_('Ok')}</Button>
+	<Button id="cookies-accept" onClick={acceptCookies} Class="mt-2 py-1">{$_('Ok')}</Button>
 </div>

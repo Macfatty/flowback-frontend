@@ -140,7 +140,7 @@
 	$: if (filter.type) getKanbanEntries();
 </script>
 
-<div class={'dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words' + Class}>
+<div id="kanban-board" class={'dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words' + Class}>
 	<KanbanFiltering bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" />
 
 	<div class="flex overflow-x-auto py-3">
@@ -152,6 +152,7 @@
 					<div class="flex justify-between pb-3">
 						<span class="xl:text-md md:text-sm p-1 font-medium">{$_(_tag)}</span>
 						<button
+							id={`${_tag}-add`}
 							class="text-sm p-1"
 							on:click={() => {
 								open = true;

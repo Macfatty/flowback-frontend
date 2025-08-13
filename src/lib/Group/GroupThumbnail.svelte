@@ -57,15 +57,15 @@
 			return;
 		}
 
-		removeGroupMembership(group.id);
+		if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') removeGroupMembership(group.id);
 		areYouSureModal = false;
 		group.joined = false;
 		group.pending_join = false;
 	};
 </script>
 
-<button
-	class={`w-4/6 md:w-2/5 max-w-[650px] bg-white relative shadow-md dark:bg-darkobject dark:text-darkmodeText ${
+<div
+	class={`w-4/6 md:w-2/5 max-w-[650px] bg-white relative shadow-md dark:bg-darkobject dark:text-darkmodeText text-center ${
 		group.joined && 'cursor-pointer hover:shadow-xl vote-thumbnail'
 	} transition-shadow rounded-2xl`}
 >
@@ -119,7 +119,7 @@
 			)}
 		</Button>
 	</div>
-</button>
+</div>
 
 <Modal
 	bind:open={areYouSureModal}

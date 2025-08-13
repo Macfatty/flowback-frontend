@@ -294,7 +294,7 @@
 					)?.pool_id}
 					<div class="flex items-center">
 						<button
-							on:click={() => goto(`/user?id=${user.user.id}&delegate_id=${delegationId || ''}`)}
+							on:click={() => goto(`/user?id=${user.user.id}&delegate_id=${delegationId || ''}&group_id=${$page.params.groupId}`)}
 							Class="w-[30%]"
 						>
 							<ProfilePicture
