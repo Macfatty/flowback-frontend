@@ -61,7 +61,7 @@
 	}
 
 	// Debug queue changes
-	$: console.log('Current popupQueue:', $popupQueue);
+	// $: console.log('Current popupQueue:', $popupQueue);
 </script>
 
 {#each $popupQueue as popup (popup.id)}

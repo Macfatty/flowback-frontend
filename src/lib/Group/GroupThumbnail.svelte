@@ -57,7 +57,7 @@
 			return;
 		}
 
-		removeGroupMembership(group.id);
+		if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') removeGroupMembership(group.id);
 		areYouSureModal = false;
 		group.joined = false;
 		group.pending_join = false;

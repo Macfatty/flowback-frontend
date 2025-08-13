@@ -4,16 +4,12 @@
 	import { page } from '$app/stores';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import TextArea from '$lib/Generic/TextArea.svelte';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
 	import { _ } from 'svelte-i18n';
-	import { type StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import { goto } from '$app/navigation';
 	import { createPoll as createPollBlockchain } from '$lib/Blockchain_v1_Ethereum/javascript/pollsBlockchain';
 	import FileUploads from '$lib/Generic/FileUploads.svelte';
-	import type { pollType, template } from './interface';
 	import AdvancedTimeSettings from './AdvancedTimeSettings.svelte';
 	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
 	import Tab from '$lib/Generic/Tab.svelte';
@@ -32,7 +28,6 @@
 
 	let title = '',
 		description = '',
-		status: StatusMessageInfo | undefined,
 		start_date = new Date(),
 		area_vote_end_date = new Date(),
 		proposal_end_date = new Date(),
@@ -48,7 +43,7 @@
 		images: File[],
 		isFF = false,
 		pushToBlockchain = true,
-		selected_poll: pollType = 'Text Poll',
+		selected_poll: any = 'Text Poll',
 		selectedPage: 'poll' | 'thread' =
 			$page.url.searchParams.get('type') === 'thread' ? 'thread' : 'poll',
 		tags: { id: number }[] = [],
@@ -116,7 +111,7 @@
 
 		loading = false;
 
-		if (!res.ok) status = statusMessageFormatter(res, json);
+		// if (!res.ok) status = statusMessageFormatter(res, json);
 
 		if (res.ok && groupId) {
 			goto(`groups/${groupId}/polls/${json}`);
@@ -124,7 +119,12 @@
 	};
 
 	const createThread = async () => {
-		let thread: { title: string; description?: string; public?:boolean, work_group_id?: number | null } = {
+		let thread: {
+			title: string;
+			description?: string;
+			public?: boolean;
+			work_group_id?: number | null;
+		} = {
 			title
 		};
 
@@ -189,18 +189,17 @@
 		}
 	};
 
-	document.addEventListener('keydown', handleKeyDown);
-
 	onDestroy(() => {
-		document.removeEventListener('keydown', handleKeyDown);
+		// document.removeEventListener('keydown', handleKeyDown);
 	});
 
 	onMount(async () => {
+		document.addEventListener('keydown', handleKeyDown);
 		getGroupTags();
 		getWorkGroupList();
 	});
 
-	$: if (selectedPage) status = undefined;
+	// $: if (selectedPage) status = undefined;
 </script>
 
 <form
@@ -234,7 +233,6 @@
 			<TextInput inputClass="bg-white" required label="Title" bind:value={title} />
 			<TextArea label="Description" bind:value={description} inputClass="whitespace-pre-wrap" />
 			<FileUploads bind:files={images} disableCropping />
-
 			{#if (selectedPage === 'thread' || selected_poll === 'Date Poll') && !isPublic}
 				<Select
 					classInner="border border-gray-300"
@@ -313,11 +311,9 @@
 				<!-- <Button action={() => createPollBlockchain(Number($page.url.searchParams.get('id')), "title")}>Push to Blockchain?</Button> -->
 			{/if}
 
-			<StatusMessage bind:status />
-
 			<Button type="submit" disabled={loading} Class={'bg-primary p-3 mt-3'}>{$_('Post')}</Button>
-		</div></Loader
-	>
+		</div>
+	</Loader>
 </form>
 
 <style>
