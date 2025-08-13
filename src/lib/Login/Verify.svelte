@@ -10,7 +10,8 @@
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
 	import { goto } from '$app/navigation';
 	import { env } from '$env/dynamic/public';
-	import { becomeMemberOfGroup } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
+	// TODO: Blockchain
+	// import { becomeMemberOfGroup } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 
@@ -69,7 +70,7 @@
 			const { res } = await fetchRequest('POST', `group/1/join`, { to: 1 });
 			if (!res.ok) return;
 
-			if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') becomeMemberOfGroup(group.blockchain_id);
+			// if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') becomeMemberOfGroup(group?.blockchain_id);
 
 			goto('/home');
 
