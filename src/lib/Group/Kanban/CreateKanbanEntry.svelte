@@ -154,7 +154,7 @@
 	};
 </script>
 
-<Modal bind:open Class="min-w-[400px] max-w-[500px]" onSubmit={createKanbanEntry}>
+<Modal bind:open Class="min-w-[400px] max-w-[500px]" onSubmit={createKanbanEntry} id="create-kanban-entry-modal">
 	<div slot="header">
 		<h2 class="text-xl">{$_('Create Kanban Entry')}</h2>
 	</div>
