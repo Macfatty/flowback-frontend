@@ -172,16 +172,15 @@
 		}
 	};
 
-	document.addEventListener('keydown', handleKeyDown);
-
 	onMount(() => {
+		document.addEventListener('keydown', handleKeyDown);
 		darkModeStore.subscribe((value) => {
 			darkmode = value;
 		});
 	});
 
 	onDestroy(() => {
-		document.removeEventListener('keydown', handleKeyDown);
+		// document.removeEventListener('keydown', handleKeyDown);
 	});
 </script>
 
