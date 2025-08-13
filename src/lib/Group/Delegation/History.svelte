@@ -5,7 +5,6 @@
 	import { page } from '$app/stores';
 	import type { DelegatePool, VoteHistory } from './interfaces';
 	import { _ } from 'svelte-i18n';
-	import { goto } from '$app/navigation';
 	import Comments from '$lib/Comments/Comments.svelte';
 	import Button from '$lib/Generic/Button.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
@@ -145,15 +144,14 @@
 							class="bg-white dark:bg-darkobject dark:text-darkmodeText p-3 w-full border-b last:border-b-0 dark:border-gray-600"
 						>
 							<div class="flex flex-col gap-2">
-								<button
+								<a
 									class="w-full break-words text-left text-xl p-1 pl-0 text-gray-900 dark:text-gray-300 cursor-pointer hover:underline"
-									on:click={() =>
-										goto(
-											`groups/${delegatePool?.delegates[0].group_user.group_id}/polls/${vote?.poll_id}`
-										)}
+									href={`groups/${new URLSearchParams(window.location.search).get(
+										'group_id'
+									)}/polls/${vote?.poll_id}`}
 								>
-									{vote?.poll_title}
-								</button>
+									{vote?.poll_title || $_('No title')}
+								</a>
 
 								{#if vote?.poll_description}
 									<div class="text-sm text-gray-600 dark:text-gray-400 pl-1">
