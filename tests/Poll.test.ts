@@ -23,4 +23,33 @@ test('Create-Poll', async ({ page }) => {
     await page.getByRole('button', { name: 'Post' }).click();
     await expect(page.getByRole('heading', { name: 'Test Poll' })).toBeVisible();
     await expect(page).toHaveURL(/\/groups\/6\/polls\/\d+$/);
+
+await page.getByRole('radio').check();
+await page.getByRole('button', { name: 'Submit' }).click();
+await expect(page.getByText('Successfully voted for area')).toBeVisible();
+await page.getByRole('button', { name: 'Cancel' }).click();
+await expect(page.getByText('Vote cancelled')).toBeVisible();
+await page.getByRole('radio').check();
+await page.getByRole('button', { name: 'Submit' }).click();
+await expect(page.getByText('Successfully voted for area')).toBeVisible();
+await page.locator('div:nth-child(3) > button').first().click();
+await page.getByRole('button', { name: 'Fast Forward' }).click();
+
+//Proposal phase
+
+await page.getByRole('button', { name: 'Add Proposal' }).click();
+await page.getByRole('textbox', { name: 'Title * 0/' }).click();
+await page.getByRole('textbox', { name: 'Title * 0/' }).fill('Proposal test');
+await page.getByLabel('Description  0/').click();
+await page.getByLabel('Description  0/').fill('Proposal Test');
+await page.getByRole('button', { name: 'Cancel' }).click();
+await page.getByRole('button', { name: 'Add Proposal' }).click();
+await page.getByRole('textbox', { name: 'Title * 0/' }).click();
+await page.getByRole('textbox', { name: 'Title * 0/' }).fill('Proposal Test 2');
+await page.getByText('Description 0/').click();
+await page.getByLabel('Description  0/').click();
+await page.getByLabel('Description  0/').fill('Proposal Test 2');
+await page.getByRole('button', { name: 'Confirm' }).click();
+await expect(page.getByText('Successfully added proposal')).toBeVisible();
+await page.getByRole('button', { name: 'Proposal Test 2 Proposal Test' }).click();
 });
