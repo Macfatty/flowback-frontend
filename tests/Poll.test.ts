@@ -90,7 +90,63 @@ test('Create-Poll', async ({ page }) => {
 
     //Prediction Betting
     await page.locator('div').filter({ hasText: 'Current: Phase 4. Consequence' }).nth(2).click();
-    await page.locator('.border-b-2 > .mt-4 > div').first().click();
+    await page.locator('div').filter({ hasText: 'See More' }).first().click();
+
+    await page.getByRole('button', { name: 'See More' }).nth(1).click();
+    await page.locator('#track-container > div:nth-child(3)').click();
+    await expect(page.getByText('Probability successfully sent')).toBeVisible();
+    await page.locator('#track-container > div:nth-child(5)').click();
+    await page.getByRole('button', { name: 'See More' }).nth(3).click();
+    await expect(page.locator('#track-container')).toBeVisible();
+
+    await page.locator('#track-container > div').nth(5).click();
+    await expect(page.getByText('Probability successfully sent').first()).toBeVisible();
+    await page.getByRole('button', { name: 'See More' }).nth(1).click();
+    await expect(page.locator('#track-container > div:nth-child(8)')).toBeVisible();
+    await page.locator('#track-container > div:nth-child(6)').click();
+    await page.locator('#track-container > div:nth-child(5)').click();
+    await page.getByRole('button', { name: 'Clear probability' }).click();
+    await page.locator('#track-container > div:nth-child(4)').click();
+    await expect(page.locator('#popup-4').getByText('Probability successfully sent')).toBeVisible();
+    await page.locator('#popup-5').getByText('Probability successfully sent').click();
+    await page.locator('#popup-6').getByText('Probability successfully sent').click();
 
 
+
+    await page.locator('#poll-header-multiple-choices').first().click();
+    await page.getByRole('button', { name: 'Fast Forward' }).click();
+
+    // Delegate Voting Phase
+    await page.locator('div').filter({ hasText: 'Current: Phase 5. Delegate' }).nth(2).click();
+    await page.getByRole('button', { name: 'Proposal Test 3 Proposal Test' }).click();
+    await page.getByText('Successfully voted').click();
+    await page.getByRole('button', { name: 'Proposal Test 2 Proposal Test' }).click();
+    await page.getByRole('button', { name: 'Proposal Test 2 Proposal Test' }).click();
+    await page.getByRole('button', { name: 'Proposal Test 2 Proposal Test' }).click();
+    await page.getByRole('button', { name: 'Proposal Test 2 Proposal Test' }).click();
+    await page.getByRole('button', { name: 'Proposal Test 2 Proposal Test' }).click();
+    await page.getByRole('button', { name: 'Proposal Test 2 Proposal Test' }).click();
+    await page.getByRole('button', { name: 'See More' }).nth(3).click();
+    // await expect(page.getByText('Probability: 80%')).toBeVisible();
+    await page.getByRole('button', { name: 'See More' }).nth(1).click();
+    // await expect(page.getByText('Probability: 40%')).toBeVisible();
+
+
+    await page.locator('#poll-header-multiple-choices').first().click();
+    await page.getByRole('button', { name: 'Fast Forward' }).click();
+    // Voting Phase
+
+    await page.waitForTimeout(400);
+    await page.getByRole('button', { name: 'Fast Forward' }).click();
+    // Results Phase
+
+    await expect(page.getByText('Results', { exact: true })).toBeVisible();
+
+    await page.locator('canvas').click({
+      position: {
+        x: 43,
+        y: 92
+      }
+    });
+    await expect(page.getByText('Current: Phase 7. Results and')).toBeVisible();
 });
