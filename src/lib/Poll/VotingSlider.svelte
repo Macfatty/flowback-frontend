@@ -28,11 +28,13 @@
 		return nearestSnap;
 	};
 
-	const onMouseDown = (event: MouseEvent) => {
-		const container = (event.target as HTMLElement).closest('#track-container') as HTMLElement;
-		if (!container) return;
+	const onMouseDown = (e: MouseEvent) => {
+
 
 		const onMouseMove = (e: MouseEvent) => {
+			const container = (e.target as HTMLElement).closest('#track-container') as HTMLElement;
+			if (!container) return;
+
 			const rect = container.getBoundingClientRect();
 			const offsetX = e.clientX - rect.left;
 			const width = (offsetX / rect.width) * 100;
@@ -43,6 +45,8 @@
 		};
 
 		const onMouseUp = () => {
+			console.log('up');
+
 			if (disabled) return;
 			onSelection(currentSnapPosition!);
 			document.removeEventListener('mousemove', onMouseMove);
@@ -50,7 +54,8 @@
 			dragLinePosition = null;
 		};
 
-		document.addEventListener('mousemove', onMouseMove);
+
+		document.addEventListener('mousemove',onMouseMove);
 		document.addEventListener('mouseup', onMouseUp);
 	};
 
@@ -61,8 +66,6 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
 	class="w-full bg-white dark:bg-darkobject py-3 px-1 rounded-lg relative"
-	class:cursor-grab={!disabled}
-	class:cursor-not-allowed={disabled}
 	class:opacity-50={disabled}
 	class:draggable={!disabled &&
 		(($groupUserStore?.delegate_pool_id && phase === 'delegate_vote') ||
@@ -71,7 +74,12 @@
 		if (!disabled) onMouseDown(e);
 	}}
 >
-	<div id="track-container" class="p-1 relative w-full h-3 bg-purple-200 rounded-full">
+	<div
+		id="track-container"
+		class="p-1 relative w-full h-3 bg-purple-200 rounded-full"
+		class:cursor-grab={!disabled}
+		class:cursor-not-allowed={disabled}
+	>
 		<!-- Active bar -->
 		<div
 			class="absolute top-0 left-0 h-full"
@@ -81,6 +89,12 @@
 		/>
 
 		{#each snapPoints as point, index}
+			<!-- on:click={() => {
+					if (disabled) return;
+					lineWidth = (point / maxScore) * 100;
+					currentSnapPosition = point;
+					onSelection(point);
+				}} -->
 			<div
 				class="absolute top-1/2 w-2 h-2 bg-white rounded-full border border-gray-400 -translate-y-1/2"
 				style="left: {index === 0

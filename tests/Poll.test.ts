@@ -83,4 +83,14 @@ test('Create-Poll', async ({ page }) => {
     await page.locator('div').filter({ hasText: /^18$/ }).click();
     await page.getByRole('button', { name: 'Submit' }).click();
     await expect(page.getByText('Successfully created')).toBeVisible();
+
+
+    await page.locator('#poll-header-multiple-choices').first().click();
+    await page.getByRole('button', { name: 'Fast Forward' }).click();
+
+    //Prediction Betting
+    await page.locator('div').filter({ hasText: 'Current: Phase 4. Consequence' }).nth(2).click();
+    await page.locator('.border-b-2 > .mt-4 > div').first().click();
+
+
 });
