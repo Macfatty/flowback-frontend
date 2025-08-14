@@ -13,4 +13,5 @@ export async function login(page: any, {
   await page.click('button[type="submit"]');
 
   await expect(page).toHaveURL('/home');
+  await page.getByRole('button', { name: 'Ok' }).click();
 }
