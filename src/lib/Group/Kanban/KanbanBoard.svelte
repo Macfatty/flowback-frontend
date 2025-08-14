@@ -147,6 +147,7 @@
 		{#each tags as _tag, i}
 			{#if i !== 0}
 				<div
+					id={`${_tag}-kanban-lane`}
 					class="bg-white w-[15vw] max-w-[250px] p-2 m-1 dark:bg-darkbackground dark:text-darkmodeText border-gray-200 rounded shadow flex flex-col"
 				>
 					<div class="flex justify-between pb-3">

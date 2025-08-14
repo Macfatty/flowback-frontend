@@ -201,7 +201,7 @@
 
 		if (!res.ok) {
 			errorHandler.addPopup({
-				message: 'Failed to delete kanban task aaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+				message: 'Failed to delete kanban task',
 				success: false
 			});
 			return;
