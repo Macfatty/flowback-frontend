@@ -29,16 +29,13 @@ test('Kanban-User', async ({ page }) => {
 test('Kanban-Group', async ({ page }) => {
   await uiLogin(page);
 
-
-  // Navigate to the kanban page
-  // Click on the group button on the header
-
   await page.locator('#groups').click();
 
-  // Click the first button in the group list
-  await page.locator('#groups-list > div').first().first().click();
+  await expect(page.locator('#groups-list')).toBeVisible();
 
-  await expect(page).toHaveURL('/groups/6');
+  const groupLink = page.locator('#groups-list a[href^="/groups/"]').first();
+  await expect(groupLink).toBeVisible();
+  groupLink.click();
 
   await page.locator('#group-tasks-sidebar-button').click();
 

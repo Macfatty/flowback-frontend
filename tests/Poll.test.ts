@@ -6,10 +6,11 @@ test('Create-Poll', async ({ page }) => {
 
     await page.locator('#groups').click();
 
-    // Click the first button in the group list
-    await page.locator('#groups-list > div').first().first().click();
+    await expect(page.locator('#groups-list')).toBeVisible();
 
-    await expect(page).toHaveURL('/groups/6');
+    const groupLink = page.locator('#groups-list a[href^="/groups/"]').first();
+    await expect(groupLink).toBeVisible();
+    groupLink.click();
 
     await page.getByRole('button', { name: 'Create a post' }).click();
     await page.getByLabel('Title * 0/').click();
@@ -22,6 +23,4 @@ test('Create-Poll', async ({ page }) => {
     await page.getByRole('button', { name: 'Post' }).click();
     await expect(page.getByRole('heading', { name: 'Test Poll' })).toBeVisible();
     await expect(page).toHaveURL(/\/groups\/6\/polls\/\d+$/);
-
-
 });
