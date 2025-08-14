@@ -97,7 +97,7 @@
 
 	onMount(() => {
 		// closeWindowWhenClickingOutside();
-		groupSubcrube();
+		// groupSubcrube();
 	});
 
 	$: if (notificationOpen) {
