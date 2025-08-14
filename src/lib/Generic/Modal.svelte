@@ -83,7 +83,7 @@
 			{/if}
 			<div class="flex justify-center gap-2">
 				{#each buttons as button}
-					<Button buttonStyle={button.type} Class={`flex-1 ${button.class || ''}`} onClick={button.onClick}>
+					<Button id={button.label} buttonStyle={button.type} Class={`flex-1 ${button.class || ''}`} onClick={button.onClick}>
 						{$_(button.label)}
 					</Button>
 				{/each}

@@ -69,14 +69,23 @@
 		group.joined && 'cursor-pointer hover:shadow-xl vote-thumbnail'
 	} transition-shadow rounded-2xl`}
 >
-	<button on:click={goToGroup} class="w-full">
+	{#if group.joined}
+		<a href={`/groups/${group.id}`} class="w-full">
+			<img
+				src={`${env.PUBLIC_API_URL}${group.cover_image}`}
+				class="cover rounded-t-2xl w-full"
+				alt="cover"
+				on:error={(e) => onThumbnailError(e, DefaultBanner)}
+			/>
+		</a>
+	{:else}
 		<img
 			src={`${env.PUBLIC_API_URL}${group.cover_image}`}
 			class="cover rounded-t-2xl w-full"
 			alt="cover"
 			on:error={(e) => onThumbnailError(e, DefaultBanner)}
 		/>
-	</button>
+	{/if}
 	<img
 		src={`${env.PUBLIC_API_URL}${group.image}`}
 		class="bg-white rounded-full w-[100px] h-[100px] absolute left-1/2 -translate-x-1/2 -translate-y-1/2"

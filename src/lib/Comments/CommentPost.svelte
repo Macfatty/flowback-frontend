@@ -227,7 +227,7 @@
 				Class="w-full"
 				placeholder={$_('Write a comment...')}
 				displayMax={false}
-				id="comment"
+				id="textarea-comment"
 			/>
 		</div>
 		<div class="flex ml-2 items-start">

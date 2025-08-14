@@ -56,7 +56,7 @@
 	}
 </script>
 
-<button
+<div
 	class={`dark:bg-darkobject bg-white w-full py-3 px-3 transition-all
 	 dark:border-gray-500 ${Class}`}
 	class:!bg-blue-100={selectedProposal === proposal && !$darkModeStore}
@@ -147,7 +147,7 @@
 			<Fa icon={faChevronRight} size="xs" />
 		</button>
 	</div>
-</button>
+</div>
 
 <style>
 	.elipsis {

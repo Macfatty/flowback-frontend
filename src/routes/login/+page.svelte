@@ -36,7 +36,7 @@
 	<title>{$_('Login to Flowback')}</title>
 </svelte:head>
 
-<div class="dark:bg-darkbackground bg-purple-50 h-[100vh]  flex flex-col items-center">
+<div id="login-page" class="dark:bg-darkbackground bg-purple-50 h-[100vh]  flex flex-col items-center">
 	<div class="mt-16">
 		<img src={env.PUBLIC_LOGO === "REFORUM" ? Reforum : Logo} class="w-[300px]" alt="flowback logo" />
 	</div>

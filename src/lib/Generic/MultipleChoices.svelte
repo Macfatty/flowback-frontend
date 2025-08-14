@@ -8,7 +8,8 @@
 	export let choicesOpen = false,
 		labels: string[],
 		Class = '',
-		functions: any[] = [];
+		functions: any[] = [],
+		id = 'multiple-choices';
 
 	let popupMessage: string = '',
 		show = false;
@@ -33,7 +34,7 @@
 	});
 </script>
 
-<div class={`${Class} notifications-clickable-region`}>
+<div class={`${Class} notifications-clickable-region`} {id}>
 	<button
 		class={``}
 		on:click={() => {
@@ -50,7 +51,9 @@
 	</button>
 
 	{#if choicesOpen}
-		<div class="z-50 absolute mt-2 bg-white dark:bg-darkobject dark:text-darkmodeText shadow-xl text-sm right-0">
+		<div
+			class="z-50 absolute mt-2 bg-white dark:bg-darkobject dark:text-darkmodeText shadow-xl text-sm right-0"
+		>
 			<div class="text-xs p-2">{$_('Actions')}</div>
 			{#each labels as label, i}
 				<button

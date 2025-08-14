@@ -73,6 +73,7 @@
 					: [])
 			]}
 			Class="justify-self-center mt-2"
+			id="poll-header-multiple-choices"
 		/>
 	</div>
 
