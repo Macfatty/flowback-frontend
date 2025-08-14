@@ -16,7 +16,8 @@
 		max: number | null = 100,
 		type: 'text' | 'password' | 'email' = 'text',
 		search = false,
-		name: string = '';
+		name: string = '',
+		id = `textinput-${label}`;
 
 	function clearInput() {
 		value = '';
@@ -60,7 +61,7 @@
 				class={`dark:text-darkmodeText dark:bg-darkbackground border border-gray-300 border-solid rounded focus:bg-gray-100 p-0.5 w-full outline-none ${inputClass} ${
 					search ? ' pl-10 ' : ''
 				}`}
-				id={`textinput-${label}`}
+				{id}
 				placeholder={$_(placeholder)}
 				maxlength={max}
 				on:blur={onBlur}

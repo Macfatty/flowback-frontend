@@ -100,7 +100,7 @@
 							>{$_('Description')}</label
 						>
 						<textarea
-							id="description"
+							id="textarea-description"
 							bind:value={editedEvent.description}
 							class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 						/>

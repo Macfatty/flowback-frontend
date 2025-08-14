@@ -16,14 +16,14 @@
 		rows = 2,
 		recentlyTappedButton = '',
 		placeholder: string = '',
-		id = 'default';
+		id = `textarea`;
 
 	const onKeyDown = (e: any) => {
 		recentlyTappedButton = e.target.value[e.target.value.length - 1];
 	};
 
 	const expandableTextArea = () => {
-		const textarea = document.getElementById(`textarea-${id}`);
+		const textarea = document.getElementById(`textarea`);
 		console.log(textarea);
 
 		if (!textarea) return;
@@ -49,7 +49,7 @@
 	});
 </script>
 
-<label class={`${Class}`} {id}>
+<label class={`${Class}`}>
 	<div class="flex justify-between w-full items-center">
 		<div>
 			<p class="text-md mb-1 inline">{$_(label)}</p>
@@ -59,14 +59,16 @@
 		</div>
 
 		{#if max && displayMax}
-			<p class="inline text-right dark:brightness-50 dark:text-darkmodeText text-gray-400 dark:text-gray-700 text-xs">
+			<p
+				class="inline text-right dark:brightness-50 dark:text-darkmodeText text-gray-400 dark:text-gray-700 text-xs"
+			>
 				{value?.length || 0}/{max}
 			</p>
 		{/if}
 	</div>
 	<textarea
 		class={`${areaClass} dark:text-darkmodeText dark:bg-darkbackground border border-gray-300 border-solid rounded focus:bg-gray-100 p-0.5 w-full outline-none ${inputClass}`}
-		id={`textarea-${id}`}
+		{id}
 		{required}
 		{rows}
 		maxlength={max}

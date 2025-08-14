@@ -154,7 +154,12 @@
 	};
 </script>
 
-<Modal bind:open Class="min-w-[400px] max-w-[500px]" onSubmit={createKanbanEntry} id="create-kanban-entry-modal">
+<Modal
+	bind:open
+	Class="min-w-[400px] max-w-[500px]"
+	onSubmit={createKanbanEntry}
+	id="create-kanban-entry-modal"
+>
 	<div slot="header">
 		<h2 class="text-xl">{$_('Create Kanban Entry')}</h2>
 	</div>
@@ -162,9 +167,16 @@
 		<Loader bind:loading>
 			<div on:submit|preventDefault={createKanbanEntry}>
 				<div class="pb-2">
-					<TextInput Class="text-md" required label="Title" bind:value={title} />
+					<TextInput
+						id="create-kanban-text"
+						Class="text-md"
+						required
+						label="Title"
+						bind:value={title}
+					/>
 				</div>
 				<TextArea
+					id={`create-kanban-textarea`}
 					Class="text-md"
 					inputClass="whitespace-pre-wrap"
 					label="Description"
@@ -227,7 +239,6 @@
 								labels={users.map((user) => user.user.username)}
 								values={users.map((user) => user.user.id)}
 								bind:value={assignee}
-								defaultValue=""
 								onInput={handleChangeAssignee}
 								innerLabel={$_('No assignee')}
 								innerLabelOn={true}
@@ -246,9 +257,7 @@
 	</div>
 
 	<div slot="footer" class="flex">
-		<Button Class="py-1 flex-1" buttonStyle="primary" type="submit"
-			>{$_('Confirm')}</Button
-		>
+		<Button Class="py-1 flex-1" buttonStyle="primary" type="submit">{$_('Confirm')}</Button>
 		<Button Class="py-1 flex-1" buttonStyle="warning" onClick={() => (open = false)}
 			>{$_('kanbanEntry.Cancel', { default: 'Cancel' })}</Button
 		>

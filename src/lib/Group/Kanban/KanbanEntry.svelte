@@ -351,6 +351,7 @@
 {#if kanban.id === selectedEntry}
 	<Modal
 		bind:open={openModal}
+		id="kanban-entry-modal"
 		Class=" min-w-[400px] max-w-[500px] z-50"
 		buttons={isEditing
 			? [
@@ -366,13 +367,14 @@
 		<div slot="body">
 			{#if isEditing}
 				<div class="pb-2">
-					<TextInput bind:value={kanbanEdited.title} required label="Title" />
+					<TextInput bind:value={kanbanEdited.title} required label="Title" id="kanban-edit-title" />
 				</div>
 				<TextArea
 					bind:value={kanbanEdited.description}
 					label="Description"
 					rows={5}
 					Class="overflow-scroll"
+					id="kanban-edit-description"
 				/>
 				{#if filter.type === 'group'}
 					<div class="text-left">

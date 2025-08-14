@@ -29,8 +29,8 @@ test('Kanban-User', async ({ page }) => {
 
   const createModal = await page.locator('#create-kanban-entry-modal');
   await expect(createModal).toBeVisible();
-  await page.locator('#textinput-Title').fill('test kanban');
-  await page.locator('#textarea-default').fill('test kanban description');
+  await page.locator('#create-kanban-text').fill('test kanban');
+  await page.locator('#create-kanban-textarea').fill('test kanban description');
 
   await page.click('button[type="submit"]');
   await expect(createModal).toBeHidden();
@@ -75,15 +75,14 @@ test('Kanban-Group', async ({ page }) => {
   const createModal = await page.locator('#create-kanban-entry-modal');
   await expect(createModal).toBeVisible();
 
-  await page.locator('#textinput-Title').fill('test kanban');
-  await page.locator('#textarea-default').fill('test kanban description');
+  await page.locator('#create-kanban-text').fill('test kanban');
+  await page.locator('#create-kanban-textarea').fill('test kanban description');
 
   page.locator('#cookies-accept').click();
 
   await page.click('button[type="submit"]');
   await expect(createModal).toBeHidden();
 });
-
 
 test('Kanban-Delete', async ({ page }) => {
   await page.goto(`/login`);
@@ -111,7 +110,7 @@ test('Kanban-Delete', async ({ page }) => {
   const doneLane = await page.locator('#Done-kanban-lane');
   await page.waitForTimeout(1000);
 
-  const kanbanEntry = page.locator('#Evaluation-kanban-lane > ul > button').first();
+  const kanbanEntry = page.locator('#Done-kanban-lane > ul > button').first();
   await expect(kanbanEntry).toBeVisible();
 
   await kanbanEntry.click();
@@ -119,12 +118,67 @@ test('Kanban-Delete', async ({ page }) => {
 
   const editButton = await page.locator('#Edit');
   editButton.click();
+  const kanbanEntryModal = await page.locator('#kanban-entry-modal');
+  await expect(kanbanEntryModal).toBeVisible();
 
   const deleteButton = await page.locator('#Delete');
   await expect(deleteButton).toBeVisible();
-  
+
   page.locator('#cookies-accept').click();
 
   await deleteButton.click();
-  await expect(kanbanEntry).toBeHidden();
+  await expect(kanbanEntryModal).toBeHidden();
+});
+
+
+test('Kanban-Edit', async ({ page }) => {
+  await page.goto(`/login`);
+
+  const login = page.locator('#login-page');
+  expect(login).toBeVisible();
+  await page.waitForTimeout(600);
+
+  await page.fill('input[name="email"]', 'a@a.se');
+  await page.fill('input[name="password"]', 'a');
+
+  await page.click('button[type="submit"]');
+
+  await expect(page).toHaveURL('/home');
+
+  // Navigate to the kanban page
+  await page.goto('/kanban');
+  await expect(page).toHaveURL('/kanban');
+
+  // Check if the kanban board is visible
+  const kanbanBoard = await page.locator('#kanban-board');
+  await expect(kanbanBoard).toBeVisible();
+
+  //n-th member of done-kanban-lane
+  const doneLane = await page.locator('#Done-kanban-lane');
+  await page.waitForTimeout(1000);
+
+  const kanbanEntry = page.locator('#Done-kanban-lane > ul > button').first();
+  await expect(kanbanEntry).toBeVisible();
+
+  await kanbanEntry.click();
+  await page.waitForTimeout(300);
+
+  const kanbanEntryModal = await page.locator('#kanban-entry-modal');
+  await expect(kanbanEntryModal).toBeVisible();
+
+  const editButton = await page.locator('#Edit');
+
+  editButton.click();
+  await page.waitForTimeout(300);
+
+  await page.locator('#kanban-edit-title').fill('test kanban edited');
+  await page.locator('#kanban-edit-description').fill('test kanban description edited');
+
+  page.locator('#cookies-accept').click();
+
+  await page.click('#Update');
+  await page.click('#Close');
+
+  await expect(kanbanEntryModal).toBeHidden();
+
 });
