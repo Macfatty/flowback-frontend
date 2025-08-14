@@ -3,6 +3,10 @@ import { test, expect } from '@playwright/test';
 test('Kanban-User', async ({ page }) => {
   await page.goto(`/login`);
 
+  const login = page.locator('#login-page');
+  expect(login).toBeVisible();
+  await page.waitForTimeout(2000);
+
   await page.fill('input[name="email"]', 'a@a.se');
   await page.fill('input[name="password"]', 'a');
 
@@ -20,11 +24,11 @@ test('Kanban-User', async ({ page }) => {
 
   const doneButton = await page.locator('#Done-add');
   await expect(doneButton).toBeVisible();
+  await page.waitForTimeout(2000);
+  await doneButton.click();
 
-  doneButton.click();
   const createModal = await page.locator('#create-kanban-entry-modal');
   await expect(createModal).toBeVisible();
-
   await page.locator('#textinput-Title').fill('test kanban');
   await page.locator('#textarea-default').fill('test kanban description');
 
@@ -34,6 +38,10 @@ test('Kanban-User', async ({ page }) => {
 
 test('Kanban-Group', async ({ page }) => {
   await page.goto(`/login`);
+
+  const login = page.locator('#login-page');
+  expect(login).toBeVisible();
+  await page.waitForTimeout(2000);
 
   await page.fill('input[name="email"]', 'a@a.se');
   await page.fill('input[name="password"]', 'a');
@@ -74,7 +82,4 @@ test('Kanban-Group', async ({ page }) => {
 
   await page.click('button[type="submit"]');
   await expect(createModal).toBeHidden();
-
-
-
 });
