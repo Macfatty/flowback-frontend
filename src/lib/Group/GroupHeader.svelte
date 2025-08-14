@@ -27,7 +27,7 @@
 	];
 </script>
 
-<div class="bg-white dark:bg-darkobject w-full max-w-[120rem]">
+<div id="group-header" class="bg-white dark:bg-darkobject w-full max-w-[120rem]">
 	<div class="relative">
 		<div class="relative">
 			<img
@@ -78,6 +78,7 @@
 			<div class="flex align-baseline items-baseline relative" id="notifications-list-group">
 				<button
 					class="text-xl hover:text-gray-800 dark:hover:text-gray-400 cursor-pointer"
+					id="group-header-title"
 					on:click={() => (selectedPage = 'flow')}
 				>
 					{group.name}
