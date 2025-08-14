@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { uiLogin } from './fixtures';
+import { login } from './generic';
 
 test('Kanban-User', async ({ page }) => {
-  await uiLogin(page);
+  await login(page);
 
   // Navigate to the kanban page
   await page.goto('/kanban');
@@ -27,7 +27,7 @@ test('Kanban-User', async ({ page }) => {
 });
 
 test('Kanban-Group', async ({ page }) => {
-  await uiLogin(page);
+  await login(page);
 
   await page.locator('#groups').click();
 
@@ -61,45 +61,9 @@ test('Kanban-Group', async ({ page }) => {
   await expect(createModal).toBeHidden();
 });
 
-test('Kanban-Delete', async ({ page }) => {
-  await uiLogin(page);
-
-
-  // Navigate to the kanban page
-  await page.goto('/kanban');
-  await expect(page).toHaveURL('/kanban');
-
-  // Check if the kanban board is visible
-  const kanbanBoard = await page.locator('#kanban-board');
-  await expect(kanbanBoard).toBeVisible();
-
-  //n-th member of done-kanban-lane
-  const doneLane = await page.locator('#Done-kanban-lane');
-  await page.waitForTimeout(1000);
-
-  const kanbanEntry = page.locator('#Done-kanban-lane > ul > button').first();
-  await expect(kanbanEntry).toBeVisible();
-
-  await kanbanEntry.click();
-  await page.waitForTimeout(300);
-
-  const editButton = await page.locator('#Edit');
-  editButton.click();
-  const kanbanEntryModal = await page.locator('#kanban-entry-modal');
-  await expect(kanbanEntryModal).toBeVisible();
-
-  const deleteButton = await page.locator('#Delete');
-  await expect(deleteButton).toBeVisible();
-
-  page.locator('#cookies-accept').click();
-
-  await deleteButton.click();
-  await expect(kanbanEntryModal).toBeHidden();
-});
-
 
 test('Kanban-Edit', async ({ page }) => {
-  await uiLogin(page);
+  await login(page);
 
 
   // Navigate to the kanban page
@@ -144,3 +108,40 @@ test('Kanban-Edit', async ({ page }) => {
   await page.click('#Close');
   await expect(kanbanEntryModal).toBeHidden();
 });
+
+test('Kanban-Delete', async ({ page }) => {
+  await login(page);
+
+
+  // Navigate to the kanban page
+  await page.goto('/kanban');
+  await expect(page).toHaveURL('/kanban');
+
+  // Check if the kanban board is visible
+  const kanbanBoard = await page.locator('#kanban-board');
+  await expect(kanbanBoard).toBeVisible();
+
+  //n-th member of done-kanban-lane
+  const doneLane = await page.locator('#Done-kanban-lane');
+  await page.waitForTimeout(1000);
+
+  const kanbanEntry = page.locator('#Done-kanban-lane > ul > button').first();
+  await expect(kanbanEntry).toBeVisible();
+
+  await kanbanEntry.click();
+  await page.waitForTimeout(300);
+
+  const editButton = await page.locator('#Edit');
+  editButton.click();
+  const kanbanEntryModal = await page.locator('#kanban-entry-modal');
+  await expect(kanbanEntryModal).toBeVisible();
+
+  const deleteButton = await page.locator('#Delete');
+  await expect(deleteButton).toBeVisible();
+
+  page.locator('#cookies-accept').click();
+
+  await deleteButton.click();
+  await expect(kanbanEntryModal).toBeHidden();
+});
+

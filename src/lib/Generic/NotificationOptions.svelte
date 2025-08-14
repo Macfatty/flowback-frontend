@@ -89,7 +89,7 @@
 		} else popupMessage = 'Something went wrong';
 	};
 
-	const groupSubcrube = async () => {
+	const groupSubcribe = async () => {
 		const { res, json } = await fetchRequest('POST', `group/${groupId}/notification/subscribe`, {
 			tags: ['group', 'group_user', 'kanban', 'poll', 'schedule_event', 'thread']
 		});
@@ -97,7 +97,7 @@
 
 	onMount(() => {
 		// closeWindowWhenClickingOutside();
-		// groupSubcrube();
+		// groupSubcribe();
 	});
 
 	$: if (notificationOpen) {

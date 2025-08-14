@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 
-export async function uiLogin(page: any, {
+export async function login(page: any, {
   email = process.env.E2E_EMAIL ?? 'a@a.se',
   password = process.env.E2E_PASSWORD ?? 'a',
 } = {}) {
