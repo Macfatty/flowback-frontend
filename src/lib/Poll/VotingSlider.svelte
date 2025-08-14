@@ -54,7 +54,7 @@
 			dragLinePosition = null;
 		};
 
-
+		onMouseMove(e);
 		document.addEventListener('mousemove',onMouseMove);
 		document.addEventListener('mouseup', onMouseUp);
 	};
