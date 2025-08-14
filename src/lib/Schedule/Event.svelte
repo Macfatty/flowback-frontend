@@ -31,7 +31,8 @@
 		// Default to Daily
 		selectedFrequency: number = 1,
 		choicesOpenMembers = false,
-		choicesOpenReminders = false;
+		choicesOpenReminders = false,
+		errorHandler: any;
 
 	const groupId = $page.params.groupId || '1';
 
@@ -165,7 +166,7 @@
 		try {
 			if (showCreateScheduleEvent) {
 				await scheduleEventCreate(selectedEvent);
-				showCreateScheduleEvent = false;
+				// showCreateScheduleEvent = false;
 			} else if (showEditScheduleEvent) {
 				await scheduleEventEdit(selectedEvent);
 				showEditScheduleEvent = false;
@@ -191,18 +192,17 @@
 	/>
 {/if}
 <!-- Modal 2: Edit Event Modal -->
-{#if showEditScheduleEvent}
-	<EditEventModal
-		bind:selectedEvent
-		bind:showEditScheduleEvent
-		bind:showEvent
-		bind:events
-		{type}
-		{workGroups}
-		{reminderOptions}
-		{frequencyOptions}
-	/>
-{/if}
+<EditEventModal
+	bind:selectedEvent
+	bind:showEditScheduleEvent
+	bind:showEvent
+	bind:events
+	{type}
+	{workGroups}
+	{reminderOptions}
+	{frequencyOptions}
+	{errorHandler}
+/>
 
 <!-- Modal 3: View Event Modal -->
 {#if showEvent}

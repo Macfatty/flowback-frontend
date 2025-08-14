@@ -710,5 +710,6 @@
     "Select Type": "Välj typ",
     "Select a type": "Välj en typ",
     "A link has been sent to your email. Check the spam folder if you don't see it.": "En länk har skickats till din e-post. Kontrollera skräppostmappen om du inte ser den.",
-    "No delegate history": "Ingen delegat historik"
+    "No delegate history": "Ingen delegat historik",
+    "Successfully edited event": "Händelsen har redigerats framgångsrikt"
 }

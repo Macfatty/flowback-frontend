@@ -3,7 +3,6 @@
 	import { _ } from 'svelte-i18n';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
 
@@ -13,10 +12,10 @@
 		workGroups: any[] = [],
 		loading = false,
 		type: 'user' | 'group',
-		errorHandler: any,
 		showEvent = false,
 		events: scheduledEvent[] = [],
 		frequencyOptions: options[] = [],
+		errorHandler: any,
 		reminderOptions: options[] = [];
 
 	// Members list and selections
