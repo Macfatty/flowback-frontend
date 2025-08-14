@@ -299,6 +299,15 @@
 		deleteSelection = () => {
 			document.getElementById(selectedDatePosition)?.classList.remove('selected');
 		};
+
+		const groupId = $page.url.searchParams.get('groupId') ?? null;
+		if (groupId) {
+			filter.group = groupId;
+			filter.type = 'group';
+		} else {
+			filter.type = 'home';
+		}
+
 		setUpScheduledPolls();
 		getGroups();
 		getWorkGroupList();

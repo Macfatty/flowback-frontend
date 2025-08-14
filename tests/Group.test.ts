@@ -26,6 +26,15 @@ test('Create-Delete-Group', async ({ page }) => {
     await expect(page.getByText('Group owner isn\'t allowed to')).toBeVisible();
     await page.getByRole('button', { name: 'No', exact: true }).click();
 
+    // Search for the group
+    await page.getByRole('link', { name: 'Groups' }).click();
+    await page.getByPlaceholder('Search groups').click();
+    await page.getByPlaceholder('Search groups').fill(`Test Group Yay ${randomNumber}`);
+    // await page.locator('label').getByRole('button').click();
+    // await page.getByPlaceholder('Search groups').fill('');
+    await expect(page.locator('#groups-list > div:first-of-type > button:first-of-type')).toHaveText(`Test Group Yay ${randomNumber}`);
+    await page.locator('#groups-list > div').nth(0).getByRole('link').click();
+
     // Workgroup testing
     await page.getByRole('button', { name: 'Work Groups' }).click();
     await page.getByRole('button', { name: '+ Add Group' }).click();

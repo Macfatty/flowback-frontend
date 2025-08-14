@@ -48,7 +48,7 @@
 					/>
 				</div>
 				<div class="mb-4">
-					<label for="description" class="block mb-1 text-gray-700 dark:text-gray-300"
+					<label for="textarea-description" class="block mb-1 text-gray-700 dark:text-gray-300"
 						>{$_('Description')}</label
 					>
 					<textarea
