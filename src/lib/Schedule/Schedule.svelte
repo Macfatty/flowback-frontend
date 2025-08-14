@@ -219,9 +219,11 @@
 		loading = false;
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to edit event', success: false });
+			errorHandler.addPopup({ message: 'Failed to update event', success: false });
 			return;
 		}
+
+		errorHandler.addPopup({ message: 'Event successfully updated', success: true });
 
 		events = events
 			.map((event) => (event.event_id === updatedEvent.event_id ? { ...updatedEvent } : event))
@@ -299,6 +301,15 @@
 		deleteSelection = () => {
 			document.getElementById(selectedDatePosition)?.classList.remove('selected');
 		};
+
+		const groupId = $page.url.searchParams.get('groupId') ?? null;
+		if (groupId) {
+			filter.group = groupId;
+			filter.type = 'group';
+		} else {
+			filter.type = 'home';
+		}
+
 		setUpScheduledPolls();
 		getGroups();
 		getWorkGroupList();

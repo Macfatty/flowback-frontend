@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 
-export async function uiLogin(page: any, {
+export async function login(page: any, {
   email = process.env.E2E_EMAIL ?? 'a@a.se',
   password = process.env.E2E_PASSWORD ?? 'a',
 } = {}) {
@@ -13,4 +13,5 @@ export async function uiLogin(page: any, {
   await page.click('button[type="submit"]');
 
   await expect(page).toHaveURL('/home');
+  await page.getByRole('button', { name: 'Ok' }).click();
 }

@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { uiLogin } from './fixtures';
+import { login } from './generic';
 
 test('Create-Poll', async ({ page }) => {
-    await uiLogin(page);
+    await login(page);
 
     await page.locator('#groups').click();
 
