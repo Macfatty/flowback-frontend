@@ -1,6 +1,27 @@
-import test from '@playwright/test'
+import { test, expect } from '@playwright/test';
+import { uiLogin } from './fixtures';
 
-test('poll process', async ({ page }) => {
-    await page.goto(`/groups`);
-    // await page.click('button[id="groups"]')
-})
+test('Create-Poll', async ({ page }) => {
+    await uiLogin(page);
+
+    await page.locator('#groups').click();
+
+    // Click the first button in the group list
+    await page.locator('#groups-list > div').first().first().click();
+
+    await expect(page).toHaveURL('/groups/6');
+
+    await page.getByRole('button', { name: 'Create a post' }).click();
+    await page.getByLabel('Title * 0/').click();
+    await page.getByLabel('Title * 0/').fill('Test Poll');
+    await page.getByLabel('Description  0/').fill('Test Description');
+    await page.getByRole('button', { name: 'Display advanced time settings' }).click();
+    await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel('Yes').check();
+    await page.locator('fieldset').filter({ hasText: 'Fast Forward? Yes No' }).getByLabel('Yes').check();
+    page.locator('#cookies-accept').click();
+    await page.getByRole('button', { name: 'Post' }).click();
+    await expect(page.getByRole('heading', { name: 'Test Poll' })).toBeVisible();
+    await expect(page).toHaveURL(/\/groups\/6\/polls\/\d+$/);
+
+
+});

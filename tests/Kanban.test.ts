@@ -1,18 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { uiLogin } from './fixtures';
 
 test('Kanban-User', async ({ page }) => {
-  await page.goto(`/login`);
-
-  const login = page.locator('#login-page');
-  expect(login).toBeVisible();
-  await page.waitForTimeout(400);
-
-  await page.fill('input[name="email"]', 'a@a.se');
-  await page.fill('input[name="password"]', 'a');
-
-  await page.click('button[type="submit"]');
-
-  await expect(page).toHaveURL('/home');
+  await uiLogin(page);
 
   // Navigate to the kanban page
   await page.goto('/kanban');
@@ -37,18 +27,8 @@ test('Kanban-User', async ({ page }) => {
 });
 
 test('Kanban-Group', async ({ page }) => {
-  await page.goto(`/login`);
+  await uiLogin(page);
 
-  const login = page.locator('#login-page');
-  expect(login).toBeVisible();
-  await page.waitForTimeout(400);
-
-  await page.fill('input[name="email"]', 'a@a.se');
-  await page.fill('input[name="password"]', 'a');
-
-  await page.click('button[type="submit"]');
-
-  await expect(page).toHaveURL('/home');
 
   // Navigate to the kanban page
   // Click on the group button on the header
@@ -85,18 +65,8 @@ test('Kanban-Group', async ({ page }) => {
 });
 
 test('Kanban-Delete', async ({ page }) => {
-  await page.goto(`/login`);
+  await uiLogin(page);
 
-  const login = page.locator('#login-page');
-  expect(login).toBeVisible();
-  await page.waitForTimeout(600);
-
-  await page.fill('input[name="email"]', 'a@a.se');
-  await page.fill('input[name="password"]', 'a');
-
-  await page.click('button[type="submit"]');
-
-  await expect(page).toHaveURL('/home');
 
   // Navigate to the kanban page
   await page.goto('/kanban');
@@ -132,18 +102,8 @@ test('Kanban-Delete', async ({ page }) => {
 
 
 test('Kanban-Edit', async ({ page }) => {
-  await page.goto(`/login`);
+  await uiLogin(page);
 
-  const login = page.locator('#login-page');
-  expect(login).toBeVisible();
-  await page.waitForTimeout(600);
-
-  await page.fill('input[name="email"]', 'a@a.se');
-  await page.fill('input[name="password"]', 'a');
-
-  await page.click('button[type="submit"]');
-
-  await expect(page).toHaveURL('/home');
 
   // Navigate to the kanban page
   await page.goto('/kanban');
@@ -176,9 +136,14 @@ test('Kanban-Edit', async ({ page }) => {
 
   page.locator('#cookies-accept').click();
 
+  // Add response listener before clicking update
+  const responsePromise = page.waitForResponse(response =>
+    response.url().includes('/user/kanban/entry/update') && response.status() === 200
+  );
+
   await page.click('#Update');
+  await responsePromise; // Wait for successful response
+
   await page.click('#Close');
-
   await expect(kanbanEntryModal).toBeHidden();
-
 });
