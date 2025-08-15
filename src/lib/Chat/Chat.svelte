@@ -13,7 +13,6 @@
 	import { chatPartner, isChatOpen } from './functions';
 	import { goto } from '$app/navigation';
 	import CreateChatGroup from '$lib/Chat/CreateChatGroup.svelte';
-	import { updateUserData } from './functions';
 	import CrossButton from '$lib/Generic/CrossButton.svelte';
 
 	let chatOpen = env.PUBLIC_MODE === 'DEV' ? false : false,

@@ -205,13 +205,12 @@
 />
 
 <!-- Modal 3: View Event Modal -->
-{#if showEvent}
-	<ViewEventModal
-		bind:selectedEvent
-		bind:showEvent
-		bind:showEditScheduleEvent
-		on:delete={() => scheduleEventDelete(selectedEvent.event_id)}
-		{type}
-		{scheduleEventDelete}
-	/>
-{/if}
+
+<ViewEventModal
+	bind:selectedEvent
+	bind:showEvent
+	bind:showEditScheduleEvent
+	on:delete={() => scheduleEventDelete(selectedEvent.event_id)}
+	{type}
+	{scheduleEventDelete}
+/>

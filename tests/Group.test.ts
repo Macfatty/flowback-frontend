@@ -1,24 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { login } from './generic';
+import { createGroup, login } from './generic';
 
 test('Create-Delete-Group', async ({ page }) => {
     await login(page);
 
-    // Creating Group
-    await page.getByRole('link', { name: 'Groups' }).click();
-    await page.getByRole('button', { name: 'Create Group' }).click();
-    await page.getByLabel('Title * 0/').click();
-    const randomNumber = Math.floor(Math.random() * 100000);
-    await page.getByLabel('Title * 0/').fill(`Test Group Yay ${randomNumber}`);
-    await page.getByLabel('Description  0/').click();
-    await page.getByLabel('Description  0/').fill('Test Group Description');
-    await page.locator(".image-upload > input").nth(0).setInputFiles('./tests/forward-facing-niko-oneshot-isnt-real-it-cant-hurt-you-v0-3ggf23q4ijcf1.webp');
-    await page.getByRole('button', { name: 'Confirm' }).click();
-    await page.locator(".image-upload > input").nth(1).setInputFiles('./tests/forward-facing-niko-oneshot-isnt-real-it-cant-hurt-you-v0-3ggf23q4ijcf1.webp');
-    await page.getByRole('button', { name: 'Confirm' }).click();
-    await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel('No').check();
-    await page.locator('fieldset').filter({ hasText: 'Hide creators? Yes No' }).getByLabel('No').check();
-    await page.getByRole('button', { name: 'Create' }).click();
+    const groupName = 'Testing Group';
+    await createGroup(page, groupName);
 
     // Attempting to leave group as owner 
     await page.getByRole('button', { name: 'Leave group' }).click();
@@ -29,10 +16,10 @@ test('Create-Delete-Group', async ({ page }) => {
     // Search for the group
     await page.getByRole('link', { name: 'Groups' }).click();
     await page.getByPlaceholder('Search groups').click();
-    await page.getByPlaceholder('Search groups').fill(`Test Group Yay ${randomNumber}`);
+    await page.getByPlaceholder('Search groups').fill(groupName);
     // await page.locator('label').getByRole('button').click();
     // await page.getByPlaceholder('Search groups').fill('');
-    await expect(page.locator('#groups-list > div:first-of-type > button:first-of-type')).toHaveText(`Test Group Yay ${randomNumber}`);
+    await expect(page.locator('#groups-list > div:first-of-type > button:first-of-type')).toHaveText(groupName);
     await page.locator('#groups-list > div').nth(0).getByRole('link').click();
 
     // Workgroup testing
@@ -59,7 +46,7 @@ test('Create-Delete-Group', async ({ page }) => {
     await page.getByRole('button', { name: 'Delete', exact: true }).click();
 
     // Editing Group
-    await expect(page.locator('#group-header-title')).toHaveText(`Test Group Yay ${randomNumber}`);
+    await expect(page.locator('#group-header-title')).toHaveText(groupName);
     await page.getByRole('button', { name: 'Edit Group' }).click();
 
     // Create, deactive and delete permission

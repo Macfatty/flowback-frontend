@@ -9,6 +9,7 @@ export async function fetchRequest(
 	needs_authorization: boolean = true,
 	needs_json: boolean = true
 ) {
+	console.log("Down here");
 	if (method === 'GET' && data !== null)
 		console.warn(
 			"Method 'GET' does not take any data, use query parameters instead. For example: /api?id=5"
@@ -16,6 +17,7 @@ export async function fetchRequest(
 
 	let headers: any = {};
 
+	
 	if (!browser) return { res: { ok: false }, json: {} };
 
 	if (needs_authorization) {

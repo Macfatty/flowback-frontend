@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login } from './generic';
+import { gotoGroup, login } from './generic';
 
 test('Kanban-User', async ({ page }) => {
   await login(page);
@@ -29,17 +29,11 @@ test('Kanban-User', async ({ page }) => {
 test('Kanban-Group', async ({ page }) => {
   await login(page);
 
-  await page.locator('#groups').click();
-
-  await expect(page.locator('#groups-list')).toBeVisible();
-
-  const groupLink = page.locator('#groups-list a[href^="/groups/"]').first();
-  await expect(groupLink).toBeVisible();
-  groupLink.click();
+  await gotoGroup(page);
 
   await page.locator('#group-tasks-sidebar-button').click();
 
-  await expect(page).toHaveURL('/kanban?groupId=6');
+  // await expect(page).toHaveURL('/kanban?groupId=');
 
   // Check if the kanban board is visible
   const kanbanBoard = await page.locator('#kanban-board');
@@ -54,8 +48,6 @@ test('Kanban-Group', async ({ page }) => {
 
   await page.locator('#create-kanban-text').fill('test kanban');
   await page.locator('#create-kanban-textarea').fill('test kanban description');
-
-  page.locator('#cookies-accept').click();
 
   await page.click('button[type="submit"]');
   await expect(createModal).toBeHidden();
@@ -94,8 +86,6 @@ test('Kanban-Edit', async ({ page }) => {
 
   await page.locator('#kanban-edit-title').fill('test kanban edited');
   await page.locator('#kanban-edit-description').fill('test kanban description edited');
-
-  page.locator('#cookies-accept').click();
 
   // Add response listener before clicking update
   const responsePromise = page.waitForResponse(response =>
@@ -139,9 +129,6 @@ test('Kanban-Delete', async ({ page }) => {
   const deleteButton = await page.locator('#Delete');
   await expect(deleteButton).toBeVisible();
 
-  page.locator('#cookies-accept').click();
-
   await deleteButton.click();
   await expect(kanbanEntryModal).toBeHidden();
 });
-

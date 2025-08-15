@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login } from './generic';
+import { login, logout } from './generic';
 
 test('Edit User', async ({ page }) => {
     login(page);
@@ -19,11 +19,9 @@ test('Edit User', async ({ page }) => {
     await page.getByLabel('Name').press('Control+ArrowLeft');
     await page.getByLabel('Name').fill('a_edited');
     await page.getByRole('button', { name: 'Save changes' }).click();
-    await expect(page.getByText('Profile successfully updated')).toBeVisible();
+    await expect(page.getByText('Profile successfully updated').nth(0)).toBeVisible();
     await expect(page.getByText('a_edited')).toBeVisible();
     await expect(page.getByText('I like pancakes :')).toBeVisible();
-    await page.getByRole('button', { name: 'default pfp' }).click();
-    await page.getByRole('button', { name: 'Log Out', exact: true }).click();
-    await expect(page.getByRole('img', { name: 'flowback logo' })).toBeVisible();
+    await logout(page);
 
 });

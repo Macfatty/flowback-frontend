@@ -29,8 +29,6 @@
 	};
 
 	const onMouseDown = (e: MouseEvent) => {
-
-
 		const onMouseMove = (e: MouseEvent) => {
 			const container = (e.target as HTMLElement).closest('#track-container') as HTMLElement;
 			if (!container) return;
@@ -45,8 +43,6 @@
 		};
 
 		const onMouseUp = () => {
-			console.log('up');
-
 			if (disabled) return;
 			onSelection(currentSnapPosition!);
 			document.removeEventListener('mousemove', onMouseMove);
