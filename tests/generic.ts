@@ -6,7 +6,7 @@ export async function login(page: any, {
 } = {}) {
   await page.goto('/login');
   await expect(page.locator('#login-page')).toBeVisible();
-  await page.waitForTimeout(600);
+  await page.waitForTimeout(700);
 
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', password);

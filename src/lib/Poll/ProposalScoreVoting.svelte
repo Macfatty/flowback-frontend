@@ -20,7 +20,7 @@
 		needsReload = 0,
 		errorHandler: any,
 		commentFilterProposalId: number | null = null,
-		delegateVoting: { score: number; proposal: number }[] = [],
+		delegateVoting: { score: number; proposal: number; raw_score: number }[] = [],
 		style: 'purple' | 'gray' = 'purple';
 
 	onMount(async () => {
@@ -30,6 +30,8 @@
 			score: 0,
 			proposal: proposal.id
 		}));
+
+		console.log(voting, 'voting');
 
 		if (phase === 'delegate_vote' || phase === 'vote' || phase === 'result') {
 			await getDelegateVotes();
@@ -61,10 +63,7 @@
 
 		if (!res.ok) return;
 
-		if (json.results.length === 0) {
-			voting = delegateVoting;
-			return;
-		}
+		if (json.results.length === 0) return;
 
 		voting = voting.map((vote) => ({
 			score: (vote.score = json?.results?.find(
@@ -99,8 +98,8 @@
 			`POST`,
 			`group/poll/${$page.params.pollId}/proposal/vote/delegate/update`,
 			{
-				proposals: voting.map((vote) => vote.proposal),
-				scores: voting.map((vote) => vote.score)
+				proposals: voting?.map((vote) => vote.proposal),
+				scores: voting?.map((vote) => vote.score)
 			}
 		);
 
@@ -124,14 +123,17 @@
 	};
 
 	const vote = async () => {
+		console.log('in vote');
+
 		const { res, json } = await fetchRequest(
 			`POST`,
 			`group/poll/${$page.params.pollId}/proposal/vote/update`,
 			{
-				proposals: voting.map((vote) => vote.proposal),
-				scores: voting.map((vote) => vote.score)
+				proposals: voting?.map((vote) => vote.proposal),
+				scores: voting?.map((vote) => vote.score)
 			}
 		);
+		console.log('in vote', res, json);
 
 		if (!res.ok) {
 			errorHandler.addPopup({
@@ -148,6 +150,8 @@
 	};
 
 	const changingVote = (score: number | string, proposalId: number) => {
+		console.log(voting, 'voting');
+
 		if (!voting) return;
 		const i = voting?.findIndex((vote) => vote.proposal === proposalId);
 		voting[i].score = Number(score);
@@ -183,6 +187,8 @@
 								<VotingSlider
 									bind:phase
 									onSelection={(pos) => {
+										console.log(pos, '!POS');
+
 										//@ts-ignore
 										changingVote(pos, proposal.id);
 										if (phase === 'delegate_vote') delegateVote();

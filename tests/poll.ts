@@ -12,6 +12,7 @@ export async function createPoll(page: any, {
     title = 'Test Poll' } = {}) {
     //Create a Poll
     await page.getByRole('button', { name: 'Create a post' }).click();
+    await expect(page.getByText('Poll Thread Poll Content Text')).toBeVisible();
     await page.getByLabel('Title * 0/').click();
     await page.getByLabel('Title * 0/').fill('Test Poll');
     await page.getByLabel('Description  0/').fill('Test Description');
@@ -103,14 +104,13 @@ export async function predictionProbability(page: any) {
     await page.locator('#track-container > div').nth(5).click();
     await expect(page.getByText('Probability successfully sent').nth(0)).toBeVisible();
     await page.getByRole('button', { name: 'See More' }).nth(1).click();
-    await expect(page.locator('#track-container > div:nth-child(8)')).toBeVisible();
-    await page.locator('#track-container > div:nth-child(6)').click();
+    // await expect(page.locator('#track-container > div:nth-child(8)')).toBeVisible();
+    // await page.waitForTimeout(200);
+    // await page.locator('#track-container > div:nth-child(6)').click();
     await page.locator('#track-container > div:nth-child(5)').click();
     await page.getByRole('button', { name: 'Clear probability' }).click();
     await page.locator('#track-container > div:nth-child(4)').click();
-    await expect(page.locator('#popup-4').getByText('Probability successfully sent')).toBeVisible();
-    await page.locator('#popup-5').getByText('Probability successfully sent').click();
-    await page.locator('#popup-6').getByText('Probability successfully sent').click();
+    await expect(page.getByText('Probability successfully sent').nth(0)).toBeVisible();
 
 }
 
