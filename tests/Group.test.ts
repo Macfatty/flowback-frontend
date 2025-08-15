@@ -1,25 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { login } from './generic';
+import { createGroup, login } from './generic';
 
 test('Create-Delete-Group', async ({ page }) => {
     await login(page);
 
-    // Creating Group
-    await page.getByRole('link', { name: 'Groups' }).click();
-    await page.getByRole('button', { name: 'Create Group' }).click();
-    await page.getByLabel('Title * 0/').click();
-    const randomNumber = Math.floor(Math.random() * 100000);
-    await page.getByLabel('Title * 0/').fill(`Test Group Yay ${randomNumber}`);
-    await page.getByLabel('Description  0/').click();
-    await page.getByLabel('Description  0/').fill('Test Group Description');
-    await page.locator(".image-upload > input").nth(0).setInputFiles('./tests/forward-facing-niko-oneshot-isnt-real-it-cant-hurt-you-v0-3ggf23q4ijcf1.webp');
-    await page.getByRole('button', { name: 'Confirm' }).click();
-    await page.locator(".image-upload > input").nth(1).setInputFiles('./tests/forward-facing-niko-oneshot-isnt-real-it-cant-hurt-you-v0-3ggf23q4ijcf1.webp');
-    await page.getByRole('button', { name: 'Confirm' }).click();
-    await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel('No').check();
-    await page.locator('fieldset').filter({ hasText: 'Hide creators? Yes No' }).getByLabel('No').check();
-    await page.getByRole('button', { name: 'Create' }).click();
-
+    await createGroup(page);
+    
     // Attempting to leave group as owner 
     await page.getByRole('button', { name: 'Leave group' }).click();
     await page.getByRole('button', { name: 'Yes', exact: true }).click();
