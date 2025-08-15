@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { gotoGroup, login } from './generic';
-import { areaVote, createPoll, createProposal, delegateVote, fastForward, predictionProbability, predictionStatementCreate, results } from './poll';
+import { areaVote, createPoll, createProposal, delegateVote, fastForward, predictionProbability, predictionStatementCreate, results, vote } from './poll';
 
 test('Poll-Start-To-Finish', async ({ page }) => {
     await login(page);
@@ -23,11 +23,11 @@ test('Poll-Start-To-Finish', async ({ page }) => {
 
     await predictionProbability(page);
 
-    await fastForward(page, 1);
-
-    await delegateVote(page);
-
     await fastForward(page, 2);
+    
+    await vote(page);
+    
+    await fastForward(page, 1);
 
     await results(page);
 

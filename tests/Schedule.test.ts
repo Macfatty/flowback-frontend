@@ -3,7 +3,6 @@ import { login } from './generic';
 
 test('Create-Delete-Schedule-Event', async ({ page }) => {
     await login(page);
-    await page.getByRole('button', { name: 'Ok' }).click();
 
     await page.getByRole('link', { name: 'Schedule' }).click();
     await page.getByRole('button', { name: '15' }).dblclick();

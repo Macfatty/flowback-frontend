@@ -131,7 +131,19 @@ export async function delegateVote(page: any) {
 }
 
 export async function vote(page: any) {
+    // Delegate Voting Phase
+    await expect(page.locator('div').filter({ hasText: 'Phase 6. Voting for non-delegates' }).nth(2)).toBeVisible();
+    await page.getByRole('button', { name: 'See more' }).nth(0).click();
+    await page.getByText('Successfully voted').isVisible();
 
+
+    await page.locator('#track-container > div:nth-child(4)').first().click();
+    await page.locator('div:nth-child(2) > div > div:nth-child(3) > #track-container > div:nth-child(6)').click();
+
+    await page.getByRole('button', { name: 'See More' }).nth(0).click();
+    // await expect(page.getByText('Probability: 80%')).toBeVisible();
+    await page.getByRole('button', { name: 'See More' }).nth(1).click();
+    // await expect(page.getByText('Probability: 40%')).toBeVisible();
 }
 
 export async function results(page: any) {
