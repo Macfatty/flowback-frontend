@@ -13,5 +13,15 @@ export async function login(page: any, {
   await page.click('button[type="submit"]');
 
   await expect(page).toHaveURL('/home');
+
+  page.locator('#cookies-accept').click();
   await page.getByRole('button', { name: 'Ok' }).click();
+}
+
+export async function gotoGroup(page: any, groupId: string = "0") {
+  await page.locator('#groups').click();
+  await expect(page.locator('#groups-list')).toBeVisible();
+  const groupLink = page.locator('#groups-list a[href^="/groups/"]').first();
+  await expect(groupLink).toBeVisible();
+  await groupLink.click();
 }

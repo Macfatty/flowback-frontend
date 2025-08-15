@@ -59,10 +59,9 @@
 
 <Layout centered>
 	<!-- TODO: design of statusmessage is off -->
-	<Loader bind:loading Class="w-full">
+	<Loader bind:loading Class="w-full flex flex-col items-center">
 		<StatusMessage bind:status disableSuccess />
-		<div id="groups-list" class="flex flex-col items-center mt-6 gap-6 mb-6 w-full">
-			
+		<div id="groups-list" class="max-w-[1000px] flex flex-col items-center mt-6 gap-6 mb-6 w-full">
 			{#if !(env.PUBLIC_DISABLE_GROUP_CREATION === 'TRUE')}
 				<Button href="creategroup" Class="w-[90%] md:w-[40%] rounded-2xl"
 					>{$_('Create Group')}</Button
