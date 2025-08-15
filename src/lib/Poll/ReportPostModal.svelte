@@ -85,6 +85,7 @@
 				required
 				bind:value={description}
 				inputClass="whitespace-pre-wrap"
+				id="report-description"
 			/>
 		</Loader>
 	</div>
