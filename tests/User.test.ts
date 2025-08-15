@@ -19,7 +19,7 @@ test('Edit User', async ({ page }) => {
     await page.getByLabel('Name').press('Control+ArrowLeft');
     await page.getByLabel('Name').fill('a_edited');
     await page.getByRole('button', { name: 'Save changes' }).click();
-    await expect(page.getByText('Profile successfully updated')).toBeVisible();
+    await expect(page.getByText('Profile successfully updated').nth(0)).toBeVisible();
     await expect(page.getByText('a_edited')).toBeVisible();
     await expect(page.getByText('I like pancakes :')).toBeVisible();
     await logout(page);

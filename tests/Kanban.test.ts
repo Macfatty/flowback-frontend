@@ -132,4 +132,3 @@ test('Kanban-Delete', async ({ page }) => {
   await deleteButton.click();
   await expect(kanbanEntryModal).toBeHidden();
 });
-

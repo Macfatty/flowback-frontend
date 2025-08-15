@@ -4,8 +4,9 @@ import { createGroup, login } from './generic';
 test('Create-Delete-Group', async ({ page }) => {
     await login(page);
 
-    await createGroup(page);
-    
+    const groupName = 'Testing Group';
+    await createGroup(page, groupName);
+
     // Attempting to leave group as owner 
     await page.getByRole('button', { name: 'Leave group' }).click();
     await page.getByRole('button', { name: 'Yes', exact: true }).click();
@@ -15,10 +16,10 @@ test('Create-Delete-Group', async ({ page }) => {
     // Search for the group
     await page.getByRole('link', { name: 'Groups' }).click();
     await page.getByPlaceholder('Search groups').click();
-    await page.getByPlaceholder('Search groups').fill(`Test Group Yay ${randomNumber}`);
+    await page.getByPlaceholder('Search groups').fill(groupName);
     // await page.locator('label').getByRole('button').click();
     // await page.getByPlaceholder('Search groups').fill('');
-    await expect(page.locator('#groups-list > div:first-of-type > button:first-of-type')).toHaveText(`Test Group Yay ${randomNumber}`);
+    await expect(page.locator('#groups-list > div:first-of-type > button:first-of-type')).toHaveText(groupName);
     await page.locator('#groups-list > div').nth(0).getByRole('link').click();
 
     // Workgroup testing
@@ -45,7 +46,7 @@ test('Create-Delete-Group', async ({ page }) => {
     await page.getByRole('button', { name: 'Delete', exact: true }).click();
 
     // Editing Group
-    await expect(page.locator('#group-header-title')).toHaveText(`Test Group Yay ${randomNumber}`);
+    await expect(page.locator('#group-header-title')).toHaveText(groupName);
     await page.getByRole('button', { name: 'Edit Group' }).click();
 
     // Create, deactive and delete permission

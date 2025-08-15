@@ -14,7 +14,7 @@ export async function login(page: any, {
 
   await expect(page).toHaveURL('/home');
 
-  page.locator('#cookies-accept').click();
+  // page.locator('#cookies-accept').click();
   await page.getByRole('button', { name: 'Ok' }).click();
 }
 
@@ -33,12 +33,11 @@ export async function gotoGroup(page: any, groupId: string = "0") {
 }
 
 
-export async function createGroup(page: any) {
+export async function createGroup(page: any, groupName:string = 'Test Group') {
   await page.getByRole('link', { name: 'Groups' }).click();
   await page.getByRole('button', { name: 'Create Group' }).click();
   await page.getByLabel('Title * 0/').click();
-  const randomNumber = Math.floor(Math.random() * 100000);
-  await page.getByLabel('Title * 0/').fill(`Test Group Yay ${randomNumber}`);
+  await page.getByLabel('Title * 0/').fill(groupName);
   await page.getByLabel('Description  0/').click();
   await page.getByLabel('Description  0/').fill('Test Group Description');
   await page.locator(".image-upload > input").nth(0).setInputFiles('./tests/forward-facing-niko-oneshot-isnt-real-it-cant-hurt-you-v0-3ggf23q4ijcf1.webp');
