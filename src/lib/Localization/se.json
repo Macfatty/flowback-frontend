@@ -711,5 +711,7 @@
     "Select a type": "Välj en typ",
     "A link has been sent to your email. Check the spam folder if you don't see it.": "En länk har skickats till din e-post. Kontrollera skräppostmappen om du inte ser den.",
     "No delegate history": "Ingen delegat historik",
-    "Successfully edited event": "Händelsen har redigerats framgångsrikt"
+    "Successfully edited event": "Händelsen har redigerats framgångsrikt",
+    "No poll found, it might have been deleted": "Ingen omröstning hittades, den kan ha tagits bort",
+    "No thread found, it might have been deleted": "Ingen tråd hittades, den kan ha tagits bort"
 }

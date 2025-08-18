@@ -14,6 +14,7 @@
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
 	import ReportPostModal from '$lib/Poll/ReportPostModal.svelte';
 	import DeletePostModal from '$lib/Poll/DeletePostModal.svelte';
+	import Button from '$lib/Generic/Button.svelte';
 
 	let thread: Thread,
 		errorHandler: any,
@@ -96,9 +97,14 @@
 				</div>
 			{/if}
 		</div>
-	{/if}
 
-	<Comments api={'thread'} Class="w-full max-w-[1000px] bg-white dark:bg-darkobject p-6 mt-6" />
+		<Comments api={'thread'} Class="w-full max-w-[1000px] bg-white dark:bg-darkobject p-6 mt-6" />
+	{:else}
+		<div class="p-4 bg-white dark:bg-darkobject dark:text-darkmodeText mt-4 rounded shadow">
+			<p>{$_('No thread found, it might have been deleted')}</p>
+			<Button on:click={() => history.back()}><Fa icon={faArrowLeft} /></Button>
+		</div>
+	{/if}
 </Layout>
 
 <ReportPostModal
