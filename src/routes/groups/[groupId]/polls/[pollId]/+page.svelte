@@ -356,7 +356,7 @@
 		{/if}
 	{:else}
 		<div class="p-4 bg-white dark:bg-darkobject dark:text-darkmodeText mt-4 rounded shadow">
-			<p>No poll found, it might have been deleted</p>
+			<p>{$_("No poll found, it might have been deleted")}</p>
 			<Button on:click={() => history.back()}><Fa icon={faArrowLeft} /></Button>
 		</div>
 	{/if}
