@@ -44,7 +44,6 @@
 			else if (source === 'delegate-history') history.back();
 		}}
 	>
-		delegate-history
 		<!-- NOTE: In +layout, rote folder, there are URL related behaviours which are affected by this. -->
 		<Fa icon={faArrowLeft} />
 	</button>
