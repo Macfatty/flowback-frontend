@@ -154,7 +154,7 @@
 
 	<a
 		class="break-words cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
-		href={`/groups/${thread?.group_id}/thread/${thread?.id}`}>{thread?.title}</a
+		href={`/groups/${thread?.group_id}/thread/${thread?.id}?source=${$page.params.groupId ? 'group' : 'home'}`}>{thread?.title}</a
 	>
 
 	<div>
@@ -186,7 +186,7 @@
 		>
 			<a
 				class="text-black dark:text-darkmodeText flex justify-center gap-1"
-				href={`groups/${thread?.group_id}/thread/${thread?.id}`}
+				href={`groups/${thread?.group_id}/thread/${thread?.id}?source=${$page.params.groupId ? 'group' : 'home'}`}
 			>
 				<img class="w-5" src={ChatIcon} alt="open chat" />
 				<span class="inline">{thread?.total_comments} {'comments'}</span>

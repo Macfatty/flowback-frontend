@@ -44,7 +44,8 @@
 			Number($page.params.pollId) === Number(postId)
 		) {
 			// If the current page is the one being deleted, redirect to the group page
-			goto(`/groups/${$page.params.groupId}?page=flow`);
+			const source = new URLSearchParams(window.location.search).get('source');
+			goto(source === 'home' ? '/home' : `/groups/${$page.params.groupId}?page=flow`);
 			return;
 		} else {
 			// If at a thread or poll page

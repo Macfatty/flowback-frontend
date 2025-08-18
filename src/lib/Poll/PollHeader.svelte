@@ -29,7 +29,8 @@
 	let deletePollModalShow = false,
 		reportPollModalShow = false,
 		choicesOpen = false,
-		errorHandler: any;
+		errorHandler: any,
+		source = new URLSearchParams(window.location.search).get('source');
 </script>
 
 <div
@@ -37,7 +38,11 @@
 >
 	<button
 		class="cursor-pointer bg-white dark:bg-darkobject dark:text-darkmodeText justify-center m-auto"
-		on:click={() => goto(`/groups/${$page.params.groupId}`)}
+		on:click={() => {
+			if (source === 'home') goto('/home');
+			else if (source === 'group') goto(`/groups/${$page.params.groupId}?page=flow`);
+			else if (source === 'delegate-history') history.back();
+		}}
 	>
 		<!-- NOTE: In +layout, rote folder, there are URL related behaviours which are affected by this. -->
 		<Fa icon={faArrowLeft} />
