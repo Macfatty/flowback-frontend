@@ -37,7 +37,12 @@
 >
 	<button
 		class="cursor-pointer bg-white dark:bg-darkobject dark:text-darkmodeText justify-center m-auto"
-		on:click={() => goto(`/groups/${$page.params.groupId}`)}
+		on:click={() =>
+			goto(
+				new URLSearchParams(window.location.search).get('source') === 'home'
+					? '/home'
+					: `/groups/${$page.params.groupId}`
+			)}
 	>
 		<!-- NOTE: In +layout, rote folder, there are URL related behaviours which are affected by this. -->
 		<Fa icon={faArrowLeft} />

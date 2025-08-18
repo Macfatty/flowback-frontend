@@ -186,7 +186,9 @@
 			</div>
 			<a
 				class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"
-				href={`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}`}
+				href={`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+					$page.params.groupId ? 'group' : 'home'
+				}`}
 			>
 				{poll?.title}
 			</a>
@@ -211,7 +213,9 @@
 			<div class="flex justify-between items-start gap-4 pb-2">
 				<a
 					class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"
-					href={`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}`}
+					href={`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+						$page.params.groupId ? 'group' : 'home'
+					}`}
 				>
 					{poll?.title}
 				</a>
@@ -298,7 +302,9 @@
 				class="flex gap-1 items-center text-black dark:text-darkmodeText hover:bg-gray-100 dark:hover:bg-slate-500 cursor-pointer text-sm"
 				href={onHoverGroup
 					? '/groups/1'
-					: `/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?section=comments`}
+					: `/groups/${poll?.group_id || $page.params.groupId}/polls/${
+							poll?.id
+					  }?section=comments&source=${$page.params.groupId ? 'group' : 'home'}`}
 			>
 				<img
 					class="w-5"
