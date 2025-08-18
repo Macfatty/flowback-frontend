@@ -35,7 +35,8 @@
 		proposalsToPredictionMarket: proposal[] = [],
 		errorHandler: any,
 		displayForm: boolean,
-		comments: Comment[] = [];
+		comments: Comment[] = [],
+		loading = true;
 
 	onMount(async () => {
 		await getPollData();
@@ -49,11 +50,14 @@
 
 	const getPollData = async () => {
 		if (!$page.params) return;
-
+		loading = true;
+		
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/poll/list?id=${$page.params.pollId}`
 		);
+
+		loading = false;
 
 		if (!res.ok) {
 			errorHandler.addPopup({ message: json.detail[0], success: false });
@@ -354,7 +358,7 @@
 				</Structure>
 			{/if}
 		{/if}
-	{:else}
+	{:else if !loading}
 		<div class="p-4 bg-white dark:bg-darkobject dark:text-darkmodeText mt-4 rounded shadow">
 			<p>{$_("No poll found, it might have been deleted")}</p>
 			<Button onClick={() => history.back()}><Fa icon={faArrowLeft} /></Button>
