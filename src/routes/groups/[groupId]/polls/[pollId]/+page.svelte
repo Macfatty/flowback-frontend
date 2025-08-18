@@ -23,6 +23,8 @@
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { formatDate } from '$lib/Generic/DateFormatter';
 	import { predictionStatementsStore } from '$lib/Poll/PredictionMarket/interfaces';
+	import Fa from 'svelte-fa';
+	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 	let poll: poll,
 		pollType = 1,
@@ -352,6 +354,11 @@
 				</Structure>
 			{/if}
 		{/if}
+	{:else}
+		<div class="p-4 bg-white dark:bg-darkobject dark:text-darkmodeText mt-4 rounded shadow">
+			<p>No poll found, it might have been deleted</p>
+			<Button on:click={() => history.back()}><Fa icon={faArrowLeft} /></Button>
+		</div>
 	{/if}
 </Layout>
 
