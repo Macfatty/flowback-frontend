@@ -8,6 +8,7 @@
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import VotingSlider from './VotingSlider.svelte';
 	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
+	import Button from '$lib/Generic/Button.svelte';
 
 	export let proposals: proposal[],
 		selectedProposal: proposal | null = null,
@@ -123,8 +124,6 @@
 	};
 
 	const vote = async () => {
-		console.log('in vote');
-
 		const { res, json } = await fetchRequest(
 			`POST`,
 			`group/poll/${$page.params.pollId}/proposal/vote/update`,
@@ -133,7 +132,6 @@
 				scores: voting?.map((vote) => vote.score)
 			}
 		);
-		console.log('in vote', res, json);
 
 		if (!res.ok) {
 			errorHandler.addPopup({
@@ -184,27 +182,40 @@
 							{#if phase === 'delegate_vote' || phase === 'vote'}
 								{@const score = getScore(proposal)}
 
-								<VotingSlider
-									bind:phase
-									onSelection={(pos) => {
-										console.log(pos, '!POS');
+								{#key voting}
+									<VotingSlider
+										bind:phase
+										onSelection={(pos) => {
+											console.log(pos);
 
-										//@ts-ignore
-										changingVote(pos, proposal.id);
-										if (phase === 'delegate_vote') delegateVote();
-										else if (phase === 'vote') vote();
-									}}
-									disabled={(phase === 'delegate_vote' &&
-										$groupUserStore?.delegate_pool_id === null) ||
-										(phase === 'vote' && !$groupUserPermissionStore?.allow_vote)}
-									{score}
-									delegateScore={delegateVoting?.find((vote) => vote.proposal === proposal.id)
-										?.raw_score}
-									style={(() => {
-										if (phase === 'vote' && voting === delegateVoting) return 'gray';
-										else return 'purple';
-									})()}
-								/>
+											//@ts-ignore
+											changingVote(pos, proposal.id);
+											if (phase === 'delegate_vote') delegateVote();
+											else if (phase === 'vote') vote();
+										}}
+										disabled={(phase === 'delegate_vote' &&
+											$groupUserStore?.delegate_pool_id === null) ||
+											(phase === 'vote' && !$groupUserPermissionStore?.allow_vote)}
+										{score}
+										delegateScore={delegateVoting?.find((vote) => vote.proposal === proposal.id)
+											?.raw_score}
+										style={(() => {
+											if (phase === 'vote' && voting === delegateVoting) return 'gray';
+											else return 'purple';
+										})()}
+									/>
+								{/key}
+							{/if}
+							{#if phase === 'vote'}
+								<Button
+									onClick={() => {
+										console.log('HIi', voting, delegateVoting);
+										const _vote = voting.find((vote) => vote.proposal === proposal.id);
+										const dVote = delegateVoting.find((vote) => vote.proposal === proposal.id);
+										if (dVote) changingVote(dVote.score, dVote.proposal);
+										vote();
+									}}>Reset to delegate votes</Button
+								>
 							{/if}
 						</Proposal>
 					</div>

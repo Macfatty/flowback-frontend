@@ -120,7 +120,7 @@
 			});
 
 		if (res.ok && groupId) {
-			goto(`groups/${groupId}/polls/${json}`);
+			goto(`groups/${groupId}/polls/${json}?source=group`);
 		}
 	};
 
