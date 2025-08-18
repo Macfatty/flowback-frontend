@@ -148,7 +148,7 @@
 									class="w-full break-words text-left text-xl p-1 pl-0 text-gray-900 dark:text-gray-300 cursor-pointer hover:underline"
 									href={`groups/${new URLSearchParams(window.location.search).get(
 										'group_id'
-									)}/polls/${vote?.poll_id}`}
+									)}/polls/${vote?.poll_id}?source=delegate-history`}
 								>
 									{vote?.poll_title || $_('No title')}
 								</a>
