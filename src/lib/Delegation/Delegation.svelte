@@ -30,7 +30,11 @@
 			return;
 		}
 		groups = json?.results;
-		group = json?.results[0];
+
+		group =
+			groups.find(
+				(g: Group) => g.id === Number(new URLSearchParams(window.location.search).get('groupId'))
+			) || groups[0];
 	};
 
 	const getUserInfo = async () => {
@@ -58,6 +62,7 @@
 			errorHandler.addPopup({ message: 'Could not create delegation pool', success: false });
 			return;
 		}
+
 		userIsDelegate = true;
 	};
 

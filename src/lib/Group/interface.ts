@@ -15,6 +15,7 @@ export type SelectablePage =
 	| 'schedule'
 	| 'threads'
 	| 'working-groups'
+	| 'delegation'
 	;
 
 export interface User {
