@@ -1,10 +1,6 @@
 export interface kanban {
 	assignee: { id: number; profile_image: string; username: string } | null;
-	group: {
-		id: number;
-		image: string;
-		name: string;
-	};
+
 	created_by: {
 		id: number;
 		profile_image: string | null;
