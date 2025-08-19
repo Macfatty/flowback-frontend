@@ -19,7 +19,10 @@
 	let errorHandler: any,
 		areYouSureModal = false;
 
-	const goToGroup = () => {
+	const goToGroup = (e: event) => {
+		console.log(e, 'E');
+		if (e.target.id === 'group-join-button') return; // Prevent navigation when clicking the join button
+
 		if (group.joined) goto(`/groups/${group.id}`);
 	};
 
@@ -64,20 +67,19 @@
 	};
 </script>
 
-<div
+<button
 	class={`w-4/6 md:w-2/5 max-w-[650px] bg-white relative shadow-md dark:bg-darkobject dark:text-darkmodeText text-center ${
 		group.joined && 'cursor-pointer hover:shadow-xl vote-thumbnail'
 	} transition-shadow rounded-2xl`}
+	on:click={goToGroup}
 >
 	{#if group.joined}
-		<a href={`/groups/${group.id}`} class="w-full">
-			<img
-				src={`${env.PUBLIC_API_URL}${group.cover_image}`}
-				class="cover rounded-t-2xl w-full"
-				alt="cover"
-				on:error={(e) => onThumbnailError(e, DefaultBanner)}
-			/>
-		</a>
+		<img
+			src={`${env.PUBLIC_API_URL}${group.cover_image}`}
+			class="cover rounded-t-2xl w-full"
+			alt="cover"
+			on:error={(e) => onThumbnailError(e, DefaultBanner)}
+		/>
 	{:else}
 		<img
 			src={`${env.PUBLIC_API_URL}${group.cover_image}`}
@@ -116,6 +118,7 @@
 					joinGroup(group.direct_join);
 				}
 			}}
+			id="group-join-button"
 		>
 			{$_(
 				group.joined
@@ -128,7 +131,7 @@
 			)}
 		</Button>
 	</div>
-</div>
+</button>
 
 <Modal
 	bind:open={areYouSureModal}

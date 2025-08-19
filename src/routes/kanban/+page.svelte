@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-	<title>My Kanban</title>
+	<title>Kanban</title>
 </svelte:head>
 
 <!-- This is for the personal kanban page. <Kanban /> is also used in groups, so this file is not reduntant -->

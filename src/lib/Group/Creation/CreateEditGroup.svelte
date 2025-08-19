@@ -40,7 +40,7 @@
 	let DeleteGroupModalShow = false;
 
 	//This function is also used for group editing
-	const createGroup = async () => {
+	const createEditGroup = async () => {
 		loading = true;
 		const formData = new FormData();
 
@@ -61,23 +61,32 @@
 		let api = groupToEdit ? `group/${groupToEdit}/update` : 'group/create';
 		const { res, json } = await fetchRequest('POST', api, formData, true, false);
 
+		loading = false;
 		if (!res.ok) {
-			status = statusMessageFormatter(res, json);
-			loading = false;
+			errorHandler.addPopup({
+				message:
+					json.detail[0] || json.detail || groupToEdit
+						? 'Could not update group'
+						: 'Could not create group',
+				success: false
+			});
 			return;
 		}
 
-		if (groupToEdit === null || groupToEdit === undefined) {
+		errorHandler.addPopup({
+			message: groupToEdit ? 'Successfully updated group' : 'Successfully created group',
+			success: true
+		});
+
+		if (!groupToEdit) {
+			// Create a default tag for the group
 			const { res } = await fetchRequest('POST', `group/${json}/tag/create`, {
-				name: 'Uncategorised' //Default
+				name: 'Uncategorised'
 			});
 
-			if (res.ok) {
-				if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') becomeMemberOfGroup(blockchain_id);
-				goto(`/groups/${json}`);
-			} else status = statusMessageFormatter(res, json);
-		} else goto(`/groups/${groupToEdit}`);
-		loading = false;
+			if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') becomeMemberOfGroup(blockchain_id);
+			goto(`/groups/${json}`);
+		}
 	};
 
 	const deleteGroup = async () => {
@@ -134,7 +143,7 @@
 </svelte:head>
 
 <form
-	on:submit|preventDefault={createGroup}
+	on:submit|preventDefault={createEditGroup}
 	class={`dark:text-darkmodeText bg-white dark:bg-darkobject ${Class}`}
 >
 	<Loader bind:loading>
