@@ -27,7 +27,7 @@ export async function logout(page: any) {
 export async function gotoGroup(page: any, groupId: string = "0") {
   await page.locator('#groups').click();
   await expect(page.locator('#groups-list')).toBeVisible();
-  const groupLink = page.locator('#groups-list a[href^="/groups/"]').first();
+  const groupLink = page.locator('#groups-list > button').nth(1);
   await expect(groupLink).toBeVisible();
   await groupLink.click();
 }

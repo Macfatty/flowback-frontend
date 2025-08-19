@@ -71,7 +71,5 @@ test('Thread-Create-Report-Delete', async ({ page }) => {
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
     await page.getByRole('button', { name: 'Delete Thread' }).click();
     await page.getByRole('button', { name: 'Remove', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Test Group' })).toBeVisible();
-
-
+    await expect(page.getByText('Successfully deleted thread')).toBeVisible();
 });
