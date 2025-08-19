@@ -4,7 +4,7 @@ import { createGroup, login } from './generic';
 test('Create-Delete-Group', async ({ page }) => {
     await login(page);
 
-    const groupName = 'Testing Group';
+    const groupName = 'Testing Group 22';
     await createGroup(page, groupName);
 
     // Attempting to leave group as owner 
@@ -19,8 +19,8 @@ test('Create-Delete-Group', async ({ page }) => {
     await page.getByPlaceholder('Search groups').fill(groupName);
     // await page.locator('label').getByRole('button').click();
     // await page.getByPlaceholder('Search groups').fill('');
-    await expect(page.locator('#groups-list > div:first-of-type > button:first-of-type')).toHaveText(groupName);
-    await page.locator('#groups-list > div').nth(0).getByRole('link').click();
+    await expect(page.getByRole('button', { name: groupName, exact: true })).toHaveText(groupName);
+    page.getByRole('button', { name: groupName, exact: true }).click();
 
     // Workgroup testing
     await page.getByRole('button', { name: 'Work Groups' }).click();

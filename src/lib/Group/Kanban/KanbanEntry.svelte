@@ -21,7 +21,6 @@
 	import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 	import Select from '$lib/Generic/Select.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import EveryProperty from '$lib/Generic/EveryProperty.svelte';
 
 	export let kanban: kanban,
 		filter: Filter,
@@ -367,7 +366,12 @@
 		<div slot="body">
 			{#if isEditing}
 				<div class="pb-2">
-					<TextInput bind:value={kanbanEdited.title} required label="Title" id="kanban-edit-title" />
+					<TextInput
+						bind:value={kanbanEdited.title}
+						required
+						label="Title"
+						id="kanban-edit-title"
+					/>
 				</div>
 				<TextArea
 					bind:value={kanbanEdited.description}
@@ -442,11 +446,15 @@
 						<!-- <FileUploads bind:images={kanbanEdited.images} /> -->
 					</div>
 				</div>
+				<!-- If not editing, so normal display -->
 			{:else}
 				<div class="text-center">
 					<h2 class="pb-1 font-semibold break-words text-xl w-full">{kanban.title}</h2>
 					{#if filter.type === 'group'}
 						<p class="w-full">{kanban?.work_group?.name || $_('No workgroup assigned')}</p>
+						<button on:click={() => goto(`/groups/${kanban?.origin_id}`)} class="w-full"
+							>{kanban?.group_name}</button
+						>
 					{/if}
 				</div>
 				<div class="flex mt-4 w-full">

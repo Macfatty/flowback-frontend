@@ -10,7 +10,7 @@
 
 <div class="flex">
 	<button
-		class={'items-center select-none text-xs tag text-center bg-accent-tertiary text-black px-4 py-1 break-words ' +
+		class={'items-center select-none text-xs tag text-center bg-accent-tertiary dark:bg-slate-500 dark:text-darkmodeText text-black px-4 py-1 break-words ' +
 			(displayImac ? 'rounded-l' : 'rounded') +
 			' ' +
 			Class}
@@ -21,7 +21,7 @@
 
 	{#if displayImac}
 		<div
-			class="border-accent-tertiary px-1 border-2 w-auto min-w-[20%] content-center text-center text-black text-xs dark:text-darkmodeText rounded-r"
+			class="border-accent-tertiary px-1 border-2 w-auto min-w-[20%] content-center text-center text-black text-xs dark:bg-slate-500 dark:text-darkmodeText rounded-r"
 		>
 			{#if tag?.imac}
 				{(tag.imac * 100).toFixed(0)}%

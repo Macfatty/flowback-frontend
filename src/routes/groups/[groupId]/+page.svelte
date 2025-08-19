@@ -82,7 +82,11 @@
 </script>
 
 <svelte:head>
-	<title>{group.name} at {selectedPage}</title>
+	{#if group.name && selectedPage}
+		<title>{group.name} at {selectedPage}</title>
+	{:else}
+		<title>Flowback</title>
+	{/if}
 </svelte:head>
 
 <Layout>

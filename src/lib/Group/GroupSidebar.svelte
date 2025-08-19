@@ -14,7 +14,10 @@
 		faX,
 		faCog,
 		faListCheck,
-		faPeopleCarryBox
+		faPeopleCarryBox,
+
+		faPeopleArrows
+
 	} from '@fortawesome/free-solid-svg-icons';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Modal from '$lib/Generic/Modal.svelte';
@@ -142,6 +145,13 @@
 				faIcon={faFile}
 			/> -->
 			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
+				<GroupSidebarButton
+					action={() => goto(`/delegations?groupId=${$page.params.groupId}`)}
+					isSelected={selectedPage === 'delegation'}
+					text="Delegation"
+					faIcon={faPeopleArrows}
+				/>
+
 				<GroupSidebarButton
 					action={() => goto(`/kanban?groupId=${$page.params.groupId}`)}
 					isSelected={selectedPage === 'kanban'}
