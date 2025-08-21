@@ -7,13 +7,15 @@ test('Delegation', async ({ page }) => {
 
     await createGroup(page);
 
+    await page.waitForTimeout(400);
+
     await page.getByRole('link', { name: 'Delegations' }).click();
+    await page.getByRole('combobox').selectOption('Test Group');
     await page.getByRole('button', { name: 'Become delegate' }).click();
     await page.getByRole('button', { name: 'Become delegate' }).nth(1).click();
     await page.getByRole('button', { name: 'Stop being delegate' }).click();
     await page.getByRole('button', { name: 'Become delegate' }).nth(1).click();
     await expect(page.getByRole('button', { name: 'Stop being delegate' })).toBeVisible();
-
 
     await gotoGroup(page);
 

@@ -33,7 +33,8 @@
 
 	const resetFilter = () => {
 		filter.joined = 'all';
-		filter.search = searchQuery;
+		filter.search = '';
+		searchQuery = '';
 		searched = true;
 		getGroups();
 	};

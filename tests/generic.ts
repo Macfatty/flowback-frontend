@@ -14,8 +14,9 @@ export async function login(page: any, {
 
   await expect(page).toHaveURL('/home');
 
-  // page.locator('#cookies-accept').click();
-  await page.getByRole('button', { name: 'Ok' }).click();
+  if (await page.getByRole('button', { name: 'Ok' }).isVisible()) {
+    await page.getByRole('button', { name: 'Ok' }).click();
+  }
 }
 
 export async function logout(page: any) {
@@ -33,7 +34,7 @@ export async function gotoGroup(page: any, groupId: string = "0") {
 }
 
 
-export async function createGroup(page: any, groupName:string = 'Test Group') {
+export async function createGroup(page: any, groupName: string = 'Test Group') {
   await page.getByRole('link', { name: 'Groups' }).click();
   await page.getByRole('button', { name: 'Create Group' }).click();
   await page.getByLabel('Title * 0/').click();
@@ -47,5 +48,6 @@ export async function createGroup(page: any, groupName:string = 'Test Group') {
   await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel('No').check();
   await page.locator('fieldset').filter({ hasText: 'Hide creators? Yes No' }).getByLabel('No').check();
   await page.getByRole('button', { name: 'Create' }).click();
+  
 
 }
