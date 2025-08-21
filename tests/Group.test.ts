@@ -5,7 +5,7 @@ test('Create-Delete-Group', async ({ page }) => {
     await login(page);
 
     const groupName = 'Testing Group 22';
-    await createGroup(page, groupName);
+    await createGroup(page, {name: groupName, public_group: true});
 
     // Attempting to leave group as owner 
     await page.getByRole('button', { name: 'Leave group' }).click();

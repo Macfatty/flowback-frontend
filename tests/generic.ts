@@ -34,18 +34,18 @@ export async function gotoGroup(page: any, groupId: string = "0") {
 }
 
 
-export async function createGroup(page: any, groupName: string = 'Test Group') {
+export async function createGroup(page: any, group = {name: 'Test Group', public_group: false}) {
   await page.getByRole('link', { name: 'Groups' }).click();
   await page.getByRole('button', { name: 'Create Group' }).click();
   await page.getByLabel('Title * 0/').click();
-  await page.getByLabel('Title * 0/').fill(groupName);
+  await page.getByLabel('Title * 0/').fill(group.name);
   await page.getByLabel('Description  0/').click();
   await page.getByLabel('Description  0/').fill('Test Group Description');
   await page.locator(".image-upload > input").nth(0).setInputFiles('./tests/forward-facing-niko-oneshot-isnt-real-it-cant-hurt-you-v0-3ggf23q4ijcf1.webp');
   await page.getByRole('button', { name: 'Confirm' }).click();
   await page.locator(".image-upload > input").nth(1).setInputFiles('./tests/forward-facing-niko-oneshot-isnt-real-it-cant-hurt-you-v0-3ggf23q4ijcf1.webp');
   await page.getByRole('button', { name: 'Confirm' }).click();
-  await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel('No').check();
+  await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel(group.public_group ? 'Yes' : 'No').check();
   await page.locator('fieldset').filter({ hasText: 'Hide creators? Yes No' }).getByLabel('No').check();
   await page.getByRole('button', { name: 'Create' }).click();
   
