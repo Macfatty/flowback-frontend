@@ -67,7 +67,7 @@
 	};
 </script>
 
-<button
+<div
 	class={`w-4/6 md:w-2/5 max-w-[650px] bg-white relative shadow-md dark:bg-darkobject dark:text-darkmodeText text-center ${
 		group.joined && 'cursor-pointer hover:shadow-xl vote-thumbnail'
 	} transition-shadow rounded-2xl`}
@@ -95,11 +95,11 @@
 		alt="profile"
 	/>
 
-	<button on:click={goToGroup}>
+	<div on:click={goToGroup}>
 		<h1 class="text-2xl p-4 mt-10 text-center break-words">
 			{group.name}
 		</h1>
-	</button>
+	</div>
 
 	{#if group.description.length > 0}
 		<div class="my-2 mx-auto w-[85%] min-w-72 grid-area-description break-words">
@@ -131,7 +131,7 @@
 			)}
 		</Button>
 	</div>
-</button>
+</div>
 
 <Modal
 	bind:open={areYouSureModal}
