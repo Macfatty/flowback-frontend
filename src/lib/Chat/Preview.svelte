@@ -12,7 +12,7 @@
 	import { _ } from 'svelte-i18n';
 	import { workGroupsStore, type WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import { env } from '$env/dynamic/public';
-	import { updateUserData } from './functions';
+	import EveryProperty from '$lib/Generic/EveryProperty.svelte';
 
 	let groups: Group[] = [],
 		directs: Direct[] = [],
@@ -101,12 +101,12 @@
 		localStorage.setItem(timestampKey, new Date().toISOString());
 
 		// if (selectedPage === 'direct') {
-			let message = previewDirect.find((message) => message.channel_id === chatterId);
-			if (message) {
-				message.timestamp = new Date().toString();
-				message.notified = false;
-				previewDirect = [...previewDirect];
-			}
+		let message = previewDirect.find((message) => message.channel_id === chatterId);
+		if (message) {
+			message.timestamp = new Date().toString();
+			message.notified = false;
+			previewDirect = [...previewDirect];
+		}
 		// 	selectedChat = chatterId;
 		// 	selectedChatChannelId = chatterId;
 		// 	chatPartner.set(chatterId);
@@ -177,24 +177,6 @@
 		}
 	};
 
-	const compressChatListIntoOneList = () => {
-		const combinedList = [...directs]; // Create a new array with spread operator
-
-		groups.forEach((group) => {
-			combinedList.push({
-				id: group.id,
-				profile_image: group.image,
-				username: group.name,
-				banner_image: group.cover_image,
-				chat_status: group.public ? 'public' : 'private',
-				channel_id: group.chat_id,
-				public_status: group.public ? 'public' : 'private'
-			});
-		});
-
-		return combinedList;
-	};
-
 	onMount(async () => {
 		if (env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') getWorkGroups();
 		await UserChatInviteList();
@@ -256,6 +238,7 @@
 					<div class="flex flex-col max-w-[40%]">
 						<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
 							{groups[0]?.name}
+
 							{groupChat.message_channel_name}
 						</span>
 						<span class="text-gray-400 text-sm truncate h-[20px] overflow-x-hidden max-w-[10%]" />
@@ -264,34 +247,30 @@
 			{/if}
 		{/each}
 	{/if}
-
-	{#each compressChatListIntoOneList() as chatter}
-		{@const previewObject = previewDirect.find(
-			(direct) => direct.channel_id === chatter?.channel_id
-		)}
-
+	{#each [...previewGroup, ...previewDirect] as chatter}
 		<button
-			class:hidden={!chatter?.username?.toLowerCase().includes(chatSearch?.toLowerCase())}
 			class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
 			class:bg-gray-200={selectedChat === chatter.channel_id}
 			class:dark:bg-gray-700={selectedChat === chatter.channel_id}
 			on:click={() => clickedChatter(chatter.channel_id)}
 		>
-			{#if previewObject?.notified}
+			{#if chatter?.notified}
 				<div class="p-1 rounded-full bg-purple-300" />
 			{/if}
 
-			<ProfilePicture username={chatter?.username} profilePicture={chatter?.profile_image} />
+			<ProfilePicture profilePicture={chatter?.profile_image} />
 			<div class="flex flex-col max-w-[40%]">
 				<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
-					{chatter?.username}
-				</span>
-				<span class="text-gray-400 text-sm truncate h-[20px] overflow-x-hidden max-w-[10%]">
-					{#if previewObject && previewObject.user && previewObject.message}
-						{previewObject.user.username}: {previewObject.message}
-					{:else}
-						{' '}
+					<!-- {chatter?.user.username} -->
+
+					<!-- <EveryProperty obj={chatter} /> -->
+
+					{#if chatter?.channel_origin === 'group'}
+						{groups.find((group) => group.chat_id === chatter.channel_id)?.name || 'Group Chat'}
 					{/if}
+				</span>
+				<span class="text-gray-400 text-sm h-[20px]">
+					{chatter?.message || ''}
 				</span>
 			</div>
 		</button>
@@ -304,9 +283,10 @@
 						}
 						const newMember = {
 							id: chatter.id,
-							username: chatter.username || chatter.name || 'Unknown',
+							username: chatter.target_username || 'Unknown',
 							profile_image: chatter.profile_image || null
 						};
+						//@ts-ignore
 						groupMembers = [...groupMembers, newMember];
 					}}
 				>

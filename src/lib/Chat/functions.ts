@@ -1,7 +1,8 @@
 import { fetchRequest } from "$lib/FetchRequest";
 import { writable } from 'svelte/store';
+import type { PreviewMessage } from "./interfaces";
 
-export const updateUserData = async (selectedChat:number, timestamp?: Date | null, closed?: Date | null) => {
+export const updateUserData = async (selectedChat: number, timestamp?: Date | null, closed?: Date | null) => {
     let data: any = {
         channel_id: selectedChat
     };
