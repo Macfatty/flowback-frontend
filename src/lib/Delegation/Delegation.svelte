@@ -12,6 +12,9 @@
 	import type { Group } from '$lib/Group/interface';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
+	import Fa from 'svelte-fa';
+	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+	import { goto } from '$app/navigation';
 
 	let group: Group,
 		groups: Group[],
@@ -105,10 +108,12 @@
 </script>
 
 <Layout centered>
+	
 	<div class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow w-full text-left">
 		<h1 class="text-xl font-semibold text-primary dark:text-secondary text-left">
 			{$_(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? 'Automate' : 'Manage Delegations')}
 		</h1>
+
 		<p>
 			{$_(
 				env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE'
@@ -118,6 +123,14 @@
 		</p>
 	</div>
 	<div class="flex w-[80%] max-w-[1200px] my-6 gap-6">
+		<Button
+			onClick={() => history.back()}
+			Class="z-10 absolute left-6 p-3 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90"
+		>
+			<div class="text-gray-800 dark:text-gray-200">
+				<Fa icon={faArrowLeft} />
+			</div>
+		</Button>
 		<div class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow w-[50%]">
 			{#if env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE'}
 				<Select
