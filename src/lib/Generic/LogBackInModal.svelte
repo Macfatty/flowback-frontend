@@ -19,7 +19,7 @@
 
 	const logOut = async () => {
 		open = false;
-		await UsersApi.logout();
+		// await UsersApi.logout();
 		localStorage.removeItem('token');
 		localStorage.removeItem('sessionExpirationTime');
 		goto('/login');

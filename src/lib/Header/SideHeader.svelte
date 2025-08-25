@@ -14,7 +14,7 @@
 		open_tools = false;
 
 	const logOut = async () => {
-		await UsersApi.logout();
+		// await UsersApi.logout();
 		localStorage.removeItem('token');
 		localStorage.removeItem('sessionExpirationTime');
 		goto('/login');
