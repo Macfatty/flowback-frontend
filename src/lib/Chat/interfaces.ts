@@ -58,6 +58,7 @@ export interface PreviewMessage {
 	};
 	target_id?: number;
 	target_username?: string;
+	channel_origin?: 'user' | 'group';
 }
 
 export interface Direct {

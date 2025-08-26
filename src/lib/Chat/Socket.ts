@@ -6,7 +6,7 @@ export const messageStore = writable<Message1 | null>(null);
 
 const createSocket = (userId: number) => {
 	const token = localStorage.getItem('token');
-	if (!token) return;
+	// if (!token) return;
 
 	const link = `${env.PUBLIC_WEBSOCKET_API}/chat/ws?token=${token}`;
 	const socket = new WebSocket(link);

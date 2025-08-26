@@ -376,7 +376,9 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=0`
+									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=0&source=${
+										$page.params.groupId ? 'group' : 'home'
+									}`
 								)}>{$_('See Proposals')} ({poll?.total_proposals})</Button
 						>
 						<Button
@@ -384,7 +386,9 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=1`
+									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=1&source=${
+										$page.params.groupId ? 'group' : 'home'
+									}`
 								)}>{$_('Create a Proposal')}</Button
 						>
 					</div>
@@ -397,7 +401,9 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=0`
+									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=0&source=${
+										$page.params.groupId ? 'group' : 'home'
+									}`
 								)}>{$_('See Consequences')} ({poll?.total_predictions})</Button
 						>
 						<Button
@@ -405,7 +411,9 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=1`
+									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=1&source=${
+										$page.params.groupId ? 'group' : 'home'
+									}`
 								)}>{$_('Create a Consequence')}</Button
 						>
 					</div>
@@ -417,7 +425,9 @@
 							Class="w-[47%]"
 							buttonStyle="primary-light"
 							onClick={() =>
-								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}`)}
+								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+										$page.params.groupId ? 'group' : 'home'
+									}`)}
 							>{$_('Manage Probabilities')}</Button
 						>
 						<!-- <p class="w-[47%]">{$_('You have not betted yet!')}</p> -->
@@ -430,7 +440,9 @@
 							Class="w-[47%]"
 							buttonStyle="primary-light"
 							onClick={() =>
-								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}`)}
+								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+										$page.params.groupId ? 'group' : 'home'
+									}`)}
 							>{$_('Manage votes')}</Button
 						>
 						<!-- <p class="w-[47%]">{$_('You have not voted yet!')}</p> -->
@@ -443,7 +455,9 @@
 							Class="w-[47%]"
 							buttonStyle="primary-light"
 							onClick={() =>
-								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}`)}
+								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+										$page.params.groupId ? 'group' : 'home'
+									}`)}
 							>{$_('View results & evaluate consequences')}</Button
 						>
 					</div>

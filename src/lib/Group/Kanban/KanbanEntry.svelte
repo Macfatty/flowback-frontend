@@ -182,18 +182,10 @@
 	};
 
 	const deleteKanbanEntry = async () => {
-		if (kanban.origin_type === 'group' && !$page.params.groupId) {
-			errorHandler.addPopup({
-				message: 'Cannot remove kanban tasks from groups in My Kanban',
-				success: false
-			});
-			return;
-		}
-
 		const { res, json } = await fetchRequest(
 			'POST',
 			kanban.origin_type === 'group'
-				? `group/${$page.params.groupId}/kanban/entry/delete`
+				? `group/${filter.group}/kanban/entry/delete`
 				: 'user/kanban/entry/delete',
 			{ entry_id: kanban.id }
 		);

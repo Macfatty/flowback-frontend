@@ -13,7 +13,6 @@
 	import { messageStore } from './Socket';
 	import { onMount, onDestroy } from 'svelte';
 	import Socket from './Socket';
-	import { updateUserData } from './functions';
 	import { chatWindow as chatWindowLimit } from '../Generic/APILimits.json';
 	import { env } from '$env/dynamic/public';
 	import Modal from '$lib/Generic/Modal.svelte';
@@ -57,9 +56,6 @@
 		// Update timestamp when viewing messages
 		const timestampKey = `lastInteraction_${selectedChatChannelId}`;
 		localStorage.setItem(timestampKey, new Date().toISOString());
-
-		// console.log("getRecentMessages timestampKey", timestampKey, localStorage.getItem(timestampKey));
-		// console.log(`Loaded messages for ${selectedPage} chat (channel ${selectedChatChannelId}):`, messages);
 	};
 
 	// Send a message and update localStorage timestamp
@@ -69,17 +65,18 @@
 
 		if (newerMessages) await getRecentMessages();
 
-		let previewMessage = (selectedPage === 'group' ? previewGroup : previewDirect).find(
-			(p) =>
-				(selectedPage === 'direct' &&
-					((p.user_id === $userStore?.id && p.target_id === selectedChat) ||
-						(p.target_id === $userStore?.id && p.user_id === selectedChat))) ||
-				(selectedPage === 'group' && p.group_id === selectedChat)
+		let previewMessage = [...previewGroup, ...previewDirect].find(
+			(p) => p.id === selectedChat || p.group_id === selectedChat
 		);
+		
+		console.log('PREVIEW MESG', previewMessage);
 		if (previewMessage) {
 			previewMessage.message = message;
 			previewMessage.created_at = new Date().toString();
 			previewMessage.notified = false;
+			previewMessage = previewMessage;
+			previewGroup = previewGroup;
+			previewDirect = previewDirect;
 		} else {
 			previewMessage = {
 				id: Date.now(),
@@ -88,11 +85,11 @@
 				timestamp: new Date().toString(),
 				notified: false,
 				profile_image: $userStore?.profile_image || '',
-				user_id: $userStore?.id,
+				user_id: $userStore?.id || -1,
 				user: {
-					id: $userStore?.id,
-					username: $userStore?.username,
-					profile_image: $userStore?.profile_image,
+					id: $userStore?.id || -1,
+					username: $userStore?.username || '',
+					profile_image: $userStore?.profile_image || '',
 					banner_image: ''
 				},
 				channel_id: selectedChatChannelId,
@@ -115,8 +112,8 @@
 			id: Date.now(),
 			message,
 			user: {
-				username: $userStore?.username,
-				id: $userStore?.id,
+				username: $userStore?.username  || '',
+				id: $userStore?.id || -1,
 				profile_image: $userStore?.profile_image || ''
 			},
 			created_at: new Date().toString(),
@@ -214,7 +211,7 @@
 
 	// Subscribe to incoming messages
 	const receiveMessage = () => {
-		const unsubscribe = messageStore.subscribe((message: Message1) => {
+		const unsubscribe = messageStore.subscribe((message: Message1 | null) => {
 			if (!message || message.user?.id === $userStore?.id) return;
 			if (message.channel_origin_name === 'group') {
 				handleReceiveMessage(previewGroup, message);

@@ -108,28 +108,24 @@
 	{/if}
 
 	<div class="flex justify-center mb-6">
-		<Button
-			disabled={group.pending_join}
-			Class="hover:bg-blue-800 bg-blue-600"
-			onClick={() => {
-				if (group.joined) {
-					areYouSureModal = true;
-				} else {
-					joinGroup(group.direct_join);
-				}
-			}}
-			id="group-join-button"
-		>
-			{$_(
-				group.joined
-					? 'Leave'
-					: group.direct_join
-					? 'Join'
-					: group.pending_join
-					? 'Request sent'
-					: 'Ask to join'
-			)}
-		</Button>
+		{#if !group.pending_join}
+			<Button
+				disabled={group.pending_join}
+				Class="hover:bg-blue-800 bg-blue-600"
+				onClick={() => {
+					if (group.joined) {
+						areYouSureModal = true;
+					} else {
+						joinGroup(group.direct_join);
+					}
+				}}
+				id="group-join-button"
+			>
+				{$_(group.joined ? 'Leave' : group.direct_join ? 'Join' : 'Ask to join')}
+			</Button>
+		{:else}
+			Request sent
+		{/if}
 	</div>
 </div>
 

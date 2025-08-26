@@ -228,7 +228,7 @@
 	});
 </script>
 
-<main class="">
+<main class="h-[100vh]">
 	{#if showUI}
 		<Chat />
 		<Header />

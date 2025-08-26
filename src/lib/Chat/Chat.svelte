@@ -90,8 +90,8 @@
 			});
 		};
 
-		const interval = setInterval(cleanupNotifications, 60000);
-		return () => clearInterval(interval);
+		// const interval = setInterval(cleanupNotifications, 60000);
+		// return () => clearInterval(interval);
 	});
 
 	// Adjust chat window margin dynamically
@@ -105,17 +105,17 @@
 		if (selectedPage === 'direct' && previewDirect.length > 0) {
 			const firstDirectChat = previewDirect[0];
 			selectedChat = firstDirectChat.channel_id || null;
-			selectedChatChannelId = firstDirectChat.channel_id || null;
-			chatPartner.set(firstDirectChat.channel_id);
+			// selectedChatChannelId = firstDirectChat.channel_id || null;
+			chatPartner.set(firstDirectChat.channel_id || -1);
 			// Clear notification and update timestamp for the selected chat
-			clearChatNotification(firstDirectChat.channel_id, 'direct');
+			clearChatNotification(firstDirectChat.channel_id  || -1, 'direct');
 		} else if (selectedPage === 'group' && previewGroup.length > 0) {
 			const firstGroupChat = previewGroup[0];
 			selectedChat = firstGroupChat.channel_id || null;
 			selectedChatChannelId = firstGroupChat.channel_id || null;
-			chatPartner.set(firstGroupChat.channel_id);
+			// chatPartner.set(firstGroupChat.channel_id);
 			// Clear notification and update timestamp for the selected chat
-			clearChatNotification(firstGroupChat.channel_id, 'group');
+			// clearChatNotification(firstGroupChat.channel_id, 'group');
 		}
 	}
 
@@ -164,7 +164,6 @@
 			{#key creatingGroup}
 				<Preview
 					bind:selectedChat
-					bind:selectedPage
 					bind:previewDirect
 					bind:previewGroup
 					bind:selectedChatChannelId
