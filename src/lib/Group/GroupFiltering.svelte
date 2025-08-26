@@ -1,8 +1,6 @@
 <script lang="ts">
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { _ } from 'svelte-i18n';
-	import Fa from 'svelte-fa';
-	import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons/faMagnifyingGlass';
 	import Button from '$lib/Generic/Button.svelte';
 	import type { GroupFilter } from './interface';
 	import Select from '$lib/Generic/Select.svelte';
@@ -33,10 +31,17 @@
 
 	const resetFilter = () => {
 		filter.joined = 'all';
-		filter.search = searchQuery;
+		filter.search = '';
+		searchQuery = '';
 		searched = true;
 		getGroups();
 	};
+
+	$: if (searchQuery === '') {
+		filter.search = searchQuery;
+		getGroups();
+		searched = false;
+	}
 </script>
 
 <form
