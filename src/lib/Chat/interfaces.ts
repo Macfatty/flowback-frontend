@@ -58,7 +58,7 @@ export interface PreviewMessage {
 	};
 	target_id?: number;
 	target_username?: string;
-	channel_origin?: 'user' | 'group';
+	channel_origin_name?: 'user' | 'group' | 'workgroup' | 'user_group';
 }
 
 export interface Direct {

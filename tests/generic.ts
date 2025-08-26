@@ -25,27 +25,25 @@ export async function logout(page: any) {
   await expect(page.getByRole('img', { name: 'flowback logo' })).toBeVisible();
 };
 
-export async function gotoGroup(page: any, group= {name: 'Test Group'}) {
+export async function gotoGroup(page: any, group = { name: 'Test Group' }) {
   await page.locator('#groups').click();
   await expect(page.locator('#groups-list')).toBeVisible();
-  const groupLink = page.locator('#groups-list > button').nth(1);
+  const groupLink = page.locator('#test-group')
   await expect(groupLink).toBeVisible();
   await groupLink.click();
 }
 
-export async function joinGroup(page: any, group= {name: 'Test Group'}) {
-  
-  
+export async function joinGroup(page: any, group = { name: 'Test Group' }) {
   await page.locator('#groups').click();
   await expect(page.locator('#groups-list')).toBeVisible();
-  await page.getByRole('heading', { name: group.name }).click();
+  const groupLink = page.locator('#test-group')
+  await expect(groupLink).toBeVisible();
+  await groupLink.click();
   await page.locator('#groups-list div').filter({ hasText: 'Test Group Test Group' }).locator('#group-join-button').click();
 
 }
 
-
-
-export async function createGroup(page: any, group = {name: 'Test Group', public_group: false}) {
+export async function createGroup(page: any, group = { name: 'Test Group', public_group: false }) {
   await page.getByRole('link', { name: 'Groups' }).click();
   await page.getByRole('button', { name: 'Create Group' }).click();
   await page.getByLabel('Title * 0/').click();
@@ -59,6 +57,6 @@ export async function createGroup(page: any, group = {name: 'Test Group', public
   await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel(group.public_group ? 'Yes' : 'No').check();
   await page.locator('fieldset').filter({ hasText: 'Hide creators? Yes No' }).getByLabel('No').check();
   await page.getByRole('button', { name: 'Create' }).click();
-  
+
 
 }

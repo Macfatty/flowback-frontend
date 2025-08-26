@@ -12,7 +12,6 @@
 	import { _ } from 'svelte-i18n';
 	import { workGroupsStore, type WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import { env } from '$env/dynamic/public';
-	import EveryProperty from '$lib/Generic/EveryProperty.svelte';
 
 	let groups: Group[] = [],
 		directs: Direct[] = [],
@@ -201,6 +200,9 @@
 	$: groups = sort(groups, previewGroup);
 	$: directs = sort(directs, previewDirect);
 	$: if (selectedChatChannelId) updateChatTitle();
+
+	$: console.log(previewDirect, "PREVIEW");
+	
 </script>
 
 <div class="max-h-[100%]">
@@ -247,7 +249,8 @@
 			{/if}
 		{/each}
 	{/if}
-	{#each [...previewGroup, ...previewDirect] as chatter}
+
+	{#each previewDirect as chatter}
 		<button
 			class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
 			class:bg-gray-200={selectedChat === chatter.channel_id}
@@ -264,10 +267,10 @@
 					<!-- {chatter?.user.username} -->
 
 					<!-- <EveryProperty obj={chatter} /> -->
-
-					{#if chatter?.channel_origin === 'group'}
+					{chatter.channel_origin_name}
+					<!-- {#if chatter?.channel_origin === 'group'}
 						{groups.find((group) => group.chat_id === chatter.channel_id)?.name || 'Group Chat'}
-					{/if}
+					{/if} -->
 				</span>
 				<span class="text-gray-400 text-sm h-[20px]">
 					{chatter?.message || ''}

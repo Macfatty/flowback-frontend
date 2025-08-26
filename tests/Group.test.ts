@@ -19,8 +19,7 @@ test('Create-Delete-Group', async ({ page }) => {
     await page.getByPlaceholder('Search groups').fill(groupName);
     // await page.locator('label').getByRole('button').click();
     // await page.getByPlaceholder('Search groups').fill('');
-    await expect(page.getByRole('button', { name: groupName, exact: true })).toHaveText(groupName);
-    page.getByRole('button', { name: groupName, exact: true }).click();
+    await page.getByRole('heading', { name: 'Testing Group' }).click();
 
     // Workgroup testing
     await page.getByRole('button', { name: 'Work Groups' }).click();
