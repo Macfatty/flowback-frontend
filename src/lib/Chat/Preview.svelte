@@ -201,11 +201,10 @@
 	$: directs = sort(directs, previewDirect);
 	$: if (selectedChatChannelId) updateChatTitle();
 
-	$: console.log(previewDirect, "PREVIEW");
-	
+	$: console.log(previewDirect, 'PREVIEW');
 </script>
 
-<div class="max-h-[100%]">
+<div class="max-h-[100%] pb-2">
 	<div class="border-b-2 w-full">
 		<TextInput
 			placeholder={'Search chatters'}
@@ -214,6 +213,20 @@
 			bind:value={chatSearch}
 			inputClass="mt-4 mb-2 placeholder-gray-600 py-1 pl-2 text-gray-500 border-0 bg-gray-100 dark:bg-darkobject"
 		/>
+	</div>
+
+	
+	<div class="flex justify-center">
+		<Button
+			Class="my-2"
+			onClick={() => {
+				creatingGroup = true;
+				// selectedPage = 'direct';
+				groupMembers = []; // Reset groupMembers
+			}}
+		>
+			{$_('+ New Group')}
+		</Button>
 	</div>
 
 	{#if inviteList}
@@ -299,14 +312,4 @@
 		{/if}
 	{/each}
 
-	<Button
-		Class="mt-4"
-		onClick={() => {
-			creatingGroup = true;
-			// selectedPage = 'direct';
-			groupMembers = []; // Reset groupMembers
-		}}
-	>
-		{$_('+ New Group')}
-	</Button>
 </div>
