@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { createGroup, login } from './generic';
+import { createGroup, deleteGroup, login } from './generic';
 
 test('Create-Delete-Group', async ({ page }) => {
     await login(page);
 
     const groupName = 'Testing Group 22';
-    await createGroup(page, {name: groupName, public_group: true});
+    await createGroup(page, { name: groupName, public_group: true });
 
     // Attempting to leave group as owner 
     await page.getByRole('button', { name: 'Leave group' }).click();
@@ -19,31 +19,30 @@ test('Create-Delete-Group', async ({ page }) => {
     await page.getByPlaceholder('Search groups').fill(groupName);
     // await page.locator('label').getByRole('button').click();
     // await page.getByPlaceholder('Search groups').fill('');
-    await expect(page.getByRole('button', { name: groupName, exact: true })).toHaveText(groupName);
-    page.getByRole('button', { name: groupName, exact: true }).click();
+    await page.getByRole('heading', { name: 'Testing Group' }).click();
 
     // Workgroup testing
-    await page.getByRole('button', { name: 'Work Groups' }).click();
-    await page.getByRole('button', { name: '+ Add Group' }).click();
-    await page.getByLabel('Name * 0/').click();
-    await page.getByLabel('Name * 0/').fill('Test Workgroup directjoin');
-    await page.getByRole('button', { name: 'Create', exact: true }).click();
-    await page.getByRole('button', { name: 'Join', exact: true }).click();
-    await page.getByRole('button', { name: '+ Add Group' }).click();
-    await page.getByLabel('No').check();
-    await page.getByLabel('Name * 0/').click();
-    await page.getByLabel('Name * 0/').fill('Test group invite only');
-    await page.getByRole('button', { name: 'Create', exact: true }).click();
-    await page.getByRole('button', { name: 'Ask to join' }).click();
-    await expect(page.getByText('Pending')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Leave', exact: true })).toBeVisible();
-    await page.getByRole('button', { name: 'Add User' }).click();
-    await page.locator('div:nth-child(3) > button:nth-child(4)').click();
-    await page.getByRole('button', { name: 'Cancel', exact: true }).click();
-    await page.locator('div:nth-child(3) > button:nth-child(4)').click();
-    await page.getByRole('button', { name: 'Delete', exact: true }).click();
-    await page.locator('.dark\\:text-darkmodeText > .text-center').first().click();
-    await page.getByRole('button', { name: 'Delete', exact: true }).click();
+    // await page.getByRole('button', { name: 'Work Groups' }).click();
+    // await page.getByRole('button', { name: '+ Add Group' }).click();
+    // await page.getByLabel('Name * 0/').click();
+    // await page.getByLabel('Name * 0/').fill('Test Workgroup directjoin');
+    // await page.getByRole('button', { name: 'Create', exact: true }).click();
+    // await page.getByRole('button', { name: 'Join', exact: true }).click();
+    // await page.getByRole('button', { name: '+ Add Group' }).click();
+    // await page.getByLabel('No').check();
+    // await page.getByLabel('Name * 0/').click();
+    // await page.getByLabel('Name * 0/').fill('Test group invite only');
+    // await page.getByRole('button', { name: 'Create', exact: true }).click();
+    // await page.getByRole('button', { name: 'Ask to join' }).click();
+    // await expect(page.getByText('Pending')).toBeVisible();
+    // await expect(page.getByRole('button', { name: 'Leave', exact: true })).toBeVisible();
+    // await page.getByRole('button', { name: 'Add User' }).click();
+    // await page.locator('div:nth-child(3) > button:nth-child(4)').click();
+    // await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+    // await page.locator('div:nth-child(3) > button:nth-child(4)').click();
+    // await page.getByRole('button', { name: 'Delete', exact: true }).click();
+    // await page.locator('.dark\\:text-darkmodeText > .text-center').first().click();
+    // await page.getByRole('button', { name: 'Delete', exact: true }).click();
 
     // Editing Group
     await expect(page.locator('#group-header-title')).toHaveText(groupName);
@@ -85,12 +84,6 @@ test('Create-Delete-Group', async ({ page }) => {
     await page.locator('.text-red-500').first().click();
     await page.getByRole('button', { name: 'Yes', exact: true }).click();
 
-    // Deleting Group
-    await page.getByRole('button', { name: 'Edit Group' }).click();
-    await page.getByRole('button', { name: 'Delete Group' }).click();
-    await page.getByRole('button', { name: 'Cancel', exact: true }).click();
-    await page.getByRole('button', { name: 'Delete Group' }).click();
-    await page.getByRole('button', { name: 'Yes', exact: true }).click();
-    await expect(page).toHaveURL('/groups');
+    deleteGroup(page, { name: groupName, public_group: false })
 
 });

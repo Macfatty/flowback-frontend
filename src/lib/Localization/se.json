@@ -718,5 +718,6 @@
     "Could not update group": "Kunde inte uppdatera grupp",
     "Successfully updated group": "Gruppen har uppdaterats framgångsrikt",
     "Could not create group": "Kunde inte skapa grupp",
-    "Successfully created group": "Gruppen har skapats framgångsrikt"
+    "Successfully created group": "Gruppen har skapats framgångsrikt",
+    "No participants found.":"Inga deltagare funna"
 }

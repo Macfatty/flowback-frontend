@@ -17,7 +17,7 @@ const createSocket = (userId: number) => {
 
 	socket.onmessage = (event) => {
 		const parsedMessage = JSON.parse(event.data);
-		if (parsedMessage.user.id !== userId) {
+		if (parsedMessage?.user.id !== userId) {
 			messageStore.set(parsedMessage);
 		}
 	};

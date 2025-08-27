@@ -141,7 +141,7 @@
 </script>
 
 <form
-	class="bg-white dark:bg-darkobject dark:text-darkmodeText shadow rounded p-4 flex flex-col w-full gap-4"
+	class="bg-white dark:bg-darkobject dark:text-darkmodeText shadow rounded p-4 pb-2 gap-2 flex flex-col w-full"
 	on:submit|preventDefault={() => {
 		searched = true;
 		handleSearch();
@@ -151,7 +151,7 @@
 		<TextInput
 			Class="w-4/5"
 			onInput={() => (searched = false)}
-			label=""
+			label=""§ 
 			max={null}
 			search={true}
 			placeholder={$_('Search polls')}

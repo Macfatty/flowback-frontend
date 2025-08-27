@@ -33,7 +33,8 @@
 		showInvite = false,
 		searched = false,
 		delegates: Delegate[] = [],
-		removeUserModalShow = false;
+		removeUserModalShow = false,
+		adminFilter:'All' | 'Admin' | 'Member' = "All";
 
 	let sortOrder: 'a-z' | 'z-a' = 'a-z'; // Default to a-z sort
 
@@ -51,7 +52,7 @@
 		const token = localStorage.getItem('token') || '';
 		const { json } = await fetchRequest(
 			'GET',
-			`group/${$page.params.groupId}/users?limit=${groupMembersLimit}`
+			`group/${$page.params.groupId}/users?limit=${groupMembersLimit}&is_admin=${adminFilter}`
 		);
 		users = json?.results;
 		loading = false;
@@ -294,7 +295,7 @@
 					)?.pool_id}
 					<div class="flex items-center">
 						<button
-							on:click={() => goto(`/user?id=${user.user.id}&delegate_id=${delegationId || ''}&group_id=${$page.params.groupId}`)}
+							on:click={() => goto(`/user?id=${user.user.id}&delegate_id=${delegationId || ''}&group_id=${$page.params.groupId}&is_admin=${adminFilter}`)}
 							Class="w-[30%]"
 						>
 							<ProfilePicture
