@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type Direct, type GroupMembers, type invite, type PreviewMessage } from './interfaces';
+	import { type GroupMembers, type invite, type PreviewMessage } from './interfaces';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { Group } from '$lib/Group/interface';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
@@ -9,9 +9,7 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 
-	let groups: Group[] = [],
-		directs: Direct[] = [],
-		chatSearch = '';
+	let chatSearch = '';
 
 	export let selectedChat: number | null,
 		selectedChatChannelId: number | null,
@@ -19,11 +17,6 @@
 		previewDirect: PreviewMessage[] = [],
 		inviteList: invite[] = [],
 		groupMembers: GroupMembers[] = [];
-
-	// Fetch and set up preview messages
-	const setUpPreview = async () => {
-		await getPreview('user');
-	};
 
 	// Fetch preview messages and set notified based on localStorage timestamps
 	const getPreview = async (selectedPage: 'user' | 'group') => {
@@ -34,11 +27,6 @@
 		if (!res.ok) return [];
 
 		previewDirect = json?.results;
-	};
-
-	// Fetch list of chattable users and groups
-	const getChattable = async () => {
-		if (directs.length + groups.length !== 0) return;
 	};
 
 	// Handle chat selection and clear notifications
@@ -107,9 +95,8 @@
 
 	onMount(async () => {
 		await UserChatInviteList();
-		await getChattable();
 		// Initialize preview messages with notification status
-		await setUpPreview();
+		await getPreview('user');
 
 		chatPartner.subscribe((partner) => {
 			if (partner === null) return;
@@ -120,7 +107,6 @@
 		});
 	});
 
-	$: directs = sort(directs, previewDirect);
 	$: if (selectedChatChannelId) updateChatTitle();
 </script>
 
@@ -170,7 +156,6 @@
 					<ProfilePicture username={groupChat.message_channel_name} profilePicture={null} />
 					<div class="flex flex-col max-w-[40%]">
 						<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
-							{groups[0]?.name}
 
 							{groupChat.message_channel_name}
 						</span>

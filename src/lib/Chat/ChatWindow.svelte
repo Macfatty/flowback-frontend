@@ -22,7 +22,6 @@
 		selectedChatChannelId: number | null,
 		selectedPage: 'direct' | 'group',
 		previewDirect: PreviewMessage[] = [],
-		previewGroup: PreviewMessage[] = [],
 		isLookingAtOlderMessages: boolean;
 
 	let message: string = env.PUBLIC_MODE === 'DEV' ? 'a' : '',
@@ -68,13 +67,12 @@
 		let previewMessage = previewDirect.find(
 			(p) => p.id === selectedChat || p.group_id === selectedChat
 		);
-		
+
 		if (previewMessage) {
 			previewMessage.message = message;
 			previewMessage.created_at = new Date().toString();
 			previewMessage.notified = false;
 			previewMessage = previewMessage;
-			previewGroup = previewGroup;
 			previewDirect = previewDirect;
 		} else {
 			previewMessage = {
@@ -94,12 +92,10 @@
 				channel_id: selectedChatChannelId,
 				...(selectedPage === 'direct' ? { target_id: selectedChat } : { group_id: selectedChat })
 			};
-			if (selectedPage === 'group') previewGroup.push(previewMessage);
-			else previewDirect.push(previewMessage);
+			previewDirect.push(previewMessage);
 		}
 
 		previewDirect = previewDirect;
-		previewGroup = previewGroup;
 
 		const didSend = await Socket.sendMessage(socket, selectedChatChannelId, message, 1);
 		if (!didSend) {
@@ -111,7 +107,7 @@
 			id: Date.now(),
 			message,
 			user: {
-				username: $userStore?.username  || '',
+				username: $userStore?.username || '',
 				id: $userStore?.id || -1,
 				profile_image: $userStore?.profile_image || ''
 			},
@@ -212,13 +208,8 @@
 	const receiveMessage = () => {
 		const unsubscribe = messageStore.subscribe((message: Message1 | null) => {
 			if (!message || message.user?.id === $userStore?.id) return;
-			if (message.channel_origin_name === 'group') {
-				handleReceiveMessage(previewGroup, message);
-				previewGroup = previewGroup;
-			} else if (message.channel_origin_name === 'user') {
-				handleReceiveMessage(previewDirect, message);
-				previewDirect = previewDirect;
-			}
+			handleReceiveMessage(previewDirect, message);
+			previewDirect = previewDirect;
 		});
 		return unsubscribe;
 	};
@@ -242,7 +233,6 @@
 			return;
 		}
 		participants = json?.results;
-		// console.log(`Participants for ${selectedPage} chat (channel ${selectedChatChannelId}):`, participants);
 	};
 
 	let unsubscribeMessageStore: () => void;
@@ -270,10 +260,6 @@
 			const d = document.querySelector('#chat-window');
 			d?.scroll(0, 100000);
 		}, 100);
-
-	// $: if (selectedChatChannelId) {
-	// 	updateUserData(selectedChatChannelId, new Date());
-	// }
 </script>
 
 {#if selectedChatChannelId !== null}
@@ -383,7 +369,7 @@
 				{/each}
 			</ul>
 		{:else}
-			<p>No participants found.</p>
+			<p>{$_("No participants found.")}</p>
 		{/if}
 	</div>
 </Modal>

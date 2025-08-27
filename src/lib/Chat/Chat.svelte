@@ -138,7 +138,6 @@
 					bind:selectedChatChannelId
 					bind:selectedPage
 					bind:previewDirect
-					bind:previewGroup
 					bind:isLookingAtOlderMessages
 				/>
 			{/if}
