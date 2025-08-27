@@ -29,11 +29,11 @@
 			`group/poll/pool/votes?group_id=${history}&include_details=true`
 		);
 		loading = false;
-		if (res.ok) {
-			votingHistory = json?.results;
-			filteredVotingHistory = [...json?.results];
-			sortVoteHistory();
-		}
+		if (!res.ok) return;
+
+		votingHistory = json?.results;
+		filteredVotingHistory = [...json?.results];
+		sortVoteHistory();
 	};
 
 	const getDelegateInfo = async () => {

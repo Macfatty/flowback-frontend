@@ -28,7 +28,7 @@ export async function logout(page: any) {
 export async function gotoGroup(page: any, group = { name: 'Test Group' }) {
   await page.locator('#groups').click();
   await expect(page.locator('#groups-list')).toBeVisible();
-  const groupLink = page.locator('#test-group')
+  const groupLink = page.locator('#groups-list > div').nth(0)
   await expect(groupLink).toBeVisible();
   await groupLink.click();
 }
@@ -59,4 +59,16 @@ export async function createGroup(page: any, group = { name: 'Test Group', publi
   await page.getByRole('button', { name: 'Create' }).click();
 
 
+}
+
+
+export async function deleteGroup(page: any, group = { name: 'Test Group', public_group: false }) {
+  gotoGroup(page, group)
+  // Deleting Group
+  await page.getByRole('button', { name: 'Edit Group' }).click();
+  await page.getByRole('button', { name: 'Delete Group' }).click();
+  await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await page.getByRole('button', { name: 'Delete Group' }).click();
+  await page.getByRole('button', { name: 'Yes', exact: true }).click();
+  await expect(page).toHaveURL('/groups');
 }
