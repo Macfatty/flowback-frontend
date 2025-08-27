@@ -221,7 +221,7 @@
 							classInner="p-1 font-semibold"
 							labels={[$_('Admin'), $_('Member')]}
 							values={[$_('Admin'), $_('Member')]}
-							bind:value={adminFilter}
+							value={''}
 							onInput={() => searchUsers(searchUserQuery)}
 							innerLabel="All"
 							innerLabelOn={true}
