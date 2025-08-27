@@ -34,7 +34,7 @@ export async function areaVote(page: any, {
     await expect(page.getByText('Successfully voted for area')).toBeVisible();
     await page.getByRole('button', { name: 'Cancel' }).click();
     await expect(page.getByText('Vote cancelled')).toBeVisible();
-    await page.getByRole('radio').nth(0).check();
+    await page.getByRole('radio').nth(1).check();
     await page.getByRole('button', { name: 'Submit' }).click();
     await expect(page.getByText('Successfully voted for area')).toBeVisible();
 }
@@ -85,7 +85,7 @@ export async function predictionStatementCreate(page: any) {
     await page.getByLabel('Description  0/').click();
     await page.getByLabel('Description  0/').fill('Prediction 1');
     // await page.getByPlaceholder('-08-27 14:40:00').click();
-    await page.locator('.date-time-field > input').nth(0).fill('2025-08-27 14:49:00');
+    await page.locator('.date-time-field > input').nth(0).fill('2025-08-27 15:40:00');
     // await page.locator('div').filter({ hasText: /^18$/ }).click();
     await page.getByRole('button', { name: 'Submit' }).click();
     await expect(page.getByText('Successfully created')).toBeVisible();
