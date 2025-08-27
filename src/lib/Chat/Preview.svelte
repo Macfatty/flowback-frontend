@@ -104,7 +104,7 @@
 		if (message) {
 			message.timestamp = new Date().toString();
 			message.notified = false;
-			previewDirect = [...previewDirect];
+			previewDirect = previewDirect;
 		}
 		// 	selectedChat = chatterId;
 		// 	selectedChatChannelId = chatterId;

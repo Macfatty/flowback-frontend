@@ -23,7 +23,6 @@
 		isLookingAtOlderMessages = false,
 		chatDiv: HTMLDivElement,
 		selectedChatChannelId: number | null,
-		darkMode = false,
 		creatingGroup = false,
 		groupMembers: GroupMembers[] = [];
 
@@ -39,11 +38,6 @@
 		const timestampKey = `lastInteraction_${chatterId}`;
 		const now = new Date().toISOString();
 		localStorage.setItem(timestampKey, now);
-
-		// console.log("clear timestampKey", localStorage.getItem(timestampKey));
-
-		// Update server-side timestamp
-		// await updateUserData(chatterId, new Date(), new Date());
 
 		// Clear notification for direct messages
 		if (page === 'direct') {
@@ -68,8 +62,6 @@
 		// Adjust chat window margin based on header height
 		correctMarginRelativeToHeader();
 		window.addEventListener('resize', correctMarginRelativeToHeader);
-		// Subscribe to dark mode changes
-		darkModeStore.subscribe((dm) => (darkMode = dm));
 		// Subscribe to chat open state
 		isChatOpen.subscribe((open) => (chatOpen = open));
 
@@ -89,9 +81,6 @@
 				return p;
 			});
 		};
-
-		// const interval = setInterval(cleanupNotifications, 60000);
-		// return () => clearInterval(interval);
 	});
 
 	// Adjust chat window margin dynamically
@@ -108,14 +97,11 @@
 			// selectedChatChannelId = firstDirectChat.channel_id || null;
 			chatPartner.set(firstDirectChat.channel_id || -1);
 			// Clear notification and update timestamp for the selected chat
-			clearChatNotification(firstDirectChat.channel_id  || -1, 'direct');
+			clearChatNotification(firstDirectChat.channel_id || -1, 'direct');
 		} else if (selectedPage === 'group' && previewGroup.length > 0) {
 			const firstGroupChat = previewGroup[0];
 			selectedChat = firstGroupChat.channel_id || null;
 			selectedChatChannelId = firstGroupChat.channel_id || null;
-			// chatPartner.set(firstGroupChat.channel_id);
-			// Clear notification and update timestamp for the selected chat
-			// clearChatNotification(firstGroupChat.channel_id, 'group');
 		}
 	}
 
@@ -136,7 +122,6 @@
 	class:invisible={!chatOpen}
 	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-40 w-full h-[100vh]"
 >
-
 	<div class="w-full flex justify-between mr-6">
 		<Button
 			onClick={() => {
