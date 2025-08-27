@@ -57,7 +57,6 @@
 		localStorage.setItem(timestampKey, new Date().toISOString());
 	};
 
-	// Send a message and update localStorage timestamp
 	const postMessage = async () => {
 		if (!selectedChat || !selectedChatChannelId || message.length === 0 || message.match(/^\s+$/))
 			return;
@@ -73,7 +72,6 @@
 			previewMessage.created_at = new Date().toString();
 			previewMessage.notified = false;
 			previewMessage = previewMessage;
-			previewDirect = previewDirect;
 		} else {
 			previewMessage = {
 				id: Date.now(),
@@ -92,16 +90,24 @@
 				channel_id: selectedChatChannelId,
 				...(selectedPage === 'direct' ? { target_id: selectedChat } : { group_id: selectedChat })
 			};
-			// previewDirect.push(previewMessage);
 		}
-
-		previewDirect = previewDirect;
 
 		const didSend = await Socket.sendMessage(socket, selectedChatChannelId, message, 1);
 		if (!didSend) {
 			status = { message: 'Could not send message', success: false };
 			return;
 		}
+
+		console.log(previewDirect, "BEFORE");
+		
+		const preview = previewDirect.find((p) => p.channel_id === selectedChatChannelId);
+		if (preview) {
+			preview.message = message;
+		}
+		previewDirect = previewDirect
+		
+		console.log(previewDirect,preview,  "AFTER");
+
 
 		messages.push({
 			id: Date.now(),
@@ -126,10 +132,6 @@
 
 		// Adds a in the chat for easier testing purposes
 		message = env.PUBLIC_MODE === 'DEV' ? message + 'a' : '';
-
-		// Update localStorage timestamp when sending a message
-		const timestampKey = `lastInteraction_${selectedChat}`;
-		localStorage.setItem(timestampKey, new Date().toISOString());
 	};
 
 	// Fetch older messages
@@ -369,7 +371,7 @@
 				{/each}
 			</ul>
 		{:else}
-			<p>{$_("No participants found.")}</p>
+			<p>{$_('No participants found.')}</p>
 		{/if}
 	</div>
 </Modal>
