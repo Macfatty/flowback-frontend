@@ -92,7 +92,7 @@
 				channel_id: selectedChatChannelId,
 				...(selectedPage === 'direct' ? { target_id: selectedChat } : { group_id: selectedChat })
 			};
-			previewDirect.push(previewMessage);
+			// previewDirect.push(previewMessage);
 		}
 
 		previewDirect = previewDirect;
@@ -114,7 +114,7 @@
 			created_at: new Date().toString(),
 			active: true,
 			channel_id: selectedChatChannelId,
-			channel_origin_name: selectedPage === 'direct' ? 'user' : 'group',
+			channel_origin_name: 'group',
 			type: 'message',
 			updated_at: new Date().toString(),
 			attachments: [],

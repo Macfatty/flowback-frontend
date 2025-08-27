@@ -14,12 +14,12 @@
 	import { goto } from '$app/navigation';
 	import CreateChatGroup from '$lib/Chat/CreateChatGroup.svelte';
 	import CrossButton from '$lib/Generic/CrossButton.svelte';
+	import { fetchRequest } from '$lib/FetchRequest';
 
 	let chatOpen = env.PUBLIC_MODE === 'DEV' ? false : false,
 		selectedPage: 'direct' | 'group' = 'direct',
 		selectedChat: number | null,
 		previewDirect: PreviewMessage[] = [],
-		previewGroup: PreviewMessage[] = [],
 		isLookingAtOlderMessages = false,
 		chatDiv: HTMLDivElement,
 		selectedChatChannelId: number | null,
@@ -47,12 +47,24 @@
 		}
 	};
 
+	// Fetch preview messages and set notified based on localStorage timestamps
+	const getPreview = async () => {
+		const { res, json } = await fetchRequest(
+			'GET',
+			`chat/message/channel/preview/list?origin_name=${selectedPage}`
+		);
+		if (!res.ok) return [];
+
+		previewDirect = json?.results;
+	};
+
 	onMount(async () => {
 		// Adjust chat window margin based on header height
 		correctMarginRelativeToHeader();
 		window.addEventListener('resize', correctMarginRelativeToHeader);
 		// Subscribe to chat open state
 		isChatOpen.subscribe((open) => (chatOpen = open));
+		getPreview();
 	});
 
 	// Adjust chat window margin dynamically

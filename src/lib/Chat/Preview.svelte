@@ -18,17 +18,6 @@
 		inviteList: invite[] = [],
 		groupMembers: GroupMembers[] = [];
 
-	// Fetch preview messages and set notified based on localStorage timestamps
-	const getPreview = async (selectedPage: 'user' | 'group') => {
-		const { res, json } = await fetchRequest(
-			'GET',
-			`chat/message/channel/preview/list?origin_name=${selectedPage}`
-		);
-		if (!res.ok) return [];
-
-		previewDirect = json?.results;
-	};
-
 	// Handle chat selection and clear notifications
 	const clickedChatter = async (chatterId: any) => {
 		// Update localStorage timestamp to mark chat as read
@@ -95,8 +84,6 @@
 
 	onMount(async () => {
 		await UserChatInviteList();
-		// Initialize preview messages with notification status
-		await getPreview('user');
 
 		chatPartner.subscribe((partner) => {
 			if (partner === null) return;
@@ -156,7 +143,6 @@
 					<ProfilePicture username={groupChat.message_channel_name} profilePicture={null} />
 					<div class="flex flex-col max-w-[40%]">
 						<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
-
 							{groupChat.message_channel_name}
 						</span>
 						<span class="text-gray-400 text-sm truncate h-[20px] overflow-x-hidden max-w-[10%]" />
