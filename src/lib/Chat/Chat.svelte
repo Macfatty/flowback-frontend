@@ -123,7 +123,6 @@
 				<Preview
 					bind:selectedChat
 					bind:previewDirect
-					bind:previewGroup
 					bind:selectedChatChannelId
 					bind:creatingGroup
 					bind:groupMembers

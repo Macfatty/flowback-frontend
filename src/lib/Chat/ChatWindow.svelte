@@ -65,11 +65,10 @@
 
 		if (newerMessages) await getRecentMessages();
 
-		let previewMessage = [...previewGroup, ...previewDirect].find(
+		let previewMessage = previewDirect.find(
 			(p) => p.id === selectedChat || p.group_id === selectedChat
 		);
 		
-		console.log('PREVIEW MESG', previewMessage);
 		if (previewMessage) {
 			previewMessage.message = message;
 			previewMessage.created_at = new Date().toString();
@@ -128,13 +127,13 @@
 			topic_id: 0
 		});
 		messages = messages;
+
+		// Adds a in the chat for easier testing purposes
 		message = env.PUBLIC_MODE === 'DEV' ? message + 'a' : '';
 
 		// Update localStorage timestamp when sending a message
 		const timestampKey = `lastInteraction_${selectedChat}`;
 		localStorage.setItem(timestampKey, new Date().toISOString());
-
-		// await updateUserData(selectedChat, new Date());
 	};
 
 	// Fetch older messages
@@ -148,7 +147,7 @@
 	};
 
 	// Fetch newer messages
-	const showEarlierMessages = async () => {
+	const showNewerMessages = async () => {
 		if (!newerMessages) return;
 		const { res, json } = await fetchRequest('GET', newerMessages);
 		olderMessages = json.next;
@@ -313,7 +312,7 @@
 			{/each}
 			{#if newerMessages}
 				<li class="text-center mt-6 mb-6">
-					<Button onClick={showEarlierMessages} buttonStyle="secondary">
+					<Button onClick={showNewerMessages} buttonStyle="secondary">
 						{$_('Show earlier messages')}
 					</Button>
 				</li>
