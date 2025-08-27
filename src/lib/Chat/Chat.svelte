@@ -27,11 +27,10 @@
 		groupMembers: GroupMembers[] = [];
 
 	// Reactive variables to track unread messages
-	$: hasUnreadDirect = previewDirect.some((p) => p.notified);
-	$: hasUnreadGroup = previewGroup.some((p) => p.notified);
+	$: displayNotification = previewDirect.some((p) => p.notified);
 
 	// Clear notification and update localStorage timestamp when a chat is opened
-	const clearChatNotification = async (chatterId: number | null, page: 'direct' | 'group') => {
+	const clearChatNotification = async (chatterId: number | null) => {
 		if (!chatterId) return;
 
 		// Store the current timestamp in localStorage to mark the chat as read
@@ -39,22 +38,12 @@
 		const now = new Date().toISOString();
 		localStorage.setItem(timestampKey, now);
 
-		// Clear notification for direct messages
-		if (page === 'direct') {
-			let message = previewDirect.find((message) => message.channel_id === chatterId);
-			if (message) {
-				message.timestamp = new Date().toString();
-				message.notified = false;
-				previewDirect = [...previewDirect];
-			}
-			// Clear notification for group messages
-		} else if (page === 'group') {
-			let message = previewGroup.find((message) => message.channel_id === chatterId);
-			if (message) {
-				message.timestamp = new Date().toString();
-				message.notified = false;
-				previewGroup = [...previewGroup];
-			}
+		// Clear notification for messages
+		let message = previewDirect.find((message) => message.channel_id === chatterId);
+		if (message) {
+			message.timestamp = new Date().toString();
+			message.notified = false;
+			previewDirect = [...previewDirect];
 		}
 	};
 
@@ -64,23 +53,6 @@
 		window.addEventListener('resize', correctMarginRelativeToHeader);
 		// Subscribe to chat open state
 		isChatOpen.subscribe((open) => (chatOpen = open));
-
-		// Periodically clean up notifications older than 1 hour
-		const cleanupNotifications = () => {
-			const now = new Date();
-			previewDirect = previewDirect.map((p) => {
-				if (p.notified && new Date(p.created_at).getTime() < now.getTime() - 3600000) {
-					p.notified = false;
-				}
-				return p;
-			});
-			previewGroup = previewGroup.map((p) => {
-				if (p.notified && new Date(p.created_at).getTime() < now.getTime() - 3600000) {
-					p.notified = false;
-				}
-				return p;
-			});
-		};
 	});
 
 	// Adjust chat window margin dynamically
@@ -90,22 +62,23 @@
 	};
 
 	// Automatically select the first chat when the chat window opens
-	$: if (chatOpen && selectedChat === null && selectedChatChannelId === null) {
-		if (selectedPage === 'direct' && previewDirect.length > 0) {
-			const firstDirectChat = previewDirect[0];
-			selectedChat = firstDirectChat.channel_id || null;
-			// selectedChatChannelId = firstDirectChat.channel_id || null;
-			chatPartner.set(firstDirectChat.channel_id || -1);
-			// Clear notification and update timestamp for the selected chat
-			clearChatNotification(firstDirectChat.channel_id || -1, 'direct');
-		} else if (selectedPage === 'group' && previewGroup.length > 0) {
-			const firstGroupChat = previewGroup[0];
-			selectedChat = firstGroupChat.channel_id || null;
-			selectedChatChannelId = firstGroupChat.channel_id || null;
-		}
+	//TODO Make it work
+	$: if (
+		chatOpen &&
+		selectedChat === null &&
+		selectedChatChannelId === null &&
+		previewDirect.length > 0
+	) {
+		const firstDirectChat = previewDirect[0];
+		selectedChat = firstDirectChat.channel_id || null;
+		// selectedChatChannelId = firstDirectChat.channel_id || null;
+		chatPartner.set(firstDirectChat.channel_id || -1);
+		// Clear notification and update timestamp for the selected chat
+		clearChatNotification(firstDirectChat.channel_id || -1);
 	}
 
 	// Reset chat partner when chat is closed
+	// TODO fix issues with this
 	$: if (!chatOpen) {
 		chatPartner.set(0);
 	}
@@ -113,7 +86,7 @@
 
 <svelte:head>
 	<title>
-		{`${hasUnreadDirect ? '🟣' : ''}${hasUnreadGroup ? '🔵' : ''}`}
+		{`${displayNotification ? '🟣' : ''}`}
 	</title>
 </svelte:head>
 
@@ -179,8 +152,7 @@
 		chatOpen = !chatOpen;
 		isChatOpen.set(chatOpen);
 	}}
-	class:small-notification={hasUnreadDirect}
-	class:small-notification-group={hasUnreadGroup}
+	class:small-notification={displayNotification}
 	class="dark:text-white transition-all fixed z-50 bg-white dark:bg-darkobject shadow-md border p-5 bottom-6 ml-5 rounded-full cursor-pointer hover:shadow-xl hover:border-gray-400 active:shadow-2xl active:p-6"
 >
 	{#key $darkModeStore}
@@ -203,15 +175,5 @@
 		border-radius: 100%;
 		padding: 10px;
 		z-index: 10;
-	}
-
-	.small-notification-group:after {
-		position: absolute;
-		content: '';
-		top: 10px;
-		right: 0;
-		background-color: rgb(147, 197, 253);
-		border-radius: 100%;
-		padding: 10px;
 	}
 </style>
