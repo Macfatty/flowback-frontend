@@ -125,7 +125,7 @@
 				{$_(group.joined ? 'Leave' : group.direct_join ? 'Join' : 'Ask to join')}
 			</Button>
 		{:else}
-			Request sent
+			{$_("Request sent")}
 		{/if}
 	</div>
 </div>

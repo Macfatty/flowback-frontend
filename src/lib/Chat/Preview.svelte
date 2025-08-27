@@ -114,6 +114,7 @@
 			onClick={() => {
 				creatingGroup = true;
 				groupMembers = []; // Reset groupMembers
+
 			}}
 		>
 			{$_('+ New Group')}
@@ -169,7 +170,7 @@
 					<!-- {chatter?.user.username} -->
 
 					<!-- <EveryProperty obj={chatter} /> -->
-					{chatter.channel_origin_name}
+					{chatter.channel_title}
 				</span>
 				<span class="text-gray-400 text-sm h-[20px]">
 					{chatter?.message || ''}

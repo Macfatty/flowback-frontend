@@ -51,7 +51,7 @@
 	const getPreview = async () => {
 		const { res, json } = await fetchRequest(
 			'GET',
-			`chat/message/channel/preview/list?origin_name=${selectedPage}`
+			`chat/message/channel/preview/list`
 		);
 		if (!res.ok) return [];
 
@@ -165,14 +165,12 @@
 	class:small-notification={displayNotification}
 	class="dark:text-white transition-all fixed z-50 bg-white dark:bg-darkobject shadow-md border p-5 bottom-6 ml-5 rounded-full cursor-pointer hover:shadow-xl hover:border-gray-400 active:shadow-2xl active:p-6"
 >
-	{#key $darkModeStore}
-		<img
-			src={ChatIcon}
-			class="text-white"
-			style="filter: {getIconFilter(true, 'white', $darkModeStore)}"
-			alt={chatOpen ? 'close chat' : 'open chat'}
-		/>
-	{/key}
+	<img
+		src={ChatIcon}
+		class="text-white"
+		style="filter: {getIconFilter(true, 'white', $darkModeStore)}"
+		alt={chatOpen ? 'close chat' : 'open chat'}
+	/>
 </button>
 
 <style>

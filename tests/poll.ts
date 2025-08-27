@@ -19,6 +19,8 @@ export async function createPoll(page: any, {
     await page.getByRole('button', { name: 'Display advanced time settings' }).click();
     await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel('Yes').check();
     await page.locator('fieldset').filter({ hasText: 'Fast Forward? Yes No' }).getByLabel('Yes').check();
+    await page.getByRole('spinbutton').fill('0');
+
     await page.getByRole('button', { name: 'Post' }).click();
     await expect(page.getByRole('heading', { name: 'Test Poll' })).toBeVisible();
     // await expect(page).toHaveURL(/\/groups\/6\/polls\/\d+$/);
@@ -82,9 +84,9 @@ export async function predictionStatementCreate(page: any) {
     await page.getByRole('textbox', { name: 'Title * 0/' }).fill('Prediction 1');
     await page.getByLabel('Description  0/').click();
     await page.getByLabel('Description  0/').fill('Prediction 1');
-    await page.getByPlaceholder('-12-31 23:00:00').click();
-    await page.getByRole('combobox').nth(2).selectOption('2029');
-    await page.locator('div').filter({ hasText: /^18$/ }).click();
+    // await page.getByPlaceholder('-08-27 14:40:00').click();
+    await page.locator('.date-time-field > input').nth(0).fill('2025-08-27 14:49:00');
+    // await page.locator('div').filter({ hasText: /^18$/ }).click();
     await page.getByRole('button', { name: 'Submit' }).click();
     await expect(page.getByText('Successfully created')).toBeVisible();
 }

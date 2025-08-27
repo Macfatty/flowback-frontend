@@ -308,51 +308,49 @@
 			{/if}
 			<StatusMessage bind:status disableSuccess />
 		</ul>
-		{#if selectedChatChannelId}
-			<div class="border-t-2 border-t-gray-200 w-full">
-				<form
-					class="flex gap-1 justify-center items-center w-full mt-2"
-					on:submit|preventDefault={postMessage}
-				>
-					<TextArea
-						autofocus
-						label=""
-						onKeyPress={(e) => {
-							if (e.key === 'Enter' && !e.shiftKey) {
-								postMessage();
-								e.preventDefault();
-							}
-						}}
-						max={3000}
-						displayMax={false}
-						rows={1}
-						bind:value={message}
-						placeholder={$_('Write a message...')}
-						Class="justify-center w-full h-2rem"
-						inputClass="border-0 bg-gray-100 placeholder-gray-700 pl-2 pt-1 resize-y min-h-[2rem] max-h-[6rem] overflow-auto"
-					/>
-					{#if env.PUBLIC_MODE === 'DEV'}
-						<Button
-							onClick={() => (showEmoji = !showEmoji)}
-							Class="rounded-full pl-3 pr-3 pt-3 pb-3 h-1/2"
-						>
-							<Fa icon={faSmile} />
-						</Button>
-					{/if}
+		<div class="border-t-2 border-t-gray-200 w-full">
+			<form
+				class="flex gap-1 justify-center items-center w-full mt-2"
+				on:submit|preventDefault={postMessage}
+			>
+				<TextArea
+					autofocus
+					label=""
+					onKeyPress={(e) => {
+						if (e.key === 'Enter' && !e.shiftKey) {
+							postMessage();
+							e.preventDefault();
+						}
+					}}
+					max={3000}
+					displayMax={false}
+					rows={1}
+					bind:value={message}
+					placeholder={$_('Write a message...')}
+					Class="justify-center w-full h-2rem"
+					inputClass="border-0 bg-gray-100 placeholder-gray-700 pl-2 pt-1 resize-y min-h-[2rem] max-h-[6rem] overflow-auto"
+				/>
+				{#if env.PUBLIC_MODE === 'DEV'}
 					<Button
-						type="submit"
-						Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2 hover:bg-gray-100 active:bg-gray-200"
+						onClick={() => (showEmoji = !showEmoji)}
+						Class="rounded-full pl-3 pr-3 pt-3 pb-3 h-1/2"
 					>
-						<Fa class="text-blue-600 text-lg" icon={faPaperPlane} />
+						<Fa icon={faSmile} />
 					</Button>
-					<Button
-						Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2 hover:bg-gray-100 active:bg-gray-200"
-						onClick={() => (participantsModalOpen = true)}
-						><Fa class="text-blue-600 text-lg" icon={faUsers} /></Button
-					>
-				</form>
-			</div>
-		{/if}
+				{/if}
+				<Button
+					type="submit"
+					Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2 hover:bg-gray-100 active:bg-gray-200"
+				>
+					<Fa class="text-blue-600 text-lg" icon={faPaperPlane} />
+				</Button>
+				<Button
+					Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2 hover:bg-gray-100 active:bg-gray-200"
+					onClick={() => (participantsModalOpen = true)}
+					><Fa class="text-blue-600 text-lg" icon={faUsers} /></Button
+				>
+			</form>
+		</div>
 	</div>
 {:else}
 	<div>{'No chat selected'}</div>
