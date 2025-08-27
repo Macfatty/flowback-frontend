@@ -98,16 +98,11 @@
 			return;
 		}
 
-		console.log(previewDirect, "BEFORE");
-		
 		const preview = previewDirect.find((p) => p.channel_id === selectedChatChannelId);
 		if (preview) {
 			preview.message = message;
 		}
-		previewDirect = previewDirect
-		
-		console.log(previewDirect,preview,  "AFTER");
-
+		previewDirect = previewDirect;
 
 		messages.push({
 			id: Date.now(),
@@ -204,6 +199,12 @@
 			}
 			preview = [...preview];
 		}
+
+		const _preview = previewDirect.find((p) => p.channel_id === selectedChatChannelId);
+		if (_preview) {
+			_preview.message = message.message;
+		}
+		previewDirect = previewDirect;
 	};
 
 	// Subscribe to incoming messages
