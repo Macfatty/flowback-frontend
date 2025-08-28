@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { createGroup, deleteGroup, login } from './generic.test';
+import { login, createGroup, deleteGroup } from './generic';
 
 test('Create-Delete-Group', async ({ page }) => {
     await login(page);
@@ -29,7 +29,7 @@ test('Create-Delete-Group', async ({ page }) => {
     await expect(page.getByText('Pending')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Leave', exact: true }).nth(0)).toBeVisible();
     await page.getByRole('button', { name: 'Add User' }).nth(0).click();
-    await page.getByText('Test group invite only Members: 1').nth(0);    
+    await page.getByText('Test group invite only Members: 1').nth(0);
     await page.getByText('Test group invite only Members: 1').nth(0).getByRole('button').nth(1).click();
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
     await page.getByText('Test group invite only Members: 1').nth(0).getByRole('button').nth(1).click();

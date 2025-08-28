@@ -36,6 +36,4 @@ test('Create-Delete-Schedule-Event', async ({ page }) => {
     await page.getByRole('button', { name: 'Delete', exact: true }).click();
     await expect(page.getByText('Event deleted')).toBeVisible();
     // await page.getByRole('button', { name: 'Create', exact: true }).click();
-
-
 });

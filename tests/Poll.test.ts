@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { createArea, createGroup, deleteGroup, gotoGroup, login } from './generic.test';
 import { areaVote, createPoll, createProposal, delegateVote, fastForward, predictionProbability, predictionStatementCreate, results, vote } from './poll';
+import { joinGroup, login, logout, gotoGroup, createArea, createGroup, deleteGroup } from './generic';
+
 
 test('Poll-Start-To-Finish', async ({ page }) => {
     await login(page);
@@ -15,34 +16,34 @@ test('Poll-Start-To-Finish', async ({ page }) => {
     }
 
     // try {
-        await createArea(page, group, "Tag 1")
-        await createArea(page, group, "Tag 2")
+    await createArea(page, group, "Tag 1")
+    await createArea(page, group, "Tag 2")
 
-        await gotoGroup(page, group);
+    await gotoGroup(page, group);
 
-        await createPoll(page);
+    await createPoll(page);
 
-        await areaVote(page);
+    await areaVote(page);
 
-        await fastForward(page, 1);
+    await fastForward(page, 1);
 
-        await createProposal(page);
+    await createProposal(page);
 
-        await fastForward(page, 1);
+    await fastForward(page, 1);
 
-        await predictionStatementCreate(page);
+    await predictionStatementCreate(page);
 
-        await fastForward(page, 1);
+    await fastForward(page, 1);
 
-        await predictionProbability(page);
+    await predictionProbability(page);
 
-        await fastForward(page, 2);
+    await fastForward(page, 2);
 
-        await vote(page);
+    await vote(page);
 
-        await fastForward(page, 1);
+    await fastForward(page, 1);
 
-        await results(page);
+    await results(page);
 
     // } catch (error) {
     //     deleteGroup(page, group)
