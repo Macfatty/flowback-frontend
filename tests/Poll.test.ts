@@ -1,35 +1,45 @@
 import { test, expect } from '@playwright/test';
-import { gotoGroup, login } from './generic';
+import { createGroup, deleteGroup, gotoGroup, login } from './generic.test';
 import { areaVote, createPoll, createProposal, delegateVote, fastForward, predictionProbability, predictionStatementCreate, results, vote } from './poll';
 
 test('Poll-Start-To-Finish', async ({ page }) => {
     await login(page);
 
-    await gotoGroup(page);
+    let group = { name: "Test Group Poll", public: false }
 
-    await createPoll(page);
+    await createGroup(page, group)
+    try {
 
-    await areaVote(page);
+        await gotoGroup(page, group);
 
-    await fastForward(page, 1);
+        await createPoll(page);
 
-    await createProposal(page);
+        await areaVote(page);
 
-    await fastForward(page, 1);
+        await fastForward(page, 1);
 
-    await predictionStatementCreate(page);
+        await createProposal(page);
 
-    await fastForward(page, 1);
+        await fastForward(page, 1);
 
-    await predictionProbability(page);
+        await predictionStatementCreate(page);
 
-    await fastForward(page, 2);
+        await fastForward(page, 1);
 
-    await vote(page);
+        await predictionProbability(page);
 
-    await fastForward(page, 1);
+        await fastForward(page, 2);
 
-    await results(page);
+        await vote(page);
+
+        await fastForward(page, 1);
+
+        await results(page);
+
+    } catch (error) {
+        deleteGroup(page, group)
+    }
+
 
 });
 

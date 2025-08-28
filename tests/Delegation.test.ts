@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { createGroup, gotoGroup, login, logout } from './generic';
+import { createGroup, gotoGroup, login, logout } from './generic.test';
 import { createPoll, createProposal, delegateVote, fastForward } from './poll';
 
 test('Delegation', async ({ page }) => {
     await login(page);
 
-    await createGroup(page, { public_group: true, name: 'Test Group' });
+    await createGroup(page, { public: true, name: 'Test Group Delegation' });
 
     await page.waitForTimeout(5000);
 
