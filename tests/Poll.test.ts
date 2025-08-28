@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { createGroup, deleteGroup, gotoGroup, login } from './generic.test';
+import { createArea, createGroup, deleteGroup, gotoGroup, login } from './generic.test';
 import { areaVote, createPoll, createProposal, delegateVote, fastForward, predictionProbability, predictionStatementCreate, results, vote } from './poll';
 
 test('Poll-Start-To-Finish', async ({ page }) => {
@@ -7,8 +7,16 @@ test('Poll-Start-To-Finish', async ({ page }) => {
 
     let group = { name: "Test Group Poll", public: false }
 
-    await createGroup(page, group)
     try {
+        await createGroup(page, group)
+    }
+    catch {
+        gotoGroup(page, group)
+    }
+
+    // try {
+        await createArea(page, group, "Tag 1")
+        await createArea(page, group, "Tag 2")
 
         await gotoGroup(page, group);
 
@@ -36,9 +44,9 @@ test('Poll-Start-To-Finish', async ({ page }) => {
 
         await results(page);
 
-    } catch (error) {
-        deleteGroup(page, group)
-    }
+    // } catch (error) {
+    //     deleteGroup(page, group)
+    // }
 
 
 });
@@ -47,9 +55,14 @@ test('Thread-Create-Report-Delete', async ({ page }) => {
 
     await login(page);
 
-    await gotoGroup(page);
+    let group = { name: "Test Group Thread", public: false }
+
+    await createGroup(page, group)
+
+    await gotoGroup(page, group);
 
     await page.getByRole('button', { name: 'Create a post' }).click();
+    await page.getByText('Poll Thread Poll Content Text')
     await page.getByRole('button', { name: 'Thread' }).click();
 
     await page.getByLabel('Title * 0/').click();
@@ -82,4 +95,6 @@ test('Thread-Create-Report-Delete', async ({ page }) => {
     await page.getByRole('button', { name: 'Delete Thread' }).click();
     await page.getByRole('button', { name: 'Remove', exact: true }).click();
     await expect(page.getByText('Successfully deleted thread')).toBeVisible();
+
+    deleteGroup(page, group);
 });

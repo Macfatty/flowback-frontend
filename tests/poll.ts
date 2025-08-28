@@ -31,6 +31,7 @@ export async function areaVote(page: any, {
 } = {}) {
     await page.getByRole('radio').nth(0).check();
     await page.getByRole('button', { name: 'Submit' }).click();
+    await page.waitForTimeout(100)
     await expect(page.getByText('Successfully voted for area')).toBeVisible();
     await page.getByRole('button', { name: 'Cancel' }).click();
     await expect(page.getByText('Vote cancelled')).toBeVisible();

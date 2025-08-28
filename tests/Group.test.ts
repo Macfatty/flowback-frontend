@@ -13,14 +13,6 @@ test('Create-Delete-Group', async ({ page }) => {
     await expect(page.getByText('Group owner isn\'t allowed to')).toBeVisible();
     await page.getByRole('button', { name: 'No', exact: true }).click();
 
-    // Search for the group
-    await page.getByRole('link', { name: 'Groups' }).click();
-    await page.getByPlaceholder('Search groups').click();
-    await page.getByPlaceholder('Search groups').fill(group.name);
-    // await page.locator('label').getByRole('button').click();
-    // await page.getByPlaceholder('Search groups').fill('');
-    await page.getByRole('heading', { name: 'Testing Group' }).click();
-
     // Workgroup testing
     await page.getByRole('button', { name: 'Work Groups' }).click();
     await page.getByRole('button', { name: '+ Add Group' }).click();
@@ -35,11 +27,12 @@ test('Create-Delete-Group', async ({ page }) => {
     await page.getByRole('button', { name: 'Create', exact: true }).click();
     await page.getByRole('button', { name: 'Ask to join' }).click();
     await expect(page.getByText('Pending')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Leave', exact: true })).toBeVisible();
-    await page.getByRole('button', { name: 'Add User' }).click();
-    await page.locator('div:nth-child(3) > button:nth-child(4)').click();
+    await expect(page.getByRole('button', { name: 'Leave', exact: true }).nth(0)).toBeVisible();
+    await page.getByRole('button', { name: 'Add User' }).nth(0).click();
+    await page.getByText('Test group invite only Members: 1').nth(0);    
+    await page.getByText('Test group invite only Members: 1').nth(0).getByRole('button').nth(1).click();
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
-    await page.locator('div:nth-child(3) > button:nth-child(4)').click();
+    await page.getByText('Test group invite only Members: 1').nth(0).getByRole('button').nth(1).click();
     await page.getByRole('button', { name: 'Delete', exact: true }).click();
     await page.locator('.dark\\:text-darkmodeText > .text-center').first().click();
     await page.getByRole('button', { name: 'Delete', exact: true }).click();

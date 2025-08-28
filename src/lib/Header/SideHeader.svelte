@@ -56,7 +56,7 @@
 	});
 </script>
 
-<button
+<div
 	class:hidden={!sideHeaderOpen}
 	class="absolute top-[4.5rem] right-0 bg-white z-50 select-none shadow slide-animation dark:bg-darkobject dark:text-darkmodeText flex flex-col"
 	id="side-header"
@@ -70,7 +70,7 @@
 			{$_(nav.title)}
 		</button>
 	{/each}
-</button>
+</div>
 
 {#if env.PUBLIC_SUPPORT_PHONE || env.PUBLIC_SUPPORT_MAIL}
 	<Modal bind:open={open_support}>

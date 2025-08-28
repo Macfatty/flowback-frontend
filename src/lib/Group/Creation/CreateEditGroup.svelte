@@ -11,7 +11,6 @@
 	import { blobifyImages, type StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
 	import { faFileImage } from '@fortawesome/free-solid-svg-icons/faFileImage';
 	import { goto } from '$app/navigation';
