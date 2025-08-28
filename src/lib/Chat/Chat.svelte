@@ -14,25 +14,23 @@
 	import { goto } from '$app/navigation';
 	import CreateChatGroup from '$lib/Chat/CreateChatGroup.svelte';
 	import CrossButton from '$lib/Generic/CrossButton.svelte';
+	import { fetchRequest } from '$lib/FetchRequest';
 
 	let chatOpen = env.PUBLIC_MODE === 'DEV' ? false : false,
 		selectedPage: 'direct' | 'group' = 'direct',
 		selectedChat: number | null,
 		previewDirect: PreviewMessage[] = [],
-		previewGroup: PreviewMessage[] = [],
 		isLookingAtOlderMessages = false,
 		chatDiv: HTMLDivElement,
 		selectedChatChannelId: number | null,
-		darkMode = false,
 		creatingGroup = false,
 		groupMembers: GroupMembers[] = [];
 
 	// Reactive variables to track unread messages
-	$: hasUnreadDirect = previewDirect.some((p) => p.notified);
-	$: hasUnreadGroup = previewGroup.some((p) => p.notified);
+	$: displayNotification = previewDirect.some((p) => p.notified);
 
 	// Clear notification and update localStorage timestamp when a chat is opened
-	const clearChatNotification = async (chatterId: number | null, page: 'direct' | 'group') => {
+	const clearChatNotification = async (chatterId: number | null) => {
 		if (!chatterId) return;
 
 		// Store the current timestamp in localStorage to mark the chat as read
@@ -40,58 +38,33 @@
 		const now = new Date().toISOString();
 		localStorage.setItem(timestampKey, now);
 
-		// console.log("clear timestampKey", localStorage.getItem(timestampKey));
-
-		// Update server-side timestamp
-		// await updateUserData(chatterId, new Date(), new Date());
-
-		// Clear notification for direct messages
-		if (page === 'direct') {
-			let message = previewDirect.find((message) => message.channel_id === chatterId);
-			if (message) {
-				message.timestamp = new Date().toString();
-				message.notified = false;
-				previewDirect = [...previewDirect];
-			}
-			// Clear notification for group messages
-		} else if (page === 'group') {
-			let message = previewGroup.find((message) => message.channel_id === chatterId);
-			if (message) {
-				message.timestamp = new Date().toString();
-				message.notified = false;
-				previewGroup = [...previewGroup];
-			}
+		// Clear notification for messages
+		let message = previewDirect.find((message) => message.channel_id === chatterId);
+		if (message) {
+			message.timestamp = new Date().toString();
+			message.notified = false;
+			previewDirect = [...previewDirect];
 		}
+	};
+
+	// Fetch preview messages and set notified based on localStorage timestamps
+	const getPreview = async () => {
+		const { res, json } = await fetchRequest(
+			'GET',
+			`chat/message/channel/preview/list`
+		);
+		if (!res.ok) return [];
+
+		previewDirect = json?.results;
 	};
 
 	onMount(async () => {
 		// Adjust chat window margin based on header height
 		correctMarginRelativeToHeader();
 		window.addEventListener('resize', correctMarginRelativeToHeader);
-		// Subscribe to dark mode changes
-		darkModeStore.subscribe((dm) => (darkMode = dm));
 		// Subscribe to chat open state
 		isChatOpen.subscribe((open) => (chatOpen = open));
-
-		// Periodically clean up notifications older than 1 hour
-		const cleanupNotifications = () => {
-			const now = new Date();
-			previewDirect = previewDirect.map((p) => {
-				if (p.notified && new Date(p.created_at).getTime() < now.getTime() - 3600000) {
-					p.notified = false;
-				}
-				return p;
-			});
-			previewGroup = previewGroup.map((p) => {
-				if (p.notified && new Date(p.created_at).getTime() < now.getTime() - 3600000) {
-					p.notified = false;
-				}
-				return p;
-			});
-		};
-
-		// const interval = setInterval(cleanupNotifications, 60000);
-		// return () => clearInterval(interval);
+		getPreview();
 	});
 
 	// Adjust chat window margin dynamically
@@ -101,25 +74,23 @@
 	};
 
 	// Automatically select the first chat when the chat window opens
-	$: if (chatOpen && selectedChat === null && selectedChatChannelId === null) {
-		if (selectedPage === 'direct' && previewDirect.length > 0) {
-			const firstDirectChat = previewDirect[0];
-			selectedChat = firstDirectChat.channel_id || null;
-			// selectedChatChannelId = firstDirectChat.channel_id || null;
-			chatPartner.set(firstDirectChat.channel_id || -1);
-			// Clear notification and update timestamp for the selected chat
-			clearChatNotification(firstDirectChat.channel_id  || -1, 'direct');
-		} else if (selectedPage === 'group' && previewGroup.length > 0) {
-			const firstGroupChat = previewGroup[0];
-			selectedChat = firstGroupChat.channel_id || null;
-			selectedChatChannelId = firstGroupChat.channel_id || null;
-			// chatPartner.set(firstGroupChat.channel_id);
-			// Clear notification and update timestamp for the selected chat
-			// clearChatNotification(firstGroupChat.channel_id, 'group');
-		}
+	//TODO Make it work
+	$: if (
+		chatOpen &&
+		selectedChat === null &&
+		selectedChatChannelId === null &&
+		previewDirect.length > 0
+	) {
+		const firstDirectChat = previewDirect[0];
+		selectedChat = firstDirectChat.channel_id || null;
+		// selectedChatChannelId = firstDirectChat.channel_id || null;
+		chatPartner.set(firstDirectChat.channel_id || -1);
+		// Clear notification and update timestamp for the selected chat
+		clearChatNotification(firstDirectChat.channel_id || -1);
 	}
 
 	// Reset chat partner when chat is closed
+	// TODO fix issues with this
 	$: if (!chatOpen) {
 		chatPartner.set(0);
 	}
@@ -127,7 +98,7 @@
 
 <svelte:head>
 	<title>
-		{`${hasUnreadDirect ? '🟣' : ''}${hasUnreadGroup ? '🔵' : ''}`}
+		{`${displayNotification ? '🟣' : ''}`}
 	</title>
 </svelte:head>
 
@@ -136,7 +107,6 @@
 	class:invisible={!chatOpen}
 	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-40 w-full h-[100vh]"
 >
-
 	<div class="w-full flex justify-between mr-6">
 		<Button
 			onClick={() => {
@@ -165,7 +135,6 @@
 				<Preview
 					bind:selectedChat
 					bind:previewDirect
-					bind:previewGroup
 					bind:selectedChatChannelId
 					bind:creatingGroup
 					bind:groupMembers
@@ -181,7 +150,6 @@
 					bind:selectedChatChannelId
 					bind:selectedPage
 					bind:previewDirect
-					bind:previewGroup
 					bind:isLookingAtOlderMessages
 				/>
 			{/if}
@@ -194,18 +162,15 @@
 		chatOpen = !chatOpen;
 		isChatOpen.set(chatOpen);
 	}}
-	class:small-notification={hasUnreadDirect}
-	class:small-notification-group={hasUnreadGroup}
+	class:small-notification={displayNotification}
 	class="dark:text-white transition-all fixed z-50 bg-white dark:bg-darkobject shadow-md border p-5 bottom-6 ml-5 rounded-full cursor-pointer hover:shadow-xl hover:border-gray-400 active:shadow-2xl active:p-6"
 >
-	{#key $darkModeStore}
-		<img
-			src={ChatIcon}
-			class="text-white"
-			style="filter: {getIconFilter(true, 'white', $darkModeStore)}"
-			alt={chatOpen ? 'close chat' : 'open chat'}
-		/>
-	{/key}
+	<img
+		src={ChatIcon}
+		class="text-white"
+		style="filter: {getIconFilter(true, 'white', $darkModeStore)}"
+		alt={chatOpen ? 'close chat' : 'open chat'}
+	/>
 </button>
 
 <style>
@@ -218,15 +183,5 @@
 		border-radius: 100%;
 		padding: 10px;
 		z-index: 10;
-	}
-
-	.small-notification-group:after {
-		position: absolute;
-		content: '';
-		top: 10px;
-		right: 0;
-		background-color: rgb(147, 197, 253);
-		border-radius: 100%;
-		padding: 10px;
 	}
 </style>

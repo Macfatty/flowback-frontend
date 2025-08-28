@@ -22,7 +22,6 @@
 		selectedChatChannelId: number | null,
 		selectedPage: 'direct' | 'group',
 		previewDirect: PreviewMessage[] = [],
-		previewGroup: PreviewMessage[] = [],
 		isLookingAtOlderMessages: boolean;
 
 	let message: string = env.PUBLIC_MODE === 'DEV' ? 'a' : '',
@@ -58,25 +57,21 @@
 		localStorage.setItem(timestampKey, new Date().toISOString());
 	};
 
-	// Send a message and update localStorage timestamp
 	const postMessage = async () => {
 		if (!selectedChat || !selectedChatChannelId || message.length === 0 || message.match(/^\s+$/))
 			return;
 
 		if (newerMessages) await getRecentMessages();
 
-		let previewMessage = [...previewGroup, ...previewDirect].find(
+		let previewMessage = previewDirect.find(
 			(p) => p.id === selectedChat || p.group_id === selectedChat
 		);
-		
-		console.log('PREVIEW MESG', previewMessage);
+
 		if (previewMessage) {
 			previewMessage.message = message;
 			previewMessage.created_at = new Date().toString();
 			previewMessage.notified = false;
 			previewMessage = previewMessage;
-			previewGroup = previewGroup;
-			previewDirect = previewDirect;
 		} else {
 			previewMessage = {
 				id: Date.now(),
@@ -95,12 +90,7 @@
 				channel_id: selectedChatChannelId,
 				...(selectedPage === 'direct' ? { target_id: selectedChat } : { group_id: selectedChat })
 			};
-			if (selectedPage === 'group') previewGroup.push(previewMessage);
-			else previewDirect.push(previewMessage);
 		}
-
-		previewDirect = previewDirect;
-		previewGroup = previewGroup;
 
 		const didSend = await Socket.sendMessage(socket, selectedChatChannelId, message, 1);
 		if (!didSend) {
@@ -108,18 +98,24 @@
 			return;
 		}
 
+		const preview = previewDirect.find((p) => p.channel_id === selectedChatChannelId);
+		if (preview) {
+			preview.message = message;
+		}
+		previewDirect = previewDirect;
+
 		messages.push({
 			id: Date.now(),
 			message,
 			user: {
-				username: $userStore?.username  || '',
+				username: $userStore?.username || '',
 				id: $userStore?.id || -1,
 				profile_image: $userStore?.profile_image || ''
 			},
 			created_at: new Date().toString(),
 			active: true,
 			channel_id: selectedChatChannelId,
-			channel_origin_name: selectedPage === 'direct' ? 'user' : 'group',
+			channel_origin_name: 'group',
 			type: 'message',
 			updated_at: new Date().toString(),
 			attachments: [],
@@ -128,13 +124,9 @@
 			topic_id: 0
 		});
 		messages = messages;
+
+		// Adds a in the chat for easier testing purposes
 		message = env.PUBLIC_MODE === 'DEV' ? message + 'a' : '';
-
-		// Update localStorage timestamp when sending a message
-		const timestampKey = `lastInteraction_${selectedChat}`;
-		localStorage.setItem(timestampKey, new Date().toISOString());
-
-		// await updateUserData(selectedChat, new Date());
 	};
 
 	// Fetch older messages
@@ -148,7 +140,7 @@
 	};
 
 	// Fetch newer messages
-	const showEarlierMessages = async () => {
+	const showNewerMessages = async () => {
 		if (!newerMessages) return;
 		const { res, json } = await fetchRequest('GET', newerMessages);
 		olderMessages = json.next;
@@ -207,19 +199,20 @@
 			}
 			preview = [...preview];
 		}
+
+		const _preview = previewDirect.find((p) => p.channel_id === selectedChatChannelId);
+		if (_preview) {
+			_preview.message = message.message;
+		}
+		previewDirect = previewDirect;
 	};
 
 	// Subscribe to incoming messages
 	const receiveMessage = () => {
 		const unsubscribe = messageStore.subscribe((message: Message1 | null) => {
 			if (!message || message.user?.id === $userStore?.id) return;
-			if (message.channel_origin_name === 'group') {
-				handleReceiveMessage(previewGroup, message);
-				previewGroup = previewGroup;
-			} else if (message.channel_origin_name === 'user') {
-				handleReceiveMessage(previewDirect, message);
-				previewDirect = previewDirect;
-			}
+			handleReceiveMessage(previewDirect, message);
+			previewDirect = previewDirect;
 		});
 		return unsubscribe;
 	};
@@ -243,7 +236,6 @@
 			return;
 		}
 		participants = json?.results;
-		// console.log(`Participants for ${selectedPage} chat (channel ${selectedChatChannelId}):`, participants);
 	};
 
 	let unsubscribeMessageStore: () => void;
@@ -271,10 +263,6 @@
 			const d = document.querySelector('#chat-window');
 			d?.scroll(0, 100000);
 		}, 100);
-
-	// $: if (selectedChatChannelId) {
-	// 	updateUserData(selectedChatChannelId, new Date());
-	// }
 </script>
 
 {#if selectedChatChannelId !== null}
@@ -313,58 +301,56 @@
 			{/each}
 			{#if newerMessages}
 				<li class="text-center mt-6 mb-6">
-					<Button onClick={showEarlierMessages} buttonStyle="secondary">
+					<Button onClick={showNewerMessages} buttonStyle="secondary">
 						{$_('Show earlier messages')}
 					</Button>
 				</li>
 			{/if}
 			<StatusMessage bind:status disableSuccess />
 		</ul>
-		{#if selectedChatChannelId}
-			<div class="border-t-2 border-t-gray-200 w-full">
-				<form
-					class="flex gap-1 justify-center items-center w-full mt-2"
-					on:submit|preventDefault={postMessage}
-				>
-					<TextArea
-						autofocus
-						label=""
-						onKeyPress={(e) => {
-							if (e.key === 'Enter' && !e.shiftKey) {
-								postMessage();
-								e.preventDefault();
-							}
-						}}
-						max={3000}
-						displayMax={false}
-						rows={1}
-						bind:value={message}
-						placeholder={$_('Write a message...')}
-						Class="justify-center w-full h-2rem"
-						inputClass="border-0 bg-gray-100 placeholder-gray-700 pl-2 pt-1 resize-y min-h-[2rem] max-h-[6rem] overflow-auto"
-					/>
-					{#if env.PUBLIC_MODE === 'DEV'}
-						<Button
-							onClick={() => (showEmoji = !showEmoji)}
-							Class="rounded-full pl-3 pr-3 pt-3 pb-3 h-1/2"
-						>
-							<Fa icon={faSmile} />
-						</Button>
-					{/if}
+		<div class="border-t-2 border-t-gray-200 w-full">
+			<form
+				class="flex gap-1 justify-center items-center w-full mt-2"
+				on:submit|preventDefault={postMessage}
+			>
+				<TextArea
+					autofocus
+					label=""
+					onKeyPress={(e) => {
+						if (e.key === 'Enter' && !e.shiftKey) {
+							postMessage();
+							e.preventDefault();
+						}
+					}}
+					max={3000}
+					displayMax={false}
+					rows={1}
+					bind:value={message}
+					placeholder={$_('Write a message...')}
+					Class="justify-center w-full h-2rem"
+					inputClass="border-0 bg-gray-100 placeholder-gray-700 pl-2 pt-1 resize-y min-h-[2rem] max-h-[6rem] overflow-auto"
+				/>
+				{#if env.PUBLIC_MODE === 'DEV'}
 					<Button
-						type="submit"
-						Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2 hover:bg-gray-100 active:bg-gray-200"
+						onClick={() => (showEmoji = !showEmoji)}
+						Class="rounded-full pl-3 pr-3 pt-3 pb-3 h-1/2"
 					>
-						<Fa class="text-blue-600 text-lg" icon={faPaperPlane} />
+						<Fa icon={faSmile} />
 					</Button>
-					<Button
-						Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2 hover:bg-gray-100 active:bg-gray-200"
-						onClick={() => (participantsModalOpen = true)}
-						><Fa class="text-blue-600 text-lg" icon={faUsers} /></Button
-					>
-				</form>
-			</div>
-		{/if}
+				{/if}
+				<Button
+					type="submit"
+					Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2 hover:bg-gray-100 active:bg-gray-200"
+				>
+					<Fa class="text-blue-600 text-lg" icon={faPaperPlane} />
+				</Button>
+				<Button
+					Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2 hover:bg-gray-100 active:bg-gray-200"
+					onClick={() => (participantsModalOpen = true)}
+					><Fa class="text-blue-600 text-lg" icon={faUsers} /></Button
+				>
+			</form>
+		</div>
 	</div>
 {:else}
 	<div>{'No chat selected'}</div>
@@ -384,7 +370,7 @@
 				{/each}
 			</ul>
 		{:else}
-			<p>No participants found.</p>
+			<p>{$_('No participants found.')}</p>
 		{/if}
 	</div>
 </Modal>

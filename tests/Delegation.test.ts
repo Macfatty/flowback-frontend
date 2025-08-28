@@ -5,15 +5,17 @@ import { createPoll, createProposal, delegateVote, fastForward } from './poll';
 test('Delegation', async ({ page }) => {
     await login(page);
 
-    await createGroup(page);
+    await createGroup(page, { public_group: true, name: 'Test Group' });
+
+    await page.waitForTimeout(5000);
 
     await page.getByRole('link', { name: 'Delegations' }).click();
+    await page.getByRole('combobox').selectOption('Test Group');
     await page.getByRole('button', { name: 'Become delegate' }).click();
     await page.getByRole('button', { name: 'Become delegate' }).nth(1).click();
     await page.getByRole('button', { name: 'Stop being delegate' }).click();
     await page.getByRole('button', { name: 'Become delegate' }).nth(1).click();
     await expect(page.getByRole('button', { name: 'Stop being delegate' })).toBeVisible();
-
 
     await gotoGroup(page);
 
@@ -31,6 +33,7 @@ test('Delegation', async ({ page }) => {
 
     await login(page, { email: 'b@b.se', password: 'b' });
 
-    
+
+
 
 });
