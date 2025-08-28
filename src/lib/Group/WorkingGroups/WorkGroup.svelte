@@ -99,7 +99,7 @@
 	};
 </script>
 
-<div class=" dark:text-darkmodeText w-full px-4 py-2 flex justify-between items-center min-h-14">
+<div class="dark:text-darkmodeText w-full px-4 py-2 flex justify-between items-center min-h-14" id={workGroup.name}>
 	<span class="text-primary dark:text-secondary w-[40%] font-semibold break-words"
 		>{workGroup.name}</span
 	>

@@ -9,14 +9,11 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import WorkingGroup from './WorkGroup.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
 	import { _ } from 'svelte-i18n';
-	import Fa from 'svelte-fa';
-	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import { groupUserStore } from '$lib/Group/interface';
 	import Loader from '$lib/Generic/Loader.svelte';
 
@@ -113,11 +110,14 @@
 		}
 
 		invites = invites.filter((invite) => invite.work_group_id !== workGroupId);
-		workGroups.forEach((workGroup) => {
-			if (workGroup.id === workGroupId && groupUserId === Number(localStorage.getItem('userId')))
-				workGroup.joined = true;
+
+		let workGroup = workGroups.find((workGroup) => workGroup.id === workGroupId);
+		if (workGroup) {
+			workGroup.requested_access = false;
 			workGroup.member_count++;
-		});
+			workGroup.joined = true;
+		}
+
 		workGroups = workGroups;
 	};
 
@@ -185,7 +185,7 @@
 			class="mt-2 text-left bg-white hover:bg-gray-100 cursor-pointer active:bg-gray-200 dark:bg-darkobject shadow rounded-sm dark:text-darkmodeText w-full px-4 py-2 flex justify-between items-center min-h-14"
 		>
 			<span class="text-primary dark:text-secondary w-[40%] font-semibold break-words"
-				>{$_("+ Add Group")}</span
+				>{$_('+ Add Group')}</span
 			>
 		</button>
 	{/if}
