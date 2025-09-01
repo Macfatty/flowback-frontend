@@ -48,12 +48,23 @@
 			false
 		);
 
-		if (!res.ok) return;
+		loading = false;
+		if (!res.ok) {
+			if (json?.detail?.verification_code || json?.detail[0] === 'Not found.' || json?.detail[0] === "Verification code has already been used.")
+				errorHandler.addPopup({ message: 'Wrong verification code' });
+			else if (json?.detail?.non_field_errors)
+				errorHandler.addPopup({ message: json?.detail?.non_field_errors[0] });
+			else if (json?.detail?.username)
+				errorHandler.addPopup({ message: json?.detail?.username[0] });
+			else errorHandler.addPopup({ message: 'Something went wrong' });
 
-		verify();
+			return;
+		}
+
+		login();
 	}
 
-	const verify = async () => {
+	const login = async () => {
 		// Getting username which is stored in the store from Register.svelte
 		// let email = '';
 		// mailStore.subscribe((mail) => (email = mail));
@@ -67,7 +78,7 @@
 		loading = false;
 
 		if (!res.ok || !json.token) {
-			errorHandler.addPopup({ message: 'Could not verify account', success: false });
+			errorHandler.addPopup({ message: 'Something went wrong', success: false });
 			return;
 		}
 
