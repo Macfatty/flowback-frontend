@@ -99,12 +99,12 @@
 				class="text-black dark:text-darkmodeText"
 			>
 				<img
-					class="h-8 w-8 inline rounded-full break-all"
+					class="h-8 w-8 inline rounded-full break-word"
 					src={poll?.group_image ? `${env.PUBLIC_API_URL}${poll?.group_image}` : DefaultBanner}
 					alt="group thumbnail"
 					on:error={(e) => onThumbnailError(e, DefaultBanner)}
 				/>
-				<span class="inline break-all">{poll?.group_name}</span>
+				<span class="inline break-word">{poll?.group_name}</span>
 			</a>
 			<!-- Current Phase -->
 			{#if pollType === 4}

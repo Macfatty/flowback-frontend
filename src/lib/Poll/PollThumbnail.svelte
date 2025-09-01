@@ -138,12 +138,12 @@
 					class="text-black dark:text-darkmodeText flex items-center"
 				>
 					<!-- <img
-						class="h-6 w-6 mr-1 rounded-full break-all"
+						class="h-6 w-6 mr-1 rounded-full break-word"
 						src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
 						alt={'Poll Thumbnail'}
 						on:error={(e) => onThumbnailError(e, DefaultBanner)}
 					/> -->
-					<span class="break-all text-sm text-gray-700 dark:text-darkmodeText"
+					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
 						>{poll?.group_name}</span
 					>
 				</a>
@@ -196,7 +196,7 @@
 			{#if poll?.created_by?.user}
 				<div class="text-black dark:text-darkmodeText flex items-center">
 					<!-- <img
-						class="h-6 w-6 mr-1 rounded-full break-all"
+						class="h-6 w-6 mr-1 rounded-full break-word"
 						src={`${
 							poll?.created_by?.user?.profile_image
 								? env.PUBLIC_API_URL + poll?.created_by?.user?.profile_image
@@ -205,7 +205,7 @@
 						alt={'poll Thumbnail'}
 						on:error={(e) => onThumbnailError(e, DefaultPFP)}
 					/> -->
-					<span class="break-all text-sm text-gray-700 dark:text-darkmodeText"
+					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
 						>{poll?.created_by?.user?.username}</span
 					>
 				</div>

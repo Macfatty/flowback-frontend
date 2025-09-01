@@ -93,20 +93,20 @@
 		{#if !$page.params.groupId}
 			<a href={`/groups/${thread?.group_id}`} class="text-black flex items-center">
 				<!-- <img
-					class="h-6 w-6 mr-1 rounded-full break-all"
+					class="h-6 w-6 mr-1 rounded-full break-word"
 					src={`${
 						thread?.group_image ? `${env.PUBLIC_API_URL}${thread?.group_image}` : DefaultBanner
 					}`}
 					alt={'thread Thumbnail'}
 					on:error={(e) => onThumbnailError(e, DefaultBanner)}
 				/> -->
-				<span class="break-all text-sm text-gray-700">{thread?.group_name}</span>
+				<span class="break-word text-sm text-gray-700">{thread?.group_name}</span>
 			</a>
 		{:else if thread?.created_by?.user}
 			<div class="text-black flex items-center">
 				<!-- TODO: add "if group doesn't hide displaying creators" condition -->
 				<!-- <img
-					class="h-6 w-6 mr-1 rounded-full break-all"
+					class="h-6 w-6 mr-1 rounded-full break-word"
 					src={`${
 						thread?.created_by?.user?.profile_image
 							? `${env.PUBLIC_API_URL}${thread?.created_by?.user?.profile_image}`
@@ -115,7 +115,7 @@
 					alt={'thread Thumbnail'}
 					on:error={(e) => onThumbnailError(e, DefaultPFP)}
 				/> -->
-				<span class="break-all text-sm text-gray-700 dark:text-darkmodeText"
+				<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
 					>{thread?.created_by?.user?.username}</span
 				>
 			</div>

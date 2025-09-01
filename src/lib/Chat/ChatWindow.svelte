@@ -267,7 +267,7 @@
 
 {#if selectedChatChannelId !== null}
 	<div class="flex flex-col h-full">
-		<ul class="grow overflow-y-auto px-2 break-all" id="chat-window" bind:this={chatWindow}>
+		<ul class="grow overflow-y-auto px-2 break-word" id="chat-window" bind:this={chatWindow}>
 			{#if messages.length === 0 && selectedChatChannelId}
 				<span class="self-center">{$_('Chat is currently empty, maybe say hello?')}</span>
 			{/if}

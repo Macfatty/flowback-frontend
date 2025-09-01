@@ -22,12 +22,15 @@
 
 	async function registerAccount() {
 		if (!acceptedToS) {
-			status = { message: 'You must accept terms of service to register', success: false };
+			errorHandler.addPopup({
+				message: 'You must accept terms of service to register',
+				success: false
+			});
 			return;
 		}
 
 		if (usernameError) {
-			status = { message: usernameError, success: false };
+			errorHandler.addPopup({ message: usernameError, success: false });
 			return;
 		}
 
@@ -46,7 +49,7 @@
 		}
 
 		mailStore.set(email);
-		status = { message: 'Successfully registered', success: true };
+		errorHandler.addPopup({ message: 'Successfully registered', success: true });
 		selectedPage = 'Verify';
 	}
 </script>
@@ -60,7 +63,6 @@
 			centering={true}
 			bind:Yes={acceptedToS}
 		/>
-		<StatusMessage bind:status />
 		<Button type="submit">
 			{$_('Send')}
 		</Button>

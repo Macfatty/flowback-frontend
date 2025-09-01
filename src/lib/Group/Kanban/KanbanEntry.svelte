@@ -249,7 +249,7 @@
 >
 	<div class="flex justify-between w-full items-start">
 		<div
-			class="text-primary dark:text-secondary text-left break-before-auto font-semibold break-all pb-1 line-clamp-2"
+			class="text-primary dark:text-secondary text-left break-before-auto font-semibold break-word pb-1 line-clamp-2"
 		>
 			{kanban.title}
 		</div>
@@ -295,7 +295,7 @@
 				size={1}
 			/>
 
-			<div class="break-all text-xs">
+			<div class="break-word text-xs">
 				{#if filter.type === 'group'}
 					{kanban.assignee?.username}
 				{:else}
