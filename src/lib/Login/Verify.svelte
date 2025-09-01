@@ -67,7 +67,7 @@
 		loading = false;
 
 		if (!res.ok || !json.token) {
-			errorHandler = { message: 'Could not verify account', success: false };
+			errorHandler.addPopup({ message: 'Could not verify account', success: false });
 			return;
 		}
 
@@ -103,6 +103,8 @@
 
 	onMount(() => {
 		getVerificationCodeFromURL();
+
+		// For when users click the link in their verification email.
 		const urlParams = new URLSearchParams(window.location.search);
 		verification_code = urlParams.get('verification_code') || '';
 	});
@@ -114,7 +116,7 @@
 </script>
 
 <Loader bind:loading>
-	<form class="gap-6 p-6 flex flex-col items-center" on:submit|preventDefault={verifyAccount}>
+	<form class="gap-6 p-6 mb-4 flex flex-col items-center" on:submit|preventDefault={verifyAccount}>
 		<span
 			>{$_(
 				`We have sent a verification code to the provided email. Don't forget to check your junk mail!`

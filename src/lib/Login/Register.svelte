@@ -9,12 +9,14 @@
 	import TextInput from '../Generic/TextInput.svelte';
 	import { mailStore } from './stores';
 	import TermsOfService from './TermsOfService.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 
 	let email: string,
 		status: StatusMessageInfo,
 		loading = false,
 		acceptedToS = false,
-		usernameError: string = '';
+		usernameError: string = '',
+		errorHandler: any;
 
 	export let selectedPage: string;
 
@@ -32,13 +34,18 @@
 		loading = true;
 		const { res, json } = await fetchRequest('POST', 'register', { email }, false);
 		loading = false;
-		if (!res.ok) return;
 
-		console.log(email, $mailStore);
+		console.log(res, json, 'RESJSON');
+
+		if (!res.ok) {
+			errorHandler.addPopup({
+				message: json?.detail?.email[0] || json?.detail || json || 'Something went wrong',
+				success: false
+			});
+			return;
+		}
 
 		mailStore.set(email);
-
-		console.log(email, $mailStore);
 		status = { message: 'Successfully registered', success: true };
 		selectedPage = 'Verify';
 	}
@@ -59,3 +66,5 @@
 		</Button>
 	</form>
 </Loader>
+
+<ErrorHandler bind:this={errorHandler} />
