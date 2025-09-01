@@ -14,44 +14,71 @@
 	// import { becomeMemberOfGroup } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 
 	let verification_code: string,
 		password: string,
 		status: StatusMessageInfo,
 		loading = false,
-		acceptedEmailNotifications = false;
+		acceptedEmailNotifications = false,
+		username: string,
+		errorHandler: any;
 
-	onMount(() => {
-		const urlParams = new URLSearchParams(window.location.search);
-		verification_code = urlParams.get('verification_code') || '';
-		const email = urlParams.get('email') || '';
-		mailStore.set(email);
-	});
+	const validateUsername = () => {
+		if (!username) {
+			// usernameError = '';
+			return;
+		}
+
+		const regex = /^[a-zA-Z0-9@./+/_-]+$/;
+		if (!username.match(regex)) {
+			// usernameError =
+			// 	'Username may only contain letters, numbers, and @/./+/-/_ characters. No spaces are allowed.';
+		} else {
+			// usernameError = '';
+		}
+	};
 
 	async function verifyAccount() {
 		loading = true;
 		const { res, json } = await fetchRequest(
 			'POST',
 			'register/verify',
-			{ verification_code, password },
+			{ verification_code, password, username },
 			false
 		);
 
-		if (!res.ok) return;
+		loading = false;
+		if (!res.ok) {
+			if (json?.detail?.verification_code || json?.detail[0] === 'Not found.' || json?.detail[0] === "Verification code has already been used.")
+				errorHandler.addPopup({ message: 'Wrong verification code' });
+			else if (json?.detail?.non_field_errors)
+				errorHandler.addPopup({ message: json?.detail?.non_field_errors[0] });
+			else if (json?.detail?.username)
+				errorHandler.addPopup({ message: json?.detail?.username[0] });
+			else errorHandler.addPopup({ message: 'Something went wrong' });
 
-		verify();
+			return;
+		}
+
+		login();
 	}
 
-	const verify = async () => {
+	const login = async () => {
 		// Getting username which is stored in the store from Register.svelte
-		let email = '';
-		mailStore.subscribe((mail) => (email = mail));
-		const { json, res } = await fetchRequest('POST', 'login', { username: email, password }, false);
+		// let email = '';
+		// mailStore.subscribe((mail) => (email = mail));
+		const { json, res } = await fetchRequest(
+			'POST',
+			'login',
+			{ username: $mailStore, password },
+			false
+		);
 
 		loading = false;
 
 		if (!res.ok || !json.token) {
-			status = { message: 'Could not verify account', success: false };
+			errorHandler.addPopup({ message: 'Something went wrong', success: false });
 			return;
 		}
 
@@ -87,11 +114,20 @@
 
 	onMount(() => {
 		getVerificationCodeFromURL();
+
+		// For when users click the link in their verification email.
+		const urlParams = new URLSearchParams(window.location.search);
+		verification_code = urlParams.get('verification_code') || '';
 	});
+
+	$: {
+		username;
+		validateUsername();
+	}
 </script>
 
 <Loader bind:loading>
-	<form class="gap-6 p-6 flex flex-col items-center" on:submit|preventDefault={verifyAccount}>
+	<form class="gap-6 p-6 mb-4 flex flex-col items-center" on:submit|preventDefault={verifyAccount}>
 		<span
 			>{$_(
 				`We have sent a verification code to the provided email. Don't forget to check your junk mail!`
@@ -100,6 +136,10 @@
 		{#if !$page.url.searchParams.get('verification_code')}
 			<TextInput label={'Verification Code'} bind:value={verification_code} required />
 		{/if}
+		<TextInput label={'Username'} bind:value={username} required />
+		<!-- {#if usernameError}
+			<p class="text-red-500 text-sm">{$_(usernameError)}</p>
+		{/if} -->
 		<TextInput label={'Choose a Password'} bind:value={password} type={'password'} required />
 		<RadioButtons
 			label="Do you want to receive Email Notifications?"
@@ -112,3 +152,5 @@
 		</Button>
 	</form>
 </Loader>
+
+<ErrorHandler bind:this={errorHandler} />

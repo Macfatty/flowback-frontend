@@ -63,14 +63,14 @@
 		role="button"
 	>
 		<div class="dark:text-darkmodeText relative p-4 w-full h-full">
-			<!-- <div class="text-xl border-b-2 border-gray-300 border-solid  break-all"> -->
-			<div class="text-xl break-all">
+			<!-- <div class="text-xl border-b-2 border-gray-300 border-solid  break-word"> -->
+			<div class="text-xl break-word">
 				<slot name="header" />
 				<CrossButton action={() => (open = false)} />
 			</div>
 			{#if onSubmit !== (() => {})}
 				<form on:submit|preventDefault={onSubmit}>
-					<div class="p-6 text-center break-all">
+					<div class="p-6 text-center break-word">
 						<slot name="body" />
 					</div>
 					<slot name="footer" />

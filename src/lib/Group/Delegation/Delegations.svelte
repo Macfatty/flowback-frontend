@@ -216,7 +216,7 @@
 					class="transition-all flex text-primary dark:text-secondary justify-between w-full section-title"
 					on:click={() => toggleSection(index)}
 				>
-					<span class="break-all text-left">{tag.name}</span>
+					<span class="break-word text-left">{tag.name}</span>
 
 					<!-- Always use chevron-down and rotate when expanded -->
 					<div class="chevron {expandedSection === index ? 'expanded' : ''}">

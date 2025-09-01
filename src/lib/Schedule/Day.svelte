@@ -130,7 +130,7 @@
 								};
 								showEvent = true;
 							}}
-							class="break-all bg-secondary w-full text-white text-sm mb-1 text-center"
+							class="break-word bg-secondary w-full text-white text-sm mb-1 text-center"
 						>
 							{elipsis(event.title, 15)}
 						</button>

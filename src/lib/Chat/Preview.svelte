@@ -114,7 +114,6 @@
 			onClick={() => {
 				creatingGroup = true;
 				groupMembers = []; // Reset groupMembers
-
 			}}
 		>
 			{$_('+ New Group')}
@@ -168,9 +167,7 @@
 			<div class="flex flex-col max-w-[40%]">
 				<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
 					<!-- {chatter?.user.username} -->
-
-					<!-- <EveryProperty obj={chatter} /> -->
-					{chatter.channel_title}
+					{chatter.channel_title || 'Name not found'}
 				</span>
 				<span class="text-gray-400 text-sm h-[20px]">
 					{chatter?.message || ''}

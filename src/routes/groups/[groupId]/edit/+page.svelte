@@ -26,7 +26,7 @@
 				>
 					<Fa icon={faArrowLeft} />
 				</button>
-				<h1 class="text-xl font-semibold text-primary dark:text-secondary text-left break-all">
+				<h1 class="text-xl font-semibold text-primary dark:text-secondary text-left break-word">
 					{$_('Admin Settings')}
 				</h1>
 			</div>

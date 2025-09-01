@@ -18,13 +18,12 @@
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { groupUserStore, type Thread } from '$lib/Group/interface';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import ReportPostModal from './ReportPostModal.svelte';
-	import DeletePostModal from './DeletePostModal.svelte';
-	import { env } from '$env/dynamic/public';
-	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 	import HeaderIcon from '$lib/Header/HeaderIcon.svelte';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import { onMount } from 'svelte';
+	import ReportPostModal from '$lib/Poll/ReportPostModal.svelte';
+	import DeletePostModal from '$lib/Poll/DeletePostModal.svelte';
+	import ThreadVoting from './ThreadVoting.svelte';
 
 	export let thread: Thread;
 	let threads: Thread[] = [],
@@ -33,41 +32,6 @@
 		choicesOpen = false,
 		poppup: poppup,
 		darkMode: boolean = false;
-
-	//Launches whenever the user clicks upvote or downvote on a thread
-	const threadVote = async (_thread: Thread, clicked: 'down' | 'up') => {
-		let vote: null | false | true = null;
-
-		// TODO: There's gotta be a more elegant way to do this
-		if (_thread?.user_vote === null && clicked === 'up') {
-			vote = true;
-			thread.score++;
-		} else if (_thread?.user_vote === null && clicked === 'down') {
-			vote = false;
-			thread.score--;
-		} else if (_thread?.user_vote === false && clicked === 'up') {
-			vote = true;
-			thread.score += 2;
-		} else if (_thread?.user_vote === false && clicked === 'down') {
-			vote = null;
-			thread.score++;
-		} else if (_thread?.user_vote === true && clicked === 'up') {
-			vote = null;
-			thread.score--;
-		} else if (_thread?.user_vote === true && clicked === 'down') {
-			vote = false;
-			thread.score -= 2;
-		}
-
-		const { res, json } = await fetchRequest('POST', `group/thread/${_thread?.id}/vote`, { vote });
-
-		if (!res.ok) {
-			poppup = { message: 'Could not vote on thread', success: false };
-			return;
-		}
-
-		thread.user_vote = vote;
-	};
 
 	//When adminn presses the pin tack symbol, pin the thread
 	const pinThread = async (thread: Thread) => {
@@ -93,20 +57,20 @@
 		{#if !$page.params.groupId}
 			<a href={`/groups/${thread?.group_id}`} class="text-black flex items-center">
 				<!-- <img
-					class="h-6 w-6 mr-1 rounded-full break-all"
+					class="h-6 w-6 mr-1 rounded-full break-word"
 					src={`${
 						thread?.group_image ? `${env.PUBLIC_API_URL}${thread?.group_image}` : DefaultBanner
 					}`}
 					alt={'thread Thumbnail'}
 					on:error={(e) => onThumbnailError(e, DefaultBanner)}
 				/> -->
-				<span class="break-all text-sm text-gray-700">{thread?.group_name}</span>
+				<span class="break-word text-sm text-gray-700">{thread?.group_name}</span>
 			</a>
 		{:else if thread?.created_by?.user}
 			<div class="text-black flex items-center">
 				<!-- TODO: add "if group doesn't hide displaying creators" condition -->
 				<!-- <img
-					class="h-6 w-6 mr-1 rounded-full break-all"
+					class="h-6 w-6 mr-1 rounded-full break-word"
 					src={`${
 						thread?.created_by?.user?.profile_image
 							? `${env.PUBLIC_API_URL}${thread?.created_by?.user?.profile_image}`
@@ -115,7 +79,7 @@
 					alt={'thread Thumbnail'}
 					on:error={(e) => onThumbnailError(e, DefaultPFP)}
 				/> -->
-				<span class="break-all text-sm text-gray-700 dark:text-darkmodeText"
+				<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
 					>{thread?.created_by?.user?.username}</span
 				>
 			</div>
@@ -154,7 +118,9 @@
 
 	<a
 		class="break-words cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
-		href={`/groups/${thread?.group_id}/thread/${thread?.id}?source=${$page.params.groupId ? 'group' : 'home'}`}>{thread?.title}</a
+		href={`/groups/${thread?.group_id}/thread/${thread?.id}?source=${
+			$page.params.groupId ? 'group' : 'home'
+		}`}>{thread?.title}</a
 	>
 
 	<div>
@@ -186,29 +152,16 @@
 		>
 			<a
 				class="text-black dark:text-darkmodeText flex justify-center gap-1"
-				href={`groups/${thread?.group_id}/thread/${thread?.id}?source=${$page.params.groupId ? 'group' : 'home'}`}
+				href={`groups/${thread?.group_id}/thread/${thread?.id}?source=${
+					$page.params.groupId ? 'group' : 'home'
+				}`}
 			>
 				<img class="w-5" src={ChatIcon} alt="open chat" />
 				<span class="inline">{thread?.total_comments} {'comments'}</span>
 			</a>
 		</div>
-		<div>
-			<div class="flex items-center gap-2">
-				<button
-					class:text-primary={thread?.user_vote === true}
-					on:click={() => threadVote(thread, 'up')}
-				>
-					<Fa icon={faThumbsUp} />
-				</button>
-				{thread?.score}
-				<button
-					class:text-primary={thread?.user_vote === false}
-					on:click={() => threadVote(thread, 'down')}
-				>
-					<Fa class="pl-0.5" icon={faThumbsDown} />
-				</button>
-			</div>
-		</div>
+
+		<ThreadVoting bind:thread />
 	</div>
 </div>
 

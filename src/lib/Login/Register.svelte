@@ -9,65 +9,53 @@
 	import TextInput from '../Generic/TextInput.svelte';
 	import { mailStore } from './stores';
 	import TermsOfService from './TermsOfService.svelte';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 
-	let username: string;
-	let email: string;
-	let status: StatusMessageInfo;
-	let loading = false;
-	let acceptedToS = false;
-	let usernameError: string = '';
+	let email: string,
+		status: StatusMessageInfo,
+		loading = false,
+		acceptedToS = false,
+		usernameError: string = '',
+		errorHandler: any;
 
 	export let selectedPage: string;
 
-	const validateUsername = () => {
-		if (!username) {
-			usernameError = '';
-			return;
-		}
-
-		const regex = /^[a-zA-Z0-9@./+/_-]+$/;
-		if (!username.match(regex)) {
-			usernameError = "Username may only contain letters, numbers, and @/./+/-/_ characters. No spaces are allowed.";
-		} else {
-			usernameError = '';
-		}
-	}
-
 	async function registerAccount() {
 		if (!acceptedToS) {
-			status = { message: 'You must accept terms of service to register', success: false };
+			errorHandler.addPopup({
+				message: 'You must accept terms of service to register',
+				success: false
+			});
 			return;
 		}
 
-		validateUsername();
-
 		if (usernameError) {
-			status = { message: usernameError, success: false };
+			errorHandler.addPopup({ message: usernameError, success: false });
 			return;
 		}
 
 		loading = true;
-		const { res, json } = await fetchRequest('POST', 'register', { username, email }, false);
+		const { res, json } = await fetchRequest('POST', 'register', { email }, false);
 		loading = false;
-		if (res.ok) {
-			mailStore.set(email);
-			status = { message: 'Successfully registered', success: true };
-			selectedPage = 'Verify';
-		} else status = { message: json.detail[0], success: false };
-	}
 
-	$: {
-		username;
-		validateUsername();
+		console.log(res, json, 'RESJSON');
+
+		if (!res.ok) {
+			errorHandler.addPopup({
+				message: json?.detail?.email[0] || json?.detail || json || 'Something went wrong',
+				success: false
+			});
+			return;
+		}
+
+		mailStore.set(email);
+		errorHandler.addPopup({ message: 'Successfully registered', success: true });
+		selectedPage = 'Verify';
 	}
 </script>
 
 <Loader bind:loading>
 	<form class="p-6 gap-6 flex flex-col items-center" on:submit|preventDefault={registerAccount}>
-		<TextInput label={'Username'} bind:value={username} required />
-		{#if usernameError}
-			<p class="text-red-500 text-sm">{$_(usernameError)}</p>
-		{/if}
 		<TextInput label={'Email'} bind:value={email} required />
 		<TermsOfService />
 		<RadioButtons
@@ -75,9 +63,10 @@
 			centering={true}
 			bind:Yes={acceptedToS}
 		/>
-		<StatusMessage bind:status />
 		<Button type="submit">
 			{$_('Send')}
 		</Button>
 	</form>
 </Loader>
+
+<ErrorHandler bind:this={errorHandler} />

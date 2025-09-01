@@ -11,11 +11,11 @@
 	import { ThreadsApi } from '$lib/api/threads';
 	import PollThumbnail from './PollThumbnail.svelte';
 	import PollFiltering from './PollFiltering.svelte';
-	import ThreadThumbnail from './ThreadThumbnail.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import Pagination from '$lib/Generic/Pagination.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { posts } from './stores';
+	import ThreadThumbnail from '$lib/Thread/ThreadThumbnail.svelte';
 
 	// Props
 	export let Class = '';

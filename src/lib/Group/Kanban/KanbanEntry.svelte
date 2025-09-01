@@ -292,8 +292,8 @@
 				Class=""
 				size={1}
 			/>
+			<div class="break-word text-xs">
 
-			<div class="text-xs">
 				{#if filter.type === 'group'}
 					{kanban.assignee?.username}
 				{:else}
