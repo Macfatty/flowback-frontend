@@ -15,6 +15,7 @@
 	import ReportPostModal from '$lib/Poll/ReportPostModal.svelte';
 	import DeletePostModal from '$lib/Poll/DeletePostModal.svelte';
 	import Button from '$lib/Generic/Button.svelte';
+	import ThreadVoting from '$lib/Thread/ThreadVoting.svelte';
 
 	let thread: Thread,
 		errorHandler: any,
@@ -62,7 +63,6 @@
 			<h1 class="text-left text-2xl text-primary dark:text-secondary font-semibold">
 				{thread?.title}
 			</h1>
-
 			<div class="inline-flex gap-4 items-baseline">
 				<NotificationOptions
 					type="thread"
@@ -89,6 +89,7 @@
 						{new Date(thread?.created_at).toISOString().split('T')[0].replace(/-/g, '.')}
 					</span>
 				{/if}
+				<ThreadVoting bind:thread />
 			</div>
 
 			{#if thread?.description.length > 0}
