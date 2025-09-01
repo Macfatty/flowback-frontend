@@ -14,26 +14,37 @@
 	// import { becomeMemberOfGroup } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 
 	let verification_code: string,
 		password: string,
 		status: StatusMessageInfo,
 		loading = false,
-		acceptedEmailNotifications = false;
+		acceptedEmailNotifications = false,
+		username: string,
+		errorHandler: any;
 
-	onMount(() => {
-		const urlParams = new URLSearchParams(window.location.search);
-		verification_code = urlParams.get('verification_code') || '';
-		const email = urlParams.get('email') || '';
-		mailStore.set(email);
-	});
+	const validateUsername = () => {
+		if (!username) {
+			// usernameError = '';
+			return;
+		}
+
+		const regex = /^[a-zA-Z0-9@./+/_-]+$/;
+		if (!username.match(regex)) {
+			// usernameError =
+			// 	'Username may only contain letters, numbers, and @/./+/-/_ characters. No spaces are allowed.';
+		} else {
+			// usernameError = '';
+		}
+	};
 
 	async function verifyAccount() {
 		loading = true;
 		const { res, json } = await fetchRequest(
 			'POST',
 			'register/verify',
-			{ verification_code, password },
+			{ verification_code, password, username },
 			false
 		);
 
@@ -44,14 +55,19 @@
 
 	const verify = async () => {
 		// Getting username which is stored in the store from Register.svelte
-		let email = '';
-		mailStore.subscribe((mail) => (email = mail));
-		const { json, res } = await fetchRequest('POST', 'login', { username: email, password }, false);
+		// let email = '';
+		// mailStore.subscribe((mail) => (email = mail));
+		const { json, res } = await fetchRequest(
+			'POST',
+			'login',
+			{ username: $mailStore, password },
+			false
+		);
 
 		loading = false;
 
 		if (!res.ok || !json.token) {
-			status = { message: 'Could not verify account', success: false };
+			errorHandler = { message: 'Could not verify account', success: false };
 			return;
 		}
 
@@ -87,7 +103,14 @@
 
 	onMount(() => {
 		getVerificationCodeFromURL();
+		const urlParams = new URLSearchParams(window.location.search);
+		verification_code = urlParams.get('verification_code') || '';
 	});
+
+	$: {
+		username;
+		validateUsername();
+	}
 </script>
 
 <Loader bind:loading>
@@ -100,6 +123,10 @@
 		{#if !$page.url.searchParams.get('verification_code')}
 			<TextInput label={'Verification Code'} bind:value={verification_code} required />
 		{/if}
+		<TextInput label={'Username'} bind:value={username} required />
+		<!-- {#if usernameError}
+			<p class="text-red-500 text-sm">{$_(usernameError)}</p>
+		{/if} -->
 		<TextInput label={'Choose a Password'} bind:value={password} type={'password'} required />
 		<RadioButtons
 			label="Do you want to receive Email Notifications?"
@@ -112,3 +139,5 @@
 		</Button>
 	</form>
 </Loader>
+
+<ErrorHandler bind:this={errorHandler} />

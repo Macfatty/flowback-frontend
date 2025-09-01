@@ -10,28 +10,13 @@
 	import { mailStore } from './stores';
 	import TermsOfService from './TermsOfService.svelte';
 
-	let username: string;
-	let email: string;
-	let status: StatusMessageInfo;
-	let loading = false;
-	let acceptedToS = false;
-	let usernameError: string = '';
+	let email: string,
+		status: StatusMessageInfo,
+		loading = false,
+		acceptedToS = false,
+		usernameError: string = '';
 
 	export let selectedPage: string;
-
-	const validateUsername = () => {
-		if (!username) {
-			usernameError = '';
-			return;
-		}
-
-		const regex = /^[a-zA-Z0-9@./+/_-]+$/;
-		if (!username.match(regex)) {
-			usernameError = "Username may only contain letters, numbers, and @/./+/-/_ characters. No spaces are allowed.";
-		} else {
-			usernameError = '';
-		}
-	}
 
 	async function registerAccount() {
 		if (!acceptedToS) {
@@ -39,35 +24,28 @@
 			return;
 		}
 
-		validateUsername();
-
 		if (usernameError) {
 			status = { message: usernameError, success: false };
 			return;
 		}
 
 		loading = true;
-		const { res, json } = await fetchRequest('POST', 'register', { username, email }, false);
+		const { res, json } = await fetchRequest('POST', 'register', { email }, false);
 		loading = false;
-		if (res.ok) {
-			mailStore.set(email);
-			status = { message: 'Successfully registered', success: true };
-			selectedPage = 'Verify';
-		} else status = { message: json.detail[0], success: false };
-	}
+		if (!res.ok) return;
 
-	$: {
-		username;
-		validateUsername();
+		console.log(email, $mailStore);
+
+		mailStore.set(email);
+
+		console.log(email, $mailStore);
+		status = { message: 'Successfully registered', success: true };
+		selectedPage = 'Verify';
 	}
 </script>
 
 <Loader bind:loading>
 	<form class="p-6 gap-6 flex flex-col items-center" on:submit|preventDefault={registerAccount}>
-		<TextInput label={'Username'} bind:value={username} required />
-		{#if usernameError}
-			<p class="text-red-500 text-sm">{$_(usernameError)}</p>
-		{/if}
 		<TextInput label={'Email'} bind:value={email} required />
 		<TermsOfService />
 		<RadioButtons
