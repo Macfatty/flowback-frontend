@@ -7,11 +7,9 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { _ } from 'svelte-i18n';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
-	import DefaultPFP from '$lib/assets/abstract-user-flat-4.svg';
 	import { onMount } from 'svelte';
 	import { getPhase, getPhaseUserFriendlyNameWithNumber, nextPhase } from './functions';
-	import DefaultBanner from '$lib/assets/default_banner_group.png';
-	import { getPermissionsFast, onThumbnailError } from '$lib/Generic/GenericFunctions';
+	import { getPermissionsFast } from '$lib/Generic/GenericFunctions';
 	import Select from '$lib/Generic/Select.svelte';
 	import { getTags } from '$lib/Group/functions';
 	import type { Tag as TagType } from '$lib/Group/interface';

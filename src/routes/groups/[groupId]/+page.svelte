@@ -19,10 +19,10 @@
 	import Permissions from '$lib/Group/Permissions/Permissions.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import Schedule from '$lib/Schedule/Schedule.svelte';
-	import Threads from '$lib/Poll/Threads.svelte';
 	import WorkGroups from '$lib/Group/WorkingGroups/WorkGroups.svelte';
 	import { env } from '$env/dynamic/public';
 	import PollThreadThumbnails from '$lib/Poll/PollThreadThumbnails.svelte';
+	import Threads from '$lib/Thread/Threads.svelte';
 
 	let selectedPage: SelectablePage = 'flow';
 	let group: GroupDetails = {
