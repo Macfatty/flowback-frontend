@@ -248,9 +248,7 @@
 	}}
 >
 	<div class="flex justify-between w-full items-start">
-		<div
-			class="text-primary dark:text-secondary text-left break-before-auto font-semibold break-word pb-1 line-clamp-2"
-		>
+		<div class="text-primary dark:text-secondary text-left font-semibold pb-1 line-clamp-2 break-keep">
 			{kanban.title}
 		</div>
 
@@ -294,8 +292,8 @@
 				Class=""
 				size={1}
 			/>
-
 			<div class="break-word text-xs">
+
 				{#if filter.type === 'group'}
 					{kanban.assignee?.username}
 				{:else}
@@ -343,7 +341,7 @@
 	<Modal
 		bind:open={openModal}
 		id="kanban-entry-modal"
-		Class=" min-w-[400px] max-w-[500px] z-50"
+		Class=" min-w-[400px] max-w-[500px] z-50 "
 		buttons={isEditing
 			? [
 					{ label: 'Update', type: 'primary', onClick: updateKanbanContent },
@@ -441,7 +439,7 @@
 				<!-- If not editing, so normal display -->
 			{:else}
 				<div class="text-center">
-					<h2 class="pb-1 font-semibold break-words text-xl w-full">{kanban.title}</h2>
+					<h2 class="pb-1 font-semibold text-xl w-full break-keep">{kanban.title}</h2>
 					{#if filter.type === 'group'}
 						<p class="w-full">{kanban?.work_group?.name || $_('No workgroup assigned')}</p>
 						<button on:click={() => goto(`/groups/${kanban?.origin_id}`)} class="w-full"
@@ -501,7 +499,7 @@
 				<div class="text-left mt-1 w-full">
 					<p class="font-bold">{$_('Description')}</p>
 					<p
-						class="max-h-[25vh] overflow-y-auto break-words w-full id={`kanban-${kanban.id}-description`} whitespace-pre-wrap"
+						class="max-h-[25vh] overflow-y-auto w-full id={`kanban-${kanban.id}-description`} whitespace-pre-wrap"
 					>
 						{kanban?.description}
 					</p>

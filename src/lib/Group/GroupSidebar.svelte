@@ -15,9 +15,7 @@
 		faCog,
 		faListCheck,
 		faPeopleCarryBox,
-
 		faPeopleArrows
-
 	} from '@fortawesome/free-solid-svg-icons';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Modal from '$lib/Generic/Modal.svelte';
