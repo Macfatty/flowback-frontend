@@ -7,7 +7,7 @@
 	import { env } from '$env/dynamic/public';
 	import Fa from 'svelte-fa';
 	import Button from '$lib/Generic/Button.svelte';
-	import { faCog } from '@fortawesome/free-solid-svg-icons';
+	import { faCog, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import { darkModeStore, getIconFilter } from '$lib/Generic/DarkMode';
 	import { chatPartner, isChatOpen } from './functions';
@@ -26,8 +26,19 @@
 		creatingGroup = false,
 		groupMembers: GroupMembers[] = [];
 
-	// Reactive variables to track unread messages
-	$: displayNotification = previewDirect.some((p) => p.notified);
+	// Fetch preview messages and set notified based on localStorage timestamps
+	const getPreview = async () => {
+		const { res, json } = await fetchRequest('GET', `chat/message/channel/preview/list`);
+		if (!res.ok) return [];
+
+		previewDirect = json?.results;
+	};
+
+	// Adjust chat window margin dynamically
+	const correctMarginRelativeToHeader = () => {
+		const _headerHeight = document.querySelector('#header')?.clientHeight;
+		if (_headerHeight && chatDiv) chatDiv.style.marginTop = `${_headerHeight.toString()}px`;
+	};
 
 	// Clear notification and update localStorage timestamp when a chat is opened
 	const clearChatNotification = async (chatterId: number | null) => {
@@ -42,17 +53,6 @@
 		}
 	};
 
-	// Fetch preview messages and set notified based on localStorage timestamps
-	const getPreview = async () => {
-		const { res, json } = await fetchRequest(
-			'GET',
-			`chat/message/channel/preview/list`
-		);
-		if (!res.ok) return [];
-
-		previewDirect = json?.results;
-	};
-
 	onMount(async () => {
 		// Adjust chat window margin based on header height
 		correctMarginRelativeToHeader();
@@ -60,13 +60,22 @@
 		// Subscribe to chat open state
 		isChatOpen.subscribe((open) => (chatOpen = open));
 		getPreview();
+		window.addEventListener('popstate', () => {
+			let url = new URL(window.location.toString());
+			if (url.searchParams.get('chatOpen') === 'true') chatOpen = true;
+			else chatOpen = false;
+		});
 	});
 
-	// Adjust chat window margin dynamically
-	const correctMarginRelativeToHeader = () => {
-		const _headerHeight = document.querySelector('#header')?.clientHeight;
-		if (_headerHeight && chatDiv) chatDiv.style.marginTop = `${_headerHeight.toString()}px`;
-	};
+	// Reactive variables to track unread messages
+	$: displayNotification = previewDirect.some((p) => p.notified);
+
+	//Handles the chatOpen=true in the URL for correct "going back in history" behaviour
+	$: (() => {
+		const url = new URL(window.location.toString());
+		url.searchParams.set('chatOpen', chatOpen.toString());
+		window.history.pushState({}, '', url);
+	})();
 
 	// Automatically select the first chat when the chat window opens
 	//TODO Make it work
