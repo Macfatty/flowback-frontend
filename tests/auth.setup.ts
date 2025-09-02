@@ -8,7 +8,7 @@ test('login', async ({ page }) => {
 
     await page.click('button[type="submit"]');
 
-    await expect(page).toHaveURL('/home');
+    await expect(page).toHaveURL('/home?chatOpen=false');
 
 
 });

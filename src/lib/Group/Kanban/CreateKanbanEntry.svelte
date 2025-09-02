@@ -13,6 +13,7 @@
 	import type { Filter, kanban } from './Kanban';
 	import Select from '$lib/Generic/Select.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { userStore } from '$lib/User/interfaces';
 
 	export let filter: Filter,
 		open: boolean = false,
@@ -107,9 +108,9 @@
 			title,
 			id: json,
 			created_by: {
-				id: Number(localStorage.getItem('userId')),
+				id: $userStore?.id || -1,
 				profile_image: localStorage.getItem('pfp-link') || '',
-				username: localStorage.getItem('userName') || ''
+				username:  $userStore?.username || '',
 			},
 			origin_id: 1,
 			origin_type: filter.type === 'group' ? 'group' : 'user',

@@ -15,6 +15,7 @@
 	import type { Delegate, DelegateRelation } from './interfaces';
 	import { env } from '$env/dynamic/public';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
+	import { userStore } from '$lib/User/interfaces';
 
 	let delegates: Delegate[] = [],
 		delegateRelations: DelegateRelation[] = [],
@@ -36,7 +37,7 @@
 	const getUserInfo = async () => {
 		const { res, json } = await fetchRequest(
 			'GET',
-			`group/${$page.params.groupId}/users?user_id=${localStorage.getItem('userId')}&is_delegate=true`
+			`group/${$page.params.groupId}/users?user_id=${($userStore?.id || -1)}&is_delegate=true`
 		);
 		if (json?.results.length === 1) userIsDelegate = true;
 	};

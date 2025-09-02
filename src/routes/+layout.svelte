@@ -29,11 +29,7 @@
 
 		if (pathname.includes('/login')) return false;
 		else if (pathname === '/') return false;
-		else if (
-			window.localStorage.getItem('token') === undefined ||
-			window.localStorage.getItem('userId') === undefined
-		)
-			return false;
+		else if (window.localStorage.getItem('token') === undefined) return false;
 
 		return true;
 	};
@@ -101,15 +97,10 @@
 
 	const setUserGroupInfo = async () => {
 		if (!$page.params.groupId) return;
-		// if (
-		// 	(Number(localStorage.getItem('userId')) === $userGroupInfo?.user.id &&
-		// 	$userGroupInfo?.group_id === Number($page.params.groupId))
-		// )
-		// 	return;
 
 		const { res, json } = await fetchRequest(
 			'GET',
-			`group/${$page.params.groupId}/users?user_id=${localStorage.getItem('userId')}`
+			`group/${$page.params.groupId}/users?user_id=${$userStore?.id || -1}`
 		);
 
 		if (!res.ok || json?.results.length === 0) {
@@ -167,15 +158,8 @@
 	};
 
 	const setUserInfo = async () => {
-		if (
-			localStorage.getItem('userId') === null ||
-			Number(localStorage.getItem('userId')) === $userStore?.id
-		)
-			return;
-
-		const { res, json } = await fetchRequest('GET', `users?id=${localStorage.getItem('userId')}`);
-		if (!res.ok) return;
-		userStore.set(json?.results[0]);
+		const { json } = await fetchRequest('GET', 'user');
+		userStore.set(json);
 	};
 
 	beforeNavigate(() => {

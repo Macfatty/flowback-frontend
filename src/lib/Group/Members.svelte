@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
-	import DefaultPFP from '$lib/assets/abstract-user-flat-4.svg';
+	import { userStore } from '$lib/User/interfaces';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import { groupUserStore, type GroupUser, type SelectablePages, type User } from './interface';
+	import { groupUserStore, type GroupUser, type User } from './interface';
 	import { _ } from 'svelte-i18n';
 	import Fa from 'svelte-fa';
 	import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope';
@@ -13,7 +13,7 @@
 	import { groupMembers as groupMembersLimit } from '../Generic/APILimits.json';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { env } from '$env/dynamic/public';
-	import { faPaperPlane, faRunning, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+	import { faPaperPlane, faRunning } from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/Generic/Button.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
@@ -333,7 +333,7 @@
 									</button>
 								{/if}
 							{/await}
-							{#if $groupUserStore?.is_admin && user.user.id !== (Number(localStorage.getItem('userId')) || 0)}
+							{#if $groupUserStore?.is_admin && user.user.id !== ($userStore?.id || -1)}
 								<Button
 									Class="w-10 h-10 flex items-center justify-center pl-6 bg-transparent"
 									onClick={() => (removeUserModalShow = true)}

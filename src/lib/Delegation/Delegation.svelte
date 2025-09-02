@@ -14,7 +14,7 @@
 	import { _ } from 'svelte-i18n';
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-	import { goto } from '$app/navigation';
+	import { userStore } from '$lib/User/interfaces';
 
 	let group: Group,
 		groups: Group[],
@@ -43,7 +43,7 @@
 	const getUserInfo = async () => {
 		const { res, json } = await fetchRequest(
 			'GET',
-			`group/${group.id}/users?user_id=${localStorage.getItem('userId')}&is_delegate=true`
+			`group/${group.id}/users?user_id=${$userStore?.id || -1}&is_delegate=true`
 		);
 
 		if (!res.ok) {

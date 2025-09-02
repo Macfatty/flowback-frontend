@@ -15,7 +15,7 @@
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
 	import FileUploads from '$lib/Generic/FileUploads.svelte';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import { userStore } from '$lib/User/interfaces';
 	import { env } from '$env/dynamic/public';
 
 	export let proposals: proposal[] = [],
@@ -89,7 +89,7 @@
 	const getUserInfo = async () => {
 		const { res, json } = await fetchRequest(
 			'GET',
-			`group/${$page.params.groupId}/users?user_id=${Number(localStorage.getItem('userId'))}`
+			`group/${$page.params.groupId}/users?user_id=${$userStore?.id || -1}`
 		);
 		if (!res.ok) return;
 		return json?.results[0].id;

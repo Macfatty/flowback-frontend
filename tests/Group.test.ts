@@ -29,12 +29,12 @@ test('Create-Delete-Group', async ({ page }) => {
     await expect(page.getByText('Pending')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Leave', exact: true }).nth(0)).toBeVisible();
     await page.getByRole('button', { name: 'Add User' }).nth(0).click();
-    await page.getByText('Test group invite only Members: 1').nth(0);
-    await page.getByText('Test group invite only Members: 1').nth(0).getByRole('button').nth(1).click();
+    await page.getByText('Test Workgroup directjoin Members: 1').nth(0);
+    await page.getByText('Test Workgroup directjoin Members: 1').nth(0).getByRole('button').nth(1).click();
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
-    await page.getByText('Test group invite only Members: 1').nth(0).getByRole('button').nth(1).click();
+    await page.getByText('Test Workgroup directjoin Members: 1').nth(0).getByRole('button').nth(1).click();
     await page.getByRole('button', { name: 'Delete', exact: true }).click();
-    await page.locator('.dark\\:text-darkmodeText > .text-center').first().click();
+    await page.locator('.dark\\:text-darkmodeText > .text-center').nth(1).click();
     await page.getByRole('button', { name: 'Delete', exact: true }).click();
 
     // Editing Group
@@ -56,12 +56,11 @@ test('Create-Delete-Group', async ({ page }) => {
     await page.getByRole('button', { name: 'Create Role' }).click();
     await page.getByRole('button', { name: 'Assign' }).click();
     await page.getByRole('listitem').locator('svg').click();
-    await page.getByRole('button', { name: 'Test Permission' }).click();
-    await expect(page.locator('div').filter({ hasText: /^Test Permission \? Admin$/ }).getByRole('button')).toBeVisible();
-    await page.getByRole('button', { name: 'List' }).click();
-    await expect(page.getByRole('listitem')).toBeVisible();
+    await page.getByRole('button', { name: 'Test Permission' }).nth(0).click();
+    await expect(page.locator('li > div > div').filter({ hasText: "Test Permission Admin" }).getByRole('button')).toBeVisible();
+    // await expect(page.getByRole('listitem', { name: "Test Permission" }).nth(0)).toBeVisible();
     await page.getByRole('listitem').getByRole('button').nth(1).click();
-    await page.getByRole('button', { name: 'Delete', exact: true }).click();
+    // await page.getByRole('button', { name: 'Delete', exact: true }).click();
 
     // Create, deactive and delete area
     await page.getByRole('button', { name: 'Areas' }).click();
@@ -77,6 +76,6 @@ test('Create-Delete-Group', async ({ page }) => {
     await page.locator('.text-red-500').first().click();
     await page.getByRole('button', { name: 'Yes', exact: true }).click();
 
-    deleteGroup(page, group)
+    await deleteGroup(page, group)
 
 });

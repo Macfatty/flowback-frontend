@@ -13,6 +13,7 @@
 	import type { kanban, Filter } from './Kanban';
 	import KanbanFiltering from './KanbanFiltering.svelte';
 	import { page } from '$app/stores';
+	import { userStore } from '$lib/User/interfaces';
 
 	const tags = ['', 'Backlog', 'To do', 'Current', 'Evaluation', 'Done'];
 
@@ -121,7 +122,7 @@
 	};
 
 	onMount(async () => {
-		assignee = Number(localStorage.getItem('userId')) || 1;
+		assignee = $userStore?.id || -1;
 		await getKanbanEntries();
 		await getWorkGroupList();
 		users = await getGroupUsers();

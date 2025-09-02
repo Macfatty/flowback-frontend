@@ -5,6 +5,7 @@
 	import type { GroupMembers } from './interfaces';
 	import Poppup from '$lib/Generic/Poppup.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
+	import { userStore } from '$lib/User/interfaces';
 
 	export let creatingGroup: boolean,
 		groupMembers: GroupMembers[] = [];
@@ -15,7 +16,7 @@
 	const groupChatCreate = async () => {
 		const { res, json } = await fetchRequest(
 			'GET',
-			`user/chat?target_user_ids=${localStorage.getItem('userId')}&${groupMembers
+			`user/chat?target_user_ids=${$userStore?.id || -1}&${groupMembers
 				.map((member) => `target_user_ids=${member.id}`)
 				.join('&')}`
 		);

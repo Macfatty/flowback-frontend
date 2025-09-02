@@ -9,6 +9,8 @@
 	import { tick } from 'svelte';
 	import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 	import { _ } from 'svelte-i18n';
+	import { userStore } from '$lib/User/interfaces';
+
 
 	export let group: Group,
 		delegates: Delegate[] = [];
@@ -238,7 +240,7 @@
 								{delegate.delegates[0]} -->
 								<span>
 									<input
-										disabled={delegate.user.id.toString() === localStorage.getItem('userId')}
+										disabled={delegate.user.id === ($userStore?.id || -1)}
 										on:input={() => {
 											changeDelegation(delegate, tag);
 											setTimeout(() => {

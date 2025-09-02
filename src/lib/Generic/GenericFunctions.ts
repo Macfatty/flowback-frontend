@@ -1,7 +1,8 @@
 import { fetchRequest } from '$lib/FetchRequest';
 import type { User } from '$lib/User/interfaces';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import { groupUserStore, type GroupUser } from '$lib/Group/interface';
+import { userStore } from '$lib/User/interfaces';
 import type { Permissions } from '$lib/Group/Permissions/interface';
 
 let groupUserInfo: GroupUser | null = null;
@@ -76,7 +77,7 @@ export const getGroupUserInfo = async (groupId: number | string) => {
 
 	const { res, json } = await fetchRequest(
 		'GET',
-		`group/${groupId}/users?user_id=${localStorage.getItem('userId')}`
+		`group/${groupId}/users?user_id=${get(userStore)?.id || -1}`
 	);
 
 	if (!res.ok) return;
