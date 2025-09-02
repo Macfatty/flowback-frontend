@@ -20,10 +20,6 @@
 
 	// Handle chat selection and clear notifications
 	const clickedChatter = async (chatterId: any) => {
-		// Update localStorage timestamp to mark chat as read
-		const timestampKey = `lastInteraction_${chatterId}`;
-		localStorage.setItem(timestampKey, new Date().toISOString());
-
 		let message = previewDirect.find((message) => message.channel_id === chatterId);
 		if (message) {
 			message.timestamp = new Date().toString();

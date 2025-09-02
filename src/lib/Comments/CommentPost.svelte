@@ -15,6 +15,7 @@
 	import { commentsStore } from './commentStore';
 	import { getCommentDepth } from './functions';
 	import { onDestroy } from 'svelte';
+	import { userStore } from '$lib/User/interfaces';
 
 	export let comments: Comment[] = [],
 		proposals: proposal[] = [],
@@ -89,7 +90,7 @@
 			parent_id,
 			reply_depth: replyDepth,
 			author_id: Number(window.localStorage.getItem('userId')) || 0,
-			author_name: window.localStorage.getItem('userName') || '',
+			author_name: $userStore?.username || '',
 			author_profile_image: window.localStorage.getItem('pfp-link') || '',
 			score: 1,
 			active: true,

@@ -52,9 +52,6 @@
 		messages = json?.results.reverse();
 		olderMessages = json.next;
 		newerMessages = '';
-		// Update timestamp when viewing messages
-		const timestampKey = `lastInteraction_${selectedChatChannelId}`;
-		localStorage.setItem(timestampKey, new Date().toISOString());
 	};
 
 	const postMessage = async () => {
@@ -284,7 +281,7 @@
 					<li class="px-4 py-2 max-w-[80%]" class:ml-auto={sentByUser}>
 						<span>{message.user?.username}</span>
 						<p
-							class="p-2 rounded-xl"
+							class="p-2 rounded-xl break-words"
 							class:bg-primary={sentByUser}
 							class:text-white={sentByUser}
 							class:bg-gray-300={!sentByUser}

@@ -33,11 +33,6 @@
 	const clearChatNotification = async (chatterId: number | null) => {
 		if (!chatterId) return;
 
-		// Store the current timestamp in localStorage to mark the chat as read
-		const timestampKey = `lastInteraction_${chatterId}`;
-		const now = new Date().toISOString();
-		localStorage.setItem(timestampKey, now);
-
 		// Clear notification for messages
 		let message = previewDirect.find((message) => message.channel_id === chatterId);
 		if (message) {

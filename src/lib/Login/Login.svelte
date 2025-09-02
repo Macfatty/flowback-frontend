@@ -40,7 +40,6 @@
 			{
 				const { json } = await fetchRequest('GET', 'user');
 				localStorage.setItem('userId', json.id);
-				localStorage.setItem('userName', json.username);
 			}
 
 			goto('/home');
