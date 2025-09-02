@@ -22,7 +22,7 @@ test('Kanban-User', async ({ page }) => {
   await page.locator('#create-kanban-text').fill('test kanban');
   await page.locator('#create-kanban-textarea').fill('test kanban description');
 
-  await page.click('button[type="submit"]');
+  await page.locator('button', {hasText:"Confirm"}).click()
   await expect(createModal).toBeHidden();
 });
 
@@ -49,7 +49,7 @@ test('Kanban-Group', async ({ page }) => {
   await page.locator('#create-kanban-text').fill('test kanban');
   await page.locator('#create-kanban-textarea').fill('test kanban description');
 
-  await page.click('button[type="submit"]');
+  await page.locator('button', {hasText:"Confirm"}).click()
   await expect(createModal).toBeHidden();
 });
 

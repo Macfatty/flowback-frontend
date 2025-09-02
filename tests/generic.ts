@@ -26,12 +26,16 @@ export async function logout(page: any) {
 };
 
 export async function createGroup(page: any, group = { name: 'Test Group', public: false }) {
-    try {
-        await gotoGroup(page, group)
-        await expect(page.getByRole('button', { name: group.name })).toBeVisible();
-    }
-    catch {
+    await page.locator("#groups").click();
+    await page.getByPlaceholder('Search groups').click();
+    await page.getByPlaceholder('Search groups').fill(group.name);
 
+    const button = page.getByRole('heading', { name: group.name, exact:true }).first()
+
+    if (await button.isVisible()) {
+        await button.click();
+    }
+    else {
         await page.getByRole('link', { name: 'Groups' }).click();
         await page.getByRole('button', { name: 'Create Group' }).click();
         await page.getByLabel('Title * 0/').click();
@@ -48,7 +52,6 @@ export async function createGroup(page: any, group = { name: 'Test Group', publi
         await expect(page.getByRole('button', { name: group.name })).toBeVisible();
     }
 }
-
 
 export async function gotoGroup(page: any, group = { name: 'Test Group' }) {
     await page.locator("#groups").click();
@@ -73,7 +76,7 @@ export async function deleteGroup(page: any, group = { name: 'Test Group', publi
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
     await page.getByRole('button', { name: 'Delete Group' }).click();
     await page.getByRole('button', { name: 'Yes', exact: true }).click();
-    await expect(page).toHaveURL('/groups?chatOpen=false');
+    await expect(page).toHaveURL('/groups');
 }
 
 export async function createArea(page: any, group = { name: 'Test Group', public: false }, tag = "Test Tag") {
