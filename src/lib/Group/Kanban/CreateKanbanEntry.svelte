@@ -108,7 +108,7 @@
 			title,
 			id: json,
 			created_by: {
-				id: Number(localStorage.getItem('userId')),
+				id: $userStore?.id || -1,
 				profile_image: localStorage.getItem('pfp-link') || '',
 				username:  $userStore?.username || '',
 			},

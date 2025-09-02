@@ -2,6 +2,7 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { Comment, proposal } from '$lib/Poll/interface';
 	import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
+	import { userStore } from '$lib/User/interfaces';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
 	import { page } from '$app/stores';
@@ -29,7 +30,6 @@
 		reportDescription: string,
 		images: File[] = [];
 
-	let reporting = false;
 	const commentDelete = async (id: number) => {
 		let _api = `group/`;
 
@@ -221,7 +221,6 @@
 
 		{#if comment.active}
 			<div class="flex gap-6 text-xs pl-14">
-				<!-- {#if comment.author_id !== Number(localStorage.getItem('userId'))} -->
 				<div class="flex items-center gap-2">
 					<button
 						class:text-primary={comment.user_vote === true}
@@ -248,7 +247,7 @@
 					<!-- <Fa icon={faReply} /> -->
 					{$_('Reply')}
 				</button>
-				{#if Number(localStorage.getItem('userId')) !== comment.author_id}
+				{#if ($userStore?.id || -1) !== comment.author_id}
 					<button
 						class="flex items-center gap-1 hover:text-red-900 text-gray-600 dark:text-darkmodeText dark:hover:text-red-400 cursor-pointer transition-colors hover:underline"
 						on:click={() => (ReportCommentModalShow = true)}
@@ -257,7 +256,7 @@
 					</button>
 				{/if}
 
-				{#if Number(localStorage.getItem('userId')) === comment.author_id}
+				{#if Number($userStore?.id || -1) === comment.author_id}
 					<button
 						class="hover:text-gray-900 text-gray-600 dark:text-darkmodeText hover:dark:text-gray-400 cursor-pointer transition-colors hover:underline"
 						on:click={() => commentDelete(comment.id)}

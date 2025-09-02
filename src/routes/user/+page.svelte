@@ -25,6 +25,7 @@
 	import { chatPartner, isChatOpen } from '$lib/Chat/functions';
 	import { getUserChannelId } from '$lib/Chat/functions';
 	import Loader from '$lib/Generic/Loader.svelte';
+	import { userStore } from '$lib/User/interfaces';
 
 	let user: User = {
 		banner_image: '',
@@ -85,7 +86,7 @@
 		//The URL has no ID if the user is on their own profile
 		const userId = $page.url.searchParams.get('id');
 		if (!userId) isUser = true;
-		else isUser = userId === localStorage.getItem('userId');
+		else isUser = userId === ($userStore?.id || -1).toString();
 
 		const { res, json } = await fetchRequest('GET', isUser ? 'user' : `users?id=${userId}`);
 		if (!res.ok) {

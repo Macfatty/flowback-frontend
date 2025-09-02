@@ -2,13 +2,13 @@
 	import { workGroupsStore, type WorkGroup, type WorkGroupUser } from './interface';
 	import Button from '$lib/Generic/Button.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { _ } from 'svelte-i18n';
 	import Fa from 'svelte-fa';
 	import { faTrash } from '@fortawesome/free-solid-svg-icons';
 	import { groupUserStore } from '$lib/Group/interface';
 	import Modal from '$lib/Generic/Modal.svelte';
+	import { userStore } from '$lib/User/interfaces';
 
 	export let workGroup: WorkGroup,
 		workGroups: WorkGroup[],
@@ -74,7 +74,7 @@
 			return;
 		}
 		workGroupUserList = workGroupUserList.filter(
-			(user) => user.id === Number(localStorage.getItem('userId'))
+			(user) => user.id === ($userStore?.id || -1)
 		);
 
 		workGroup.member_count--;

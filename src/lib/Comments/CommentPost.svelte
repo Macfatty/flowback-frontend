@@ -89,7 +89,7 @@
 			attachments: files.map((file) => ({ file: URL.createObjectURL(file) })),
 			parent_id,
 			reply_depth: replyDepth,
-			author_id: Number(window.localStorage.getItem('userId')) || 0,
+			author_id: $userStore?.id || -1,
 			author_name: $userStore?.username || '',
 			author_profile_image: window.localStorage.getItem('pfp-link') || '',
 			score: 1,
