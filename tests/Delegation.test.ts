@@ -5,12 +5,14 @@ import { createPoll, createProposal, delegateVote, fastForward } from './poll';
 test('Delegation', async ({ page }) => {
     await login(page);
 
-    await createGroup(page, { public: true, name: 'Test Group Delegation' });
+    const group = { name: "Test Group Delegation", public: false }
 
-    await page.waitForTimeout(5000);
+    await createGroup(page, group);
+
+    await page.waitForTimeout(3000);
 
     await page.getByRole('link', { name: 'Delegations' }).click();
-    await page.getByRole('combobox').selectOption('Test Group');
+    await page.getByRole('combobox').selectOption({ label: group.name });
     await page.getByRole('button', { name: 'Become delegate' }).click();
     await page.getByRole('button', { name: 'Become delegate' }).nth(1).click();
     await page.getByRole('button', { name: 'Stop being delegate' }).click();
