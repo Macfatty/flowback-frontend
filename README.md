@@ -257,3 +257,6 @@ const thingtoDo2Good = (thing) => {
 
 
 //Have paragraphs in functions to differentiate different operations
+
+
+// Make sure to never use break-all.

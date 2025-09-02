@@ -50,7 +50,11 @@
 
 		loading = false;
 		if (!res.ok) {
-			if (json?.detail?.verification_code || json?.detail[0] === 'Not found.' || json?.detail[0] === "Verification code has already been used.")
+			if (
+				json?.detail?.verification_code ||
+				json?.detail[0] === 'Not found.' ||
+				json?.detail[0] === 'Verification code has already been used.'
+			)
 				errorHandler.addPopup({ message: 'Wrong verification code' });
 			else if (json?.detail?.non_field_errors)
 				errorHandler.addPopup({ message: json?.detail?.non_field_errors[0] });
@@ -136,6 +140,7 @@
 		{#if !$page.url.searchParams.get('verification_code')}
 			<TextInput label={'Verification Code'} bind:value={verification_code} required />
 		{/if}
+
 		<TextInput label={'Username'} bind:value={username} required />
 		<!-- {#if usernameError}
 			<p class="text-red-500 text-sm">{$_(usernameError)}</p>

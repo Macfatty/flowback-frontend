@@ -248,7 +248,7 @@
 	}}
 >
 	<div class="flex justify-between w-full items-start">
-		<div class="text-primary dark:text-secondary text-left font-semibold pb-1 line-clamp-2 break-keep">
+		<div class="text-primary dark:text-secondary text-left font-semibold pb-1 line-clamp-2">
 			{kanban.title}
 		</div>
 
@@ -439,7 +439,7 @@
 				<!-- If not editing, so normal display -->
 			{:else}
 				<div class="text-center">
-					<h2 class="pb-1 font-semibold text-xl w-full break-keep">{kanban.title}</h2>
+					<h2 class="pb-1 font-semibold text-xl w-full">{kanban.title}</h2>
 					{#if filter.type === 'group'}
 						<p class="w-full">{kanban?.work_group?.name || $_('No workgroup assigned')}</p>
 						<button on:click={() => goto(`/groups/${kanban?.origin_id}`)} class="w-full"
@@ -510,3 +510,10 @@
 {/if}
 
 <ErrorHandler bind:this={errorHandler} />
+
+<style>
+
+.break {
+	word-break: break-all;
+}
+</style>
