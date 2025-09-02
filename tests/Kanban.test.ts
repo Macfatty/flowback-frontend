@@ -6,7 +6,7 @@ test('Kanban-User', async ({ page }) => {
 
   // Navigate to the kanban page
   await page.goto('/kanban');
-  await expect(page).toHaveURL('/kanban');
+  await expect(page).toHaveURL('/kanban?chatOpen=false');
 
   // Check if the kanban board is visible
   const kanbanBoard = await page.locator('#kanban-board');
@@ -33,7 +33,7 @@ test('Kanban-Group', async ({ page }) => {
 
   await page.locator('#group-tasks-sidebar-button').click();
 
-  // await expect(page).toHaveURL('/kanban?groupId=');
+  // await expect(page).toHaveURL('/kanban?groupId=?chatOpen=false');
 
   // Check if the kanban board is visible
   const kanbanBoard = await page.locator('#kanban-board');
@@ -60,7 +60,7 @@ test('Kanban-Edit', async ({ page }) => {
 
   // Navigate to the kanban page
   await page.goto('/kanban');
-  await expect(page).toHaveURL('/kanban');
+  await expect(page).toHaveURL('/kanban?chatOpen=false');
 
   // Check if the kanban board is visible
   const kanbanBoard = await page.locator('#kanban-board');
@@ -105,7 +105,7 @@ test('Kanban-Delete', async ({ page }) => {
 
   // Navigate to the kanban page
   await page.goto('/kanban');
-  await expect(page).toHaveURL('/kanban');
+  await expect(page).toHaveURL('/kanban?chatOpen=false');
 
   // Check if the kanban board is visible
   const kanbanBoard = await page.locator('#kanban-board');

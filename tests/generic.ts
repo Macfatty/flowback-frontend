@@ -12,7 +12,7 @@ export async function login(page: any, {
     await page.fill('input[name="password"]', password);
     await page.click('button[type="submit"]');
 
-    await expect(page).toHaveURL('/home');
+    await expect(page).toHaveURL('/home?chatOpen=false');
 
     if (await page.getByRole('button', { name: 'Ok' }).isVisible()) {
         await page.getByRole('button', { name: 'Ok' }).click();
@@ -73,7 +73,7 @@ export async function deleteGroup(page: any, group = { name: 'Test Group', publi
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
     await page.getByRole('button', { name: 'Delete Group' }).click();
     await page.getByRole('button', { name: 'Yes', exact: true }).click();
-    await expect(page).toHaveURL('/groups');
+    await expect(page).toHaveURL('/groups?chatOpen=false');
 }
 
 export async function createArea(page: any, group = { name: 'Test Group', public: false }, tag = "Test Tag") {

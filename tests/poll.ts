@@ -23,7 +23,7 @@ export async function createPoll(page: any, {
 
     await page.getByRole('button', { name: 'Post' }).click();
     await expect(page.getByRole('heading', { name: 'Test Poll' })).toBeVisible();
-    // await expect(page).toHaveURL(/\/groups\/6\/polls\/\d+$/);
+    // await expect(page).toHaveURL(/\/groups\/6\/polls\/\d+$/?chatOpen=false);
 }
 
 export async function areaVote(page: any, {

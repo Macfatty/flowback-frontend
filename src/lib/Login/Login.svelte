@@ -9,7 +9,7 @@
 	import { goto } from '$app/navigation';
 	import Button from '$lib/Generic/Button.svelte';
 	import CheckboxButtons from '$lib/Generic/CheckboxButtons.svelte';
-	// import { userInfo } from '$lib/Generic/GenericFunctions';
+	import { userStore } from '$lib/User/interfaces';
 
 	let username: string,
 		password: string,
@@ -39,7 +39,7 @@
 
 			{
 				const { json } = await fetchRequest('GET', 'user');
-				localStorage.setItem('userId', json.id);
+				userStore.set(json);
 			}
 
 			goto('/home');
