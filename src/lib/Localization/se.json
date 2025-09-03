@@ -703,7 +703,7 @@
     "wants to join": "Vill gå med",
     "Participants": "Deltagare",
     "Remove": "Ta bort",
-    "+ Add Group": "+ Lägg till grupp",
+    "+ Add Workgroup": "+ Lägg till arbetsgrupp",
     "Hide creators": "Dölj skapare",
     "Hide creators?": "Dölj skapare?",
     "An error occurred while leaving the group": "Ett fel inträffade när du lämnade gruppen",
@@ -720,5 +720,7 @@
     "Could not create group": "Kunde inte skapa grupp",
     "Successfully created group": "Gruppen har skapats framgångsrikt",
     "No participants found.": "Inga deltagare funna",
-    "Enter a valid email address.": "Lägg in en giltig e-post adress."
+    "Enter a valid email address.": "Lägg in en giltig e-post adress.",
+    "Choose a Password": "Välj ett lösenord",
+    "Sent Mail": "Skickad e-post"
 }

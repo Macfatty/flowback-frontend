@@ -185,7 +185,7 @@
 			class="mt-2 text-left bg-white hover:bg-gray-100 cursor-pointer active:bg-gray-200 dark:bg-darkobject shadow rounded-sm dark:text-darkmodeText w-full px-4 py-2 flex justify-between items-center min-h-14"
 		>
 			<span class="text-primary dark:text-secondary w-[40%] font-semibold break-words"
-				>{$_('+ Add Group')}</span
+				>{$_('+ Add Workgroup')}</span
 			>
 		</button>
 	{/if}
