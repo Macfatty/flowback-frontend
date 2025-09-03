@@ -132,11 +132,12 @@
 
 <Loader bind:loading>
 	<form class="gap-6 p-6 mb-4 flex flex-col items-center" on:submit|preventDefault={verifyAccount}>
-		<span
+		
+		<!-- <span
 			>{$_(
 				`We have sent a verification code to the provided email. Don't forget to check your junk mail!`
 			)}</span
-		>
+		> -->
 		{#if !$page.url.searchParams.get('verification_code')}
 			<TextInput label={'Verification Code'} bind:value={verification_code} required />
 		{/if}

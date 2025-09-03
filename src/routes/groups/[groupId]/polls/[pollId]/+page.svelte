@@ -51,7 +51,7 @@
 	const getPollData = async () => {
 		if (!$page.params) return;
 		loading = true;
-		
+
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/poll/list?id=${$page.params.pollId}`
@@ -116,6 +116,7 @@
 			<PollHeader {poll} bind:phase displayTag={false} />
 		{/if}
 
+		<!-- Normal Poll -->
 		{#if pollType === 4}
 			<!-- PHASE 0: PRE-START -->
 			{#if phase === 'pre_start'}
@@ -345,11 +346,13 @@
 					</div>
 				</Structure>
 			{/if}
+
+			<!-- Date Poll -->
 		{:else if pollType === 3}
-			{#if !finished}
+			{#if phase === 'area_vote' || phase === 'pre_start'}
 				<DatePoll />
 			{:else}
-				<Structure poll={null}>
+				<Structure bind:phase bind:poll>
 					<div slot="left" class="w-[600px]">
 						<Results bind:poll {getPollData} {pollType} />
 					</div>
@@ -360,10 +363,8 @@
 		{/if}
 	{:else if !loading}
 		<div class="p-4 bg-white dark:bg-darkobject dark:text-darkmodeText mt-4 rounded shadow">
-			<p>{$_("No poll found, it might have been deleted")}</p>
+			<p>{$_('No poll found, it might have been deleted')}</p>
 			<Button onClick={() => history.back()}><Fa icon={faArrowLeft} /></Button>
 		</div>
 	{/if}
 </Layout>
-
- 
