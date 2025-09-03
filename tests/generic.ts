@@ -45,7 +45,7 @@ export async function createGroup(page: any, group = { name: 'Test Group', publi
         await page.locator(".image-upload > input").nth(0).setInputFiles('./tests/forward-facing-niko-oneshot-isnt-real-it-cant-hurt-you-v0-3ggf23q4ijcf1.webp');
         await page.getByRole('button', { name: 'Confirm' }).click();
         await page.locator(".image-upload > input").nth(1).setInputFiles('./tests/forward-facing-niko-oneshot-isnt-real-it-cant-hurt-you-v0-3ggf23q4ijcf1.webp');
-        await page.getByRole('button', { name: 'Confirm' }).click();
+        await page.getByRole('button', { name: 'Confirm' }).nth(1).click();
         await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel(group.public ? 'Yes' : 'No').check();
         await page.locator('fieldset').filter({ hasText: 'Hide creators? Yes No' }).getByLabel('No').check();
         await page.getByRole('button', { name: 'Create' }).click();
