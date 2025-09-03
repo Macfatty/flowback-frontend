@@ -15,7 +15,7 @@
 	import formatDate from '$lib/Ledger/formatDate';
 	import { generateAndDownloadHTML } from '$lib/Ledger/HTML';
 	import Pagination from '$lib/Generic/Pagination.svelte';	
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import { userStore } from '$lib/User/interfaces';
 
@@ -67,7 +67,7 @@
 		// loading = true;
 		const { res, json } = await fetchRequest('GET', `ledger/account/list`);
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Something went wrong', success: false });
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		}
 		// loading = false;
@@ -104,7 +104,7 @@
 		const { res, json } = await fetchRequest('GET', api);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Something went wrong', success: false });
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		}
 
@@ -135,11 +135,11 @@
 
 		if (!res.ok) {
 			show_poppup = true;
-			errorHandler.addPopup({ message: 'Something went wrong', success: false });
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		} else {
 			show_poppup = true;
-			errorHandler.addPopup({ message: 'Successfully created transaction', success: true });
+			ErrorHandlerStore.set({ message: 'Successfully created transaction', success: true });
 		}
 
 		transactions.push({
@@ -179,11 +179,11 @@
 
 		if (!res.ok) {
 			show_poppup = true;
-			errorHandler.addPopup({ message: 'Something went wrong', success: false });
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		} else {
 			show_poppup = true;			
-			errorHandler.addPopup({ message: 'Successfully created account', success: true });
+			ErrorHandlerStore.set({ message: 'Successfully created account', success: true });
 			accounts.push({
 				account_name,
 				account_number,
@@ -202,11 +202,11 @@
 
 		if (!res.ok) {
 			show_poppup = true;			
-			errorHandler.addPopup({ message: 'Something went wrong', success: false });
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		} else {
 			show_poppup = true;
-			errorHandler.addPopup({ message: 'Successfully deleted account', success: true });
+			ErrorHandlerStore.set({ message: 'Successfully deleted account', success: true });
 			accounts = accounts.filter((account) => account_id !== account.id);
 		}
 	};
@@ -465,7 +465,7 @@
 	</div>
 </Modal>
 
-<ErrorHandler bind:this={errorHandler} />
+ 
 
 <Modal bind:open={showDeleteAccount}>
 	<div slot="body">

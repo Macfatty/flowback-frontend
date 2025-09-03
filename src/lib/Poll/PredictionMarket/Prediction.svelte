@@ -10,7 +10,7 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { formatDate } from '$lib/Generic/DateFormatter';
 	import { onMount } from 'svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import { createPredictionBet as createPredictionBetBlockchain } from '$lib/Blockchain_v1_Ethereum/javascript/predictionsBlockchain';
 	import VotingSlider from '../VotingSlider.svelte';
@@ -46,11 +46,11 @@
 		loading = false;
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to send probability', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to send probability', success: false });
 			return;
 		}
 
-		errorHandler.addPopup({ message: 'Probability successfully sent', success: true, show: true });
+		ErrorHandlerStore.set({ message: 'Probability successfully sent', success: true, show: true });
 	};
 
 	const predictionBetDelete = async () => {
@@ -64,11 +64,11 @@
 		loading = false;
 
 		if (!res.ok) {			
-			errorHandler.addPopup({ message: 'Failed to change probability', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to change probability', success: false });
 			return;
 		}
 		
-		errorHandler.addPopup({ message: 'Probability successfully sent', success: true });
+		ErrorHandlerStore.set({ message: 'Probability successfully sent', success: true });
 	};
 
 	const createEvaluation = async (vote: boolean) => {
@@ -79,11 +79,11 @@
 		);
 
 		if (!res.ok) {			
-			errorHandler.addPopup({ message: 'Evaluation failed', success: false });
+			ErrorHandlerStore.set({ message: 'Evaluation failed', success: false });
 			return;
 		}
 		
-		errorHandler.addPopup({ message: 'Successfully evaluated consequence', success: true });
+		ErrorHandlerStore.set({ message: 'Successfully evaluated consequence', success: true });
 		prediction.user_prediction_statement_vote = vote;
 	};
 
@@ -94,7 +94,7 @@
 		);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Something went wrong', success: false });
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		}
 
@@ -111,11 +111,11 @@
 		);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Something went wrong', success: false });
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		}
 				
-		errorHandler.addPopup({ message: 'Successfully evaluated consequence', success: true });
+		ErrorHandlerStore.set({ message: 'Successfully evaluated consequence', success: true });
 
 		prediction.user_prediction_statement_vote = vote;
 	};
@@ -241,4 +241,4 @@
 	</div>
 </Modal>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

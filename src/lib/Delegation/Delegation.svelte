@@ -3,7 +3,7 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
 	import Layout from '$lib/Generic/Layout.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import Select from '$lib/Generic/Select.svelte';
 	import Toggle from '$lib/Generic/Toggle.svelte';
 	import type { Delegate } from '$lib/Group/Delegation/interfaces';
@@ -29,7 +29,7 @@
 		const { res, json } = await fetchRequest('GET', `group/list?limit=1000&joined=true`);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not get groups', success: false });
+			ErrorHandlerStore.set({ message: 'Could not get groups', success: false });
 			return;
 		}
 		groups = json?.results;
@@ -47,7 +47,7 @@
 		);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not get user info', success: false });
+			ErrorHandlerStore.set({ message: 'Could not get user info', success: false });
 			return;
 		}
 
@@ -62,7 +62,7 @@
 		const { res } = await fetchRequest('POST', `group/${group.id}/delegate/pool/create`, {});
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not create delegation pool', success: false });
+			ErrorHandlerStore.set({ message: 'Could not create delegation pool', success: false });
 			return;
 		}
 
@@ -78,7 +78,7 @@
 
 		const results = await Promise.all(promises);
 
-		errorHandler.addPopup({ message: 'Removed delegations', success: true });
+		ErrorHandlerStore.set({ message: 'Removed delegations', success: true });
 	};
 
 	const getDelegatePools = async () => {
@@ -207,4 +207,4 @@
 	</div>
 </Layout>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

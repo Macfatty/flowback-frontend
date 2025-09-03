@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { _ } from 'svelte-i18n';
 	import { page } from '$app/stores';
 	import type { GroupUser } from '../interface';
@@ -53,13 +53,13 @@
 		});
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to make user admin', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to make user admin', success: false });
 			return;
 		}
 
 		users.find((u) => u.user.id === user.user.id)!.is_admin = true;
 		users = users;
-		errorHandler.addPopup({ message: 'User is now admin', success: true });
+		ErrorHandlerStore.set({ message: 'User is now admin', success: true });
 	};
 
 	onMount(() => {
@@ -129,4 +129,4 @@
 	{/each}
 </ul>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

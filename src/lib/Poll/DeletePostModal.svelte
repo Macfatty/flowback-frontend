@@ -4,10 +4,9 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { _ } from 'svelte-i18n';
 	import { page } from '$app/stores';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { posts } from './stores';
 	import Loader from '$lib/Generic/Loader.svelte';
-	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	export let deleteModalShow = false,
 		postId: string | number,
@@ -75,4 +74,4 @@
 	</div>
 </Modal>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { _ } from 'svelte-i18n';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { Comment, Phase, proposal } from '$lib/Poll/interface';
 	import Proposal from './Proposal.svelte';
 	import { proposals as proposalsLimit } from '../Generic/APILimits.json';
 	import { onMount } from 'svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import VotingSlider from './VotingSlider.svelte';
 	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 	import Button from '$lib/Generic/Button.svelte';
@@ -106,18 +107,18 @@
 
 		if (!res.ok) {
 			if (json?.detail[0] === 'groupuserdelegatepool does not exist')
-				errorHandler.addPopup({
+				ErrorHandlerStore.set({
 					message: 'You cannot vote on this poll since you are not a delegate',
 					success: false
 				});
 			else
-				errorHandler.addPopup({
+				ErrorHandlerStore.set({
 					message: 'Vote Failed',
 					success: false
 				});
 			return;
 		}
-		errorHandler.addPopup({
+		ErrorHandlerStore.set({
 			message: 'Successfully voted',
 			success: true
 		});
@@ -134,14 +135,14 @@
 		);
 
 		if (!res.ok) {
-			errorHandler.addPopup({
+			ErrorHandlerStore.set({
 				message: 'Vote Failed',
 				success: false
 			});
 			return;
 		}
 
-		errorHandler.addPopup({
+		ErrorHandlerStore.set({
 			message: 'Successfully voted',
 			success: true
 		});
@@ -206,15 +207,13 @@
 									/>
 								{/key}
 							{/if}
-							{#if phase === 'vote'}
+							{#if phase === 'vote' && $groupUserPermissionStore.allow_vote}
 								<Button
 									onClick={() => {
-										console.log('HIi', voting, delegateVoting);
-										const _vote = voting.find((vote) => vote.proposal === proposal.id);
 										const dVote = delegateVoting.find((vote) => vote.proposal === proposal.id);
 										if (dVote) changingVote(dVote.score, dVote.proposal);
 										vote();
-									}}>Reset to delegate votes</Button
+									}}>{$_('Reset to delegate votes')}</Button
 								>
 							{/if}
 						</Proposal>
@@ -225,4 +224,4 @@
 	</div>
 </div>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

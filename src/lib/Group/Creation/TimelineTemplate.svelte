@@ -6,7 +6,7 @@
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import type { template } from './interface';
 	import { _ } from 'svelte-i18n';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import Fa from 'svelte-fa';
 	import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -34,7 +34,7 @@
 		const { res, json } = await fetchRequest('GET', `group/${groupId}/poll/template/list`);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not get templates', success: false });
+			ErrorHandlerStore.set({ message: 'Could not get templates', success: false });
 			return;
 		}
 
@@ -63,12 +63,12 @@
 		);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not create template', success: false });
+			ErrorHandlerStore.set({ message: 'Could not create template', success: false });
 			return;
 		}
 
 		templates = [...templates, json];		
-		errorHandler.addPopup({ message: 'Successfully saved timetemplate', success: true });
+		ErrorHandlerStore.set({ message: 'Successfully saved timetemplate', success: true });
 		await templateList();
 
 		name = '';
@@ -81,12 +81,12 @@
 		);
 
 		if (!res.ok) {			
-			errorHandler.addPopup({ message: 'Could not delete template', success: false })
+			ErrorHandlerStore.set({ message: 'Could not delete template', success: false })
 			return;
 		}
 
 		templates = templates.filter(template => template.id !== template_id);
-		errorHandler.addPopup({ message: 'Template deleted successfully', success: true });
+		ErrorHandlerStore.set({ message: 'Template deleted successfully', success: true });
 	};
 
 	//TODO: Fix a better templateUpdate using Update-API instead of Delete+Create
@@ -160,4 +160,4 @@
 	{/each}
 </div>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

@@ -3,7 +3,7 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import { _ } from 'svelte-i18n';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import type { Delegate } from './interfaces';
 
 	export let userIsDelegate: boolean,
@@ -42,7 +42,7 @@
 		const { json, res } = await fetchRequest('GET', `group/${groupId}/delegate/pools?limit=1000`);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: "Couldn't get delegation pools", success: false });
+			ErrorHandlerStore.set({ message: "Couldn't get delegation pools", success: false });
 			return;
 		}
 
@@ -56,4 +56,4 @@
 
 <Button Class={`bg-red-500 ${Class}`} onClick={deleteDelegation}>{$_('Stop being delegate')}</Button
 >
-<ErrorHandler bind:this={errorHandler} />
+ 

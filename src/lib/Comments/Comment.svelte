@@ -10,7 +10,7 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { onMount } from 'svelte';
 	import { env } from '$env/dynamic/public';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import TextArea from '$lib/Generic/TextArea.svelte';
@@ -42,7 +42,7 @@
 		const { res, json } = await fetchRequest('POST', _api);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to delete comment', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to delete comment', success: false });
 			return;
 		}
 
@@ -67,7 +67,7 @@
 		const { res, json } = await fetchRequest('POST', _api, data);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to report comment', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to report comment', success: false });
 			return;
 		}
 
@@ -104,7 +104,7 @@
 		const { res, json } = await fetchRequest('POST', _api, vote);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Comment vote failed', success: false });
+			ErrorHandlerStore.set({ message: 'Comment vote failed', success: false });
 			return;
 		}
 
@@ -313,4 +313,4 @@
 	/>
 {/if}
 
-<ErrorHandler bind:this={errorHandler} />
+ 

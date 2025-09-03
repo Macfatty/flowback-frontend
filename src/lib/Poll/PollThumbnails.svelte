@@ -9,7 +9,7 @@
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { pollThumbnails as pollThumbnailsLimit } from '../Generic/APILimits.json';
 	import Pagination from '$lib/Generic/Pagination.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import type { DelegateMinimal } from '$lib/Group/interface';
 
 	export let Class = '',
@@ -77,7 +77,7 @@
 		loading = false;
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not get polls', success: false });
+			ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
 			return;
 		}
 
@@ -163,4 +163,4 @@
 	</Loader>
 </div>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

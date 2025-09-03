@@ -48,8 +48,34 @@ test('Poll-Start-To-Finish', async ({ page }) => {
     // } catch (error) {
     //     deleteGroup(page, group)
     // }
+});
 
+test('Date-Poll', async ({ page }) => {
+    await login(page);
 
+    const group = { name: "Test Group Poll", public: false }
+    const poll = { title: "Test Group Poll", date: true }
+
+    try {
+        await createGroup(page, group)
+    }
+    catch {
+        gotoGroup(page, group)
+    }
+
+    await gotoGroup(page, group);
+
+    await createPoll(page, poll);
+
+    await page.locator('button:nth-child(45)').click();
+    await page.locator('button:nth-child(46)').click();
+    await page.locator('button:nth-child(55)').click();
+    await page.locator('button:nth-child(64)').click();
+    await page.getByRole('button', { name: 'Submit' }).click();
+
+    fastForward(page, 1);
+
+    expect(page.getByText('Results', { exact: true })).toBeVisible();
 });
 
 test('Thread-Create-Report-Delete', async ({ page }) => {

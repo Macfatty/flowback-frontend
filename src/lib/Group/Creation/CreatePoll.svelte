@@ -26,7 +26,7 @@
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import { groupUserStore } from '$lib/Group/interface';
 	import type { pollType } from './interface';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	let title = '',
 		description = '',
@@ -51,8 +51,7 @@
 		tags: { id: number }[] = [],
 		workGroups: WorkGroup[] = [],
 		workGroup: number,
-		permissions: any,
-		errorHandler: any;
+		permissions: any;
 
 	const groupId = $page.url.searchParams.get('id');
 
@@ -114,10 +113,15 @@
 		loading = false;
 
 		if (!res.ok)
-			errorHandler.addPopup({
+			ErrorHandlerStore.set({
 				message: 'Could not create Poll',
 				success: false
 			});
+
+		ErrorHandlerStore.set({
+			message: 'Poll Created',
+			success: true
+		});
 
 		if (res.ok && groupId) {
 			goto(`groups/${groupId}/polls/${json}?source=group`);
@@ -219,7 +223,6 @@
 	on:submit|preventDefault={() => (selectedPage === 'poll' ? createPoll() : createThread())}
 	class="relative md:w-2/3 max-w-[800px] dark:text-darkmodeText my-6"
 >
-
 	<Loader {loading}>
 		<div class="bg-white dark:bg-darkobject p-6 shadow-xl flex flex-col gap-3 rounded">
 			<Tab displayNames={['Poll', 'Thread']} tabs={['poll', 'thread']} bind:selectedPage />
@@ -323,8 +326,6 @@
 		</div>
 	</Loader>
 </form>
-
-<ErrorHandler bind:this={errorHandler} />
 
 <style>
 	.show-buttons-all-times::-webkit-inner-spin-button,

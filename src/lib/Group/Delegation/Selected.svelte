@@ -15,7 +15,7 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { delegation as delegationLimit } from '../../Generic/APILimits.json';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import type { poppup } from '$lib/Generic/Poppup';
 
 	let delegates: DelegateMinimal[] = [],
@@ -41,7 +41,7 @@
 			toSendDelegates
 		);
 
-		if (res.ok) errorHandler.addPopup({ message: 'Success', success: true });
+		if (res.ok) ErrorHandlerStore.set({ message: 'Success', success: true });
 		loading = false;
 	};
 
@@ -53,7 +53,7 @@
 		);
 		loading = false;
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not get delegates', success: false })
+			ErrorHandlerStore.set({ message: 'Could not get delegates', success: false })
 			return [];
 		}
 
@@ -195,7 +195,7 @@
 	<Loader bind:loading />
 {/if}
 
-<ErrorHandler bind:this={errorHandler} />
+ 
 
 <style>
 	.faPlus {

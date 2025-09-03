@@ -11,7 +11,7 @@
 	import DefaultBanner from '$lib/assets/default_banner_group.png';
 	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 	import { env } from '$env/dynamic/public';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import Modal from '$lib/Generic/Modal.svelte';
 
 	export let group: Group;
@@ -34,7 +34,7 @@
 		const { res } = await fetchRequest('POST', `group/${group.id}/join`, { to: group.id });
 
 		if (!res.ok) {
-			errorHandler.addPopup({
+			ErrorHandlerStore.set({
 				message: 'An error occurred while joining the group',
 				success: false
 			});
@@ -43,7 +43,7 @@
 
 		if (!directJoin) {
 			group.pending_join = true;
-			errorHandler.addPopup({ message: 'Pending invite', success: true });
+			ErrorHandlerStore.set({ message: 'Pending invite', success: true });
 		} else group.joined = !group.joined;
 
 		if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') becomeMemberOfGroup(group.blockchain_id);
@@ -53,7 +53,7 @@
 		const { res, json } = await fetchRequest('POST', `group/${group.id}/leave`);
 
 		if (!res.ok) {
-			errorHandler.addPopup({
+			ErrorHandlerStore.set({
 				message: json.detail[0] || json.detail || 'An error occurred while leaving the group',
 				success: false
 			});
@@ -143,7 +143,7 @@
 	<div slot="body">{$_('You are about to leave the group!')}</div>
 </Modal>
 
-<ErrorHandler bind:this={errorHandler} />
+ 
 
 <style>
 	.vote-thumbnail:hover {

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Comments from '$lib/Comments/Comments.svelte';
+	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 	import { onMount } from 'svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { page } from '$app/stores';
@@ -19,7 +20,7 @@
 	import Layout from '$lib/Generic/Layout.svelte';
 	import PredictionStatements from '$lib/Poll/PredictionStatements.svelte';
 	import { env } from '$env/dynamic/public';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { formatDate } from '$lib/Generic/DateFormatter';
 	import { predictionStatementsStore } from '$lib/Poll/PredictionMarket/interfaces';
@@ -51,7 +52,7 @@
 	const getPollData = async () => {
 		if (!$page.params) return;
 		loading = true;
-		
+
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/poll/list?id=${$page.params.pollId}`
@@ -60,7 +61,7 @@
 		loading = false;
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: json.detail[0], success: false });
+			ErrorHandlerStore.set({ message: json.detail[0], success: false });
 			return;
 		}
 
@@ -116,6 +117,7 @@
 			<PollHeader {poll} bind:phase displayTag={false} />
 		{/if}
 
+		<!-- Normal Poll -->
 		{#if pollType === 4}
 			<!-- PHASE 0: PRE-START -->
 			{#if phase === 'pre_start'}
@@ -304,6 +306,7 @@
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
+						<div>{$_('Allowed to vote: ')}{$groupUserPermissionStore.allow_vote}</div>
 						<div class="max-h-[90%] overflow-y-auto">
 							<ProposalScoreVoting bind:comments bind:proposals bind:selectedProposal bind:phase />
 						</div>
@@ -345,11 +348,13 @@
 					</div>
 				</Structure>
 			{/if}
+
+			<!-- Date Poll -->
 		{:else if pollType === 3}
-			{#if !finished}
+			{#if phase === 'area_vote' || phase === 'pre_start'}
 				<DatePoll />
 			{:else}
-				<Structure poll={null}>
+				<Structure bind:phase bind:poll>
 					<div slot="left" class="w-[600px]">
 						<Results bind:poll {getPollData} {pollType} />
 					</div>
@@ -360,10 +365,8 @@
 		{/if}
 	{:else if !loading}
 		<div class="p-4 bg-white dark:bg-darkobject dark:text-darkmodeText mt-4 rounded shadow">
-			<p>{$_("No poll found, it might have been deleted")}</p>
+			<p>{$_('No poll found, it might have been deleted')}</p>
 			<Button onClick={() => history.back()}><Fa icon={faArrowLeft} /></Button>
 		</div>
 	{/if}
 </Layout>
-
-<ErrorHandler bind:this={errorHandler} />
