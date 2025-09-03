@@ -207,7 +207,7 @@
 									/>
 								{/key}
 							{/if}
-							{#if phase === 'vote'}
+							{#if phase === 'vote' && $groupUserPermissionStore.allow_vote}
 								<Button
 									onClick={() => {
 										const dVote = delegateVoting.find((vote) => vote.proposal === proposal.id);

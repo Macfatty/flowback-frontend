@@ -722,5 +722,6 @@
     "No participants found.": "Inga deltagare funna",
     "Enter a valid email address.": "Lägg in en giltig e-post adress.",
     "Choose a Password": "Välj ett lösenord",
-    "Sent Mail": "Skickad e-post"
+    "Sent Mail": "Skickad e-post",
+    "Allowed to vote: ": "Tillåten att rösta: "
 }

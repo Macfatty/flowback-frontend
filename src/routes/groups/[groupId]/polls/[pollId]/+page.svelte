@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Comments from '$lib/Comments/Comments.svelte';
+	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 	import { onMount } from 'svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { page } from '$app/stores';
@@ -305,6 +306,7 @@
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
+						<div>{$_('Allowed to vote: ')}{$groupUserPermissionStore.allow_vote}</div>
 						<div class="max-h-[90%] overflow-y-auto">
 							<ProposalScoreVoting bind:comments bind:proposals bind:selectedProposal bind:phase />
 						</div>

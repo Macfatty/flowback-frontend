@@ -126,7 +126,7 @@
 						</div>
 					{/if}
 				{/if}
-				{:else}
+			{:else}
 				{$_('No date was selected')}
 			{/if}
 		</div>

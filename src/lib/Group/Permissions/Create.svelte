@@ -7,7 +7,6 @@
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { _ } from 'svelte-i18n';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import { onMount } from 'svelte';
 	import type { Permissions } from './interface';
 
@@ -70,7 +69,6 @@
 	];
 
 	let loading = false,
-		errorHandler: any,
 		roleName = '',
 		rolePerms = new Array(perms.length).fill(false);
 
@@ -106,7 +104,8 @@
 		if (!res.ok) {
 			ErrorHandlerStore.set({ message: 'Could not create role', success: false });
 			return;
-		}		
+		}
+
 		ErrorHandlerStore.set({ message: 'Successfully created role', success: true });
 	};
 
@@ -141,7 +140,7 @@
 		loading = false;
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Could not update role', success: false })
+			ErrorHandlerStore.set({ message: 'Could not update role', success: false });
 			return;
 		}
 		ErrorHandlerStore.set({ message: 'Successfully updated role', success: true });
@@ -150,6 +149,7 @@
 	};
 
 	const transformIntoRolePermType = (permissions: Permissions) => {
+		//TODO: Turn this into a for loop?
 		roleName = permissions.role_name;
 		rolePerms[0] = permissions.invite_user;
 		rolePerms[1] = permissions.create_poll;
@@ -200,5 +200,3 @@
 		</form>
 	</div>
 </Loader>
-
- 
