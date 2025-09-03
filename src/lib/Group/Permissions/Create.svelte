@@ -143,6 +143,7 @@
 			ErrorHandlerStore.set({ message: 'Could not update role', success: false });
 			return;
 		}
+
 		ErrorHandlerStore.set({ message: 'Successfully updated role', success: true });
 		selectedRole = undefined;
 		selectedPage = 'list';
