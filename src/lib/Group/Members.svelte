@@ -11,7 +11,7 @@
 	import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { groupMembers as groupMembersLimit } from '../Generic/APILimits.json';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { env } from '$env/dynamic/public';
 	import { faPaperPlane, faRunning } from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
@@ -34,7 +34,7 @@
 		searched = false,
 		delegates: Delegate[] = [],
 		removeUserModalShow = false,
-		adminFilter:'All' | 'Admin' | 'Member' = "All";
+		adminFilter: 'All' | 'Admin' | 'Member' = 'All';
 
 	let sortOrder: 'a-z' | 'z-a' = 'a-z'; // Default to a-z sort
 
@@ -104,11 +104,11 @@
 
 		loading = false;
 		if (!res.ok) {
-			errorHandler.addPopup({ message: "Couldn't get invites list", success: false });
+			ErrorHandlerStore.set({ message: "Couldn't get invites list", success: false });
 			return;
 		}
 
-		errorHandler.addPopup({
+		ErrorHandlerStore.set({
 			success: true,
 			message: 'Successfully sent invite'
 		});
@@ -129,7 +129,8 @@
 		usersAskingForInvite = usersAskingForInvite.filter((user) => user.id !== userId);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: "Couldn't accept user invite", success: false });
+			ErrorHandlerStore.set({ message: "Couldn't accept user invite", success: false });
+			return;
 		}
 
 		await getInvitesList();
@@ -138,9 +139,18 @@
 	};
 
 	const denyInviteUser = async (userId: number) => {
-		const { json } = await fetchRequest('POST', `group/${$page.params.groupId}/invite/reject`, {
-			to: userId
-		});
+		const { res, json } = await fetchRequest(
+			'POST',
+			`group/${$page.params.groupId}/invite/reject`,
+			{
+				to: userId
+			}
+		);
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: "Couldn't reject user invite", success: false });
+			return;
+		}
+
 		usersAskingForInvite = usersAskingForInvite.filter((user) => user.id !== userId);
 		await getInvitesList();
 	};
@@ -168,11 +178,11 @@
 		});
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: $_('Failed to remove user'), success: false });
+			ErrorHandlerStore.set({ message: $_('Failed to remove user'), success: false });
 			return;
 		}
 
-		errorHandler.addPopup({ message: $_('Successfully removed user'), success: true });
+		ErrorHandlerStore.set({ message: $_('Successfully removed user'), success: true });
 		searchedUsers = searchedUsers.filter((user) => user.user.id !== userToRemove);
 		removeUserModalShow = false;
 		await getUsers();
@@ -241,7 +251,7 @@
 
 		<!-- Invites -->
 		{#if usersAskingForInvite.length > 0}
-			<div class="w-full flex-col gap-6 shadow rounded bg-white p-2 mb-4 dark:bg-darkobject">
+			<div class="w-full flex-col gap-6 shadow rounded bg-white p-2 dark:bg-darkobject">
 				<span class="font-semibold text-sm text-gray-700 dark:text-darkmodeText"
 					>{$_('Users requesting invite')}</span
 				>
@@ -295,7 +305,12 @@
 					)?.pool_id}
 					<div class="flex items-center">
 						<button
-							on:click={() => goto(`/user?id=${user.user.id}&delegate_id=${delegationId || ''}&group_id=${$page.params.groupId}&is_admin=${adminFilter}`)}
+							on:click={() =>
+								goto(
+									`/user?id=${user.user.id}&delegate_id=${delegationId || ''}&group_id=${
+										$page.params.groupId
+									}&is_admin=${adminFilter}`
+								)}
 							Class="w-[30%]"
 						>
 							<ProfilePicture
@@ -340,11 +355,13 @@
 								>
 									<Fa size="lg" class="text-red-500" icon={faRunning} />
 								</Button>
-								<Modal bind:open={removeUserModalShow} Class="w-80 max-w-[400px]"
-								buttons={[
-									{ label: 'Yes', type: 'warning', onClick: () => userRemove(user.user.id) },
-									{ label: 'No', type: 'default', onClick: () => (removeUserModalShow = false) }
-								]}
+								<Modal
+									bind:open={removeUserModalShow}
+									Class="w-80 max-w-[400px]"
+									buttons={[
+										{ label: 'Yes', type: 'warning', onClick: () => userRemove(user.user.id) },
+										{ label: 'No', type: 'default', onClick: () => (removeUserModalShow = false) }
+									]}
 								>
 									<div slot="header">{$_('Kick ') + user.user.username + '?'}</div>
 								</Modal>
@@ -398,4 +415,4 @@
 	</div>
 </Modal>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

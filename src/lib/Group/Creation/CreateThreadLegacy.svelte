@@ -6,7 +6,7 @@
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { _ } from 'svelte-i18n';
 	import { goto } from '$app/navigation';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import type { poppup } from '$lib/Generic/Poppup';
 
 	let loading = false,
@@ -23,7 +23,7 @@
 		);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: "Couldn't create Thread", success: false });
+			ErrorHandlerStore.set({ message: "Couldn't create Thread", success: false });
 			return;
 		}
 
@@ -42,4 +42,4 @@
 		</Loader>
 	</form>
 </div>
-<ErrorHandler bind:this={errorHandler} />
+ 

@@ -11,7 +11,7 @@
 	import Question from '$lib/Generic/Question.svelte';
 	import { maxDatePickerYear } from '$lib/Generic/DateFormatter';
 	import { predictionStatementsStore, type PredictionBet, type PredictionStatement } from './interfaces';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
 	import { createPrediction as createPredictionBlockchain } from '$lib/Blockchain_v1_Ethereum/javascript/predictionsBlockchain';
 	import Fa from 'svelte-fa';
@@ -96,7 +96,7 @@
 			title: ''
 		};
 
-		errorHandler.addPopup({ message: 'Successfully created consequence', success: true });
+		ErrorHandlerStore.set({ message: 'Successfully created consequence', success: true });
 	};
 
 	//Go through every proposal that the prediction statement is predicting on.
@@ -120,7 +120,7 @@
 				}
 				newPredictionStatement.blockchain_id = Number(`${prediction_blockchain_id}`);
 			} catch {
-				errorHandler.addPopup({ message: 'Could not push to Blockchain', success: false });
+				ErrorHandlerStore.set({ message: 'Could not push to Blockchain', success: false });
 			}
 		}
 	};
@@ -242,4 +242,4 @@
 	</form>
 </Loader>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

@@ -36,7 +36,7 @@ import type { Thread } from "$lib/Group/interface";
 		const { res, json } = await fetchRequest('POST', `group/thread/${_thread?.id}/vote`, { vote });
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not vote on thread', success: false });
+			ErrorHandlerStore.set({ message: 'Could not vote on thread', success: false });
 			return;
 		}
 

@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import Tag from '$lib/Group/Tag.svelte';
 	import Button from '$lib/Generic/Button.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import { _ } from 'svelte-i18n';
@@ -20,7 +20,7 @@
 			`group/${$page.params.groupId}/tags?limit=1000&active=true`
 		);
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not get tags', success: false });
+			ErrorHandlerStore.set({ message: 'Could not get tags', success: false });
 			return;
 		}
 
@@ -29,7 +29,7 @@
 
 	const submitVote = async () => {
 		if (selectedTag === null) {			
-			errorHandler.addPopup({ message: 'Please select a tag before submitting.', success: false });
+			ErrorHandlerStore.set({ message: 'Please select a tag before submitting.', success: false });
 			return;
 		}
 
@@ -39,11 +39,11 @@
 		});
 
 		if (!res.ok) {			
-			errorHandler.addPopup({ message: 'Could not vote on tag', success: false });
+			ErrorHandlerStore.set({ message: 'Could not vote on tag', success: false });
 			return;
 		}
 
-		errorHandler.addPopup({ message: 'Successfully voted for area', success: true });
+		ErrorHandlerStore.set({ message: 'Successfully voted for area', success: true });
 	};
 
 	const getAreaVote = async () => {
@@ -60,7 +60,7 @@
 
 	const cancelVote = () => {
 		selectedTag = null;		
-		errorHandler.addPopup({ message: 'Vote cancelled', success: true });
+		ErrorHandlerStore.set({ message: 'Vote cancelled', success: true });
 	};
 
 	onMount(async () => {
@@ -116,4 +116,4 @@
 	</div>
 </div>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

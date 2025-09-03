@@ -21,7 +21,7 @@
 	import { getStores } from '$app/stores';
 	import { TelInput, normalizedCountries } from 'svelte-tel-input';
 	import type { DetailedValue, CountryCode, E164Number } from 'svelte-tel-input/types';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { chatPartner, isChatOpen } from '$lib/Chat/functions';
 	import { getUserChannelId } from '$lib/Chat/functions';
 	import Loader from '$lib/Generic/Loader.svelte';
@@ -90,7 +90,7 @@
 
 		const { res, json } = await fetchRequest('GET', isUser ? 'user' : `users?id=${userId}`);
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not fetch user', success: false });
+			ErrorHandlerStore.set({ message: 'Could not fetch user', success: false });
 			return;
 		}
 		user = isUser ? json : json?.results[0];
@@ -130,14 +130,14 @@
 		if (!res.ok) {
 			const message = json.detail[Object.keys(json.detail)[0]][0] || 'Could not update profile';
 
-			errorHandler.addPopup({ message, success: false });
+			ErrorHandlerStore.set({ message, success: false });
 			return;
 		}
 
 		user = userEdit;
 		isEditing = false;
 		pfpStore.set(`${imageToSend.name}${Math.floor(Math.random() * 1000000)}`);
-		errorHandler.addPopup({ message: 'Profile successfully updated', success: true });
+		ErrorHandlerStore.set({ message: 'Profile successfully updated', success: true });
 	};
 
 	const handleCropProfileImage = async (e: any) => {
@@ -410,7 +410,7 @@
 	{/if}
 </Layout>
 
-<ErrorHandler bind:this={errorHandler} />
+ 
 
 <style>
 	img.cover {

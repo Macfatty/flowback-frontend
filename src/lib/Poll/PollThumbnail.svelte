@@ -16,7 +16,7 @@
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import Button from '$lib/Generic/Button.svelte';
 	import NewDescription from './NewDescription.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { env } from '$env/dynamic/public';
 	import {
 		faAnglesRight,
@@ -61,7 +61,7 @@
 		});
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not pin poll', success: false });
+			ErrorHandlerStore.set({ message: 'Could not pin poll', success: false });
 			return;
 		}
 
@@ -75,7 +75,7 @@
 		});
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not submit tag vote', success: false });
+			ErrorHandlerStore.set({ message: 'Could not submit tag vote', success: false });
 			return;
 		}
 
@@ -476,7 +476,7 @@
 	bind:reportModalShow={reportPollModalShow}
 />
 
-<ErrorHandler bind:this={errorHandler} />
+ 
 
 <style>
 	.poll-thumbnail-shadow {

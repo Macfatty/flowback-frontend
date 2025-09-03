@@ -25,7 +25,7 @@
 	import { goto } from '$app/navigation';
 	import { removeGroupMembership } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
 	import { env } from '$env/dynamic/public';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 
 	export let selectedPage: SelectablePage = 'flow',
@@ -41,7 +41,7 @@
 		const { res, json } = await fetchRequest('POST', `group/${$page.params.groupId}/leave`);
 
 		if (!res.ok) {
-			errorHandler.addPopup({
+			ErrorHandlerStore.set({
 				message: json.detail[0] || json.detail || 'An error occurred while leaving the group',
 				success: false
 			});
@@ -99,7 +99,7 @@
 							}`
 						);
 					else
-						errorHandler.addPopup({
+						ErrorHandlerStore.set({
 							message: 'You do not have permission to create a post',
 							success: false
 						});
@@ -251,4 +251,4 @@
 	<div slot="body">{$_('You are about to leave the group!')}</div>
 </Modal>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

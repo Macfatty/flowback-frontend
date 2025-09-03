@@ -9,7 +9,7 @@
 	import TextInput from '../Generic/TextInput.svelte';
 	import { mailStore } from './stores';
 	import TermsOfService from './TermsOfService.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	let email: string,
 		status: StatusMessageInfo,
@@ -22,7 +22,7 @@
 
 	async function registerAccount() {
 		if (!acceptedToS) {
-			errorHandler.addPopup({
+			ErrorHandlerStore.set({
 				message: 'You must accept terms of service to register',
 				success: false
 			});
@@ -30,7 +30,7 @@
 		}
 
 		if (usernameError) {
-			errorHandler.addPopup({ message: usernameError, success: false });
+			ErrorHandlerStore.set({ message: usernameError, success: false });
 			return;
 		}
 
@@ -41,7 +41,7 @@
 		console.log(res, json, 'RESJSON');
 
 		if (!res.ok) {
-			errorHandler.addPopup({
+			ErrorHandlerStore.set({
 				message: json?.detail?.email[0] || json?.detail || json || 'Something went wrong',
 				success: false
 			});
@@ -49,7 +49,7 @@
 		}
 
 		mailStore.set(email);
-		errorHandler.addPopup({ message: 'Successfully registered', success: true });
+		ErrorHandlerStore.set({ message: 'Successfully registered', success: true });
 		selectedPage = 'Verify';
 	}
 </script>
@@ -69,4 +69,4 @@
 	</form>
 </Loader>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

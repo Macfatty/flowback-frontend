@@ -16,7 +16,7 @@
 	import { _ } from 'svelte-i18n';
 	import NewDescription from './NewDescription.svelte';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import ReportPostModal from './ReportPostModal.svelte';
 	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 	import DeletePostModal from './DeletePostModal.svelte';
@@ -154,7 +154,7 @@
 	bind:reportModalShow={reportPollModalShow}
 />
 
-<ErrorHandler bind:this={errorHandler} />
+ 
 
 <style>
 	.poll-header-grid {

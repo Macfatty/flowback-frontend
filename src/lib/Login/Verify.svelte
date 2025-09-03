@@ -14,7 +14,7 @@
 	// import { becomeMemberOfGroup } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	let verification_code: string,
 		password: string,
@@ -55,12 +55,12 @@
 				json?.detail[0] === 'Not found.' ||
 				json?.detail[0] === 'Verification code has already been used.'
 			)
-				errorHandler.addPopup({ message: 'Wrong verification code' });
+				ErrorHandlerStore.set({ message: 'Wrong verification code' });
 			else if (json?.detail?.non_field_errors)
-				errorHandler.addPopup({ message: json?.detail?.non_field_errors[0] });
+				ErrorHandlerStore.set({ message: json?.detail?.non_field_errors[0] });
 			else if (json?.detail?.username)
-				errorHandler.addPopup({ message: json?.detail?.username[0] });
-			else errorHandler.addPopup({ message: 'Something went wrong' });
+				ErrorHandlerStore.set({ message: json?.detail?.username[0] });
+			else ErrorHandlerStore.set({ message: 'Something went wrong' });
 
 			return;
 		}
@@ -82,7 +82,7 @@
 		loading = false;
 
 		if (!res.ok || !json.token) {
-			errorHandler.addPopup({ message: 'Something went wrong', success: false });
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		}
 
@@ -158,4 +158,4 @@
 	</form>
 </Loader>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

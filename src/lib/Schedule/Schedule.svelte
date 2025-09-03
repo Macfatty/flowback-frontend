@@ -14,7 +14,7 @@
 	import type { Group } from '$lib/Group/interface';
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import Button from '$lib/Generic/Button.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
@@ -162,11 +162,11 @@
 		loading = false;
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to create event', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to create event', success: false });
 			return;
 		}
 
-		errorHandler.addPopup({ message: 'Successfully created event', success: true });
+		ErrorHandlerStore.set({ message: 'Successfully created event', success: true });
 		showCreateScheduleEvent = false;
 
 		const createdEvent: scheduledEvent = {
@@ -219,11 +219,11 @@
 		loading = false;
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to update event', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to update event', success: false });
 			return;
 		}
 
-		errorHandler.addPopup({ message: 'Event successfully updated', success: true });
+		ErrorHandlerStore.set({ message: 'Event successfully updated', success: true });
 
 		events = events
 			.map((event) => (event.event_id === updatedEvent.event_id ? { ...updatedEvent } : event))
@@ -250,11 +250,11 @@
 		loading = false;
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to delete event', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to delete event', success: false });
 			return;
 		}
 
-		errorHandler.addPopup({ message: 'Event deleted', success: true });
+		ErrorHandlerStore.set({ message: 'Event deleted', success: true });
 		events = events.filter((event) => event.event_id !== eventId);
 		showEvent = false;
 		resetSelectedEvent();
@@ -493,7 +493,7 @@
 	{year}
 />
 
-<ErrorHandler bind:this={errorHandler} />
+ 
 
 <style>
 	.calendar {

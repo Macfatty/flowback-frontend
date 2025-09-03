@@ -8,7 +8,7 @@
 	import { getCommentDepth, getComments } from './functions';
 	import { pollComments as pollCommentsLimit } from '../Generic/APILimits.json';
 	import CommentFilter from './CommentFilter.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { commentsStore } from './commentStore';
 	import type { Comment as comment } from '$lib/Poll/interface';
 
@@ -84,4 +84,4 @@
 	{/if}
 </div>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

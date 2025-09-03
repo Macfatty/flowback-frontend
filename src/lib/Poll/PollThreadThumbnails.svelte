@@ -13,7 +13,7 @@
 	import PollFiltering from './PollFiltering.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import Pagination from '$lib/Generic/Pagination.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { posts } from './stores';
 	import ThreadThumbnail from '$lib/Thread/ThreadThumbnail.svelte';
 
@@ -90,7 +90,7 @@
 			next = response.next ?? '';
 			prev = response.previous ?? '';
 		} catch (error) {
-			errorHandler.addPopup({ message: 'Could not get polls', success: false });
+			ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
 		} finally {
 			loading = false;
 		}
@@ -198,4 +198,4 @@
 	</Loader>
 </div>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

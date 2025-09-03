@@ -5,7 +5,7 @@
 	import type { GroupUser } from '../interface';
 	import { onDestroy, onMount } from 'svelte';
 	import { kanban as kanbanLimit } from '../../Generic/APILimits.json';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import CreateKanbanEntry from './CreateKanbanEntry.svelte';
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import Fa from 'svelte-fa';
@@ -70,7 +70,7 @@
 		const { res, json } = await fetchRequest('GET', api);
 
 		if (!res.ok) {
-			// errorHandler.addPopup({ message: 'Failed to fetch kanban tasks', success: false });
+			// ErrorHandlerStore.set({ message: 'Failed to fetch kanban tasks', success: false });
 			return;
 		}
 
@@ -208,4 +208,4 @@
 	{getKanbanEntries}
 />
 
-<ErrorHandler bind:this={errorHandler} />
+ 

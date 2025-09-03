@@ -19,7 +19,7 @@
 	import Layout from '$lib/Generic/Layout.svelte';
 	import PredictionStatements from '$lib/Poll/PredictionStatements.svelte';
 	import { env } from '$env/dynamic/public';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { formatDate } from '$lib/Generic/DateFormatter';
 	import { predictionStatementsStore } from '$lib/Poll/PredictionMarket/interfaces';
@@ -60,7 +60,7 @@
 		loading = false;
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: json.detail[0], success: false });
+			ErrorHandlerStore.set({ message: json.detail[0], success: false });
 			return;
 		}
 
@@ -366,4 +366,4 @@
 	{/if}
 </Layout>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

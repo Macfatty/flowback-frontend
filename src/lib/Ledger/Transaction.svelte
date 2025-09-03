@@ -11,7 +11,7 @@
 	import DateInput from 'date-picker-svelte/DateInput.svelte';
 	import { deepCopy } from 'ethers/lib/utils';
 	import formatDate from './formatDate';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import type { poppup } from '$lib/Generic/Poppup';
 	// import { formatDate } from '$lib/Generic/DateFormatter';
 
@@ -35,11 +35,11 @@
 		);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Something went wrong', success: false });
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		}
 
-		errorHandler.addPopup({ message: 'Successfully deleted transaction', success: true });
+		ErrorHandlerStore.set({ message: 'Successfully deleted transaction', success: true });
 		transactions = transactions.filter((transaction_) => transaction_.id !== transaction.id);
 		openDelete = false;
 	};
@@ -64,11 +64,11 @@
 		);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Something went wrong', success: true });
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: true });
 			return;
 		}
 
-		errorHandler.addPopup({ message: 'Successfully updated transaction', success: true });
+		ErrorHandlerStore.set({ message: 'Successfully updated transaction', success: true });
 		let newTransaction = deepCopy(transactions);
 
 		newTransaction = newTransaction.filter((transaction_) => transaction_.id !== transaction.id);
@@ -189,4 +189,4 @@
 	</div>
 </Modal>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

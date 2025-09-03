@@ -2,7 +2,7 @@
 	import type { options, scheduledEvent } from '../interface';
 	import { _ } from 'svelte-i18n';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
 
@@ -61,11 +61,11 @@
 		loading = false;
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to update event', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to update event', success: false });
 			return;
 		}
 
-		errorHandler.addPopup({ message: 'Event successfully updated', success: true });
+		ErrorHandlerStore.set({ message: 'Event successfully updated', success: true });
 
 		showEditScheduleEvent = false;
 		showEvent = true;
@@ -259,4 +259,4 @@
 		</Modal>
 	</form>
 {/if}
-<ErrorHandler bind:this={errorHandler} />
+ 

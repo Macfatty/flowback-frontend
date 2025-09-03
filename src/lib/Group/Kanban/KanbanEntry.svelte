@@ -20,7 +20,7 @@
 	import { env } from '$env/dynamic/public';
 	import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 	import Select from '$lib/Generic/Select.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	export let kanban: kanban,
 		filter: Filter,
@@ -128,7 +128,7 @@
 		isEditing = false;
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to update kanban task', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to update kanban task', success: false });
 			return;
 		}
 
@@ -164,7 +164,7 @@
 		);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to update kanban lane', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to update kanban lane', success: false });
 			return;
 		}
 
@@ -191,7 +191,7 @@
 		);
 
 		if (!res.ok) {
-			errorHandler.addPopup({
+			ErrorHandlerStore.set({
 				message: 'Failed to delete kanban task',
 				success: false
 			});
@@ -509,7 +509,7 @@
 	</Modal>
 {/if}
 
-<ErrorHandler bind:this={errorHandler} />
+ 
 
 <style>
 

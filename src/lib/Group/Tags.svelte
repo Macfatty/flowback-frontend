@@ -10,7 +10,7 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { getTags } from './functions';
 	import Tag from './Tag.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import Fa from 'svelte-fa';
 	import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -32,7 +32,7 @@
 	const getTagsLocal = async () => {
 		loading = true;
 		tags = await getTags($page.params.groupId);
-		if (!tags) errorHandler.addPopup({ message: 'Could not get poppups', success: false })
+		if (!tags) ErrorHandlerStore.set({ message: 'Could not get poppups', success: false })
 		loading = false;
 	};
 
@@ -152,4 +152,4 @@
 	</div>
 </Modal>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

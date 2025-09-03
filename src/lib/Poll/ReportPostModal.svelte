@@ -5,7 +5,7 @@
 	import { _ } from 'svelte-i18n';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import TextArea from '$lib/Generic/TextArea.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import Loader from '$lib/Generic/Loader.svelte';
 
 	export let reportModalShow = false,
@@ -35,7 +35,7 @@
 		};
 
 		if (description === '') {
-			errorHandler.addPopup({
+			ErrorHandlerStore.set({
 				message: 'Description is required',
 				success: false
 			});
@@ -48,14 +48,14 @@
 		loading = false;
 
 		if (!res.ok) {
-			errorHandler.addPopup({
+			ErrorHandlerStore.set({
 				message: 'An error occurred while reporting the poll.',
 				success: false
 			});
 			return;
 		}
 
-		errorHandler.addPopup({
+		ErrorHandlerStore.set({
 			message:
 				post_type === 'poll' ? 'Poll reported successfully.' : 'Thread reported successfully.',
 			success: true
@@ -99,4 +99,4 @@
 	</div> -->
 </Modal>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

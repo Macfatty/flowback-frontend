@@ -33,7 +33,7 @@
 		);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not get Thread', success: false });
+			ErrorHandlerStore.set({ message: 'Could not get Thread', success: false });
 			return;
 		}
 

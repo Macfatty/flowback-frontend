@@ -2,7 +2,7 @@
 	import { workGroupsStore, type WorkGroup, type WorkGroupUser } from './interface';
 	import Button from '$lib/Generic/Button.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { _ } from 'svelte-i18n';
 	import Fa from 'svelte-fa';
 	import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -35,7 +35,7 @@
 		const { res, json } = await fetchRequest('POST', `group/workgroup/${workGroup.id}/join`);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to join Group', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to join Group', success: false });
 			return;
 		}
 
@@ -55,13 +55,13 @@
 					? 'Already asked to join group'
 					: 'Failed to ask to join group';
 
-			errorHandler.addPopup({ message, success: false });
+			ErrorHandlerStore.set({ message, success: false });
 			return;
 		}
 
 		if (!res.ok) return;
 
-		errorHandler.addPopup({ message: 'Invite Sent', success: true });
+		ErrorHandlerStore.set({ message: 'Invite Sent', success: true });
 		workGroup.requested_access = true;
 		getWorkGroupInvite();
 	};
@@ -70,7 +70,7 @@
 		const { res, json } = await fetchRequest('POST', `group/workgroup/${workGroup.id}/leave`);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to leave Group', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to leave Group', success: false });
 			return;
 		}
 		workGroupUserList = workGroupUserList.filter(
@@ -88,10 +88,10 @@
 		const { res, json } = await fetchRequest('POST', `group/workgroup/${workGroup.id}/delete`);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to delete workgroup', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to delete workgroup', success: false });
 			return;
 		} else {
-			errorHandler.addPopup({ message: 'Workgroup deleted', success: true });
+			ErrorHandlerStore.set({ message: 'Workgroup deleted', success: true });
 		}
 
 		handleRemoveGroup(workGroup.id);
@@ -142,4 +142,4 @@
 	</div>
 </Modal>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

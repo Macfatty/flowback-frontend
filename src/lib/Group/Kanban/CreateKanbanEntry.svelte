@@ -12,7 +12,7 @@
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import type { Filter, kanban } from './Kanban';
 	import Select from '$lib/Generic/Select.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { userStore } from '$lib/User/interfaces';
 
 	export let filter: Filter,
@@ -85,11 +85,11 @@
 		loading = false;
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to create kanban task', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to create kanban task', success: false });
 			return;
 		}
 
-		errorHandler.addPopup({ message: 'Successfully created kanban task', success: true });
+		ErrorHandlerStore.set({ message: 'Successfully created kanban task', success: true });
 
 		const userAssigned = users.find((user) => assignee === user.user.id);
 		const _assignee = assignee
@@ -265,4 +265,4 @@
 	</div>
 </Modal>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

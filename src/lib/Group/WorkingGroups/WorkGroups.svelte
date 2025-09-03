@@ -8,7 +8,7 @@
 	} from './interface';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import WorkingGroup from './WorkGroup.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
@@ -45,7 +45,7 @@
 		);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not fetch work groups', success: false });
+			ErrorHandlerStore.set({ message: 'Could not fetch work groups', success: false });
 			return;
 		}
 
@@ -61,7 +61,7 @@
 		);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to create work group', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to create work group', success: false });
 			return;
 		}
 
@@ -105,7 +105,7 @@
 		});
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to add user to group', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to add user to group', success: false });
 			return;
 		}
 
@@ -202,7 +202,7 @@
 	</div>
 </Loader>
 
-<ErrorHandler bind:this={errorHandler} />
+ 
 
 <Modal
 	bind:open

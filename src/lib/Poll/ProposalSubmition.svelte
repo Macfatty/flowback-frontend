@@ -14,7 +14,7 @@
 	import { proposalCreate as proposalCreateBlockchain } from '$lib/Blockchain_v1_Ethereum/javascript/pollsBlockchain';
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
 	import FileUploads from '$lib/Generic/FileUploads.svelte';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { userStore } from '$lib/User/interfaces';
 	import { env } from '$env/dynamic/public';
 
@@ -61,11 +61,11 @@
 		statusMessageFormatter(res, id);
 
 		if (!res.ok)  {			
-			errorHandler.addPopup({ message: 'Failed to add proposal', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to add proposal', success: false });
 			return;
 		}
 				
-		errorHandler.addPopup({ message: 'Successfully added proposal', success: true });
+		ErrorHandlerStore.set({ message: 'Successfully added proposal', success: true });
 
 		let created_by = await getUserInfo();
 		loading = false;
@@ -152,4 +152,4 @@
 	</Loader>
 </form>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

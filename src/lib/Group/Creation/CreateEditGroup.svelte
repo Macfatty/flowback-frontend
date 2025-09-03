@@ -16,7 +16,7 @@
 	import { goto } from '$app/navigation';
 	import { becomeMemberOfGroup } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
 	import { env } from '$env/dynamic/public';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
 
 	export let Class = '';
@@ -62,7 +62,7 @@
 
 		loading = false;
 		if (!res.ok) {
-			errorHandler.addPopup({
+			ErrorHandlerStore.set({
 				message:
 					json.detail[0] || json.detail || groupToEdit
 						? 'Could not update group'
@@ -72,7 +72,7 @@
 			return;
 		}
 
-		errorHandler.addPopup({
+		ErrorHandlerStore.set({
 			message: groupToEdit ? 'Successfully updated group' : 'Successfully created group',
 			success: true
 		});
@@ -92,7 +92,7 @@
 		const { res } = await fetchRequest('POST', `group/${groupToEdit}/delete`);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Could not delete group', success: false });
+			ErrorHandlerStore.set({ message: 'Could not delete group', success: false });
 			return;
 		}
 
@@ -123,7 +123,7 @@
 		if (oldGroup.image) image = oldGroup.image;
 		if (oldGroup.cover_image) coverImage = oldGroup.coverImage;
 
-		errorHandler.addPopup({ message: 'Successfully reverted edits', success: true });
+		ErrorHandlerStore.set({ message: 'Successfully reverted edits', success: true });
 	};
 
 	onMount(() => {
@@ -224,4 +224,4 @@
 	</Loader>
 </form>
 
-<ErrorHandler bind:this={errorHandler} />
+ 

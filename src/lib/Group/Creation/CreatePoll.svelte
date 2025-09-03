@@ -26,7 +26,7 @@
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import { groupUserStore } from '$lib/Group/interface';
 	import type { pollType } from './interface';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	let title = '',
 		description = '',
@@ -114,7 +114,7 @@
 		loading = false;
 
 		if (!res.ok)
-			errorHandler.addPopup({
+			ErrorHandlerStore.set({
 				message: 'Could not create Poll',
 				success: false
 			});
@@ -324,7 +324,7 @@
 	</Loader>
 </form>
 
-<ErrorHandler bind:this={errorHandler} />
+ 
 
 <style>
 	.show-buttons-all-times::-webkit-inner-spin-button,

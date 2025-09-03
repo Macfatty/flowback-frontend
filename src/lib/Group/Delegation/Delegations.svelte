@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import type { Group, Tag } from '../interface';
 	import type { Delegate, DelegateRelation } from './interfaces';
-	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import Fa from 'svelte-fa';
 	import { tick } from 'svelte';
@@ -140,7 +140,7 @@
 		});
 
 		if (!res.ok) {
-			// errorHandler.addPopup({ message: 'Failed to create delegation', success: false });
+			// ErrorHandlerStore.set({ message: 'Failed to create delegation', success: false });
 			return;
 		}
 
@@ -174,10 +174,10 @@
 		);
 
 		if (!res.ok) {
-			errorHandler.addPopup({ message: 'Failed to save new delegation', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to save new delegation', success: false });
 			return;
 		}
-		errorHandler.addPopup({ message: 'Successfully saved delegation', success: true });
+		ErrorHandlerStore.set({ message: 'Successfully saved delegation', success: true });
 
 		// Refresh relations to ensure consistency with backend
 		await getDelegateRelations();
@@ -271,7 +271,7 @@
 	{/if}
 </div>
 
-<ErrorHandler bind:this={errorHandler} />
+ 
 
 <style>
 	.section {
