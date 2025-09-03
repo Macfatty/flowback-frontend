@@ -49,8 +49,8 @@
 		}
 
 		mailStore.set(email);
-		ErrorHandlerStore.set({ message: 'Successfully registered', success: true });
-		selectedPage = 'Verify';
+		ErrorHandlerStore.set({ message: 'Mail Sent', success: true });
+		selectedPage = 'GotMail';
 	}
 </script>
 
