@@ -9,22 +9,27 @@ export async function fastForward(page: any, times = 1) {
 }
 
 export async function createPoll(page: any, {
-    title = 'Test Poll' } = {}) {
+    title = 'Test Poll', date = false } = {}) {
     //Create a Poll
     await page.getByRole('button', { name: 'Create a post' }).click();
     await expect(page.getByText('Poll Thread Poll Content Text')).toBeVisible();
     await page.getByLabel('Title * 0/').click();
-    await page.getByLabel('Title * 0/').fill('Test Poll');
+    await page.getByLabel('Title * 0/').fill(title);
     await page.getByLabel('Description  0/').fill('Test Description');
+
+    if (date) await page.getByLabel('Date Poll').check();
+
     await page.getByRole('button', { name: 'Display advanced time settings' }).click();
     await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel('Yes').check();
     await page.locator('fieldset').filter({ hasText: 'Fast Forward? Yes No' }).getByLabel('Yes').check();
     await page.getByRole('spinbutton').fill('0');
 
     await page.getByRole('button', { name: 'Post' }).click();
-    await expect(page.getByRole('heading', { name: 'Test Poll' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: title })).toBeVisible();
     // await expect(page).toHaveURL(/\/groups\/6\/polls\/\d+$/?chatOpen=false);
 }
+
+
 
 export async function areaVote(page: any, {
     area = 'Default',
