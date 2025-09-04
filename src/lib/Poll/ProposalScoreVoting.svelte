@@ -20,10 +20,8 @@
 
 	let voting: { score: number; proposal: number }[] = [],
 		needsReload = 0,
-		errorHandler: any,
 		commentFilterProposalId: number | null = null,
-		delegateVoting: { score: number; proposal: number; raw_score: number }[] = [],
-		style: 'purple' | 'gray' = 'purple';
+		delegateVoting: { score: number; proposal: number; raw_score: number }[] = [];
 
 	onMount(async () => {
 		await getProposals();
@@ -32,8 +30,6 @@
 			score: 0,
 			proposal: proposal.id
 		}));
-
-		console.log(voting, 'voting');
 
 		if (phase === 'delegate_vote' || phase === 'vote' || phase === 'result') {
 			await getDelegateVotes();
@@ -73,6 +69,7 @@
 			).raw_score),
 			proposal: vote.proposal
 		}));
+
 		voting = voting;
 	};
 
@@ -149,8 +146,6 @@
 	};
 
 	const changingVote = (score: number | string, proposalId: number) => {
-		console.log(voting, 'voting');
-
 		if (!voting) return;
 		const i = voting?.findIndex((vote) => vote.proposal === proposalId);
 		voting[i].score = Number(score);
@@ -187,8 +182,6 @@
 									<VotingSlider
 										bind:phase
 										onSelection={(pos) => {
-											console.log(pos);
-
 											//@ts-ignore
 											changingVote(pos, proposal.id);
 											if (phase === 'delegate_vote') delegateVote();
@@ -207,7 +200,7 @@
 									/>
 								{/key}
 							{/if}
-							{#if phase === 'vote' && $groupUserPermissionStore.allow_vote}
+							{#if phase === 'vote' && $groupUserPermissionStore?.allow_vote}
 								<Button
 									onClick={() => {
 										const dVote = delegateVoting.find((vote) => vote.proposal === proposal.id);
@@ -223,5 +216,3 @@
 		{/if}
 	</div>
 </div>
-
- 

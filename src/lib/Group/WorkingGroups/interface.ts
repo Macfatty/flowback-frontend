@@ -16,6 +16,7 @@ export interface WorkGroup {
 	previous: string;
 	chat: 1;
 	requested_access: boolean;
+	group_id?: number;
 }
 
 export interface WorkGroupUser {

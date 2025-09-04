@@ -73,7 +73,7 @@
 		workGroups: WorkGroup[] = [],
 		workGroupFilter: number[] = [],
 		status: StatusMessageInfo,
-		errorHandler: any,
+		 
 		filter: Filter = {
 			assignee: null,
 			group: $page.url.searchParams.get('groupId'),

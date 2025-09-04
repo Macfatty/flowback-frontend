@@ -38,7 +38,7 @@
 			end_date: new Date(new Date(poll.end_date).getTime() + 1 * 60 * 1000)
 		},
 		bets: PredictionBet[] = [],
-		errorHandler: any,
+		 
 		pushingToBlockchain = true;
 
 	const getPredictionBets = async () => {

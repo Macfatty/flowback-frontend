@@ -29,7 +29,7 @@
 	let deletePollModalShow = false,
 		reportPollModalShow = false,
 		choicesOpen = false,
-		errorHandler: any,
+		 
 		source = new URLSearchParams(window.location.search).get('source');
 </script>
 

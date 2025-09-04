@@ -15,7 +15,7 @@
 		showEvent = false,
 		events: scheduledEvent[] = [],
 		frequencyOptions: options[] = [],
-		errorHandler: any,
+		 
 		reminderOptions: options[] = [];
 
 	// Members list and selections

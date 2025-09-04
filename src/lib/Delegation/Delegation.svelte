@@ -108,7 +108,6 @@
 </script>
 
 <Layout centered>
-	
 	<div class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow w-full text-left">
 		<h1 class="text-xl font-semibold text-primary dark:text-secondary text-left">
 			{$_(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? 'Automate' : 'Manage Delegations')}
@@ -200,11 +199,13 @@
 				{/if}
 			{:else if selectedPage === 'delegate'}
 				{#if group?.id}
-					<Delegations bind:group bind:delegates />
+					{#if userIsDelegate}
+						{$_('You cannot delegate as a delegate')}
+					{:else}
+						<Delegations bind:group bind:delegates />
+					{/if}
 				{/if}
 			{/if}
 		</div>
 	</div>
 </Layout>
-
- 

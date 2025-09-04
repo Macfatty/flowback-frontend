@@ -16,7 +16,7 @@
 
 	export let group: Group;
 
-	let errorHandler: any,
+	let  
 		areYouSureModal = false;
 
 	const goToGroup = (e: event) => {

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import { _ } from 'svelte-i18n';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import type { Delegate } from './interfaces';
@@ -11,7 +10,6 @@
 		groupId: number,
 		delegates: Delegate[],
 		Class = '';
-	let errorHandler: any;
 
 	const deleteDelegation = async () => {
 		await deleteDelegationPool();
@@ -56,4 +54,3 @@
 
 <Button Class={`bg-red-500 ${Class}`} onClick={deleteDelegation}>{$_('Stop being delegate')}</Button
 >
- 

@@ -65,10 +65,10 @@ interface UserInfo {
 export let userInfo = writable<UserInfo>();
 
 //Get info about user (the information you'd see on the user page)
-export const getUserInfo = async () => {
+export const getUserInfo = async (): Promise<User> => {
 	const { res, json } = await fetchRequest('GET', `user`);
-	if (!res.ok) return {};
-	return json;
+	if (!res.ok) return {} as User;
+	return json as User;
 };
 
 //Get info about user as in the group (permissions, is admin, workgroups and the user itself)

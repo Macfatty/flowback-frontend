@@ -18,7 +18,7 @@
 	import ThreadVoting from '$lib/Thread/ThreadVoting.svelte';
 
 	let thread: Thread,
-		errorHandler: any,
+		 
 		reportModalShow = false,
 		deleteModalShow = false;
 

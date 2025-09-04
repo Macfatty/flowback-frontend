@@ -1,14 +1,12 @@
 <script lang="ts">
 	import HeaderIcon from './HeaderIcon.svelte';
+	import { userStore } from '$lib/User/interfaces';
 	import Logo from '$lib/assets/Logo.png';
 	import Reforum from '$lib/assets/ReforumTransparent.png';
 	import DefaultPFP from '$lib/assets/abstract-user-flat-4.svg';
 	import SideHeader from './SideHeader.svelte';
-	import { onDestroy, onMount } from 'svelte';
-	import { fetchRequest } from '$lib/FetchRequest';
 	import Notifications from './Notifications.svelte';
-	import { darkModeStore, initializeDarkMode, toggleDarkMode } from '$lib/Generic/DarkMode';
-	import { pfpStore } from '$lib/Login/stores';
+	import { darkModeStore, toggleDarkMode } from '$lib/Generic/DarkMode';
 	import {
 		faCalendarDays,
 		faCoins,
@@ -25,49 +23,9 @@
 	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 
 	let sideHeaderOpen = false,
-		profileImage: string | null = DefaultPFP,
 		selectedHref = '';
 
-	onMount(async () => {
-		if (location.pathname !== '/login') {
-			getProfileImage();
-			setPfP();
-		}
-
-		initializeDarkMode(); // Ensure background color is set correctly
-
-		pfpStore.subscribe(() => {
-			getProfileImage();
-		});
-	});
-
-	onDestroy(() => {
-		profileImage = null;
-		clearProfileImage(); // Ensure profile image is cleared on component destroy
-	});
-
-	const setPfP = () => {
-		if (!profileImage) getProfileImage();
-		else {
-			const pfpLink = localStorage.getItem('pfp-link');
-
-			if (pfpLink !== 'null') profileImage = pfpLink;
-			else profileImage = null;
-		}
-	};
-
-	const getProfileImage = async () => {
-		const { res, json } = await fetchRequest('GET', 'user');
-
-		if (res.ok && json.profile_image) profileImage = json.profile_image;
-
-		localStorage.setItem('pfp-link', json.profile_image);
-	};
-
-	const clearProfileImage = () => {
-		localStorage.removeItem('pfp-link');
-		profileImage = null;
-	};
+	$: console.log($userStore?.profile_image);
 </script>
 
 <header
@@ -167,16 +125,14 @@
 				<Notifications />
 			</div>
 			<button id="side-header" on:click={() => (sideHeaderOpen = !sideHeaderOpen)}>
-				{#key profileImage}
-					<img
-						src={profileImage ? `${env.PUBLIC_API_URL}${profileImage}` : DefaultPFP}
-						class={`w-8 h-8 rounded-full cursor-pointer ${
-							sideHeaderOpen && 'ring-blue-500 ring-4'
-						}`}
-						alt="default pfp"
-						on:error={(e) => onThumbnailError(e, DefaultPFP)}
-					/>
-				{/key}
+				<img
+					src={$userStore?.profile_image
+						? `${env.PUBLIC_API_URL}${$userStore?.profile_image}`
+						: DefaultPFP}
+					class={`w-8 h-8 rounded-full cursor-pointer ${sideHeaderOpen && 'ring-blue-500 ring-4'}`}
+					alt="default pfp"
+					on:error={(e) => onThumbnailError(e, DefaultPFP)}
+				/>
 			</button>
 		</div>
 	</div>
@@ -189,20 +145,10 @@
 		align-self: stretch;
 	}
 
-	/* header > .inline-flex {
-		gap: calc(8% - 60px);
-	} */
-
 	header {
 		flex-wrap: wrap-reverse;
 		padding: 0rem 1rem;
 	}
-
-	/* @media only screen and (max-width: 768px) {
-		header > .inline-flex {
-			gap: calc(15% - 70px);
-		}
-	} */
 
 	@media only screen and (max-width: 500px) {
 		header > div:last-child {

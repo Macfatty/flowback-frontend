@@ -22,7 +22,7 @@
 		selectedTag: TagType = { active: false, id: 0, name: '', imac: 0 },
 		loading = false,
 		areYouSureModal = false,
-		errorHandler: any,
+		 
 		tagDescription: string;
 
 	onMount(async () => {

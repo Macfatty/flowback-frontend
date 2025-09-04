@@ -19,7 +19,7 @@
 		expandedSection: any = null,
 		previousExpandedSection: any = null,
 		delegateRelations: DelegateRelation[] = [],
-		errorHandler: any,
+		 
 		delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
 
 	onMount(async () => {
@@ -225,7 +225,7 @@
 						<Fa icon={faChevronDown} />
 					</div>
 				</button>
-
+				
 				{#if expandedSection === index}
 					<div class="voter-list">
 						{#each delegates as delegate}

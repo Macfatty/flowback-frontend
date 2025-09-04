@@ -51,7 +51,7 @@
 		};
 
 		onMouseMove(e);
-		document.addEventListener('mousemove',onMouseMove);
+		document.addEventListener('mousemove', onMouseMove);
 		document.addEventListener('mouseup', onMouseUp);
 	};
 
@@ -148,7 +148,9 @@
 		}}
 		{disabled}
 	>
-		{$_(phase === 'prediction_bet' ? 'Clear probability' : 'Clear vote')}
+		{#if !disabled}
+			{$_(phase === 'prediction_bet' ? 'Clear probability' : 'Clear vote')}
+		{/if}
 	</Button>
 </div>
 

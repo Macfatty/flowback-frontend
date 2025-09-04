@@ -41,6 +41,7 @@
 	>
 		>
 		<div slot="body">
+			<!-- {groups selectedEvent.schedule_origin_id} -->
 			<h2 class="text-xl mb-4 text-gray-900 dark:text-white">{selectedEvent.title}</h2>
 			<p>
 				<strong class="text-gray-700 dark:text-gray-300">{$_('Description')}:</strong>

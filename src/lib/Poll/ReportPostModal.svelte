@@ -17,7 +17,7 @@
 
 	let title: string,
 		description: string,
-		errorHandler: any,
+		 
 		loading = false;
 
 	const reportPoll = async () => {

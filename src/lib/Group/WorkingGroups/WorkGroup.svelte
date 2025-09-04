@@ -15,7 +15,7 @@
 		handleRemoveGroup: (id: number) => void,
 		getWorkGroupInvite: () => {};
 
-	let errorHandler: any,
+	let  
 		workGroupUserList: WorkGroupUser[] = [],
 		showDeleteModal = false;
 

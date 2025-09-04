@@ -9,10 +9,9 @@
 	import { _ } from 'svelte-i18n';
 	import Button from '$lib/Generic/Button.svelte';
 	import TextArea from '$lib/Generic/TextArea.svelte';
-	import { blobifyImages } from '$lib/Generic/GenericFunctions';
+	import { blobifyImages, getUserInfo } from '$lib/Generic/GenericFunctions';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import CropperModal from '$lib/Generic/Cropper/CropperModal.svelte';
-	import { pfpStore } from '$lib/Login/stores';
 	import { env } from '$env/dynamic/public';
 	import Fa from 'svelte-fa';
 	import { faArrowLeft, faPen, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
@@ -56,7 +55,7 @@
 		profileImagePreview = DefaultPFP,
 		bannerImagePreview = '',
 		currentlyEditing: null | 'bio' | 'web' | 'name' | 'phone' | 'email' = null,
-		errorHandler: any,
+		 
 		currentlyCroppingProfile: boolean = false,
 		currentlyCroppingBanner = false,
 		oldProfileImagePreview = '',
@@ -134,9 +133,12 @@
 			return;
 		}
 
-		user = userEdit;
+		// Required to update user properly
+		const updatedUser = await getUserInfo();
+		userStore.set(updatedUser);
+		user = updatedUser;
+		
 		isEditing = false;
-		pfpStore.set(`${imageToSend.name}${Math.floor(Math.random() * 1000000)}`);
 		ErrorHandlerStore.set({ message: 'Profile successfully updated', success: true });
 	};
 
@@ -409,8 +411,6 @@
 		<History history={Number($page.url.searchParams.get('delegate_id'))} groupId={1} />
 	{/if}
 </Layout>
-
- 
 
 <style>
 	img.cover {
