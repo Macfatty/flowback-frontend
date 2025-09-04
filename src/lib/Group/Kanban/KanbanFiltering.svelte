@@ -10,7 +10,6 @@
 	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
 	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
-	import Select from '$lib/Generic/Select.svelte';
 
 	export let filter: Filter,
 		handleSearch: () => Promise<void>,
@@ -70,6 +69,17 @@
 		await handleSearch();
 	}}
 >
+	<!-- WIP -->
+	<!-- {#each groupList as group}
+		<label><input type="checkbox" value={group.id} />{group.name}</label>
+
+		{#each workGroups as workgroup}
+			{#if workgroup.group_id === group.id}
+				<label class="ml-4"><input type="checkbox" value={workgroup.id} />{workgroup.name}</label>
+			{/if}
+		{/each}
+	{/each} -->
+
 	<div class="w-full items-end gap-4">
 		<TextInput
 			Class="flex-1 h-full placeholder-gray-600 rounded text-gray-500 bg-gray-100 dark:bg-darkobject dark:text-darkmodeText"
@@ -111,7 +121,10 @@
 					<select
 						style="width:100%"
 						class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
-						on:change={(e) => onGroupChange(e?.target?.value)}
+						on:change={(e) => {
+							//@ts-ignore
+							onGroupChange(e?.target?.value);
+						}}
 						id="group"
 						bind:value={filter.group}
 					>
@@ -128,7 +141,10 @@
 					<select
 						style="width:100%"
 						class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
-						on:change={(e) => onWorkGroupChange(e?.target?.value)}
+						on:change={(e) => {
+							//@ts-ignore
+							onWorkGroupChange(e?.target?.value);
+						}}
 						id="work-group"
 					>
 						<option value="">{$_('All')}</option>

@@ -2,7 +2,6 @@
 	import GroupHeader from '$lib/Group/GroupHeader.svelte';
 	import Members from '$lib/Group/Members.svelte';
 	import { type GroupDetails, type SelectablePage } from '$lib/Group/interface';
-	import Delegation from '$lib/Group/Delegation/LegacyDelegation.svelte';
 	import GroupSidebar from '$lib/Group/GroupSidebar.svelte';
 	import Layout from '$lib/Generic/Layout.svelte';
 	import Documents from '$lib/Group/Documents/Documents.svelte';
@@ -110,8 +109,6 @@
 							infoToGet={env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? 'user' : 'group'}
 							Class={`w-full mx-auto my-0`}
 						/>
-					{:else if selectedPage === 'delegation'}
-						<Delegation />
 					{:else if selectedPage === 'members'}
 						<Members />
 					{:else if selectedPage === 'documents'}

@@ -5,7 +5,6 @@
 	import type { GroupUser } from '../interface';
 	import { onDestroy, onMount } from 'svelte';
 	import { kanban as kanbanLimit } from '../../Generic/APILimits.json';
-	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import CreateKanbanEntry from './CreateKanbanEntry.svelte';
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import Fa from 'svelte-fa';
@@ -101,6 +100,10 @@
 
 		if (!res.ok) return;
 		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
+
+		workGroups.forEach(workgroup => {
+			workgroup.group_id = Number(filter.group);
+		});
 	};
 
 	const removeKanbanEntry = (id: number) => {
@@ -162,7 +165,6 @@
 							}}><Fa icon={faPlus} size="12px" /></button
 						>
 					</div>
-					<!-- max-w-[144px] -->
 					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
 						{#if filteredKanbanEntries?.length > 0}
 							{#each filteredKanbanEntries as kanban}
