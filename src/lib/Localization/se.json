@@ -724,5 +724,6 @@
     "Choose a Password": "Välj ett lösenord",
     "Sent Mail": "Skickad e-post",
     "Allowed to vote: ": "Tillåten att rösta: ",
-    "Poll Created": "Omröstning skapad"
+    "Poll Created": "Omröstning skapad",
+    "You cannot delegate as a delegate": "Du kan inte delegera som delegat"
 }

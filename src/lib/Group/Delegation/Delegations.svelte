@@ -225,7 +225,7 @@
 						<Fa icon={faChevronDown} />
 					</div>
 				</button>
-
+				
 				{#if expandedSection === index}
 					<div class="voter-list">
 						{#each delegates as delegate}
