@@ -91,7 +91,7 @@
 			reply_depth: replyDepth,
 			author_id: $userStore?.id || -1,
 			author_name: $userStore?.username || '',
-			author_profile_image: window.localStorage.getItem('pfp-link') || '',
+			author_profile_image: $userStore?.profile_image || '',
 			score: 1,
 			active: true,
 			edited: false,
