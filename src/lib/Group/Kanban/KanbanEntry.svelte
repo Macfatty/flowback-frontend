@@ -293,7 +293,6 @@
 				size={1}
 			/>
 			<div class="break-word text-xs">
-
 				{#if filter.type === 'group'}
 					{kanban.assignee?.username}
 				{:else}
@@ -458,14 +457,14 @@
 					<div class="flex flex-col text-right gap-1 w-full">
 						<p>
 							{#if kanban?.end_date}
-								{new Intl.DateTimeFormat('sv-SE', {
+								{new Intl.DateTimeFormat(navigator?.language, {
 									weekday: 'short',
 									day: '2-digit',
-									month: 'long',
-									year: 'numeric'
+									month: 'long'
 								})
 									.format(new Date(kanban.end_date))
-									.replace(/\b\w/g, (char) => char.toUpperCase())}
+									.replace(/\b\w/g, (char) => char.toLowerCase())
+									.replace(/^\w/, (c) => c.toUpperCase())}
 							{:else}
 								{$_('No end date set')}
 							{/if}
@@ -509,11 +508,8 @@
 	</Modal>
 {/if}
 
- 
-
 <style>
-
-.break {
-	word-break: break-all;
-}
+	.break {
+		word-break: break-all;
+	}
 </style>
