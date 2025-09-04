@@ -14,7 +14,7 @@
 	let threads: Thread[] = [],
 		prev = '',
 		next = '',
-		errorHandler: any,
+		 
 		searchQuery = '',
 		searched = true,
 		workGroups: any[] = [];

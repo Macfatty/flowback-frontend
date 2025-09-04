@@ -29,7 +29,7 @@
 		searchInvitationQuery = '',
 		searchedInvitationUsers: User[] = [],
 		searchedUsers: GroupUser[] = [],
-		errorHandler: any,
+		 
 		showInvite = false,
 		searched = false,
 		delegates: Delegate[] = [],

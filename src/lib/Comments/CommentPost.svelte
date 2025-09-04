@@ -32,7 +32,7 @@
 		showMessage = '',
 		recentlyTappedButton = '',
 		darkmode = false,
-		errorHandler: any,
+		 
 		filteredProposal: proposal | null = null;
 
 	// Reactive subscription to the filtered proposal in the commentsStore

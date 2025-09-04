@@ -20,7 +20,7 @@
 
 	let voting: { score: number; proposal: number }[] = [],
 		needsReload = 0,
-		errorHandler: any,
+		 
 		commentFilterProposalId: number | null = null,
 		delegateVoting: { score: number; proposal: number; raw_score: number }[] = [],
 		style: 'purple' | 'gray' = 'purple';
@@ -187,8 +187,6 @@
 									<VotingSlider
 										bind:phase
 										onSelection={(pos) => {
-											console.log(pos);
-
 											//@ts-ignore
 											changingVote(pos, proposal.id);
 											if (phase === 'delegate_vote') delegateVote();

@@ -38,7 +38,7 @@
 		priority: number | undefined = 3,
 		end_date: string | null = new Date().toISOString().slice(0, 16),
 		loading = false,
-		errorHandler: any,
+		 
 		images: File[] = [],
 		workGroup: number | undefined;
 

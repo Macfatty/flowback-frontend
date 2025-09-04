@@ -32,7 +32,7 @@
 			chat: 1,
 			requested_access: false
 		},
-		errorHandler: any,
+		 
 		open = false,
 		search: string,
 		invites: WorkGroupInvite[] = [],

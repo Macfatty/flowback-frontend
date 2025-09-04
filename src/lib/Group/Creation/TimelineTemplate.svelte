@@ -24,7 +24,7 @@
 
 	let name: string,
 		templates: template[] = [],
-		errorHandler: any,
+		 
 		isUpdating: boolean = false,
 		currentTemplateId: number | null = null;
 

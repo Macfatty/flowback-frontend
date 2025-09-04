@@ -26,7 +26,7 @@
 		description: string,
 		loading = false,
 		status: StatusMessageInfo,
-		errorHandler: any,
+		 
 		blockchain = true,
 		images: File[];
 

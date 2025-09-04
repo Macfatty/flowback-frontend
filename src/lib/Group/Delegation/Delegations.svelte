@@ -19,7 +19,7 @@
 		expandedSection: any = null,
 		previousExpandedSection: any = null,
 		delegateRelations: DelegateRelation[] = [],
-		errorHandler: any,
+		 
 		delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
 
 	onMount(async () => {

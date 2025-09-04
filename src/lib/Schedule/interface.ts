@@ -18,6 +18,7 @@ export interface scheduledEvent {
     repeat_frequency?: number; // 0: Never, 1: Daily, 2: Weekly, 3: Monthly, 4: Yearly, 5: Custom
     assignee_ids?: number[]; // List of assigned group member IDs
     reminders?: number[]; // List of reminder times in seconds
+    schedule_origin_id?: number; // ID of the group where the event was created
 }
 
 export interface WorkGroupScheduledEventCreate {

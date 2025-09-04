@@ -20,7 +20,7 @@
 
 	let delegates: DelegateMinimal[] = [],
 		tags: TagType[] = [],
-		errorHandler: any,
+		 
 		loading = false;
 
 	onMount(async () => {

@@ -285,20 +285,24 @@
 				size={1}
 			/>
 			{$_('My own')}
-		{:else if kanban?.assignee}
-			<ProfilePicture
-				username={kanban?.assignee?.username}
-				profilePicture={kanban?.assignee?.profile_image}
-				Class=""
-				size={1}
-			/>
-			<div class="break-word text-xs">
-				{#if filter.type === 'group'}
-					{kanban.assignee?.username}
-				{:else}
-					{kanban.group_name}
-				{/if}
-			</div>
+		{:else}
+			{$_('Group')}: {kanban.group_name}
+
+			{#if kanban?.assignee}
+				<ProfilePicture
+					username={kanban?.assignee?.username}
+					profilePicture={kanban?.assignee?.profile_image}
+					Class=""
+					size={1}
+				/>
+				<div class="break-word text-xs">
+					{#if filter.type === 'group'}
+						{kanban.assignee?.username}
+					{:else}
+						{kanban.group_name}
+					{/if}
+				</div>
+			{/if}
 		{/if}
 	</button>
 

@@ -55,7 +55,7 @@
 		profileImagePreview = DefaultPFP,
 		bannerImagePreview = '',
 		currentlyEditing: null | 'bio' | 'web' | 'name' | 'phone' | 'email' = null,
-		errorHandler: any,
+		 
 		currentlyCroppingProfile: boolean = false,
 		currentlyCroppingBanner = false,
 		oldProfileImagePreview = '',

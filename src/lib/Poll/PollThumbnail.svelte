@@ -46,7 +46,7 @@
 		selectedTag: number,
 		darkMode: boolean,
 		voting = true,
-		errorHandler: any,
+		 
 		choicesOpen = false,
 		deletePollModalShow = false,
 		reportPollModalShow = false,

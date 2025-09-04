@@ -37,7 +37,7 @@
 		accounts: Account[] = [],
 		next: string,
 		prev: string,
-		errorHandler: any,
+		 
 		totalBalance = 0,
 		filter: Filter = {
 			account_ids: [],

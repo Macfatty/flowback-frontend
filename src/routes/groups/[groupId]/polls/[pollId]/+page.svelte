@@ -34,7 +34,7 @@
 		proposals: proposal[],
 		selectedProposal: proposal | null,
 		proposalsToPredictionMarket: proposal[] = [],
-		errorHandler: any,
+		 
 		displayForm: boolean,
 		comments: Comment[] = [],
 		loading = true;

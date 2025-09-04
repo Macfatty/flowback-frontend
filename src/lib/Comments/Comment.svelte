@@ -23,7 +23,7 @@
 
 	let userUpVote: -1 | 0 | 1 = 0,
 		comments: Comment[],
-		errorHandler: any,
+		 
 		isVoting = false,
 		ReportCommentModalShow = false,
 		reportTitle: string,

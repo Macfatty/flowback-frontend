@@ -21,7 +21,7 @@
 	let kanbanEntries: kanban[] = [],
 		assignee: number | null = null,
 		users: GroupUser[] = [],
-		errorHandler: any,
+		 
 		interval: any,
 		open = false,
 		numberOfOpen = 0,

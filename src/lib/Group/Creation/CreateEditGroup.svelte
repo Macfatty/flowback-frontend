@@ -30,7 +30,7 @@
 		publicGroup = true,
 		hiddenGroup = true,
 		loading = false,
-		errorHandler: any,
+		 
 		oldGroup: any;
 
 	//This page also supports the edit of groups
