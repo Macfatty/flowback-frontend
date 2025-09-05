@@ -74,9 +74,9 @@
 		<label><input type="checkbox" value={group.id} />{group.name}</label>
 
 		{#each workGroups as workgroup}
-			{#if workgroup.group_id === group.id}
-				<label class="ml-4"><input type="checkbox" value={workgroup.id} />{workgroup.name}</label>
-			{/if}
+		<label><input type="checkbox" value={group.id} />------{workgroup.name}</label>
+		<label><input type="checkbox" value={group.id} />------{workgroup.name}</label>
+		<label><input type="checkbox" value={group.id} />------{workgroup.name}</label>
 		{/each}
 	{/each} -->
 

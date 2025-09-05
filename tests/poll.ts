@@ -1,7 +1,8 @@
 import { expect } from '@playwright/test';
 
 export async function fastForward(page: any, times = 1) {
-    await page.locator('#poll-header-multiple-choices').nth(0).click();
+    await expect(page.locator('#poll-header-multiple-choices')).toBeVisible();
+    await page.locator('#poll-header-multiple-choices').getByRole('button').click();
     for (let i = 0; i < times; i++) {
         await page.waitForTimeout(300);
         await page.getByRole('button', { name: 'Fast Forward' }).click();
