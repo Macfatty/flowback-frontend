@@ -21,6 +21,7 @@
 	let voting: { score: number; proposal: number }[] = [],
 		needsReload = 0,
 		commentFilterProposalId: number | null = null,
+		// What my delegate has voted on
 		delegateVoting: { score: number; proposal: number; raw_score: number }[] = [];
 
 	onMount(async () => {
@@ -53,6 +54,7 @@
 		proposals = json?.results;
 	};
 
+	// Getting one's own votes
 	const getVotes = async () => {
 		const { json, res } = await fetchRequest(
 			'GET',
@@ -73,6 +75,7 @@
 		voting = voting;
 	};
 
+	// Getting the vote from one's delegate
 	const getDelegateVotes = async () => {
 		const { res, json } = await fetchRequest(
 			'GET',
@@ -88,10 +91,9 @@
 			score: vote.raw_score,
 			proposal: vote.proposal_id
 		}));
-
-		// voting = delegateVoting;
 	};
 
+	// Voting as a delegate
 	const delegateVote = async () => {
 		const { json, res } = await fetchRequest(
 			`POST`,
@@ -153,12 +155,16 @@
 	};
 
 	const getScore = (proposal: proposal) => {
+		console.log(phase, 'PHASE');
+		
 		if (phase === 'delegate_vote') {
-			return delegateVoting?.find((vote) => vote.proposal === proposal.id)?.score;
+			return voting?.find((vote) => vote.proposal === proposal.id)?.score;
 		} else if (phase === 'vote') {
 			return voting?.find((vote) => vote.proposal === proposal.id)?.score;
 		}
 	};
+
+	$: console.log(voting, delegateVoting, 'VOTE');
 </script>
 
 <div class={`box-border ${Class}`}>
