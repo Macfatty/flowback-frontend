@@ -155,13 +155,7 @@
 	};
 
 	const getScore = (proposal: proposal) => {
-		console.log(phase, 'PHASE');
-		
-		if (phase === 'delegate_vote') {
-			return voting?.find((vote) => vote.proposal === proposal.id)?.score;
-		} else if (phase === 'vote') {
-			return voting?.find((vote) => vote.proposal === proposal.id)?.score;
-		}
+		return voting?.find((vote) => vote.proposal === proposal.id)?.score;
 	};
 
 	$: console.log(voting, delegateVoting, 'VOTE');
