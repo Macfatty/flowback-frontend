@@ -201,7 +201,6 @@
 	{workGroups}
 	{reminderOptions}
 	{frequencyOptions}
-	{errorHandler}
 />
 
 <!-- Modal 3: View Event Modal -->
