@@ -47,7 +47,4 @@ test('Delegation', async ({ page }) => {
 
     await login(page, { email: 'b@b.se', password: 'b' });
 
-
-
-
 });
