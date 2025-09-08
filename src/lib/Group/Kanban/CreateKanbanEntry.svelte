@@ -250,7 +250,7 @@
 						<span class="block text-md">
 							{$_('Attachments')}
 						</span>
-						<FileUploads bind:files={images} />
+						<FileUploads bind:files={images} disableCropping/>
 					</div>
 				</div>
 			</div>
