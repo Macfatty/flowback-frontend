@@ -6,8 +6,6 @@
 	import { page } from '$app/stores';
 	import { _ } from 'svelte-i18n';
 	import Loader from '$lib/Generic/Loader.svelte';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import type { poll, proposal } from './interface';
 	import { getProposals } from '$lib/Generic/AI';
@@ -25,7 +23,7 @@
 	let title: string,
 		description: string,
 		loading = false,
-		status: StatusMessageInfo,
+  
 		 
 		blockchain = true,
 		images: File[];
@@ -123,7 +121,7 @@
 		{/if}
 
 		<FileUploads Class="mt-4" bind:files={images} />
-		<StatusMessage bind:status />
+		 
 
 		<Button
 			buttonStyle="primary-light"

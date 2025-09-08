@@ -15,8 +15,6 @@
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import Button from '$lib/Generic/Button.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import type { poppup } from '$lib/Generic/Poppup';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
@@ -72,7 +70,7 @@
 		groupList: Group[] = [],
 		workGroups: WorkGroup[] = [],
 		workGroupFilter: number[] = [],
-		status: StatusMessageInfo,
+  
 		 
 		filter: Filter = {
 			assignee: null,
@@ -270,7 +268,6 @@
 			'GET',
 			`group/list?limit=${groupMembersLimit}` + urlFilter
 		);
-		status = statusMessageFormatter(res, json);
 
 		if (!res.ok) return;
 

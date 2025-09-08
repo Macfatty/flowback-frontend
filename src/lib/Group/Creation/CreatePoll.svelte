@@ -209,7 +209,7 @@
 		getWorkGroupList();
 	});
 
-	// $: if (selectedPage) status = undefined;
+	// $: if (selectedPage) ErrorHandlerStore.set(undefined;
 </script>
 
 <button

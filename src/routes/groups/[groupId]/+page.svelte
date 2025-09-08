@@ -14,7 +14,6 @@
 	import Tags from '$lib/Group/Tags.svelte';
 	import KanbanBoard from '$lib/Group/Kanban/KanbanBoard.svelte';
 	import { _ } from 'svelte-i18n';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import Permissions from '$lib/Group/Permissions/Permissions.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import Schedule from '$lib/Schedule/Schedule.svelte';
@@ -56,7 +55,6 @@
 		// console.log(group, 'GROUPPP');
 		memberCount = json.member_count;
 		userInGroup = !(json.detail && json.detail[0] === 'User is not in group');
-		statusMessageFormatter(res, json);
 	};
 
 	let hasMounted = false;
@@ -122,7 +120,7 @@
 					{:else if selectedPage === 'tags'}
 						<Tags />
 					{:else if selectedPage === 'kanban'}
-						<KanbanBoard type="group" />
+						<!-- <KanbanBoard type="group" /> -->
 					{:else if selectedPage === 'perms'}
 						<Permissions />
 					{:else if selectedPage === 'schedule'}

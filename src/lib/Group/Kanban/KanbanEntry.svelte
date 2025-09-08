@@ -124,8 +124,6 @@
 			false
 		);
 
-		console.log(res, json);
-
 		isEditing = false;
 
 		if (!res.ok) {

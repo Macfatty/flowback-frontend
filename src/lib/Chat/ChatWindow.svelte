@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { type Message, type Message1, type PreviewMessage } from './interfaces';
 	import Button from '$lib/Generic/Button.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
@@ -9,7 +10,6 @@
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import Fa from 'svelte-fa';
 	import { faPaperPlane, faSmile, faUsers } from '@fortawesome/free-solid-svg-icons';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
 	import { messageStore } from './Socket';
 	import { onMount, onDestroy } from 'svelte';
 	import Socket from './Socket';
@@ -28,7 +28,6 @@
 		olderMessages: string,
 		newerMessages: string,
 		showEmoji = false,
-		status: { message: any; success: boolean },
 		messages: Message[] = [],
 		socket: WebSocket,
 		chatWindow: any,
@@ -91,7 +90,7 @@
 
 		const didSend = await Socket.sendMessage(socket, selectedChatChannelId, message, 1);
 		if (!didSend) {
-			status = { message: 'Could not send message', success: false };
+			ErrorHandlerStore.set({ message: 'Could not send message', success: false });
 			return;
 		}
 
@@ -303,7 +302,6 @@
 					</Button>
 				</li>
 			{/if}
-			<StatusMessage bind:status disableSuccess />
 		</ul>
 		<div class="border-t-2 border-t-gray-200 w-full">
 			<form

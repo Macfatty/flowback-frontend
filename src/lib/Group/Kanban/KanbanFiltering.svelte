@@ -8,7 +8,7 @@
 	import type { Group } from '$lib/Group/interface';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 
 	export let filter: Filter,
@@ -18,7 +18,7 @@
 
 	let searched = true;
 	let groupList: Group[] = [],
-		status: StatusMessageInfo,
+  
 		loading = false;
 
 	const onGroupChange = async (id: string) => {
@@ -48,7 +48,7 @@
 			'GET',
 			`group/list?limit=${groupMembersLimit}` + urlFilter
 		);
-		status = statusMessageFormatter(res, json);
+		ErrorHandlerStore.set(statusMessageFormatter(res, json));
 
 		if (!res.ok) return;
 
