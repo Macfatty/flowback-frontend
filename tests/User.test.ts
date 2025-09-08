@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { login, logout } from './generic';
 
 test('Edit User', async ({ page }) => {
-    login(page);
+    await login(page);
     await page.getByRole('button', { name: 'default pfp' }).click();
     await page.getByRole('button', { name: 'User Profile', exact: true }).click();
     await page.getByRole('button').nth(3).click();

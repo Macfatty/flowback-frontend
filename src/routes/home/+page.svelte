@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import Layout from '$lib/Generic/Layout.svelte';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import { homePolls as homePollsLimit } from '$lib/Generic/APILimits.json';
@@ -21,8 +19,7 @@
 		profile_image: string;
 	}
 
-	let invitations: Invitation[] = [],
-		status: StatusMessageInfo;
+	let invitations: Invitation[] = [];
 
 	onMount(async () => {
 		if (env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') goto('groups/1');
@@ -55,12 +52,10 @@
 
 	const getPolls = async () => {
 		const { res, json } = await fetchRequest('GET', `home/polls?limit=${homePollsLimit}`);
-		status = statusMessageFormatter(res, json);
 	};
 
 	const getHome = async () => {
 		const { res, json } = await fetchRequest('GET', `user/home`);
-		status = statusMessageFormatter(res, json);
 	};
 </script>
 

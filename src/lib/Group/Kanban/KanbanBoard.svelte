@@ -21,7 +21,6 @@
 	let kanbanEntries: kanban[] = [],
 		assignee: number | null = null,
 		users: GroupUser[] = [],
-		 
 		interval: any,
 		open = false,
 		numberOfOpen = 0,
@@ -91,8 +90,9 @@
 		let api = `group/${filter.group}/users?limit=${kanbanLimit}`;
 
 		const { json, res } = await fetchRequest('GET', api);
-		if (!res.ok) return [];
-		return json?.results;
+		if (!res.ok) return;
+
+		users = json?.results;
 	};
 
 	const getWorkGroupList = async () => {
@@ -101,7 +101,7 @@
 		if (!res.ok) return;
 		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
 
-		workGroups.forEach(workgroup => {
+		workGroups.forEach((workgroup) => {
 			workgroup.group_id = Number(filter.group);
 		});
 	};
@@ -128,7 +128,7 @@
 		assignee = $userStore?.id || -1;
 		await getKanbanEntries();
 		await getWorkGroupList();
-		users = await getGroupUsers();
+		await getGroupUsers();
 
 		interval = setInterval(async () => {
 			if (numberOfOpen === 0) await getKanbanEntries();
@@ -140,11 +140,15 @@
 	});
 
 	$: filter.group && getWorkGroupList();
+	$: filter.group && getGroupUsers();
 
 	$: if (filter.type) getKanbanEntries();
 </script>
 
-<div id="kanban-board" class={'dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words' + Class}>
+<div
+	id="kanban-board"
+	class={'dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words' + Class}
+>
 	<KanbanFiltering bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" />
 
 	<div class="flex overflow-x-auto py-3">
@@ -204,10 +208,8 @@
 	bind:open
 	bind:filter
 	bind:kanbanEntries
-	{users}
+	bind:users
 	bind:workGroups
 	bind:lane
 	{getKanbanEntries}
 />
-
- 

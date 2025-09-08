@@ -1,18 +1,16 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
 	import { _ } from 'svelte-i18n';
 	import TextInput from '../Generic/TextInput.svelte';
 	import { mailStore } from './stores';
 	import TermsOfService from './TermsOfService.svelte';
-	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	let email: string,
-		status: StatusMessageInfo,
+  
 		loading = false,
 		acceptedToS = false,
 		usernameError: string = '',

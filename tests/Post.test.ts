@@ -9,10 +9,10 @@ test('Poll-Start-To-Finish', async ({ page }) => {
     let group = { name: "Test Group Poll", public: false }
 
     try {
-        await createGroup(page, group)
+        await gotoGroup(page, group)
     }
     catch {
-        gotoGroup(page, group)
+        await createGroup(page, group)
     }
 
     // try {
@@ -60,7 +60,7 @@ test('Date-Poll', async ({ page }) => {
         await createGroup(page, group)
     }
     catch {
-        gotoGroup(page, group)
+        await gotoGroup(page, group)
     }
 
     await gotoGroup(page, group);
@@ -73,9 +73,9 @@ test('Date-Poll', async ({ page }) => {
     await page.locator('button:nth-child(64)').click();
     await page.getByRole('button', { name: 'Submit' }).click();
 
-    fastForward(page, 1);
+    await fastForward(page, 1);
 
-    expect(page.getByText('Results', { exact: true })).toBeVisible();
+    await expect(page.getByText('Results', { exact: true })).toBeVisible();
 });
 
 test('Thread-Create-Report-Delete', async ({ page }) => {

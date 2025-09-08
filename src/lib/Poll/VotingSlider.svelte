@@ -61,7 +61,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-	class="w-full bg-white dark:bg-darkobject py-3 px-1 rounded-lg relative"
+	class="w-full bg-white dark:bg-darkobject rounded-lg relative"
 	class:opacity-50={disabled}
 	class:draggable={!disabled &&
 		(($groupUserStore?.delegate_pool_id && phase === 'delegate_vote') ||
@@ -69,13 +69,10 @@
 	on:mousedown={(e) => {
 		if (!disabled) onMouseDown(e);
 	}}
+	class:cursor-grab={!disabled}
+	class:cursor-not-allowed={disabled}
 >
-	<div
-		id="track-container"
-		class="p-1 relative w-full h-3 bg-purple-200 rounded-full"
-		class:cursor-grab={!disabled}
-		class:cursor-not-allowed={disabled}
-	>
+	<div id="track-container" class=" relative w-full h-3 bg-purple-200 rounded-full">
 		<!-- Active bar -->
 		<div
 			class="absolute top-0 left-0 h-full"

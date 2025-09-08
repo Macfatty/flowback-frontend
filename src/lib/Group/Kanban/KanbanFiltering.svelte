@@ -8,7 +8,7 @@
 	import type { Group } from '$lib/Group/interface';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 
 	export let filter: Filter,
@@ -18,7 +18,7 @@
 
 	let searched = true;
 	let groupList: Group[] = [],
-		status: StatusMessageInfo,
+  
 		loading = false;
 
 	const onGroupChange = async (id: string) => {
@@ -48,7 +48,7 @@
 			'GET',
 			`group/list?limit=${groupMembersLimit}` + urlFilter
 		);
-		status = statusMessageFormatter(res, json);
+		ErrorHandlerStore.set(statusMessageFormatter(res, json));
 
 		if (!res.ok) return;
 
@@ -74,9 +74,9 @@
 		<label><input type="checkbox" value={group.id} />{group.name}</label>
 
 		{#each workGroups as workgroup}
-			{#if workgroup.group_id === group.id}
-				<label class="ml-4"><input type="checkbox" value={workgroup.id} />{workgroup.name}</label>
-			{/if}
+		<label><input type="checkbox" value={group.id} />------{workgroup.name}</label>
+		<label><input type="checkbox" value={group.id} />------{workgroup.name}</label>
+		<label><input type="checkbox" value={group.id} />------{workgroup.name}</label>
 		{/each}
 	{/each} -->
 

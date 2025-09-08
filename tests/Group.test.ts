@@ -15,12 +15,12 @@ test('Create-Delete-Group', async ({ page }) => {
 
     // Workgroup testing
     await page.getByRole('button', { name: 'Work Groups' }).click();
-    await page.getByRole('button', { name: '+ Add Group' }).click();
+    await page.getByRole('button', { name: '+ Add Workgroup' }).click();
     await page.getByLabel('Name * 0/').click();
     await page.getByLabel('Name * 0/').fill('Test Workgroup directjoin');
     await page.getByRole('button', { name: 'Create', exact: true }).click();
     await page.getByRole('button', { name: 'Join', exact: true }).click();
-    await page.getByRole('button', { name: '+ Add Group' }).click();
+    await page.getByRole('button', { name: '+ Add Workgroup' }).click();
     await page.getByLabel('No').check();
     await page.getByLabel('Name * 0/').click();
     await page.getByLabel('Name * 0/').fill('Test group invite only');

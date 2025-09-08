@@ -55,7 +55,9 @@
 	{/if}
 
 	<div class="mt-6 mb-2 flex gap-2">
-		<Button Class="flex-1" buttonStyle="primary" onClick={handleCrop}>{$_('Confirm')}</Button>
+		<Button Class="flex-1" buttonStyle="primary" onClick={handleCrop} id="cropper-confirm"
+			>{$_('Confirm')}</Button
+		>
 		<Button Class="flex-1 bg-gray-500" buttonStyle="default" onClick={cancelAction}
 			>{$_('Cancel')}</Button
 		>

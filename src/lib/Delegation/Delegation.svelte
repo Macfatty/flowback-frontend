@@ -139,6 +139,7 @@
 					values={groups}
 					innerLabelOn={true}
 					disableFirstChoice
+					id="delegate-group-select"
 				/>
 			{/if}
 

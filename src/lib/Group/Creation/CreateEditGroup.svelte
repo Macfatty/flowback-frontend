@@ -7,8 +7,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { _ } from 'svelte-i18n';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
-	import { blobifyImages, type StatusMessageInfo } from '$lib/Generic/GenericFunctions';
+	import { blobifyImages } from '$lib/Generic/GenericFunctions';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
@@ -35,7 +34,7 @@
 
 	//This page also supports the edit of groups
 	const groupToEdit = $page.url.searchParams.get('group') || $page.params.groupId;
-	let status: StatusMessageInfo;
+
 	let DeleteGroupModalShow = false;
 
 	//This function is also used for group editing
@@ -176,7 +175,7 @@
 				/>
 			{/if}
 
-			<StatusMessage bind:status />
+			 
 
 			<div class="flex gap-4">
 				<Button type="submit" disabled={loading} buttonStyle="primary" Class="w-1/2"

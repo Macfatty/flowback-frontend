@@ -16,7 +16,8 @@
 		innerLabel: string | null = 'Select',
 		innerLabelOn: boolean = false,
 		charlimit = 30,
-		disableFirstChoice = false;
+		disableFirstChoice = false,
+		id: string = '';
 
 	// onMount(() => {
 	// 	value = defaultValue;
@@ -35,6 +36,7 @@
 		class={`rounded p-1 dark:bg-darkobject ${classInner}`}
 		style="width:100%"
 		name={label}
+		{id}
 	>
 		{#if innerLabel}
 			<option value="" disabled={disableFirstChoice} selected>{$_(innerLabel)}</option>

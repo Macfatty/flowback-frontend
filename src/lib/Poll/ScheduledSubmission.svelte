@@ -6,12 +6,11 @@
 	import type { proposal } from './interface';
 	import { formatDate } from './functions';
 	import Loader from '$lib/Generic/Loader.svelte';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import { maxDatePickerYear } from '$lib/Generic/DateFormatter';
 
-	let start_date: Date | null, end_date: Date | null, loading = false, status:StatusMessageInfo;
+	let start_date: Date | null, end_date: Date | null, loading = false;
 
 	export let abstained: proposal[];
 
@@ -26,7 +25,7 @@
 			}
 		);
 		loading = false
-		status = statusMessageFormatter(res, json)
+		ErrorHandlerStore.set(statusMessageFormatter(res, json))
 		
 		if (res.ok && start_date !== null && end_date !== null){
 			abstained.push({
@@ -64,6 +63,5 @@
 		/>
 
 		<Button Class="mt-4" type="submit" label="Add" />
-		<StatusMessage bind:status Class="mt-4" />
 	</Loader>
 </form>

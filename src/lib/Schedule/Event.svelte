@@ -197,11 +197,11 @@
 	bind:showEditScheduleEvent
 	bind:showEvent
 	bind:events
+	editedEvent={selectedEvent}
 	{type}
 	{workGroups}
 	{reminderOptions}
 	{frequencyOptions}
-	{errorHandler}
 />
 
 <!-- Modal 3: View Event Modal -->

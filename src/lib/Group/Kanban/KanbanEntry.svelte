@@ -21,6 +21,7 @@
 	import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 	import Select from '$lib/Generic/Select.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import FileUploads from '$lib/Generic/FileUploads.svelte';
 
 	export let kanban: kanban,
 		filter: Filter,
@@ -122,8 +123,6 @@
 			true,
 			false
 		);
-
-		console.log(res, json);
 
 		isEditing = false;
 
@@ -436,7 +435,7 @@
 						<div class="block text-md">
 							{$_('Attachments')}
 						</div>
-						<!-- <FileUploads bind:images={kanbanEdited.images} /> -->
+						<FileUploads bind:files={kanbanEdited.images} disableCropping />
 					</div>
 				</div>
 				<!-- If not editing, so normal display -->

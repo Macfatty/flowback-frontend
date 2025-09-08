@@ -16,7 +16,6 @@
 	import { _ } from 'svelte-i18n';
 	import NewDescription from './NewDescription.svelte';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import ReportPostModal from './ReportPostModal.svelte';
 	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 	import DeletePostModal from './DeletePostModal.svelte';
@@ -36,6 +35,7 @@
 <div
 	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded shadow w-full poll-header-grid py-4"
 >
+
 	<button
 		class="cursor-pointer bg-white dark:bg-darkobject dark:text-darkmodeText justify-center m-auto"
 		on:click={() => {
@@ -83,6 +83,7 @@
 	</div>
 
 	<div class="flex gap-4 items-baseline grid-area-items my-1">
+		Workgroup: {poll.work_group_id}
 		{#if poll?.poll_type === 4}
 			<HeaderIcon Class="cursor-default" icon={faAlignLeft} text={'Text Poll'} />
 		{:else if poll?.poll_type === 3}

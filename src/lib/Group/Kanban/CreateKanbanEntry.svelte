@@ -102,7 +102,7 @@
 
 		kanbanEntries.push({
 			assignee: _assignee,
-			group: { id: 0, image: '', name: '' },
+			// group: { id: 0, image: '', name: '' },
 			description,
 			lane,
 			title,
@@ -250,7 +250,7 @@
 						<span class="block text-md">
 							{$_('Attachments')}
 						</span>
-						<FileUploads bind:files={images} />
+						<FileUploads bind:files={images} disableCropping/>
 					</div>
 				</div>
 			</div>

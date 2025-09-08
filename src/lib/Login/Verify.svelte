@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import Loader from '$lib/Generic/Loader.svelte';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
 	import { _ } from 'svelte-i18n';
 	import TextInput from '../Generic/TextInput.svelte';
 	import { mailStore } from './stores';
@@ -18,11 +16,9 @@
 
 	let verification_code: string,
 		password: string,
-		status: StatusMessageInfo,
 		loading = false,
 		acceptedEmailNotifications = false,
-		username: string,
-		errorHandler: any;
+		username: string;
 
 	const validateUsername = () => {
 		if (!username) {
@@ -55,12 +51,12 @@
 				json?.detail[0] === 'Not found.' ||
 				json?.detail[0] === 'Verification code has already been used.'
 			)
-				ErrorHandlerStore.set({ message: 'Wrong verification code' });
+				ErrorHandlerStore.set({ message: 'Wrong verification code', success: false });
 			else if (json?.detail?.non_field_errors)
-				ErrorHandlerStore.set({ message: json?.detail?.non_field_errors[0] });
+				ErrorHandlerStore.set({ message: json?.detail?.non_field_errors[0], success: false });
 			else if (json?.detail?.username)
-				ErrorHandlerStore.set({ message: json?.detail?.username[0] });
-			else ErrorHandlerStore.set({ message: 'Something went wrong' });
+				ErrorHandlerStore.set({ message: json?.detail?.username[0], success: false });
+			else ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 
 			return;
 		}
@@ -87,7 +83,7 @@
 		}
 
 		//Done with account registration, redirect
-		status = { message: 'Success', success: true };
+		ErrorHandlerStore.set({ message: 'Success', success: true });
 		localStorage.setItem('token', json.token);
 
 		{
@@ -152,7 +148,7 @@
 			centering={true}
 			bind:Yes={acceptedEmailNotifications}
 		/>
-		<StatusMessage bind:status />
+		 
 		<Button type="submit">
 			{$_('Send')}
 		</Button>
