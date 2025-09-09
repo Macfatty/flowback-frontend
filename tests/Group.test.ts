@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { login } from './generic';
 import { createGroup, deleteGroup, gotoGroup, joinGroup } from './group';
 
-const group = { name: "Test Group Group-Testing", public: false }
+const group = { name: "Test Group Group-Testing", public: true }
 
 test('Create Group', async ({ page }) => {
     await login(page)
@@ -15,7 +15,7 @@ test('Go To Group', async ({ page }) => {
 })
 
 test('Join Group', async ({ page }) => {
-    await login(page)
+    await login(page, {email:"b@b.se", password:"b"})
     await joinGroup(page, group)
 })
 

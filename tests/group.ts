@@ -43,12 +43,13 @@ export async function gotoGroup(page: any, group = { name: 'Test Group' }) {
 }
 
 export async function joinGroup(page: any, group = { name: 'Test Group' }) {
-    await page.locator('#groups').click();
-    await expect(page.locator('#groups-list')).toBeVisible();
-    const groupLink = page.locator('#test-group')
-    await expect(groupLink).toBeVisible();
-    await groupLink.click();
-    await page.locator('#groups-list div').filter({ hasText: 'Test Group Test Group' }).locator('#group-join-button').click();
+    await page.locator("#groups").click();
+    await page.getByPlaceholder('Search groups').click();
+    await page.getByPlaceholder('Search groups').fill(group.name);
+    await page.getByRole('heading', { name: group.name, exact: true });
+    const joinButton = await page.locator('#groups-list div').filter({ hasText: group.name }).locator('#group-join-button');
+    if ((await joinButton.innerText()).trim() === "Join")
+        await joinButton.click();
 }
 
 export async function deleteGroup(page: any, group = { name: 'Test Group', public: false }) {
