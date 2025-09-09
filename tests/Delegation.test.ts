@@ -32,6 +32,26 @@ test('Delegation', async ({ page }) => {
     // await page.getByRole('button', { name: 'Become delegate' }).nth(1).click();
     await expect(page.getByRole('button', { name: 'Stop being delegate' })).toBeVisible();
 
+ 
+
+    const browser = await chromium.launch();
+    const bContext = await browser.newContext();
+    const bPage = await bContext.newPage();
+
+    await login(bPage, { email: 'b@b.se', password: 'b' });
+    await joinGroup(bPage, group);
+
+
+    await page.waitForTimeout(1000)
+    await bPage.getByRole('link', { name: 'Delegations' }).click();
+    await page.waitForTimeout(1000)
+    await bPage.locator('#delegate-group-select').selectOption({ label: group.name });
+    await page.waitForTimeout(1000)
+    await bPage.getByRole('button', { name: 'Uncategorised' }).click();
+    await page.waitForTimeout(1000)
+    await bPage.getByRole('radio').first().check();
+    await page.waitForTimeout(1000)
+
     await gotoGroup(page, group);
 
     const title = `Test Poll for Delegation ${Math.floor(Math.random() * 10000)}`;
@@ -45,21 +65,8 @@ test('Delegation', async ({ page }) => {
 
     await delegateVote(page);
 
-    const browser = await chromium.launch();
-    const bContext = await browser.newContext();
-    const bPage = await bContext.newPage();
-
-    await login(bPage, { email: 'b@b.se', password: 'b' });
-    await joinGroup(bPage, group);
-
-
-    await bPage.getByRole('link', { name: 'Delegations' }).click();
-    await bPage.locator('#delegate-group-select').selectOption({ label: group.name });
-    await bPage.getByRole('button', { name: 'Uncategorised' }).click();
-    await bPage.getByRole('radio').first().check();
-
     await goToPost(bPage, { title });
+    // await page.waitForTimeout(100000)
 
-    
 
 });
