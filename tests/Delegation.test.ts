@@ -1,7 +1,7 @@
-import { test, expect } from '@playwright/test';
-import {  login, logout } from './generic';
-import { createPoll, createProposal, delegateVote, fastForward } from './poll';
-import { createGroup, gotoGroup } from './group';
+import { test, expect, firefox, chromium } from '@playwright/test';
+import { login, logout } from './generic';
+import { createPoll, createProposal, delegateVote, fastForward, goToPost } from './poll';
+import { createGroup, gotoGroup, joinGroup } from './group';
 
 test('Delegation', async ({ page }) => {
     await login(page);
@@ -18,7 +18,7 @@ test('Delegation', async ({ page }) => {
     await page.waitForTimeout(300);
     await page.getByRole('button', { name: 'Become delegate' }).click();
     // await page.waitForTimeout(300);
-   
+
     // Check if already a delegate
     if (await page.getByRole('button', { name: 'Stop being delegate' }).isVisible()) {
         await page.getByRole('button', { name: 'Stop being delegate' }).click();
@@ -34,7 +34,8 @@ test('Delegation', async ({ page }) => {
 
     await gotoGroup(page);
 
-    await createPoll(page, { title: 'Test Poll for Delegation' });
+    const title = `Test Poll for Delegation ${Math.floor(Math.random() * 10000)}`;
+    await createPoll(page, { title });
 
     await fastForward(page, 1);
 
@@ -44,8 +45,13 @@ test('Delegation', async ({ page }) => {
 
     await delegateVote(page);
 
-    await logout(page);
+    const browser = await chromium.launch();
+    const bContext = await browser.newContext();
+    const bPage = await bContext.newPage();
 
-    await login(page, { email: 'b@b.se', password: 'b' });
+    await login(bPage, { email: 'b@b.se', password: 'b' });
+    await joinGroup(bPage, group);
+    await goToPost(bPage, { title });
+
 
 });

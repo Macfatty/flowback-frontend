@@ -1,7 +1,20 @@
 import { test, expect } from '@playwright/test';
-import { areaVote, createPoll, createProposal, delegateVote, fastForward, predictionProbability, predictionStatementCreate, results, vote } from './poll';
+import { areaVote, createPoll, createProposal, delegateVote, fastForward, goToPost, predictionProbability, predictionStatementCreate, results, vote } from './poll';
 import { login } from './generic';
 import { gotoGroup, createArea, createGroup, deleteGroup } from './group';
+
+test('Go-To-Post', async ({ page }) => {
+    await login(page);
+    
+    const group = { name: "Test Group Poll", public: false }
+    await gotoGroup(page, group)
+
+    //Random poll name
+    const pollTitle = `Test Poll ${Math.floor(Math.random() * 10000)}`;
+    const poll = { title: pollTitle, date: false }
+    await createPoll(page, poll);
+    await goToPost(page, poll);
+})
 
 
 test('Poll-Start-To-Finish', async ({ page }) => {
