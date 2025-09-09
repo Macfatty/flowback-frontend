@@ -12,7 +12,6 @@
 
 	let username: string,
 		password: string,
-  
 		loading = false,
 		remainLoggedIn = false;
 
@@ -23,7 +22,11 @@
 		const { json, res } = await fetchRequest('POST', 'login', { username, password }, false);
 		loading = false;
 
-		if (!res.ok) ErrorHandlerStore.set({ message: json.detail.non_field_errors[0], success: false });
+		if (!res.ok)
+			ErrorHandlerStore.set({
+				message: json.detail.non_field_errors[0] ?? 'Something went wrong',
+				success: false
+			});
 		else if (json?.token) {
 			await localStorage.setItem('token', json.token);
 
@@ -67,6 +70,7 @@
 					onChange={(e) => (remainLoggedIn = !remainLoggedIn)}
 				/>
 				<button
+					type="button"
 					class="cursor-pointer hover:underline text-gray-400"
 					on:click={() => (selectedPage = 'ForgotPassword')}
 				>
@@ -79,11 +83,9 @@
 
 		<Button
 			type="submit"
-			buttonStyle="primary-light"
+			buttonStyle="primary"
 			disabled={username === '' || password === ''}
 			Class="w-[250px]">{$_('Login')}</Button
 		>
-
-		 
 	</form>
 </Loader>

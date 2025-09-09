@@ -30,6 +30,9 @@
 
 		if (localStorage.getItem('token')) goto('/home');
 	});
+
+	$: console.log(selectedPage, "PAGE");
+	
 </script>
 
 <svelte:head>
