@@ -1,8 +1,12 @@
 import test from '@playwright/test';
-import { joinGroup, login, logout, gotoGroup, createGroup, deleteGroup } from './generic';
+import { joinGroup, login, logout, gotoGroup, createGroup, deleteGroup, loginEnter } from './generic';
 
 test('Login', async ({ page }) => {
   await login(page)
+})
+
+test('Login-Enter', async ({ page }) => {
+  await loginEnter(page)
 })
 
 test('Logout', async ({ page }) => {

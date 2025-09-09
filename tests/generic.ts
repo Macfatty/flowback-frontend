@@ -19,6 +19,21 @@ export async function login(page: any, {
     }
 }
 
+export async function loginEnter(page: any, {
+    email = process.env.E2E_EMAIL ?? 'a@a.se',
+    password = process.env.E2E_PASSWORD ?? 'a',
+} = {}) {
+    await page.goto('/login');
+    await expect(page.locator('#login-page')).toBeVisible();
+    await page.waitForTimeout(700);
+
+    await page.fill('input[name="email"]', email);
+    await page.fill('input[name="password"]', password);
+    await page.getByLabel('Password * 1/').press('Enter');
+
+    await expect(page).toHaveURL('/home?chatOpen=false');
+}
+
 export async function logout(page: any) {
     await page.getByRole('button', { name: 'default pfp' }).click();
     await page.getByRole('button', { name: 'Log Out', exact: true }).click();
