@@ -49,15 +49,37 @@ export async function register(page: any) {
     await page.getByRole('button', { name: 'Send' }).click();
     await expect(page.getByText('Email already exists.')).toBeVisible();
 
-    const randomEmail = `${Math.random().toString(36).slice(2, 10)}@aaa.se`;
+    const randomUSername = Math.random().toString(36).slice(2, 10);
+    const randomEmail = `${randomUSername}@flowback.test`;
     await page.getByLabel('Email * 6/').fill(randomEmail);
+
+    let registrationCode = '';
+    let urlAttempt = 0;
+    page.on('response', async (response: any) => {
+        if (urlAttempt === 0) {
+            registrationCode = await response.text()
+            urlAttempt++;
+        }
+    });
+
     await page.getByRole('button', { name: 'Send' }).click();
     await expect(page.getByText('Email Sent')).toBeVisible();
     await expect(page.getByText('Mail Sent')).toBeVisible();
 
-    const registerResponse = await page.waitForResponse((response:any) =>
-        response.url().includes('register') && response.status() === 200
-    );
+    await page.getByLabel('Verification Code * 0/').click();
+    await page.getByLabel('Verification Code * 0/').fill('geageageadgea');
+    await page.getByLabel('Username * 0/').click();
+    await page.getByLabel('Username * 0/').fill(randomUSername);
+    await page.getByLabel('Choose a Password * 0/').click();
+    await page.getByLabel('Choose a Password * 0/').fill('SecretPassword123123!');
+    await page.getByRole('button', { name: 'Send' }).click();
+    await expect(page.getByText('Wrong verification code')).toBeVisible();
+    await page.getByLabel('Verification Code * 13/').click();
+    await page.getByLabel('Verification Code * 13/').press('Control+a');
+    await page.getByLabel('Verification Code * 13/').fill(registrationCode.replace("\"", "").replace("\"", ""));
+    await page.getByRole('button', { name: 'Send' }).click();
+    await expect(page.getByText('Success')).toBeVisible();
+    await expect(page).toHaveURL('/home?chatOpen=false');
 }
 
 export async function logout(page: any) {
