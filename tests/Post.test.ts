@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { areaVote, createPoll, createProposal, delegateVote, fastForward, predictionProbability, predictionStatementCreate, results, vote } from './poll';
-import { joinGroup, login, logout, gotoGroup, createArea, createGroup, deleteGroup } from './generic';
+import { login } from './generic';
+import { gotoGroup, createArea, createGroup, deleteGroup } from './group';
 
 
 test('Poll-Start-To-Finish', async ({ page }) => {

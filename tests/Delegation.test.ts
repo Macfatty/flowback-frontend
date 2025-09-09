@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { createGroup, gotoGroup, login, logout } from './generic';
+import {  login, logout } from './generic';
 import { createPoll, createProposal, delegateVote, fastForward } from './poll';
+import { createGroup, gotoGroup } from './group';
 
 test('Delegation', async ({ page }) => {
     await login(page);

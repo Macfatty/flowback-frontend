@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { login, gotoGroup } from './generic';
+import { login } from './generic';
+import { gotoGroup } from './group';
 
 test('Kanban-User', async ({ page }) => {
   await login(page);

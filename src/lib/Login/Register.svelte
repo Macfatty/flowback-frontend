@@ -49,7 +49,7 @@
 		}
 
 		mailStore.set(email);
-		ErrorHandlerStore.set({ message: 'Mail Sent', success: true });
+		ErrorHandlerStore.set({ message: 'Email Sent', success: true });
 
 		if (!(env.PUBLIC_EMAIL_REGISTRATION === 'FALSE')) selectedPage = 'GotMail';
 		else selectedPage = 'Verify';
