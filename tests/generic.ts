@@ -42,16 +42,23 @@ export async function register(page: any) {
 
     await page.getByRole('button', { name: 'Register' }).click();
     await page.getByLabel('Email * 0/').click();
-    await page.getByLabel('Email * 0/').fill('aaa@aaa.se');
+    await page.getByLabel('Email * 0/').fill('a@a.se');
+    await page.getByRole('button', { name: 'Send' }).click();
+    await expect(page.getByText('You must accept terms of')).toBeVisible();
     await page.getByLabel('Yes').check();
     await page.getByRole('button', { name: 'Send' }).click();
+    await expect(page.getByText('Email already exists.')).toBeVisible();
+    await page.getByLabel('Email * 0/').click();
+    await page.getByLabel('Email * 0/').fill('aaa@aaa.se');
+    await page.getByRole('button', { name: 'Send' }).click();
+    await expect(page.getByText('Email sent')).toBeVisible();
 
-    const registerResponse = await page.waitForResponse((response:any) =>
-        response.url().includes('/register') && response.status() === 200
-    );
-    
+
+    // const registerResponse = await page.waitForResponse((response:any) =>
+    //     response.url().includes('/register') && response.status() === 200
+    // );
+
 }
-
 
 export async function logout(page: any) {
     await page.getByRole('button', { name: 'default pfp' }).click();
@@ -66,7 +73,7 @@ export async function createGroup(page: any, group = { name: 'Test Group', publi
 
     // await expect(page.getByRole('heading', { name: group.name, exact: true }).first()).toBeVisible();
     const button = await page.getByRole('heading', { name: group.name, exact: true }).first()
-    
+
     if (await button.isVisible()) {
         await button.click();
     }
@@ -93,8 +100,6 @@ export async function createGroup(page: any, group = { name: 'Test Group', publi
         }
     }
 }
-
-
 
 export async function gotoGroup(page: any, group = { name: 'Test Group' }) {
     await page.locator("#groups").click();
