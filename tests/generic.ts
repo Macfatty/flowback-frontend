@@ -1,3 +1,4 @@
+import { env } from '$env/dynamic/public';
 import { expect } from '@playwright/test';
 
 export async function login(page: any, {
@@ -34,7 +35,9 @@ export async function loginEnter(page: any, {
     await expect(page).toHaveURL('/home?chatOpen=false');
 }
 
+// Tests registring a user
 // Only works if PUBLIC_EMAIL_REGISTRATION=FALSE in .env
+// Email functionality appears to only be manually testable afaik 
 export async function register(page: any) {
     await page.goto('/login');
     await expect(page.locator('#login-page')).toBeVisible();
@@ -54,11 +57,9 @@ export async function register(page: any) {
     await page.getByLabel('Email * 6/').fill(randomEmail);
 
     let registrationCode = '';
-    let urlAttempt = 0;
     page.on('response', async (response: any) => {
-        if (urlAttempt === 0) {
+        if (response.url().includes('register') && !response.url().includes('verify')) {
             registrationCode = await response.text()
-            urlAttempt++;
         }
     });
 
@@ -78,8 +79,13 @@ export async function register(page: any) {
     await page.getByLabel('Verification Code * 13/').press('Control+a');
     await page.getByLabel('Verification Code * 13/').fill(registrationCode.replace("\"", "").replace("\"", ""));
     await page.getByRole('button', { name: 'Send' }).click();
+
     await expect(page.getByText('Success')).toBeVisible();
     await expect(page).toHaveURL('/home?chatOpen=false');
+
+    if (await page.getByRole('button', { name: 'Ok' }).isVisible()) {
+        await page.getByRole('button', { name: 'Ok' }).click();
+    }
 }
 
 export async function logout(page: any) {
