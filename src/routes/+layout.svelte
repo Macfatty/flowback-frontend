@@ -210,9 +210,6 @@
 			});
 		});
 	});
-
-	$: console.log($ErrorHandlerStore, "ERROR STORE");
-	
 </script>
 
 <main class="min-h-[100vh]">

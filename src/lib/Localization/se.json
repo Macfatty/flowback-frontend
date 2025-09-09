@@ -727,5 +727,6 @@
     "Poll Created": "Omröstning skapad",
     "You cannot delegate as a delegate": "Du kan inte delegera som delegat",
     "true": "sant",
-    "false": "falskt"
+    "false": "falskt",
+    "Email Sent": "E-post skickad"
 }

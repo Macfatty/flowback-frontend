@@ -30,7 +30,18 @@ export async function createPoll(page: any, {
     // await expect(page).toHaveURL(/\/groups\/6\/polls\/\d+$/?chatOpen=false);
 }
 
+export async function goToPost(page: any, {
+    title = 'Test Poll'
+}) {
+    await page.getByRole('link', { name: 'Home' }).click();
+    await page.getByPlaceholder('Search polls').click();
+    await page.getByPlaceholder('Search polls').fill(title);
+    await expect(page.locator('#thumbnails > div').getByRole('link', { name: title, exact: true }).first()).toBeVisible();
+    await page.locator('#thumbnails > div').getByRole('link', { name: title, exact: true }).first().click();
+    await expect(page.getByRole('heading', { name: title })).toBeVisible();
 
+    // await expect(page.locator('#poll-thumbnail-140').getByRole('link', { name: 'Test Poll' })).toBeVisible();
+}
 
 export async function areaVote(page: any, {
     area = 'Default',

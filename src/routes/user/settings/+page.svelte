@@ -53,7 +53,7 @@
 		},
 		reports: report[] = [],
 		serverConfig: any = {},
-		version = '18',
+		version = '19',
 		open = false,
 		selectedRepport: report = {
 			description: '',
@@ -82,9 +82,7 @@
 	const getUserConfig = async () => {
 		const { res, json } = await fetchRequest('GET', 'user');
 
-		if (res.ok && json.user_config) {
-			userConfig = JSON.parse(json.user_config);
-		}
+		if (res.ok && json.user_config) userConfig = JSON.parse(json.user_config);
 	};
 
 	const saveUserConfig = async () => {

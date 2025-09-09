@@ -1,5 +1,30 @@
 import { test, expect } from '@playwright/test';
-import { login, createGroup, deleteGroup } from './generic';
+import { login } from './generic';
+import { createGroup, deleteGroup, gotoGroup, joinGroup } from './group';
+
+const group = { name: "Test Group Group-Testing", public: true }
+
+test('Create Group', async ({ page }) => {
+    await login(page)
+    await createGroup(page, group)
+})
+
+test('Go To Group', async ({ page }) => {
+    await login(page)
+    await gotoGroup(page, group)
+})
+
+test('Join Group', async ({ page }) => {
+    await login(page, {email:"b@b.se", password:"b"})
+    await joinGroup(page, group)
+})
+
+test('Delete Group', async ({ page }) => {
+    await login(page)
+    await gotoGroup(page, group)
+    await deleteGroup(page)
+})
+
 
 test('Create-Delete-Group', async ({ page }) => {
     await login(page);

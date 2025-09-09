@@ -8,9 +8,9 @@
 	import TextInput from '../Generic/TextInput.svelte';
 	import { mailStore } from './stores';
 	import TermsOfService from './TermsOfService.svelte';
+	import { env } from '$env/dynamic/public';
 
 	let email: string,
-  
 		loading = false,
 		acceptedToS = false,
 		usernameError: string = '',
@@ -36,19 +36,23 @@
 		const { res, json } = await fetchRequest('POST', 'register', { email }, false);
 		loading = false;
 
-		console.log(res, json, 'RESJSON');
-
 		if (!res.ok) {
 			ErrorHandlerStore.set({
-				message: json?.detail?.email[0] || json?.detail || json || 'Something went wrong',
+				message:
+					(json?.detail?.email && json?.detail?.email[0]) ??
+					(json?.detail && json?.detail[0]) ??
+					json ??
+					'Something went wrong',
 				success: false
 			});
 			return;
 		}
 
 		mailStore.set(email);
-		ErrorHandlerStore.set({ message: 'Mail Sent', success: true });
-		selectedPage = 'GotMail';
+		ErrorHandlerStore.set({ message: 'Email Sent', success: true });
+
+		if (!(env.PUBLIC_EMAIL_REGISTRATION === 'FALSE')) selectedPage = 'GotMail';
+		else selectedPage = 'Verify';
 	}
 </script>
 
@@ -66,5 +70,3 @@
 		</Button>
 	</form>
 </Loader>
-
- 

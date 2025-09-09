@@ -104,8 +104,8 @@
 			return;
 		}
 
-		//If multi-group flowback, just go to the list of groups
-		goto('/groups');
+		//If multi-group flowback, just go to home
+		goto('/home');
 	};
 
 	const getVerificationCodeFromURL = () => {
