@@ -34,6 +34,25 @@ export async function loginEnter(page: any, {
     await expect(page).toHaveURL('/home?chatOpen=false');
 }
 
+// Only works if PUBLIC_EMAIL_REGISTRATION=FALSE in .env
+export async function register(page: any) {
+    await page.goto('/login');
+    await expect(page.locator('#login-page')).toBeVisible();
+    await page.waitForTimeout(700);
+
+    await page.getByRole('button', { name: 'Register' }).click();
+    await page.getByLabel('Email * 0/').click();
+    await page.getByLabel('Email * 0/').fill('aaa@aaa.se');
+    await page.getByLabel('Yes').check();
+    await page.getByRole('button', { name: 'Send' }).click();
+
+    const registerResponse = await page.waitForResponse((response:any) =>
+        response.url().includes('/register') && response.status() === 200
+    );
+    
+}
+
+
 export async function logout(page: any) {
     await page.getByRole('button', { name: 'default pfp' }).click();
     await page.getByRole('button', { name: 'Log Out', exact: true }).click();
@@ -74,6 +93,8 @@ export async function createGroup(page: any, group = { name: 'Test Group', publi
         }
     }
 }
+
+
 
 export async function gotoGroup(page: any, group = { name: 'Test Group' }) {
     await page.locator("#groups").click();
