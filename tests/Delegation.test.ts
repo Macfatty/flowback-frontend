@@ -1,38 +1,31 @@
-import { test, expect, firefox, chromium } from '@playwright/test';
-import { login, logout } from './generic';
+import { test, chromium } from '@playwright/test';
+import { login } from './generic';
 import { createPoll, createProposal, delegateVote, fastForward, goToPost } from './poll';
-import { createGroup, gotoGroup, joinGroup } from './group';
+import { createGroup, deleteGroup, gotoGroup, joinGroup } from './group';
+import { becomeDelegate } from './delegation';
 
-test('Delegation', async ({ page }) => {
+test('Become-Delegate', async ({ page }) => {
     await login(page);
 
-    const group = { name: "Test Group Delegation", public: false }
+    const group = { name: "Test Group Delegation", public: true }
 
     await createGroup(page, group);
 
-    await page.waitForTimeout(1000);
+    await becomeDelegate(page, group);
 
-    await page.getByRole('link', { name: 'Delegations' }).click();
-    await page.locator('#delegate-group-select').selectOption({ label: group.name });
-    await expect(page.getByRole('button', { name: 'Become delegate' })).toBeVisible();
+})
+
+test('Delegation-Poll', async ({ page }) => {
+    await login(page);
+
+    const rand = Math.random().toString(36).slice(2, 10);
+    const group = { name: "Test Group Delegation" + rand, public: true }
+
+    await createGroup(page, group);
+
     await page.waitForTimeout(300);
-    await page.getByRole('button', { name: 'Become delegate' }).click();
-    // await page.waitForTimeout(300);
 
-    // Check if already a delegate
-    if (!await page.getByRole('button', { name: 'Stop being delegate' }).isVisible()) {
-        // await page.getByRole('button', { name: 'Stop being delegate' }).click();
-        await page.getByRole('button', { name: 'Become delegate' }).nth(1).click();
-    }
-
-    // await page.waitForTimeout(500);
-    // await page.waitForTimeout(300);
-    // await expect(page.getByRole('button', { name: 'Stop being delegate' })).toBeVisible();
-    // await page.getByRole('button', { name: 'Stop being delegate' }).click();
-    // await page.getByRole('button', { name: 'Become delegate' }).nth(1).click();
-    // await expect(page.getByRole('button', { name: 'Stop being delegate' })).toBeVisible();
-
-
+    await becomeDelegate(page, group);
 
     const browser = await chromium.launch();
     const bContext = await browser.newContext();
@@ -44,18 +37,17 @@ test('Delegation', async ({ page }) => {
 
     await page.waitForTimeout(1000)
     await bPage.getByRole('link', { name: 'Delegations' }).click();
-    await page.waitForTimeout(1000)
     await bPage.locator('#delegate-group-select').selectOption({ label: group.name });
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(300)
     await bPage.getByRole('button', { name: 'Uncategorised' }).click();
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(300)
     await bPage.getByRole('radio').first().check();
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(300)
 
     await gotoGroup(page, group);
 
     const title = `Test Poll for Delegation ${Math.floor(Math.random() * 10000)}`;
-    await createPoll(page, { title });
+    await createPoll(page, { title, phase_time: 1 });
 
     await fastForward(page, 1);
 
@@ -66,5 +58,10 @@ test('Delegation', async ({ page }) => {
     await delegateVote(page);
 
     await goToPost(bPage, { title });
+
+
+
+
+    // await deleteGroup(page, group)
 
 });

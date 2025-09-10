@@ -1,4 +1,3 @@
-import { env } from '$env/dynamic/public';
 import { expect } from '@playwright/test';
 
 export async function login(page: any, {
