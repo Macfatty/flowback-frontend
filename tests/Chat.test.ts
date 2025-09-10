@@ -17,6 +17,9 @@ test('Group-Chat', async ({ page }) => {
     await login(bPage, { email: 'b@b.se', password: 'b' });
     await joinGroup(bPage, group);
 
+    await page.reload();
+    await bPage.reload();
+
     await page.getByRole('button', { name: 'open chat' }).click();
     await page.getByPlaceholder('Search chatters').click();
     await page.getByPlaceholder('Search chatters').fill(group.name);
