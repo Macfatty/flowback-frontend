@@ -4,10 +4,12 @@ export async function createGroup(page: any, group = { name: 'Test Group', publi
     await page.locator("#groups").click();
     await page.getByPlaceholder('Search groups').click();
     await page.getByPlaceholder('Search groups').fill(group.name);
-
+    await page.waitForTimeout(500);
+    
     // await expect(page.getByRole('heading', { name: group.name, exact: true }).first()).toBeVisible();
     const button = await page.getByRole('heading', { name: group.name, exact: true }).first()
-
+    await page.waitForTimeout(500);
+    
     if (await button.isVisible()) {
         await button.click();
     }

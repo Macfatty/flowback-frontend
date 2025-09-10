@@ -4,10 +4,9 @@
 	import { onMount } from 'svelte';
 	import type { GroupMembers, PreviewMessage } from './interfaces';
 	import { _ } from 'svelte-i18n';
-	import { env } from '$env/dynamic/public';
 	import Fa from 'svelte-fa';
 	import Button from '$lib/Generic/Button.svelte';
-	import { faCog, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
+	import { faCog } from '@fortawesome/free-solid-svg-icons';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import { darkModeStore, getIconFilter } from '$lib/Generic/DarkMode';
 	import { chatPartner, isChatOpen } from './functions';
