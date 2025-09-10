@@ -16,7 +16,7 @@
 	import CrossButton from '$lib/Generic/CrossButton.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 
-	let chatOpen = env.PUBLIC_MODE === 'DEV' ? false : false,
+	let chatOpen = false,
 		selectedPage: 'direct' | 'group' = 'direct',
 		selectedChat: number | null,
 		previewDirect: PreviewMessage[] = [],
@@ -109,7 +109,7 @@
 <div
 	bind:this={chatDiv}
 	class:invisible={!chatOpen}
-	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-40 w-full h-[100vh]"
+	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-40 w-full h-[100vh] flex flex-col items-center"
 >
 	<div class="w-full flex justify-between mr-6">
 		<Button

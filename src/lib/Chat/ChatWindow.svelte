@@ -24,7 +24,7 @@
 		previewDirect: PreviewMessage[] = [],
 		isLookingAtOlderMessages: boolean;
 
-	let message: string = env.PUBLIC_MODE === 'DEV' ? 'a' : '',
+	let message: string = '',
 		olderMessages: string,
 		newerMessages: string,
 		showEmoji = false,
@@ -121,8 +121,7 @@
 		});
 		messages = messages;
 
-		// Adds a in the chat for easier testing purposes
-		message = env.PUBLIC_MODE === 'DEV' ? message + 'a' : '';
+		message = '';
 	};
 
 	// Fetch older messages
@@ -325,14 +324,14 @@
 					Class="justify-center w-full h-2rem"
 					inputClass="border-0 bg-gray-100 placeholder-gray-700 pl-2 pt-1 resize-y min-h-[2rem] max-h-[6rem] overflow-auto"
 				/>
-				{#if env.PUBLIC_MODE === 'DEV'}
+				<!-- {#if env.PUBLIC_MODE === 'DEV'}
 					<Button
 						onClick={() => (showEmoji = !showEmoji)}
 						Class="rounded-full pl-3 pr-3 pt-3 pb-3 h-1/2"
 					>
 						<Fa icon={faSmile} />
 					</Button>
-				{/if}
+				{/if} -->
 				<Button
 					type="submit"
 					Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2 hover:bg-gray-100 active:bg-gray-200"
