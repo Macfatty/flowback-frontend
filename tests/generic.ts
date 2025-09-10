@@ -41,7 +41,7 @@ export async function loginEnter(page: any, {
 export async function register(page: any) {
     await page.goto('/login');
     await expect(page.locator('#login-page')).toBeVisible();
-    await page.waitForTimeout(700);
+    await page.waitForTimeout(500);
 
     await page.getByRole('button', { name: 'Register' }).click();
     await page.getByLabel('Email * 0/').click();

@@ -26,8 +26,8 @@ export async function createPoll(page: any, {
     await page.getByRole('spinbutton').fill('0');
 
     await page.getByRole('button', { name: 'Post' }).click();
+    await page.waitForTimeout(500);
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
-    // await expect(page).toHaveURL(/\/groups\/6\/polls\/\d+$/?chatOpen=false);
 }
 
 export async function goToPost(page: any, {
@@ -169,6 +169,8 @@ export async function vote(page: any) {
 export async function results(page: any) {
     await expect(page.getByText('Results', { exact: true })).toBeVisible();
 
+    await expect(page.locator('canvas')).toBeVisible();
+    
     await page.locator('canvas').click({
         position: {
             x: 43,
