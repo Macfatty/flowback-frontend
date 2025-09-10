@@ -18,7 +18,6 @@
 
 	let searched = true;
 	let groupList: Group[] = [],
-  
 		loading = false;
 
 	const onGroupChange = async (id: string) => {
@@ -48,7 +47,6 @@
 			'GET',
 			`group/list?limit=${groupMembersLimit}` + urlFilter
 		);
-		ErrorHandlerStore.set(statusMessageFormatter(res, json));
 
 		if (!res.ok) return;
 
