@@ -53,6 +53,7 @@
         "date-picker-svelte": "^2.2.0",
         "dotenv": "^16.3.1",
         "esbuild": "0.25.4",
+        "ethers": "^6.15.0",
         "javascript-time-ago": "^2.5.9",
         "svelte-easy-crop": "^5.0.0",
         "svelte-fa": "^3.0.3",

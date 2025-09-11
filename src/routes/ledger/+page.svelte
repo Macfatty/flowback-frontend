@@ -16,7 +16,6 @@
 	import { generateAndDownloadHTML } from '$lib/Ledger/HTML';
 	import Pagination from '$lib/Generic/Pagination.svelte';	
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import { userStore } from '$lib/User/interfaces';
 
 	let loading: boolean = true,
