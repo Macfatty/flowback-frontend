@@ -16,8 +16,6 @@
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
-	export const prerender = true;
-
 	let showUI = false,
 		scrolledY = '',
 		openLoginModal = false,
