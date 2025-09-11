@@ -1,7 +1,7 @@
 <script lang="ts">
 	// import { Pie } from 'svelte-chartjs';
 
-	import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale } from 'chart.js';
+	// import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale } from 'chart.js';
 	import { onMount } from 'svelte';
 
 	export let labels = ['1'],
@@ -28,7 +28,7 @@
 		updateChart();
 	});
 
-	ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
+	// ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
 
 	const updateChart = () => {
 		labels.forEach((label) => {
