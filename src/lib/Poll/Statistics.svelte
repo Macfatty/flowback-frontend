@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Pie } from 'svelte-chartjs';
+	// import { Pie } from 'svelte-chartjs';
 
 	import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale } from 'chart.js';
 	import { onMount } from 'svelte';
@@ -45,5 +45,5 @@
 </script>
 
 <div class=" m-auto">
-	<Pie bind:chart bind:data options={{ responsive: true }} />
+	<!-- <Pie bind:chart bind:data options={{ responsive: true }} /> -->
 </div>
