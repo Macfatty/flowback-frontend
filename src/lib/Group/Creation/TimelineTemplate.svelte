@@ -7,7 +7,7 @@
 	import type { template } from './interface';
 	import { _ } from 'svelte-i18n';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import type { poppup } from '$lib/Generic/Poppup';
+	
 	import Fa from 'svelte-fa';
 	import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 	import { error } from '@sveltejs/kit';

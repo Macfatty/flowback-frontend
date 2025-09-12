@@ -2,7 +2,7 @@
 	import { _ } from 'svelte-i18n';
 	import Fa from 'svelte-fa';
 	import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-	import type { poppup } from './Poppup';
+	import type { poppup } from './interfaces';
 	import { writable } from 'svelte/store';
 
 	// Store to manage queue of popup messages

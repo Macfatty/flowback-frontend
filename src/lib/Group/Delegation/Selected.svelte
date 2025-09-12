@@ -16,7 +16,6 @@
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { delegation as delegationLimit } from '../../Generic/APILimits.json';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import type { poppup } from '$lib/Generic/Poppup';
 
 	let delegates: DelegateMinimal[] = [],
 		tags: TagType[] = [],

@@ -3,16 +3,12 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 	import type { GroupMembers } from './interfaces';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	
 	import { userStore } from '$lib/User/interfaces';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	export let creatingGroup: boolean,
 		groupMembers: GroupMembers[] = [];
-
-	let name = '',
-		poppup: poppup;
 
 	const groupChatCreate = async () => {
 		const { res, json } = await fetchRequest(
@@ -52,5 +48,4 @@
 
 	<Button buttonStyle="primary-light" type="submit">{$_('Confirm')}</Button>
 	<Button buttonStyle="warning-light" onClick={cancelGroupChatCreate}>{$_('Cancel')}</Button>
-	<Poppup bind:poppup Class="z-50" />
 </form>

@@ -12,7 +12,6 @@
 	import { deepCopy } from 'ethers/lib/utils';
 	import formatDate from './formatDate';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import type { poppup } from '$lib/Generic/Poppup';
 	// import { formatDate } from '$lib/Generic/DateFormatter';
 
 	export let transaction: Transaction, transactions: Transaction[], accounts: Account[];
