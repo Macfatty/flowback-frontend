@@ -70,8 +70,6 @@
 		groupList: Group[] = [],
 		workGroups: WorkGroup[] = [],
 		workGroupFilter: number[] = [],
-  
-		 
 		filter: Filter = {
 			assignee: null,
 			group: $page.url.searchParams.get('groupId'),
@@ -353,12 +351,9 @@
 						description: '',
 						meeting_link: '',
 						event_id: 0,
-						schedule_origin_name: type,
+						schedule_origin_name: 'group',
 						created_by: 0,
-						work_group: undefined,
-						assignee_ids: [],
-						reminders: [],
-						repeat_frequency: 0
+						work_group: undefined
 					};
 					showCreateScheduleEvent = true;
 					selectedEvent.start_date = formatDateToLocalTime(selectedDate).slice(0, 16);
@@ -489,8 +484,6 @@
 	{month}
 	{year}
 />
-
- 
 
 <style>
 	.calendar {
