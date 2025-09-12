@@ -69,6 +69,9 @@
 	};
 
 	const createPoll = async () => {
+		console.log(start_date.toISOString(), "STRING");
+		
+
 		loading = true;
 		const formData = new FormData();
 		let blockchain_id;
