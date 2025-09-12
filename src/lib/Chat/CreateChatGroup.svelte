@@ -6,6 +6,7 @@
 	import Poppup from '$lib/Generic/Poppup.svelte';
 	import type { poppup } from '$lib/Generic/Poppup';
 	import { userStore } from '$lib/User/interfaces';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	export let creatingGroup: boolean,
 		groupMembers: GroupMembers[] = [];
@@ -22,7 +23,7 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to created group chat', success: false, show: true };
+			ErrorHandlerStore.set({ message: 'Failed to created group chat', success: false });
 			return;
 		}
 
@@ -30,7 +31,7 @@
 		//TODO: Redo the poppup system to have a poppup queue that's always rendered and which is accessed via svelte store
 		creatingGroup = false;
 		groupMembers = [];
-		poppup = { message: 'Successfully created group chat', success: true, show: true };
+		ErrorHandlerStore.set({ message: 'Successfully created group chat', success: true });
 	};
 
 	const cancelGroupChatCreate = () => {

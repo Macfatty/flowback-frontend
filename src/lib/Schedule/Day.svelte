@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import type { scheduledEvent } from '$lib/Schedule/interface';
-	import { setDateToMidnight } from '$lib/Generic/Dates';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 
 	export let Class = '',
