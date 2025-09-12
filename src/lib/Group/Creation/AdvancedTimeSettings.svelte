@@ -126,6 +126,7 @@
 						bind:value={start_date}
 						min={new Date()}
 						max={maxDatePickerYear}
+						
 					/>
 				</div>
 				{#if selected_poll !== 'Date Poll'}

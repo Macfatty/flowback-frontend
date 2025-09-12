@@ -11,7 +11,6 @@
 	import { formatDate } from '$lib/Generic/DateFormatter';
 	import { onMount } from 'svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import { createPredictionBet as createPredictionBetBlockchain } from '$lib/Blockchain_v1_Ethereum/javascript/predictionsBlockchain';
 	import VotingSlider from '../VotingSlider.svelte';
 	import { env } from '$env/dynamic/public';

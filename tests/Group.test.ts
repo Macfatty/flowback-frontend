@@ -29,7 +29,8 @@ test('Delete Group', async ({ page }) => {
 test('Create-Delete-Group', async ({ page }) => {
     await login(page);
 
-    const group = { name: 'Test Group Group-Test', public: false };
+    const rand = Math.random().toString(36).slice(2, 10);
+    const group = { name: 'Test Group Group-Test-' + rand, public: false };
     await createGroup(page, group);
 
     // Attempting to leave group as owner 

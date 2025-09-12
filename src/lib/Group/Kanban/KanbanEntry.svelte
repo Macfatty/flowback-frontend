@@ -56,9 +56,8 @@
 			work_group: kanban.work_group || null,
 			images: kanban.attachments || []
 		},
-		endDate: TimeAgo,
-		errorHandler: any;
-
+		endDate: TimeAgo;
+		
 	// Helper function to format date for datetime-local input
 	function formatDateForInput(dateStr: string | null | undefined): string | null {
 		if (!dateStr || isNaN(new Date(dateStr).getTime())) return null;

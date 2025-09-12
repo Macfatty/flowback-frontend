@@ -28,14 +28,12 @@
 	let deletePollModalShow = false,
 		reportPollModalShow = false,
 		choicesOpen = false,
-		 
 		source = new URLSearchParams(window.location.search).get('source');
 </script>
 
 <div
 	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded shadow w-full poll-header-grid py-4"
 >
-
 	<button
 		class="cursor-pointer bg-white dark:bg-darkobject dark:text-darkmodeText justify-center m-auto"
 		on:click={() => {
@@ -83,7 +81,9 @@
 	</div>
 
 	<div class="flex gap-4 items-baseline grid-area-items my-1">
-		Workgroup: {poll.work_group_id}
+		{#if poll?.work_group_id}
+			{$_('Workgroup')}: {poll.work_group_id}
+		{/if}
 		{#if poll?.poll_type === 4}
 			<HeaderIcon Class="cursor-default" icon={faAlignLeft} text={'Text Poll'} />
 		{:else if poll?.poll_type === 3}
@@ -154,8 +154,6 @@
 	post_description={poll.description || ''}
 	bind:reportModalShow={reportPollModalShow}
 />
-
- 
 
 <style>
 	.poll-header-grid {

@@ -10,7 +10,7 @@ export async function fastForward(page: any, times = 1) {
 }
 
 export async function createPoll(page: any, {
-    title = 'Test Poll', date = false } = {}) {
+    title = 'Test Poll', date = false, phase_time=0 } = {}) {
     //Create a Poll
     await page.getByRole('button', { name: 'Create a post' }).click();
     await expect(page.getByText('Poll Thread Poll Content Text')).toBeVisible();
@@ -23,11 +23,11 @@ export async function createPoll(page: any, {
     await page.getByRole('button', { name: 'Display advanced time settings' }).click();
     await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel('Yes').check();
     await page.locator('fieldset').filter({ hasText: 'Fast Forward? Yes No' }).getByLabel('Yes').check();
-    await page.getByRole('spinbutton').fill('0');
+    await page.getByRole('spinbutton').fill(phase_time.toString());
 
     await page.getByRole('button', { name: 'Post' }).click();
+    await page.waitForTimeout(500);
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
-    // await expect(page).toHaveURL(/\/groups\/6\/polls\/\d+$/?chatOpen=false);
 }
 
 export async function goToPost(page: any, {
@@ -168,6 +168,8 @@ export async function vote(page: any) {
 
 export async function results(page: any) {
     await expect(page.getByText('Results', { exact: true })).toBeVisible();
+
+    await expect(page.locator('canvas')).toBeVisible();
 
     await page.locator('canvas').click({
         position: {

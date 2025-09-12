@@ -69,6 +69,9 @@
 	};
 
 	const createPoll = async () => {
+		console.log(start_date.toISOString(), "STRING");
+		
+
 		loading = true;
 		const formData = new FormData();
 		let blockchain_id;
@@ -213,7 +216,7 @@
 </script>
 
 <button
-	class="absolute top-8 left-4 z-10 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+	class="fixed top-8 left-4 z-10 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
 	on:click={goBack}
 >
 	<Fa icon={faArrowLeft} />

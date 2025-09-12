@@ -16,11 +16,9 @@
 
 	export let group: Group;
 
-	let  
-		areYouSureModal = false;
+	let areYouSureModal = false;
 
 	const goToGroup = (e: event) => {
-		console.log(e, 'E');
 		if (e.target.id === 'group-join-button') return; // Prevent navigation when clicking the join button
 
 		if (group.joined) goto(`/groups/${group.id}`);
@@ -68,7 +66,7 @@
 </script>
 
 <div
-	id={group.name.toLowerCase().replaceAll(" ", "-")}
+	id={group.name.toLowerCase().replaceAll(' ', '-')}
 	class={`w-4/6 md:w-2/5 max-w-[650px] bg-white relative shadow-md dark:bg-darkobject dark:text-darkmodeText text-center ${
 		group.joined && 'cursor-pointer hover:shadow-xl vote-thumbnail'
 	} transition-shadow rounded-2xl`}
@@ -125,7 +123,7 @@
 				{$_(group.joined ? 'Leave' : group.direct_join ? 'Join' : 'Ask to join')}
 			</Button>
 		{:else}
-			{$_("Request sent")}
+			{$_('Request sent')}
 		{/if}
 	</div>
 </div>
@@ -142,8 +140,6 @@
 	<div slot="header">{$_('Are you sure?')}</div>
 	<div slot="body">{$_('You are about to leave the group!')}</div>
 </Modal>
-
- 
 
 <style>
 	.vote-thumbnail:hover {

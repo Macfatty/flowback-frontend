@@ -5,7 +5,7 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { onMount } from 'svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import { chatPartner } from './functions';
+	import { chatPartnerStore } from './functions';
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 
@@ -28,7 +28,7 @@
 		}
 
 		selectedChat = chatterId;
-		chatPartner.set(chatterId);
+		chatPartnerStore.set(chatterId);
 		selectedChatChannelId = chatterId;
 	};
 
@@ -81,7 +81,7 @@
 	onMount(async () => {
 		await UserChatInviteList();
 
-		chatPartner.subscribe((partner) => {
+		chatPartnerStore.subscribe((partner) => {
 			if (partner === null) return;
 			// selectedPage = 'direct';
 			selectedChat = partner;
@@ -147,48 +147,50 @@
 			{/if}
 		{/each}
 	{/if}
-
 	{#each previewDirect as chatter}
-		<button
-			class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
-			class:bg-gray-200={selectedChat === chatter.channel_id}
-			class:dark:bg-gray-700={selectedChat === chatter.channel_id}
-			on:click={() => clickedChatter(chatter.channel_id)}
-		>
-			{#if chatter?.notified}
-				<div class="p-1 rounded-full bg-purple-300" />
-			{/if}
+	{chatSearch}
+		{#if chatter.channel_title?.includes(chatSearch) && (chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup}
+			<button
+				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
+				class:bg-gray-200={selectedChat === chatter.channel_id}
+				class:dark:bg-gray-700={selectedChat === chatter.channel_id}
+				on:click={() => clickedChatter(chatter.channel_id)}
+			>
+				{#if chatter?.notified}
+					<div class="p-1 rounded-full bg-purple-300" />
+				{/if}
 
-			<ProfilePicture profilePicture={chatter?.profile_image} />
-			<div class="flex flex-col max-w-[40%]">
-				<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
-					<!-- {chatter?.user.username} -->
-					{chatter.channel_title || 'Name not found'}
-				</span>
-				<span class="text-gray-400 text-sm h-[20px]">
-					{chatter?.message || ''}
-				</span>
-			</div>
-		</button>
-		{#if creatingGroup}
-			<div>
-				<Button
-					onClick={() => {
-						if (groupMembers.some((member) => member.id === chatter.id)) {
-							return;
-						}
-						const newMember = {
-							id: chatter.id,
-							username: chatter.target_username || 'Unknown',
-							profile_image: chatter.profile_image || null
-						};
-						//@ts-ignore
-						groupMembers = [...groupMembers, newMember];
-					}}
-				>
-					{$_('Add User')}
-				</Button>
-			</div>
+				<ProfilePicture profilePicture={chatter?.profile_image} />
+				<div class="flex flex-col max-w-[40%]">
+					<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
+						<!-- {chatter?.user.username} -->
+						{chatter.channel_title || 'Name not found'}
+					</span>
+					<span class="text-gray-400 text-sm h-[20px]">
+						{chatter?.message || ''}
+					</span>
+				</div>
+			</button>
+			{#if creatingGroup}
+				<div>
+					<Button
+						onClick={() => {
+							if (groupMembers.some((member) => member.id === chatter.id)) {
+								return;
+							}
+							const newMember = {
+								id: chatter.id,
+								username: chatter.target_username || 'Unknown',
+								profile_image: chatter.profile_image || null
+							};
+							//@ts-ignore
+							groupMembers = [...groupMembers, newMember];
+						}}
+					>
+						{$_('Add User')}
+					</Button>
+				</div>
+			{/if}
 		{/if}
 	{/each}
 </div>

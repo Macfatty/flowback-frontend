@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import KanbanEntry from './KanbanEntry.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { _ } from 'svelte-i18n';
@@ -68,7 +69,7 @@
 		const { res, json } = await fetchRequest('GET', api);
 
 		if (!res.ok) {
-			// ErrorHandlerStore.set({ message: 'Failed to fetch kanban tasks', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to fetch kanban tasks', success: false });
 			return;
 		}
 
@@ -82,7 +83,11 @@
 
 		const { res, json } = await fetchRequest('GET', api);
 
-		if (!res.ok) return;
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: 'Failed to fetch kanban tasks', success: false });
+			return;
+		}
+		
 		kanbanEntries = json.results;
 	};
 
