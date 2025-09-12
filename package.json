@@ -9,7 +9,6 @@
         "dev3000": "vite dev --port 3000",
         "dev4000": "vite dev --port 4000",
         "dev5000": "vite dev --port 5000",
-        "dev6000": "vite dev --port 4500",
         "build": "vite build",
         "package": "svelte-kit package",
         "preview": "vite preview",

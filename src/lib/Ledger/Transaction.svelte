@@ -11,7 +11,6 @@
 	import DateInput from 'date-picker-svelte/DateInput.svelte';
 	import formatDate from './formatDate';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import { deepCopy } from '$lib/Generic/GenericFunctions';
 	// import { formatDate } from '$lib/Generic/DateFormatter';
 
