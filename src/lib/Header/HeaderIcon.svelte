@@ -8,7 +8,7 @@
 	import { page } from '$app/stores';
 	import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 	import { darkModeStore, getIconFilter } from '$lib/Generic/DarkMode';
-	import { get } from 'svelte/store';
+	import { chatOpenStore } from '$lib/Chat/functions';
 
 	export let icon: IconDefinition | string = faCircle,
 		icons: (IconDefinition | string)[] = [faCircle],
@@ -22,14 +22,14 @@
 		disableTextOnHover = false;
 
 	let hovering = false,
-		selectedCurrent = '',
-		selectedPage = false,
-		darkMode = get(darkModeStore);
+		selectedPage = false;
+
 
 	$: selectedPage = selectedHref === href;
 
 	const handleClick = () => {
 		selectedHref = href;
+		chatOpenStore.set(false);
 	};
 
 	const checkIfSelected = () => {
@@ -40,13 +40,9 @@
 
 	onMount(() => {
 		checkIfSelected();
-		darkModeStore.subscribe((_darkMode) => {
-			darkMode = _darkMode;
-		});
 	});
 
 	$: if ($page.url.pathname) checkIfSelected();
-	$: darkMode = get(darkModeStore);
 </script>
 
 {#if href}
@@ -58,12 +54,12 @@
 		on:click={handleClick}
 		href={href === '/' ? window.location.href : '/' + href}
 		class:active-icon={selectedPage}
-		class={`relative w-14 ${Class} ${darkMode ? 'text-white' : ''}`}
+		class={`relative w-14 ${Class} ${$darkModeStore ? 'text-white' : ''}`}
 		id={href}
 		{tabindex}
 	>
 		<div on:load={checkIfSelected} class="flex flex-col items-center">
-			{#key darkMode}
+			{#key $darkModeStore}
 				{#each icons as icon}
 					{#if typeof icon === 'string'}
 						<img
@@ -100,7 +96,7 @@
 		on:blur={() => (hovering = false)}
 		aria-haspopup="true"
 		class={`flex relative cursor-pointer ${selectedPage ? 'active-icon' : ''} ${Class} ${
-			darkMode ? 'text-white' : ''
+			$darkModeStore ? 'text-white' : ''
 		}`}
 		id={href}
 		on:load={checkIfSelected}

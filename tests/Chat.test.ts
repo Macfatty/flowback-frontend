@@ -23,7 +23,7 @@ test('Group-Chat', async ({ page }) => {
     await page.getByRole('button', { name: 'open chat' }).click();
     await page.getByPlaceholder('Search chatters').click();
     await page.getByPlaceholder('Search chatters').fill(group.name);
-    await page.getByRole('button', { name: group.name }).click();
+    await page.getByRole('button', { name: group.name }).first().click();
     await page.getByPlaceholder('Write a message...').click();
     await page.getByPlaceholder('Write a message...').fill('Hello!! :D');
     await page.locator('form > button:nth-child(2)').click();

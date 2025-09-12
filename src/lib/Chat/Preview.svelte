@@ -5,7 +5,7 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { onMount } from 'svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import { chatPartner } from './functions';
+	import { chatPartnerStore } from './functions';
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 
@@ -28,7 +28,7 @@
 		}
 
 		selectedChat = chatterId;
-		chatPartner.set(chatterId);
+		chatPartnerStore.set(chatterId);
 		selectedChatChannelId = chatterId;
 	};
 
@@ -81,7 +81,7 @@
 	onMount(async () => {
 		await UserChatInviteList();
 
-		chatPartner.subscribe((partner) => {
+		chatPartnerStore.subscribe((partner) => {
 			if (partner === null) return;
 			// selectedPage = 'direct';
 			selectedChat = partner;

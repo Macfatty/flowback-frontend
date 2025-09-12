@@ -17,7 +17,7 @@
 	import { goto } from '$app/navigation';
 	import Button from '$lib/Generic/Button.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
-	import { chatPartner, isChatOpen } from '$lib/Chat/functions';
+	import { chatPartnerStore, chatOpenStore } from '$lib/Chat/functions';
 	import type { Delegate } from './Delegation/interfaces';
 	import Select from '$lib/Generic/Select.svelte';
 	import { getUserChannelId } from '$lib/Chat/functions';
@@ -339,8 +339,8 @@
 								{#if channelId}
 									<button
 										on:click={() => {
-											isChatOpen.set(true);
-											chatPartner.set(channelId);
+											chatOpenStore.set(true);
+											chatPartnerStore.set(channelId);
 										}}
 										Class="text-primary"
 									>
