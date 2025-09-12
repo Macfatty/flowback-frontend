@@ -17,16 +17,15 @@
 	<div class="relative w-full">
 		<Button
 			onClick={() => history.back()}
-			Class="absolute top-0 left-0 p-3 m-4 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90 z-50"
+			Class="fixed p-3 m-4 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90 z-50"
+			id="back-button"
 		>
 			<div class="text-gray-800 dark:text-gray-200">
 				<Fa icon={faArrowLeft} />
 			</div>
 		</Button>
 		<div class="flex justify-center">
-			<KanbanBoard
-				type={env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? 'group' : 'group'}
-			/>
+			<KanbanBoard type={env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? 'group' : 'group'} />
 		</div>
 	</div>
 </Layout>

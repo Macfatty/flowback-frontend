@@ -197,6 +197,20 @@
 <Layout centered Class="bg-white dark:bg-darkobject shadow">
 	{#if !isEditing}
 		<div class="relative w-full">
+			<Button
+				onClick={() => {
+					if (window.history.length > 1) {
+						window.history.back();
+					} else {
+						goto('/');
+					}
+				}}
+				Class="fixed p-3 m-4 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90"
+			>
+				<div class="text-gray-800 dark:text-gray-200">
+					<Fa icon={faArrowLeft} />
+				</div>
+			</Button>
 			<img
 				src={bannerImagePreview || DefaultBanner}
 				class="w-full cover aspect-ratio-5"
@@ -214,20 +228,7 @@
 					</div>
 				</Button>
 			{/if}
-			<Button
-				onClick={() => {
-					if (window.history.length > 1) {
-						window.history.back();
-					} else {
-						goto('/');
-					}
-				}}
-				Class="absolute left-0 top-0 p-3 m-4 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90"
-			>
-				<div class="text-gray-800 dark:text-gray-200">
-					<Fa icon={faArrowLeft} />
-				</div>
-			</Button>
+			
 		</div>
 		<div class="flex justify-around w-full max-w-[850px]">
 			<img
