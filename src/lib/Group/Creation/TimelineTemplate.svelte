@@ -6,11 +6,9 @@
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import type { template } from './interface';
 	import { _ } from 'svelte-i18n';
-	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';	
 	import Fa from 'svelte-fa';
 	import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
-	import { error } from '@sveltejs/kit';
 
 	export let area_vote_time_delta: number,
 		proposal_time_delta: number,

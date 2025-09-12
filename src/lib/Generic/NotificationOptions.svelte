@@ -5,9 +5,9 @@
 	import { onMount } from 'svelte';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
-	import SuccessPoppup from './SuccessPoppup.svelte';
 	import { page } from '$app/stores';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
+	import { ErrorHandlerStore } from './ErrorHandlerStore';
 
 	export let notificationOpen = false,
 		categories: string[],
@@ -19,9 +19,7 @@
 		ClassOpen = '',
 		hoverEffect = true;
 
-	let popupMessage: string = '',
-		notifications: NotificationObject[] = [],
-		show = false;
+	let notifications: NotificationObject[] = [];
 
 	interface NotificationObject {
 		channel_category: string;
@@ -65,14 +63,18 @@
 		const { res, json } = await fetchRequest('POST', `${api}/notification/subscribe`, {
 			tags: [category]
 		});
-		if (res.ok) {
-			notifications.push({
-				channel_category: category,
-				channel_sender_id: id,
-				channel_sender_type: type
-			});
-			popupMessage = 'Subscribed';
-		} else popupMessage = 'Something went wrong';
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: 'Failed to subscribe', success: false });
+			return;
+		}
+
+		notifications.push({
+			channel_category: category,
+			channel_sender_id: id,
+			channel_sender_type: type
+		});
+
+		ErrorHandlerStore.set({ message: 'Subscribed', success: true });
 
 		notifications = notifications;
 	};
@@ -83,17 +85,20 @@
 			channel_category: category,
 			channel_sender_type: type
 		});
-		if (res.ok) {
-			notifications = notifications.filter((object) => object.channel_category !== category);
-			popupMessage = 'Unsubscribed';
-		} else popupMessage = 'Something went wrong';
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: 'Failed to unsubscribe', success: false });
+			return;
+		}
+
+		notifications = notifications.filter((object) => object.channel_category !== category);
+		ErrorHandlerStore.set({ message: 'Subscribed', success: true });
 	};
 
 	const groupSubcribe = async () => {
 		const { res, json } = await fetchRequest('POST', `group/${groupId}/notification/subscribe`, {
 			tags: ['group', 'group_user', 'kanban', 'poll', 'schedule_event', 'thread']
 		});
-	}
+	};
 
 	onMount(() => {
 		// closeWindowWhenClickingOutside();
@@ -168,4 +173,3 @@
 		</div>
 	{/if}
 </div>
-<SuccessPoppup bind:show bind:message={popupMessage} />

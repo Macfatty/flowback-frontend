@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
-	import SuccessPoppup from './SuccessPoppup.svelte';
 	import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
 
 	export let choicesOpen = false,
@@ -10,9 +9,6 @@
 		Class = '',
 		functions: any[] = [],
 		id = 'multiple-choices';
-
-	let popupMessage: string = '',
-		show = false;
 
 	const closeWindowWhenClickingOutside = () => {
 		window.addEventListener('click', function (e) {
@@ -66,4 +62,3 @@
 	{/if}
 </div>
 
-<SuccessPoppup bind:show bind:message={popupMessage} />

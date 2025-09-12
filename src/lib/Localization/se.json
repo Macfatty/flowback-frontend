@@ -728,5 +728,9 @@
     "You cannot delegate as a delegate": "Du kan inte delegera som delegat",
     "true": "sant",
     "false": "falskt",
-    "Email Sent": "E-post skickad"
+    "Email Sent": "E-post skickad",
+    "Failed to subscribe": "Misslyckades att prenumerera",
+    "Failed to unsubscribe": "Misslyckades att avsluta prenumeration",
+    "Subscribed": "Prenumererad",
+    "Unsubscribed": "Avslutat prenumeration"
 }
