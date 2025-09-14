@@ -15,3 +15,9 @@ export interface ModalButton {
     onClick: () => void;
     submit?: boolean;
 }
+
+export type poppup = {
+    show?: boolean;
+    message: string,
+    success: boolean
+}

@@ -124,7 +124,7 @@
 	<div class="flex w-[80%] max-w-[1200px] my-6 gap-6">
 		<Button
 			onClick={() => history.back()}
-			Class="z-10 absolute left-6 p-3 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90"
+			Class="z-10 fixed left-6 p-3 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90"
 		>
 			<div class="text-gray-800 dark:text-gray-200">
 				<Fa icon={faArrowLeft} />

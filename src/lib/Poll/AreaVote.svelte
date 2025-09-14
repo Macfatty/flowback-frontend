@@ -5,7 +5,6 @@
 	import Tag from '$lib/Group/Tag.svelte';
 	import Button from '$lib/Generic/Button.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import { _ } from 'svelte-i18n';
 	import Question from '$lib/Generic/Question.svelte';

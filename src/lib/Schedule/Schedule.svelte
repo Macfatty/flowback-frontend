@@ -16,7 +16,6 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
 	import Event from './Event.svelte';
 	import Select from '$lib/Generic/Select.svelte';
@@ -70,8 +69,6 @@
 		groupList: Group[] = [],
 		workGroups: WorkGroup[] = [],
 		workGroupFilter: number[] = [],
-  
-		 
 		filter: Filter = {
 			assignee: null,
 			group: $page.url.searchParams.get('groupId'),
@@ -353,12 +350,9 @@
 						description: '',
 						meeting_link: '',
 						event_id: 0,
-						schedule_origin_name: type,
+						schedule_origin_name: 'group',
 						created_by: 0,
-						work_group: undefined,
-						assignee_ids: [],
-						reminders: [],
-						repeat_frequency: 0
+						work_group: undefined
 					};
 					showCreateScheduleEvent = true;
 					selectedEvent.start_date = formatDateToLocalTime(selectedDate).slice(0, 16);
@@ -489,8 +483,6 @@
 	{month}
 	{year}
 />
-
- 
 
 <style>
 	.calendar {

@@ -9,9 +9,7 @@
 	import Loader from '$lib/Generic/Loader.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { getTags } from './functions';
-	import Tag from './Tag.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import Fa from 'svelte-fa';
 	import { faTrash } from '@fortawesome/free-solid-svg-icons';
 	import Toggle from '$lib/Generic/Toggle.svelte';

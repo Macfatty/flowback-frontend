@@ -9,7 +9,7 @@
 	import { faCog } from '@fortawesome/free-solid-svg-icons';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import { darkModeStore, getIconFilter } from '$lib/Generic/DarkMode';
-	import { chatPartner, isChatOpen } from './functions';
+	import { chatPartnerStore, chatOpenStore } from './functions';
 	import { goto } from '$app/navigation';
 	import CreateChatGroup from '$lib/Chat/CreateChatGroup.svelte';
 	import CrossButton from '$lib/Generic/CrossButton.svelte';
@@ -57,7 +57,7 @@
 		correctMarginRelativeToHeader();
 		window.addEventListener('resize', correctMarginRelativeToHeader);
 		// Subscribe to chat open state
-		isChatOpen.subscribe((open) => (chatOpen = open));
+		chatOpenStore.subscribe((open) => (chatOpen = open));
 		getPreview();
 		window.addEventListener('popstate', () => {
 			let url = new URL(window.location.toString());
@@ -87,7 +87,7 @@
 		const firstDirectChat = previewDirect[0];
 		selectedChat = firstDirectChat.channel_id || null;
 		// selectedChatChannelId = firstDirectChat.channel_id || null;
-		chatPartner.set(firstDirectChat.channel_id || -1);
+		chatPartnerStore.set(firstDirectChat.channel_id || -1);
 		// Clear notification and update timestamp for the selected chat
 		clearChatNotification(firstDirectChat.channel_id || -1);
 	}
@@ -95,7 +95,7 @@
 	// Reset chat partner when chat is closed
 	// TODO fix issues with this
 	$: if (!chatOpen) {
-		chatPartner.set(0);
+		chatPartnerStore.set(0);
 	}
 </script>
 
@@ -108,13 +108,13 @@
 <div
 	bind:this={chatDiv}
 	class:invisible={!chatOpen}
-	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-40 w-full h-[100vh] flex flex-col items-center"
+	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-50 w-full h-[100vh] flex flex-col items-center"
 >
 	<div class="w-full flex justify-between mr-6">
 		<Button
 			onClick={() => {
 				chatOpen = false;
-				isChatOpen.set(false);
+				chatOpenStore.set(false);
 				goto('/user/settings');
 			}}
 			Class="px-6 my-3 dark:bg-darkbackground hover:brightness-95 active:brightness-90"
@@ -128,7 +128,7 @@
 		<CrossButton
 			action={() => {
 				chatOpen = false;
-				isChatOpen.set(false);
+				chatOpenStore.set(false);
 			}}
 		/>
 	</div>
@@ -163,7 +163,7 @@
 <button
 	on:click={() => {
 		chatOpen = !chatOpen;
-		isChatOpen.set(chatOpen);
+		chatOpenStore.set(chatOpen);
 	}}
 	class:small-notification={displayNotification}
 	class="dark:text-white transition-all fixed z-50 bg-white dark:bg-darkobject shadow-md border p-5 bottom-6 ml-5 rounded-full cursor-pointer hover:shadow-xl hover:border-gray-400 active:shadow-2xl active:p-6"

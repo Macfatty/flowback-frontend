@@ -14,8 +14,7 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { onMount } from 'svelte';
 	import { configToReadable } from '$lib/utils/configToReadable';
-	import { env } from '$env/dynamic/public';
-	import type { report } from '$lib/Generic/interface';
+	import type { report } from '$lib/Generic/interfaces';
 	import { linkToPost } from '$lib/Generic/GenericFunctions';
 	import Modal from '$lib/Generic/Modal.svelte';
 
@@ -53,7 +52,7 @@
 		},
 		reports: report[] = [],
 		serverConfig: any = {},
-		version = '19',
+		version = '20',
 		open = false,
 		selectedRepport: report = {
 			description: '',
@@ -112,13 +111,6 @@
 		getUserConfig();
 		getServerConfig();
 		getReportList();
-
-		console.log(
-			env.PUBLIC_API_URL,
-			env.PUBLIC_DISABLE_GROUP_CREATION,
-			env.PUBLIC_FLOWBACK_AI_MODULE,
-			env.PUBLIC_LOGO
-		);
 	});
 </script>
 

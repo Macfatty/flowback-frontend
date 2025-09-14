@@ -2,7 +2,7 @@
 	import Button from './Button.svelte';
 	import { _ } from 'svelte-i18n';
 	import CrossButton from './CrossButton.svelte';
-	import type { ModalButton } from './interface';
+	import type { ModalButton } from './interfaces';
 	//TODO: Make the design nicer and larger, make it draggable, add more options
 
 	export let open = false,

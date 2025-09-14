@@ -39,7 +39,7 @@
 			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
 				<Button
 					onClick={() => goto(`/groups`)}
-					Class="absolute left-0 top-0 p-3 m-4 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90"
+					Class="fixed left-0 top-0 p-3 m-4 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90"
 				>
 					<div class="text-gray-800 dark:text-gray-200">
 						<Fa icon={faArrowLeft} />

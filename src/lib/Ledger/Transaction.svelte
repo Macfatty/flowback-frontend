@@ -11,8 +11,6 @@
 	import DateInput from 'date-picker-svelte/DateInput.svelte';
 	import formatDate from './formatDate';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import { deepCopy } from '$lib/Generic/GenericFunctions';
-	// import { formatDate } from '$lib/Generic/DateFormatter';
 
 	export let transaction: Transaction, transactions: Transaction[], accounts: Account[];
 

@@ -4,7 +4,6 @@
 	import DefaultBanner from '$lib/assets/default_banner_group.png';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import { page } from '$app/stores';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import Fa from 'svelte-fa';
 	import {
