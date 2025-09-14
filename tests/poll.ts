@@ -10,8 +10,8 @@ export async function fastForward(page: any, times = 1) {
 }
 
 export async function createPoll(page: any, {
-    title = 'Test Poll', date = false, phase_time=0 } = {}) {
-    //Create a Polls
+    title = 'Test Poll', date = false, phase_time = 0 } = {}) {
+    //Create a Poll
     await page.getByRole('button', { name: 'Create a post' }).click();
     await expect(page.getByText('Poll Thread Poll Content Text')).toBeVisible();
     await page.getByLabel('Title * 0/').click();
