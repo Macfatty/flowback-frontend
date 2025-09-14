@@ -35,7 +35,7 @@
 	//TODO: Avoid code duplication and introduce group stores for storing group data.
 	const getGrouplist = async () => {
 		const { res, json } = await fetchRequest('GET', 'group/list');
-		console.log(res, 'Group List');
+		console.log(res, 'Group-List');
 
 		if (!res.ok) return;
 		else return json?.results;
