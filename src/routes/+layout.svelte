@@ -16,8 +16,6 @@
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
-	export const prerender = true;
-
 	let showUI = false,
 		scrolledY = '',
 		openLoginModal = false,
@@ -37,7 +35,7 @@
 	//TODO: Avoid code duplication and introduce group stores for storing group data.
 	const getGrouplist = async () => {
 		const { res, json } = await fetchRequest('GET', 'group/list');
-		console.log(res, 'Group List');
+		console.log(res, 'Group-List');
 
 		if (!res.ok) return;
 		else return json?.results;
