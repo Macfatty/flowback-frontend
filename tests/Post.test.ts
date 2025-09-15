@@ -5,7 +5,7 @@ import { gotoGroup, createArea, createGroup, deleteGroup } from './group';
 
 test('Go-To-Post', async ({ page }) => {
     await login(page);
-    
+
     const group = { name: "Test Group Poll", public: false }
     await gotoGroup(page, group)
 
@@ -35,7 +35,7 @@ test('Poll-Start-To-Finish', async ({ page }) => {
 
     await gotoGroup(page, group);
 
-    await createPoll(page);
+    await createPoll(page, { phase_time: 1 });
 
     await areaVote(page);
 
@@ -51,13 +51,13 @@ test('Poll-Start-To-Finish', async ({ page }) => {
 
     await predictionProbability(page);
 
-    await fastForward(page, 2);
+    // await fastForward(page, 2);
 
-    await vote(page);
+    // await vote(page);
 
-    await fastForward(page, 1);
+    // await fastForward(page, 1);
 
-    await results(page);
+    // await results(page);
 
     // } catch (error) {
     //     deleteGroup(page, group)

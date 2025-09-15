@@ -91,6 +91,12 @@
 			score: vote.raw_score,
 			proposal: vote.proposal_id
 		}));
+		voting = json?.results[0]?.vote.map((vote: any) => ({
+			score: vote.raw_score,
+			proposal: vote.proposal_id
+		}));
+		voting = voting;
+		delegateVoting = delegateVoting;
 	};
 
 	// Voting as a delegate
@@ -99,8 +105,8 @@
 			`POST`,
 			`group/poll/${$page.params.pollId}/proposal/vote/delegate/update`,
 			{
-				proposals: voting?.map((vote) => vote.proposal),
-				scores: voting?.map((vote) => vote.score)
+				proposals: delegateVoting?.map((vote) => vote.proposal),
+				scores: delegateVoting?.map((vote) => vote.score)
 			}
 		);
 
@@ -149,13 +155,26 @@
 
 	const changingVote = (score: number | string, proposalId: number) => {
 		if (!voting) return;
-		const i = voting?.findIndex((vote) => vote.proposal === proposalId);
-		voting[i].score = Number(score);
-		voting = voting;
+
+		if (phase === 'delegate_vote') {
+			const i = delegateVoting?.findIndex((vote) => vote.proposal === proposalId);
+			delegateVoting[i].score = Number(score);
+			delegateVoting = delegateVoting;
+		} else if (phase === 'vote') {
+			const i = voting?.findIndex((vote) => vote.proposal === proposalId);
+			voting[i].score = Number(score);
+			voting = voting;
+		}
+
+		needsReload++;
 	};
 
 	const getScore = (proposal: proposal) => {
-		return voting?.find((vote) => vote.proposal === proposal.id)?.score;
+		// console.log(delegateVoting, 'VOTING', proposal, delegateVoting?.find((vote) => vote.proposal === proposal.id)?.raw_score);
+		if (phase === 'delegate_vote')
+			return delegateVoting?.find((vote) => vote.proposal === proposal.id)?.score ?? 0;
+		else if (phase === 'vote')
+			return voting?.find((vote) => vote.proposal === proposal.id)?.score ?? 0;
 	};
 
 	$: console.log(voting, delegateVoting, 'VOTE');
@@ -178,7 +197,7 @@
 							{#if phase === 'delegate_vote' || phase === 'vote'}
 								{@const score = getScore(proposal)}
 
-								{#key voting}
+								{#key voting || delegateVoting}
 									<VotingSlider
 										bind:phase
 										onSelection={(pos) => {
@@ -191,8 +210,6 @@
 											$groupUserStore?.delegate_pool_id === null) ||
 											(phase === 'vote' && !$groupUserPermissionStore?.allow_vote)}
 										{score}
-										delegateScore={delegateVoting?.find((vote) => vote.proposal === proposal.id)
-											?.raw_score}
 										style={(() => {
 											if (phase === 'vote' && voting === delegateVoting) return 'gray';
 											else return 'purple';
@@ -200,6 +217,7 @@
 									/>
 								{/key}
 							{/if}
+
 							{#if phase === 'vote' && $groupUserPermissionStore?.allow_vote}
 								<Button
 									onClick={() => {
