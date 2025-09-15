@@ -10,10 +10,10 @@ export async function fastForward(page: any, times = 1) {
 }
 
 export async function createPoll(page: any, {
-    title = 'Test Poll', date = false, phase_time=0 } = {}) {
+    title = 'Test Poll', date = false, phase_time = 0 } = {}) {
     //Create a Poll
     await page.getByRole('button', { name: 'Create a post' }).click();
-    await expect(page.getByText('Poll Thread Poll Content Text')).toBeVisible();
+    await expect(page.getByText('PollThread')).toBeVisible();
     await page.getByLabel('Title * 0/').click();
     await page.getByLabel('Title * 0/').fill(title);
     await page.getByLabel('Description  0/').fill('Test Description');
@@ -164,6 +164,15 @@ export async function vote(page: any) {
     // await expect(page.getByText('Probability: 80%')).toBeVisible();
     await page.getByRole('button', { name: 'See More' }).nth(1).click();
     // await expect(page.getByText('Probability: 40%')).toBeVisible();
+
+    // await page.locator("#proposals-section").screenshot({ path: 'tests/voting.png', fullPage: true });
+    // await expect(page.locator("#proposals-section")).toHaveScreenshot('tests/voting.png');
+
+    // await page.reload();
+    // await page.waitForLoadState('networkidle');
+
+    // await expect(page.locator("#proposals-section")).toHaveScreenshot('tests/voting.png');
+
 }
 
 export async function results(page: any) {

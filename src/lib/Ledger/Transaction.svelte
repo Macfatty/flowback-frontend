@@ -9,10 +9,8 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import DateInput from 'date-picker-svelte/DateInput.svelte';
-	import { deepCopy } from 'ethers/lib/utils';
 	import formatDate from './formatDate';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	// import { formatDate } from '$lib/Generic/DateFormatter';
 
 	export let transaction: Transaction, transactions: Transaction[], accounts: Account[];
 

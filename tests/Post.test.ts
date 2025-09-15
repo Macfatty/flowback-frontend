@@ -5,7 +5,7 @@ import { gotoGroup, createArea, createGroup, deleteGroup } from './group';
 
 test('Go-To-Post', async ({ page }) => {
     await login(page);
-    
+
     const group = { name: "Test Group Poll", public: false }
     await gotoGroup(page, group)
 
@@ -29,13 +29,13 @@ test('Poll-Start-To-Finish', async ({ page }) => {
         await createGroup(page, group)
     }
 
-    // try {
     await createArea(page, group, "Tag 1")
+
     await createArea(page, group, "Tag 2")
 
     await gotoGroup(page, group);
 
-    await createPoll(page);
+    await createPoll(page, { phase_time: 1 });
 
     await areaVote(page);
 
@@ -59,9 +59,6 @@ test('Poll-Start-To-Finish', async ({ page }) => {
 
     await results(page);
 
-    // } catch (error) {
-    //     deleteGroup(page, group)
-    // }
 });
 
 test('Date-Poll', async ({ page }) => {

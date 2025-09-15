@@ -57,7 +57,7 @@
 			images: kanban.attachments || []
 		},
 		endDate: TimeAgo;
-		
+
 	// Helper function to format date for datetime-local input
 	function formatDateForInput(dateStr: string | null | undefined): string | null {
 		if (!dateStr || isNaN(new Date(dateStr).getTime())) return null;
@@ -116,7 +116,7 @@
 			filter.type === 'group'
 				? `group/${
 						env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : filter.group
-				  }/kanban/entry/update`
+					}/kanban/entry/update`
 				: 'user/kanban/entry/update',
 			formData,
 			true,
@@ -143,7 +143,7 @@
 					id: kanbanEdited.assignee_id,
 					username: assignee?.user.username || '',
 					profile_image: assignee?.user.profile_image || ''
-			  }
+				}
 			: null;
 
 		await getKanbanEntries();
@@ -268,7 +268,7 @@
 				.replace(/^\w/, (c) => c.toUpperCase())}
 		</div>
 	{/if}
-	<button
+	<div
 		class="mt-2 gap-2 items-center text-sm cursor-pointer hover:underline inline-flex"
 		on:click={() => {
 			if ($page.params.groupId) goto(`/user?id=${kanban?.assignee?.id}`);
@@ -302,7 +302,7 @@
 				</div>
 			{/if}
 		{/if}
-	</button>
+	</div>
 
 	{#if kanban.work_group && kanban.work_group.name}
 		<div class="text-sm">
@@ -348,11 +348,11 @@
 					{ label: 'Update', type: 'primary', onClick: updateKanbanContent },
 					{ label: 'Cancel', type: 'default', onClick: cancelUpdateKanban },
 					{ label: 'Delete', type: 'warning', onClick: deleteKanbanEntry }
-			  ]
+				]
 			: [
 					{ label: 'Edit', type: 'primary', onClick: () => (isEditing = true) },
 					{ label: 'Close', type: 'default', onClick: () => (openModal = false) }
-			  ]}
+				]}
 	>
 		<div slot="body">
 			{#if isEditing}

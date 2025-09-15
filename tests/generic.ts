@@ -1,4 +1,11 @@
-import { expect } from '@playwright/test';
+import { chromium, expect } from '@playwright/test';
+
+export async function newWindow() {
+    const browser = await chromium.launch();
+    const Context = await browser.newContext();
+    const Page = await Context.newPage();
+    return Page
+}
 
 export async function login(page: any, {
     email = process.env.E2E_EMAIL ?? 'a@a.se',

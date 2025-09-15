@@ -55,6 +55,7 @@
 			<Button
 				onClick={() => (showDeleteModal = true)}
 				Class="p-2 text-lg cursor-pointer bg-white dark:bg-darkobject"
+				id={"delete-permission-button " + role.role_name}
 			>
 				<Fa class="text-red-500" icon={faTrash} />
 			</Button>
