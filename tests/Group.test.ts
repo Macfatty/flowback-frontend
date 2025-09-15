@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { login } from './generic';
-import { createGroup, deleteGroup, gotoGroup, joinGroup } from './group';
+import { createGroup, createPermission, deleteGroup, gotoGroup, joinGroup } from './group';
 
 const group = { name: "Test Group Group-Testing", public: true }
 
@@ -15,7 +15,7 @@ test('Go To Group', async ({ page }) => {
 })
 
 test('Join Group', async ({ page }) => {
-    await login(page, {email:"b@b.se", password:"b"})
+    await login(page, { email: "b@b.se", password: "b" })
     await joinGroup(page, group)
 })
 
@@ -68,26 +68,12 @@ test('Create-Delete-Group', async ({ page }) => {
     await page.getByRole('button', { name: 'Edit Group' }).click();
 
     // Create, deactive and delete permission
-    await page.getByRole('button', { name: 'Permissions' }).click();
-    await page.getByRole('button', { name: 'Create' }).click();
-    await page.getByLabel('Role name * 0/').click();
-    await page.getByLabel('Role name * 0/').fill('Test Permission');
-    await page.getByLabel('Role name * 15/').click();
-    await page.locator('.slider').first().click();
-    const indexes = [4, 5, 6, 11, 12, 13, 14, 16, 17, 18, 9, 8, 7, 10, 15, 19];
-    for (const index of indexes) {
-        await page.locator(`div:nth-child(${index}) > .switch > .slider`).click();
-    }
+    await createPermission(page, group, [4, 5, 6, 11, 12, 13, 14, 16, 17, 18, 9, 8, 7, 10, 15, 19]);
 
-    await page.getByRole('button', { name: 'Create Role' }).click();
     await page.getByRole('button', { name: 'Assign' }).click();
-    await page.getByRole('listitem').locator('svg').click();
-    await page.getByRole('button', { name: 'Test Permission' }).nth(0).click();
-    await expect(page.locator('li > div > div').filter({ hasText: "Test Permission Admin" }).getByRole('button')).toBeVisible();
-    // await expect(page.getByRole('listitem', { name: "Test Permission" }).nth(0)).toBeVisible();
-    await page.getByRole('listitem').getByRole('button').nth(1).click();
-    // await page.getByRole('button', { name: 'Delete', exact: true }).click();
-
+    await page.getByRole('button', { name: 'List' }).click();
+    await page.locator('[id="delete-permission-button Test Permission"]').click();
+    await page.getByRole('button', { name: 'Delete', exact: true }).nth(1).click();
     // Create, deactive and delete area
     await page.getByRole('button', { name: 'Areas' }).click();
     await page.getByLabel('Tag * 0/').click();

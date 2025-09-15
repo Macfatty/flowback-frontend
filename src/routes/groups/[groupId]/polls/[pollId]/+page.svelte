@@ -302,7 +302,7 @@
 				<!-- PHASE 6: NON-DELEGATE VOTING -->
 			{:else if phase === 'vote'}
 				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-full">
+					<div slot="left" class="h-full" id="proposals-section">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>

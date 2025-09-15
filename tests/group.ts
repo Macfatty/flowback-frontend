@@ -5,11 +5,11 @@ export async function createGroup(page: any, group = { name: 'Test Group', publi
     await page.getByPlaceholder('Search groups').click();
     await page.getByPlaceholder('Search groups').fill(group.name);
     await page.waitForTimeout(500);
-    
+
     // await expect(page.getByRole('heading', { name: group.name, exact: true }).first()).toBeVisible();
     const button = await page.getByRole('heading', { name: group.name, exact: true }).first()
     await page.waitForTimeout(500);
-    
+
     if (await button.isVisible()) {
         await button.click();
     }
@@ -24,7 +24,7 @@ export async function createGroup(page: any, group = { name: 'Test Group', publi
         await page.getByRole('button', { name: 'Confirm' }).click();
         await page.waitForTimeout(500);
         await page.locator(".image-upload > input").nth(1).setInputFiles('./tests/forward-facing-niko-oneshot-isnt-real-it-cant-hurt-you-v0-3ggf23q4ijcf1.webp');
-        await page.locator("#cropper-confirm").click();
+        await page.locator("#cropper-confirm").first().click();
         await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel(group.public ? 'Yes' : 'No').check();
         await page.locator('fieldset').filter({ hasText: 'Hide creators? Yes No' }).getByLabel('No').check();
         await page.getByRole('button', { name: 'Create' }).click();
@@ -41,6 +41,7 @@ export async function gotoGroup(page: any, group = { name: 'Test Group' }) {
     await page.locator("#groups").click();
     await page.getByPlaceholder('Search groups').click();
     await page.getByPlaceholder('Search groups').fill(group.name);
+    await expect(page.getByRole('heading', { name: group.name, exact: true })).toBeVisible();
     await page.getByRole('heading', { name: group.name, exact: true }).click();
 }
 
@@ -50,6 +51,7 @@ export async function joinGroup(page: any, group = { name: 'Test Group' }) {
     await page.getByPlaceholder('Search groups').fill(group.name);
     await page.getByRole('heading', { name: group.name, exact: true });
     const joinButton = await page.locator('#groups-list div').filter({ hasText: group.name }).locator('#group-join-button');
+    await expect(joinButton).toBeVisible();
     if ((await joinButton.innerText()).trim() === "Join")
         await joinButton.click();
 }
@@ -74,4 +76,18 @@ export async function createArea(page: any, group = { name: 'Test Group', public
     await page.getByLabel('Description  0/').fill('Tag description');
     await page.getByRole('button', { name: 'Add' }).click();
     await expect(page.locator('div:nth-child(3) > div').filter({ hasText: tag })).toHaveText(tag);
+}
+
+export async function createPermission(page: any, group = { name: 'Test Group', public: false }, permissions = [0]) {
+    // Create, deactive and delete permission
+    await page.getByRole('button', { name: 'Permissions' }).click();
+    await page.getByRole('button', { name: 'Create' }).click();
+    await page.getByLabel('Role name * 0/').click();
+    await page.getByLabel('Role name * 0/').fill('Test Permission');
+    await page.getByLabel('Role name * 15/').click();
+    await page.locator('.slider').first().click();
+    for (const index of permissions) {
+        await page.locator(`div:nth-child(${index}) > .switch > .slider`).click();
+    }
+    await page.getByRole('button', { name: 'Create Role' }).click();
 }

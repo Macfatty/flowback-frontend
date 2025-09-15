@@ -17,6 +17,7 @@
 	class={`${Class} ${
 		poll ? 'poll-grid' : 'poll-grid-no-timeline'
 	} p-12 max-w-[1200px] w-full gap-4 lg:gap-6`}
+	id="poll-structure"
 >
 	{#if poll}
 		<Timeline

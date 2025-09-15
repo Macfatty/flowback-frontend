@@ -7,7 +7,6 @@
 	export let onSelection = (pos: number | null) => {},
 		lineWidth = 0,
 		score: number | null = null,
-		delegateScore: number | null = null,
 		phase: Phase,
 		disabled = false,
 		style: 'purple' | 'gray' = 'purple';
