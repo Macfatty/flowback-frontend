@@ -29,8 +29,8 @@ test('Poll-Start-To-Finish', async ({ page }) => {
         await createGroup(page, group)
     }
 
-    // try {
     await createArea(page, group, "Tag 1")
+
     await createArea(page, group, "Tag 2")
 
     await gotoGroup(page, group);
@@ -51,17 +51,14 @@ test('Poll-Start-To-Finish', async ({ page }) => {
 
     await predictionProbability(page);
 
-    // await fastForward(page, 2);
+    await fastForward(page, 2);
 
-    // await vote(page);
+    await vote(page);
 
-    // await fastForward(page, 1);
+    await fastForward(page, 1);
 
-    // await results(page);
+    await results(page);
 
-    // } catch (error) {
-    //     deleteGroup(page, group)
-    // }
 });
 
 test('Date-Poll', async ({ page }) => {

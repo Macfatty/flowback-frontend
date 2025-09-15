@@ -22,7 +22,7 @@
 		needsReload = 0,
 		commentFilterProposalId: number | null = null,
 		// What my delegate has voted on
-		delegateVoting: { score: number; proposal: number; raw_score: number }[] = [];
+		delegateVoting: { score: number; proposal: number }[] = [];
 
 	onMount(async () => {
 		await getProposals();
@@ -91,10 +91,13 @@
 			score: vote.raw_score,
 			proposal: vote.proposal_id
 		}));
-		voting = json?.results[0]?.vote.map((vote: any) => ({
-			score: vote.raw_score,
-			proposal: vote.proposal_id
-		}));
+
+		if (phase === 'delegate_vote')
+			voting = json?.results[0]?.vote.map((vote: any) => ({
+				score: vote.raw_score,
+				proposal: vote.proposal_id
+			}));
+
 		voting = voting;
 		delegateVoting = delegateVoting;
 	};
@@ -170,7 +173,12 @@
 	};
 
 	const getScore = (proposal: proposal) => {
-		// console.log(delegateVoting, 'VOTING', proposal, delegateVoting?.find((vote) => vote.proposal === proposal.id)?.raw_score);
+		console.log(
+			delegateVoting,
+			'VOTING',
+			proposal,
+			delegateVoting?.find((vote) => vote.proposal === proposal.id)
+		);
 		if (phase === 'delegate_vote')
 			return delegateVoting?.find((vote) => vote.proposal === proposal.id)?.score ?? 0;
 		else if (phase === 'vote')
