@@ -29,7 +29,7 @@
 		${disabled ? 'opacity-50 saturate-0 cursor-not-allowed' : ''}
 	`}
 		aria-disabled={disabled}
-		id={`${text.replace(' ', '-').toLowerCase()}-sidebar-button`}
+		id={`${text.replace(' ', '-').replace(' ', '-').toLowerCase()}-sidebar-button`}
 	>
 		<div class="w-6 flex items-center justify-center">
 			<Fa icon={faIcon} class="w-6 h-6" />
