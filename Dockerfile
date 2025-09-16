@@ -1,4 +1,4 @@
-FROM node:18-alpine AS sk-build
+FROM 24-alpine3.21 AS sk-build
 WORKDIR /usr/src/app
 
 # This just sets the timezone
@@ -10,7 +10,7 @@ RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN npm install
 RUN npm run build
 
-FROM node:18-alpine
+FROM 24-alpine3.21
 WORKDIR /usr/src/app
 
 # This just sets the timezone
