@@ -9,21 +9,22 @@
 	import type { Delegate } from '$lib/Group/Delegation/interfaces';
 	import Delegations from '$lib/Group/Delegation/Delegations.svelte';
 	import StopBeingDelegate from '$lib/Group/Delegation/StopBeingDelegate.svelte';
-	import type { Group } from '$lib/Group/interface';
+	import { groupUserPermissionStore, type Group, type GroupUser } from '$lib/Group/interface';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 	import { userStore } from '$lib/User/interfaces';
+	import { setUserGroupPermissionInfo } from '$lib/Group/functions';
 
 	let group: Group,
 		groups: Group[],
 		userIsDelegate = false,
+		groupUser: GroupUser,
 		autovote = false,
 		loading = false,
 		delegates: Delegate[] = [],
-		selectedPage: 'become-delegate' | 'delegate' | 'none' = 'none',
-		errorHandler: any;
+		selectedPage: 'become-delegate' | 'delegate' | 'none' = 'none';
 
 	const getGroups = async () => {
 		const { res, json } = await fetchRequest('GET', `group/list?limit=1000&joined=true`);
@@ -85,6 +86,10 @@
 		const { json, res } = await fetchRequest('GET', `group/${group.id}/delegate/pools?limit=1000`);
 
 		autovote = res.ok && json?.results.length > 0;
+	};
+
+	const userPermission = async () => {
+		// groupUserPermissionStore.set(await setUserGroupPermissionInfo($groupUserStore));
 	};
 
 	onMount(async () => {
