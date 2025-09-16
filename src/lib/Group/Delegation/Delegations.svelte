@@ -11,7 +11,6 @@
 	import { _ } from 'svelte-i18n';
 	import { userStore } from '$lib/User/interfaces';
 
-
 	export let group: Group,
 		delegates: Delegate[] = [];
 
@@ -19,7 +18,6 @@
 		expandedSection: any = null,
 		previousExpandedSection: any = null,
 		delegateRelations: DelegateRelation[] = [],
-		 
 		delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
 
 	onMount(async () => {
@@ -225,7 +223,7 @@
 						<Fa icon={faChevronDown} />
 					</div>
 				</button>
-				
+
 				{#if expandedSection === index}
 					<div class="voter-list">
 						{#each delegates as delegate}
@@ -270,8 +268,6 @@
 		<span>{$_('There are currently no delegates for this group')}</span>
 	{/if}
 </div>
-
- 
 
 <style>
 	.section {

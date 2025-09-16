@@ -732,5 +732,6 @@
     "Failed to subscribe": "Misslyckades att prenumerera",
     "Failed to unsubscribe": "Misslyckades att avsluta prenumeration",
     "Subscribed": "Prenumererad",
-    "Unsubscribed": "Avslutat prenumeration"
+    "Unsubscribed": "Avslutat prenumeration",
+    "Could not create Poll": "Kunde inte skapa omröstning"
 }
