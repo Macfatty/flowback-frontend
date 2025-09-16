@@ -1,4 +1,4 @@
-FROM alpine3.21 AS sk-build
+FROM alpine:3.21 AS sk-build
 WORKDIR /usr/src/app
 
 # This just sets the timezone
@@ -10,7 +10,7 @@ RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN npm install
 RUN npm run build
 
-FROM alpine3.21
+FROM alpine:3.21
 WORKDIR /usr/src/app
 
 # This just sets the timezone
