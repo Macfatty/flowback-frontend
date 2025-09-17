@@ -137,7 +137,7 @@
 
 		interval = setInterval(async () => {
 			if (numberOfOpen === 0) await getKanbanEntries();
-		}, 20210);
+		}, 20410);
 	});
 
 	onDestroy(() => {
