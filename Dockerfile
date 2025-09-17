@@ -7,7 +7,7 @@ ARG TZ=Europe/Stockholm
 COPY . /usr/src/app
 RUN apk --no-cache add curl tzdata
 RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN npm install
+RUN npm i
 RUN npm run build
 
 FROM node:24-alpine3.21
@@ -31,5 +31,6 @@ COPY --from=sk-build /usr/src/app/build /usr/src/app/build
 
 # EXPOSE 5173
 EXPOSE 3000
-# CMD ["npm", "run", "dev"]
-CMD ["npm", "run", "dev3000", "--host"]
+CMD ["node", "build/index.js", "&&", "npm", "run", "dev3000"]
+# CMD ["npm", "run", "dev3000"]
+# CMD ["vite", "dev", "--port", "3000", "--host"]
