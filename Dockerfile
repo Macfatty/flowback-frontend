@@ -32,4 +32,4 @@ COPY --from=sk-build /usr/src/app/build /usr/src/app/build
 # EXPOSE 5173
 EXPOSE 3000
 # CMD ["npm", "run", "dev"]
-CMD ["node", "build/index.js"]
+CMD ["npm", "run", "dev3000", "--host"]
