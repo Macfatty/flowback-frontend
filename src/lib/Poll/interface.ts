@@ -27,7 +27,7 @@ export interface timeProposal {
 export interface poll {
 	attachments: { file: string }[];
 	allow_fast_forward: boolean;
-	created_by: number;
+	created_by: GroupUser;
 	created_at: number;
 	description: string;
 	dynamic: boolean;
@@ -59,6 +59,8 @@ export interface poll {
 	total_proposals: number;
 	total_predictions: number;
 	pinned: boolean;
+	public: boolean;
+	work_group_id?: number | null;
 
 	// Status on calculating predictions.  1 is done, 2 is in progress, 0 is not started
 	status_prediction: 0 | 1 | 2;

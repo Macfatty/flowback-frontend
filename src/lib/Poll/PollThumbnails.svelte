@@ -7,11 +7,9 @@
 	import PollFiltering from './PollFiltering.svelte';
 	import type { Filter, poll as Poll } from './interface';
 	import Loader from '$lib/Generic/Loader.svelte';
-	import { getUserIsOwner } from '$lib/Group/functions';
 	import { pollThumbnails as pollThumbnailsLimit } from '../Generic/APILimits.json';
 	import Pagination from '$lib/Generic/Pagination.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import type { DelegateMinimal } from '$lib/Group/interface';
 
 	export let Class = '',
@@ -24,13 +22,13 @@
 			finishedSelection: 'all',
 			public: false,
 			order_by: 'start_date_desc',
-			tag: null
+			tag: null,
+			workgroup: null
 		},
 		loading = false,
-		isAdmin = false,
 		next = '',
 		prev = '',
-		poppup: poppup;
+		errorHandler: any;
 
 	const getAPI = async () => {
 		let API = '';
@@ -44,6 +42,8 @@
 		//TODO remove public
 		else if (infoToGet === 'public') API += `home/polls?public=true`;
 
+		console.log(filter.order_by, 'Order by filter');
+		
 		if (filter.order_by) API += `&order_by=pinned,${filter.order_by}`;
 		else API += `&order_by=pinned`;
 
@@ -61,6 +61,10 @@
 
 		if (filter.tag) API += `&tag_id=${filter.tag}`;
 
+		if (filter.workgroup) API += `&work_group_ids=${filter.workgroup}`;
+
+		console.log(API, 'API for polls');
+
 		return API;
 	};
 
@@ -73,11 +77,11 @@
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Could not get polls', success: false };
+			ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
 			return;
 		}
 
-		polls = json.results;
+		polls = json?.results;
 		next = json.next;
 		prev = json.previous;
 	};
@@ -87,12 +91,11 @@
 			//@ts-ignore
 			.map((poll) => (poll.related_model === 'poll' ? poll.id : undefined))
 			.filter((id) => id !== undefined);
-		//@ts-ignore
+
 		const threadIds = polls
 			//@ts-ignore
-			.map((poll) => (poll.related_model === 'group_thread' ? poll.id : undefined))
+			.map((poll) => (poll.related_model === 'thread' ? poll.id : undefined))
 			.filter((id) => id !== undefined);
-		//@ts-ignore
 
 		{
 			console.log(pollIds, 'pollz');
@@ -117,14 +120,12 @@
 	onMount(async () => {
 		await getPolls();
 		sharedThreadPollFixing();
-		//TODO: Part of refactoring with svelte stores includes this
-		if ($page.params.groupId) isAdmin = (await getUserIsOwner($page.params.groupId)) || false;
 	});
 </script>
 
 <div class={`${Class} dark:text-darkmodeText`}>
 	<Loader bind:loading>
-		<div class={`flex flex-col gap-6 w-full`}>
+		<div class={`flex flex-col gap-6 w-full`} id="thumbnails">
 			<PollFiltering
 				tagFiltering={infoToGet === 'group'}
 				handleSearch={async () => {
@@ -143,7 +144,7 @@
 				{#key polls}
 					{#if polls && polls?.length > 0}
 						{#each polls as poll}
-							<PollThumbnail {poll} {isAdmin} />
+							<PollThumbnail {poll} />
 						{/each}
 					{:else if !loading}
 						<div class="bg-white rounded shadow p-8 dark:bg-darkobject">
@@ -162,4 +163,4 @@
 	</Loader>
 </div>
 
-<Poppup bind:poppup />
+ 

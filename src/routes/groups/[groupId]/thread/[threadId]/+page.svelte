@@ -10,12 +10,17 @@
 	import { _ } from 'svelte-i18n';
 	import Comments from '$lib/Comments/Comments.svelte';
 	import Layout from '$lib/Generic/Layout.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
+	import ReportPostModal from '$lib/Poll/ReportPostModal.svelte';
+	import DeletePostModal from '$lib/Poll/DeletePostModal.svelte';
+	import Button from '$lib/Generic/Button.svelte';
+	import ThreadVoting from '$lib/Thread/ThreadVoting.svelte';
 
-	let thread: Thread, poppup: poppup;
+	let thread: Thread,
+		 
+		reportModalShow = false,
+		deleteModalShow = false;
 
 	onMount(() => {
 		getThread();
@@ -28,12 +33,12 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: 'Could not get Thread', success: false };
+			ErrorHandlerStore.set({ message: 'Could not get Thread', success: false });
 			return;
 		}
 
-		thread = json.results[0];
-		if (thread.description === null) thread.description = '';		
+		thread = json?.results[0];
+		if (thread?.description === null) thread.description = '';
 	};
 </script>
 
@@ -44,7 +49,10 @@
 		>
 			<div
 				class="cursor-pointer bg-white dark:bg-darkobject dark:text-darkmodeText justify-center m-auto"
-				on:click={() => goto(`/groups/${$page.params.groupId}?page=flow`)}
+				on:click={() =>
+					new URLSearchParams(window.location.search).get('source') === 'home'
+						? goto('/home')
+						: goto(`/groups/${$page.params.groupId}?page=flow`)}
 				on:keydown
 				role="button"
 				tabindex="0"
@@ -52,46 +60,64 @@
 				<Fa icon={faArrowLeft} />
 			</div>
 
-			<h1 class="text-left text-2xl text-primary dark:text-secondary font-semibold">{thread.title}</h1>
-
-			<div class="flex inline-flex gap-4 items-baseline">
+			<h1 class="text-left text-2xl text-primary dark:text-secondary font-semibold">
+				{thread?.title}
+			</h1>
+			<div class="inline-flex gap-4 items-baseline">
 				<NotificationOptions
-					type="group_thread"
-					id={thread.id}
-					api={`group/thread/${thread.id}`}
+					type="thread"
+					id={thread?.id}
+					api={`group/thread/${thread?.id}`}
 					categories={['thread']}
 					labels={['thread']}
 				/>
 				<MultipleChoices
-					labels={[$_('Delete Thread,'), $_('Report Thread')]}
-					functions={[]}
+					labels={[$_('Delete Thread'), $_('Report Thread')]}
 					Class="text-black justify-self-center"
+					functions={[() => (deleteModalShow = true), () => (reportModalShow = true)]}
 				/>
 			</div>
 
 			<div class="grid-area-workgroup">
-				{#if thread.work_group}
-					<span class="text-sm text-gray-500 dark:text-darkmodeText">#{thread.work_group?.name}, </span>
-				{/if}
-				{#if thread.created_at}
-					<span class="text-sm text-gray-500 dark:text-darkmodeText">
-						{new Date(thread.created_at).toISOString().split('T')[0].replace(/-/g, '.')}
+				{#if thread?.work_group}
+					<span class="text-sm text-gray-500 dark:text-darkmodeText"
+						>#{thread?.work_group?.name},
 					</span>
 				{/if}
+				{#if thread?.created_at}
+					<span class="text-sm text-gray-500 dark:text-darkmodeText">
+						{new Date(thread?.created_at).toISOString().split('T')[0].replace(/-/g, '.')}
+					</span>
+				{/if}
+				<ThreadVoting bind:thread />
 			</div>
 
-			{#if thread.description.length > 0}
+			{#if thread?.description.length > 0}
 				<div class="grid-area-description py-2">
 					<NewDescription bind:description={thread.description} limit={3} lengthLimit={300} />
 				</div>
 			{/if}
 		</div>
-	{/if}
 
-	<Comments api={'thread'} Class="w-full max-w-[1000px] bg-white dark:bg-darkobject p-6 mt-6" />
+		<Comments api={'thread'} Class="w-full max-w-[1000px] bg-white dark:bg-darkobject p-6 mt-6" />
+	{:else}
+		<div class="p-4 bg-white dark:bg-darkobject dark:text-darkmodeText mt-4 rounded shadow">
+			<p>{$_('No thread found, it might have been deleted')}</p>
+			<Button onClick={() => history.back()}><Fa icon={faArrowLeft} /></Button>
+		</div>
+	{/if}
 </Layout>
 
-<Poppup bind:poppup />
+<ReportPostModal
+	post_type="thread"
+	group_id={$page.params.groupId}
+	post_id={thread?.id}
+	post_title={thread?.title}
+	post_description={thread?.description}
+	bind:reportModalShow
+/>
+
+<DeletePostModal bind:deleteModalShow postId={thread?.id} post_type="thread" />
 
 <style>
 	.poll-header-grid {

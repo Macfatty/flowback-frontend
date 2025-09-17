@@ -9,7 +9,8 @@
 		disabled = false,
 		label: string = '',
 		href = '',
-		hoverEffect = true;
+		hoverEffect = true,
+		id = '';
 
 	//If all you send in is ref without noClick, the button will automatically send one to that link if pressed.
 	onMount(() => {
@@ -27,6 +28,7 @@
 		| 'accent-secondary'
 		| 'accent'
 		| 'primary-light'
+		| 'default'
 		| 'inactive';
 
 	type buttontypes = 'button' | 'submit';
@@ -34,14 +36,14 @@
 
 <!-- role={type === 'button' ? 'button' : type === 'submit' ? 'submit' : ''} -->
 <button
+	{id}
 	{type}
 	on:click={() => {
-		//The button used to only have action, but onClick is standard for svelte. TODO: Refactor so we only have onClick on all buttons in the code.
 		onClick();
 	}}
-	class={`text-center ${
+	class={`text-center dark:saturate-[60%] transition-colors duration-50 ${
 		Class.includes('bg-') ? '' : 'bg-primary'
-	} ${Class} filter inline text-white rounded-md cursor-pointer p-2 transition-all duration-50 
+	} ${Class}  inline text-white rounded-md cursor-pointer p-2  
 	${buttonStyle === 'primary-light' && ' bg-white dark:bg-darkobject primary-light-inner-shadow'}
 	${
 		buttonStyle === 'warning-light' &&
@@ -55,6 +57,7 @@
 	class:!text-gray-300={disabled}
 	class:!bg-secondary={buttonStyle == 'secondary'}
 	class:!bg-red-500={buttonStyle === 'warning'}
+	class:!bg-gray-700={buttonStyle === 'default'}
 	class:!bg-accent={buttonStyle === 'accent'}
 	class:!bg-accentSecondary={buttonStyle === 'accent-secondary'}
 	{disabled}

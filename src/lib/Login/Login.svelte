@@ -1,19 +1,17 @@
 <script lang="ts">
 	import TextInput from '../Generic/TextInput.svelte';
 	import { fetchRequest } from '../FetchRequest';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { _ } from 'svelte-i18n';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/Generic/Button.svelte';
 	import CheckboxButtons from '$lib/Generic/CheckboxButtons.svelte';
-	// import { userInfo } from '$lib/Generic/GenericFunctions';
+	import { userStore } from '$lib/User/interfaces';
 
 	let username: string,
 		password: string,
-		status: StatusMessageInfo,
 		loading = false,
 		remainLoggedIn = false;
 
@@ -24,7 +22,11 @@
 		const { json, res } = await fetchRequest('POST', 'login', { username, password }, false);
 		loading = false;
 
-		if (!res.ok) status = { message: json.detail.non_field_errors[0], success: false };
+		if (!res.ok)
+			ErrorHandlerStore.set({
+				message: json.detail.non_field_errors[0] ?? 'Something went wrong',
+				success: false
+			});
 		else if (json?.token) {
 			await localStorage.setItem('token', json.token);
 
@@ -39,13 +41,12 @@
 
 			{
 				const { json } = await fetchRequest('GET', 'user');
-				localStorage.setItem('userId', json.id);
-				localStorage.setItem('userName', json.username);
+				userStore.set(json);
 			}
 
 			goto('/home');
 		} else {
-			status = statusMessageFormatter(res, json, 'There was a problem logging in');
+			ErrorHandlerStore.set(statusMessageFormatter(res, json, 'There was a problem logging in'));
 		}
 	};
 </script>
@@ -61,7 +62,6 @@
 				required
 				name="password"
 			/>
-			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 			<div class="flex justify-between items-end">
 				<CheckboxButtons
 					Class="cursor-pointer"
@@ -69,15 +69,13 @@
 					labels={[{ label: 'Remain logged in', checked: false, id: 1 }]}
 					onChange={(e) => (remainLoggedIn = !remainLoggedIn)}
 				/>
-				<!-- svelte-ignore a11y-no-static-element-interactions -->
-				<div
+				<button
+					type="button"
 					class="cursor-pointer hover:underline text-gray-400"
 					on:click={() => (selectedPage = 'ForgotPassword')}
-					on:keydown
-					tabindex="0"
 				>
 					{$_('Forgot password?')}
-				</div>
+				</button>
 			</div>
 		</div>
 
@@ -85,11 +83,9 @@
 
 		<Button
 			type="submit"
-			buttonStyle="primary-light"
+			buttonStyle="primary"
 			disabled={username === '' || password === ''}
 			Class="w-[250px]">{$_('Login')}</Button
 		>
-
-		<StatusMessage bind:status />
 	</form>
 </Loader>

@@ -19,15 +19,25 @@
 	let email = ''
 
 	onMount(() => {
+		const params = new URLSearchParams(window.location.search);
+		const emailParam = params.get('email');
+		const verificationCode = params.get('verification_code');
+
+		if (emailParam && verificationCode) {
+			selectedPage = 'Verify';
+			return;
+		}
+
 		if (localStorage.getItem('token')) goto('/home');
 	});
+	
 </script>
 
 <svelte:head>
 	<title>{$_('Login to Flowback')}</title>
 </svelte:head>
 
-<div class="dark:bg-darkbackground bg-purple-50 h-[100vh]  flex flex-col items-center">
+<div id="login-page" class="dark:bg-darkbackground bg-purple-50 min-h-[110vh]  flex flex-col items-center">
 	<div class="mt-16">
 		<img src={env.PUBLIC_LOGO === "REFORUM" ? Reforum : Logo} class="w-[300px]" alt="flowback logo" />
 	</div>
@@ -40,6 +50,8 @@
 				<Register bind:selectedPage />
 			{:else if selectedPage === 'Verify'}
 				<Verify />
+			{:else if selectedPage === 'GotMail'}
+				{$_("A link has been sent to your email. Check the spam folder if you don't see it.")}
 			{:else if selectedPage === 'ForgotPassword'}
 				<ForgotPassword bind:selectedPage bind:email />
 			{:else if selectedPage === 'NewPassword'}

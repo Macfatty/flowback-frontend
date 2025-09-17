@@ -9,6 +9,7 @@ export async function fetchRequest(
 	needs_authorization: boolean = true,
 	needs_json: boolean = true
 ) {
+	console.log("Down here");
 	if (method === 'GET' && data !== null)
 		console.warn(
 			"Method 'GET' does not take any data, use query parameters instead. For example: /api?id=5"
@@ -16,6 +17,7 @@ export async function fetchRequest(
 
 	let headers: any = {};
 
+	
 	if (!browser) return { res: { ok: false }, json: {} };
 
 	if (needs_authorization) {
@@ -23,7 +25,7 @@ export async function fetchRequest(
 		const relativePath = new URL(location.href).pathname;
 
 		if (token !== null) headers.Authorization = 'Token ' + (localStorage.getItem('token') || '');
-		else if (relativePath !== '/login') goto('/login');
+		else if (!relativePath.includes('/login')) goto('/login');
 	}
 
 	if (needs_json) {
@@ -46,7 +48,10 @@ export async function fetchRequest(
 	);
 
 	const relativePath = new URL(location.href).pathname;
-	if (res.status === 401 && relativePath !== '/login') goto('/login')
+	if (res.status === 401 && !relativePath.includes('/login')) {
+		localStorage.clear();
+		goto('/login')
+	}
 
 	try {
 		const json = await res.json();

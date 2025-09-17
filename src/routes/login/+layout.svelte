@@ -21,13 +21,6 @@
 	});
 </script>
 
-<main>
+<div>
 	<slot />
-</main>
-
-<style>
-	.header {
-		display: none;
-		visibility: hidden;
-	}
-</style>
+</div>

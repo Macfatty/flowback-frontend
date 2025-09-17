@@ -15,12 +15,11 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { delegation as delegationLimit } from '../../Generic/APILimits.json';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	let delegates: DelegateMinimal[] = [],
 		tags: TagType[] = [],
-		poppup: poppup,
+		 
 		loading = false;
 
 	onMount(async () => {
@@ -41,7 +40,7 @@
 			toSendDelegates
 		);
 
-		if (res.ok) poppup = { message: 'Success', success: true };
+		if (res.ok) ErrorHandlerStore.set({ message: 'Success', success: true });
 		loading = false;
 	};
 
@@ -53,11 +52,11 @@
 		);
 		loading = false;
 		if (!res.ok) {
-			poppup = { message: 'Could not get delegates', success: false };
+			ErrorHandlerStore.set({ message: 'Could not get delegates', success: false })
 			return [];
 		}
 
-		return json.results;
+		return json?.results;
 	};
 
 	const setTagList = async () => {
@@ -66,7 +65,7 @@
 			'GET',
 			`group/${$page.params.groupId}/tags?limit=${delegationLimit}`
 		);
-		tags = json.results.map(({ active, ...args }: any) => args);
+		tags = json?.results.map(({ active, ...args }: any) => args);
 		loading = false;
 	};
 
@@ -77,7 +76,7 @@
 			`group/${$page.params.groupId}/users?limit=${delegationLimit}&is_delegate=true`
 		);
 		loading = false;
-		return json.results;
+		return json?.results;
 	};
 
 	const getDelegationPools = async () => {
@@ -86,7 +85,7 @@
 			`group/${$page.params.groupId}/delegate/pools?limit=${delegationLimit}`
 		);
 
-		return json.results;
+		return json?.results;
 	};
 
 	const setDelegators = async () => {
@@ -195,7 +194,7 @@
 	<Loader bind:loading />
 {/if}
 
-<Poppup bind:poppup />
+ 
 
 <style>
 	.faPlus {

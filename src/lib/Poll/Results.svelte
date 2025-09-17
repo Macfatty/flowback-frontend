@@ -16,23 +16,23 @@
 	//4 for score voting, 3 for date
 	export let pollType = 1,
 		proposals: any[] = [],
-		poll: poll;
+		poll: poll,
+		getPollData = () => {};
 
 	const getProposals = async () => {
 		const { json } = await fetchRequest(
 			'GET',
 			`group/poll/${$page.params.pollId}/proposals?limit=1000&order_by=score_desc`
 		);
-		console.log('WHAAAATTT', json, pollType);
 
-		if (pollType === 4) proposals = json.results;
+		if (pollType === 4) proposals = json?.results;
 		else if (pollType === 3)
 			//Only one proposal wins in date poll
 			proposals = [
 				{
-					id: json.results[0].id,
-					title: formatDate(json.results[0].start_date),
-					description: formatDate(json.results[0].end_date)
+					id: json?.results[0].id,
+					title: formatDate(json?.results[0].start_date),
+					description: formatDate(json?.results[0].end_date)
 				}
 			];
 
@@ -63,6 +63,16 @@
 
 	onMount(() => {
 		getProposals();
+		let k = 0;
+
+		if (poll?.status === 2 || poll?.status === 0) {
+			let time = setInterval(() => {
+				if (poll.status === -1 || poll.status === 1 || k === 15) clearInterval(time);
+				getProposals();
+				getPollData();
+				k++;
+			}, 1000);
+		}
 	});
 </script>
 
@@ -72,12 +82,12 @@
 	>
 
 	{#if pollType === 4}
-		<!-- If the winner has atleast one point, display statistics (otherwise it looks empty) -->
 		{#if poll?.status === 2 || poll?.status === 0}
-			{$_('Calculating results, try refreshing in a while.')}
+			{$_('Calculating results...')}
 		{:else if poll?.status === -1}
 			{$_('Vote calculation failed')}
-		{:else}
+		{:else if poll?.status === 1}
+			<!-- If the winner has atleast one point, display statistics (otherwise it looks empty) -->
 			{#if proposals[0]?.score > 0}
 				<Statistics bind:votes bind:labels />
 			{/if}
@@ -98,21 +108,26 @@
 		{/if}
 	{:else if pollType === 3}
 		<div class="flex flex-col items-center justify-center h-full gap-4 mt-10">
-			<Fa icon={faStar} color="orange" class="text-5xl" />
-			<div class="text-primary dark:text-secondary font-semibold text-lg text-center block">
-				{$_('Results have also been added to Group Schedule')}!
-			</div>
+			{#if proposals.length > 0}
+				<Fa icon={faStar} color="orange" class="text-5xl" />
+				<div class="text-primary dark:text-secondary font-semibold text-lg text-center block">
+					{$_('Results have also been added to Group Schedule')}!
+				</div>
 
-			{#if proposals?.length > 0}
-				{#if proposals[0].title && proposals[0].description}
-					<div class="mt-2 text-center">
-						<span>{formatDateTime(proposals[0].title).date}</span>
-						<div class="mt-1 text-md text-gray-500">
-							{formatDateTime(proposals[0].title).time} - {formatDateTime(proposals[0].description)
-								.time}
+				{#if proposals?.length > 0}
+					{#if proposals[0].title && proposals[0].description}
+						<div class="mt-2 text-center">
+							<span>{formatDateTime(proposals[0].title).date}</span>
+							<div class="mt-1 text-md text-gray-500">
+								{formatDateTime(proposals[0].title).time} - {formatDateTime(
+									proposals[0].description
+								).time}
+							</div>
 						</div>
-					</div>
+					{/if}
 				{/if}
+			{:else}
+				{$_('No date was selected')}
 			{/if}
 		</div>
 	{/if}

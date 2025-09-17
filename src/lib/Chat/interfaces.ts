@@ -58,6 +58,7 @@ export interface PreviewMessage {
 	};
 	target_id?: number;
 	target_username?: string;
+	channel_origin_name?: 'user' | 'group' | 'workgroup' | 'user_group';
 }
 
 export interface Direct {
@@ -90,4 +91,14 @@ export interface GroupMembers {
 	profile_image: string | null;
 	public_status: string;
 	username: string;
+}
+
+export interface Direct {
+	id: number;
+	profile_image: string | null;
+	username: string;
+	banner_image: string | null;
+	chat_status: string;
+	channel_id: number;
+	public_status: string;
 }

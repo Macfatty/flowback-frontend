@@ -193,7 +193,7 @@
 			{/each}
 		</div>
 
-		<div class="pt-4 px-4 border-t flex gap-4 bg-white">
+		<div class="pt-4 px-4 border-t flex gap-4 bg-white dark:bg-darkobject">
 			<Button
 				disabled={noChanges || selectedDates.length === 0}
 				onClick={saveSelection}

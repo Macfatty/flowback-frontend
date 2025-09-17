@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Comments from '$lib/Comments/Comments.svelte';
+	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 	import { onMount } from 'svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { page } from '$app/stores';
@@ -7,10 +8,9 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 	import Results from '$lib/Poll/Results.svelte';
-	import type { groupUser } from '$lib/Group/interface';
 	import { checkForLinks } from '$lib/Generic/GenericFunctions';
 	import ProposalSubmition from '$lib/Poll/ProposalSubmition.svelte';
-	import Predictions from '$lib/Poll/PredictionMarket/PredictionCreate.svelte';
+	import Predictions from '$lib/Poll/PredictionMarket/CreatePrediction.svelte';
 	import PollHeader from '$lib/Poll/PollHeader.svelte';
 	import { getPhase } from '$lib/Poll/functions';
 	import AreaVote from '$lib/Poll/AreaVote.svelte';
@@ -20,66 +20,54 @@
 	import Layout from '$lib/Generic/Layout.svelte';
 	import PredictionStatements from '$lib/Poll/PredictionStatements.svelte';
 	import { env } from '$env/dynamic/public';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { formatDate } from '$lib/Generic/DateFormatter';
+	import { predictionStatementsStore } from '$lib/Poll/PredictionMarket/interfaces';
+	import Fa from 'svelte-fa';
+	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 	let poll: poll,
 		pollType = 1,
 		finished: boolean,
-		groupUser: groupUser,
-		phase: Phase,
+		phase: Phase = 'pre_start',
 		proposals: proposal[],
 		selectedProposal: proposal | null,
 		proposalsToPredictionMarket: proposal[] = [],
-		poppup: poppup,
+		 
 		displayForm: boolean,
-		comments: Comment[] = [];
+		comments: Comment[] = [],
+		loading = true;
 
 	onMount(async () => {
-		getGroupUser();
 		await getPollData();
 		phase = getPhase(poll);
 		scrollToSection();
 		checkForLinks(poll?.description, 'poll-description');
-		document.title = poll.title;
+		document.title = poll?.title;
 		getDisplayForm();
+		setUpPredictionStore();
 	});
 
 	const getPollData = async () => {
 		if (!$page.params) return;
+		loading = true;
 
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/poll/list?id=${$page.params.pollId}`
 		);
 
+		loading = false;
+
 		if (!res.ok) {
-			poppup = { message: json.detail[0], success: false };
+			ErrorHandlerStore.set({ message: json.detail[0], success: false });
 			return;
 		}
 
-		poll = json.results[0];
-		pollType = json.results[0].poll_type;
-		finished = new Date(json.results[0].end_date) < new Date();
-	};
-
-	//TODO: Replace this later with some kind of svelte stores or local storage data
-	const getGroupUser = async () => {
-		if (!$page.params) return;
-
-		const { res, json } = await fetchRequest('GET', `user`);
-		if (res.ok) {
-			const userId = json.id;
-			{
-				const { res, json } = await fetchRequest(
-					'GET',
-					`group/${$page.params.groupId}/users?user_id=${userId}`
-				);
-				if (res.ok) groupUser = json.results[0];
-			}
-		}
+		poll = json?.results[0];
+		pollType = json?.results[0]?.poll_type;
+		finished = new Date(json?.results[0]?.end_date) < new Date();
 	};
 
 	const scrollToSection = () => {
@@ -99,7 +87,20 @@
 		if (display === '1') displayForm = true;
 	};
 
-	// When fast forwarding from area phase to prposal phase, get tag info in real time
+	const setUpPredictionStore = async () => {
+		const { json, res } = await fetchRequest(
+			'GET',
+			`group/${$page.params.groupId}/poll/prediction/statement/list?poll_id=${$page.params.pollId}`
+		);
+
+		if (!res.ok) {
+			return;
+		}
+
+		predictionStatementsStore.set(json?.results);
+	};
+
+	// When fast forwarding from area phase to proposal phase, get tag info in real time
 	$: if (phase === 'proposal') {
 		const a = setTimeout(() => {
 			getPollData();
@@ -116,6 +117,7 @@
 			<PollHeader {poll} bind:phase displayTag={false} />
 		{/if}
 
+		<!-- Normal Poll -->
 		{#if pollType === 4}
 			<!-- PHASE 0: PRE-START -->
 			{#if phase === 'pre_start'}
@@ -124,7 +126,7 @@
 					{formatDate(poll.start_date)}
 				</div>
 				<div class="bg-white p-6 mt-6">
-					<Comments bind:_comments={comments} bind:proposals api={'poll'} />
+					<Comments bind:proposals api={'poll'} />
 				</div>
 
 				<!-- PHASE 1: AREA VOTE -->
@@ -132,7 +134,7 @@
 				<Structure bind:phase bind:poll>
 					<div slot="left"><AreaVote /></div>
 					<div slot="right" class="!p-0">
-						<Comments bind:_comments={comments} bind:proposals api={'poll'} />
+						<Comments bind:proposals api={'poll'} />
 					</div>
 				</Structure>
 
@@ -144,14 +146,7 @@
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-[80%] overflow-y-auto">
-							<ProposalScoreVoting
-								bind:poll
-								bind:selectedProposal
-								bind:proposals
-								bind:comments
-								bind:phase
-								isVoting={false}
-							/>
+							<ProposalScoreVoting bind:selectedProposal bind:proposals bind:comments bind:phase />
 						</div>
 						<Button
 							Class="w-full absolute bottom-0 mb-2"
@@ -187,7 +182,7 @@
 						{/if}
 					</div>
 					<div slot="bottom">
-						<Comments bind:_comments={comments} bind:proposals api={'poll'} />
+						<Comments bind:proposals api={'poll'} />
 					</div>
 				</Structure>
 
@@ -200,13 +195,11 @@
 						>
 						<div class="max-h-[80%] overflow-y-auto">
 							<ProposalScoreVoting
-								bind:poll
 								bind:comments
 								bind:proposals
 								bind:phase
 								bind:selectedProposal
 								bind:proposalsToPredictionMarket
-								isVoting={false}
 							/>
 						</div>
 						<Button
@@ -241,7 +234,7 @@
 						{/if}
 					</div>
 					<div slot="bottom">
-						<Comments bind:_comments={comments} bind:proposals api={'poll'} />
+						<Comments bind:proposals api={'poll'} />
 					</div>
 				</Structure>
 
@@ -253,14 +246,7 @@
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-full overflow-y-auto">
-							<ProposalScoreVoting
-								bind:poll
-								bind:comments
-								bind:proposals
-								bind:phase
-								bind:selectedProposal
-								isVoting={false}
-							/>
+							<ProposalScoreVoting bind:comments bind:phase bind:proposals bind:selectedProposal />
 						</div>
 					</div>
 					<div slot="right">
@@ -279,7 +265,7 @@
 						{/if}
 					</div>
 					<div slot="bottom">
-						<Comments bind:_comments={comments} bind:proposals api={'poll'} />
+						<Comments bind:proposals api={'poll'} />
 					</div>
 				</Structure>
 
@@ -291,14 +277,7 @@
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-[90%] overflow-y-auto">
-							<ProposalScoreVoting
-								bind:comments
-								bind:proposals
-								isVoting={false}
-								bind:phase
-								bind:selectedProposal
-								bind:poll
-							/>
+							<ProposalScoreVoting bind:comments bind:proposals bind:phase bind:selectedProposal />
 						</div>
 					</div>
 					<div slot="right">
@@ -317,25 +296,19 @@
 						{/if}
 					</div>
 					<div slot="bottom">
-						<Comments bind:_comments={comments} bind:proposals api={'poll'} />
+						<Comments bind:proposals api={'poll'} />
 					</div>
 				</Structure>
 				<!-- PHASE 6: NON-DELEGATE VOTING -->
 			{:else if phase === 'vote'}
 				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-full">
+					<div slot="left" class="h-full" id="proposals-section">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
+						<div>{$_('Allowed to vote: ')}{$groupUserPermissionStore?.allow_vote}</div>
 						<div class="max-h-[90%] overflow-y-auto">
-							<ProposalScoreVoting
-								bind:poll
-								bind:comments
-								bind:proposals
-								bind:phase
-								bind:selectedProposal
-								isVoting={false}
-							/>
+							<ProposalScoreVoting bind:comments bind:proposals bind:selectedProposal bind:phase />
 						</div>
 					</div>
 					<div slot="right">
@@ -354,7 +327,7 @@
 						{/if}
 					</div>
 					<div slot="bottom">
-						<Comments bind:_comments={comments} bind:proposals api={'poll'} />
+						<Comments bind:proposals api={'poll'} />
 					</div>
 				</Structure>
 				<!-- PHASE 7: RESULTS AND EVALUATION -->
@@ -369,26 +342,31 @@
 							/>
 						{/if}
 					</div>
-					<div slot="right"><Results bind:poll {pollType} /></div>
+					<div slot="right"><Results bind:poll {getPollData} {pollType} /></div>
 					<div slot="bottom">
-						<Comments bind:_comments={comments} bind:proposals api={'poll'} />
+						<Comments bind:proposals api={'poll'} />
 					</div>
 				</Structure>
 			{/if}
+
+			<!-- Date Poll -->
 		{:else if pollType === 3}
-			{#if !finished}
+			{#if phase === 'area_vote' || phase === 'pre_start'}
 				<DatePoll />
 			{:else}
-				<Structure poll={null}>
+				<Structure bind:phase bind:poll>
 					<div slot="left" class="w-[600px]">
-						<Results bind:poll {pollType} />
+						<Results bind:poll {getPollData} {pollType} />
 					</div>
 
 					<div slot="right"><Comments api="poll" /></div>
 				</Structure>
 			{/if}
 		{/if}
+	{:else if !loading}
+		<div class="p-4 bg-white dark:bg-darkobject dark:text-darkmodeText mt-4 rounded shadow">
+			<p>{$_('No poll found, it might have been deleted')}</p>
+			<Button onClick={() => history.back()}><Fa icon={faArrowLeft} /></Button>
+		</div>
 	{/if}
 </Layout>
-
-<Poppup bind:poppup />

@@ -1,11 +1,8 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import Layout from '$lib/Generic/Layout.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
 	import GroupFiltering from '$lib/Group/GroupFiltering.svelte';
 	import GroupThumbnail from '$lib/Group/GroupThumbnail.svelte';
 	import type { Group, GroupFilter } from '$lib/Group/interface';
@@ -16,7 +13,7 @@
 	import { goto } from '$app/navigation';
 
 	let groupList: Group[] = [],
-		status: StatusMessageInfo,
+  
 		filter: GroupFilter = { joined: 'all', search: '' },
 		loading = false;
 
@@ -41,11 +38,10 @@
 			'GET',
 			`group/list?limit=${groupMembersLimit}` + urlFilter
 		);
-		status = statusMessageFormatter(res, json);
 
 		if (!res.ok) return;
 
-		groupList = json.results
+		groupList = json?.results
 			.reverse()
 			.sort((group1: any, group2: any) => +group2.joined - +group1.joined);
 
@@ -59,9 +55,8 @@
 
 <Layout centered>
 	<!-- TODO: design of statusmessage is off -->
-	<Loader bind:loading Class="w-full">
-		<StatusMessage bind:status disableSuccess />
-		<div class="flex flex-col items-center mt-6 gap-6 mb-6 w-full">
+	<Loader bind:loading Class="w-full flex flex-col items-center">
+		<div id="groups-list" class="max-w-[1000px] flex flex-col items-center mt-6 gap-6 mb-6 w-full">
 			{#if !(env.PUBLIC_DISABLE_GROUP_CREATION === 'TRUE')}
 				<Button href="creategroup" Class="w-[90%] md:w-[40%] rounded-2xl"
 					>{$_('Create Group')}</Button

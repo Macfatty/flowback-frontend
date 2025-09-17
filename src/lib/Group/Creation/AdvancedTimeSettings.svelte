@@ -6,7 +6,6 @@
 	import type { pollType, template } from './interface';
 	import MonthView from '$lib/Generic/Schedules/MonthView.svelte';
 	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
-	import { poll } from 'ethers/lib/utils';
 
 	export let selected_poll: pollType,
 		advancedTimeSettings = false,
@@ -127,6 +126,7 @@
 						bind:value={start_date}
 						min={new Date()}
 						max={maxDatePickerYear}
+						
 					/>
 				</div>
 				{#if selected_poll !== 'Date Poll'}

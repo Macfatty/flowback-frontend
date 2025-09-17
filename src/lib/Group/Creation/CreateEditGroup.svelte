@@ -7,18 +7,15 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { _ } from 'svelte-i18n';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
-	import { blobifyImages, type StatusMessageInfo } from '$lib/Generic/GenericFunctions';
+	import { blobifyImages } from '$lib/Generic/GenericFunctions';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
 	import { faFileImage } from '@fortawesome/free-solid-svg-icons/faFileImage';
 	import { goto } from '$app/navigation';
 	import { becomeMemberOfGroup } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
 	import { env } from '$env/dynamic/public';
-	import type { poppup } from '$lib/Generic/Poppup';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
 
 	export let Class = '';
@@ -30,18 +27,18 @@
 		coverImage: string,
 		useInvite = false,
 		publicGroup = true,
-		hiddenGroup = false,
+		hiddenGroup = true,
 		loading = false,
-		poppup: poppup,
+		 
 		oldGroup: any;
 
 	//This page also supports the edit of groups
 	const groupToEdit = $page.url.searchParams.get('group') || $page.params.groupId;
-	let status: StatusMessageInfo;
+
 	let DeleteGroupModalShow = false;
 
 	//This function is also used for group editing
-	const createGroup = async () => {
+	const createEditGroup = async () => {
 		loading = true;
 		const formData = new FormData();
 
@@ -62,30 +59,39 @@
 		let api = groupToEdit ? `group/${groupToEdit}/update` : 'group/create';
 		const { res, json } = await fetchRequest('POST', api, formData, true, false);
 
+		loading = false;
 		if (!res.ok) {
-			status = statusMessageFormatter(res, json);
-			loading = false;
+			ErrorHandlerStore.set({
+				message:
+					json.detail[0] || json.detail || groupToEdit
+						? 'Could not update group'
+						: 'Could not create group',
+				success: false
+			});
 			return;
 		}
 
-		if (groupToEdit === null || groupToEdit === undefined) {
+		ErrorHandlerStore.set({
+			message: groupToEdit ? 'Successfully updated group' : 'Successfully created group',
+			success: true
+		});
+
+		if (!groupToEdit) {
+			// Create a default tag for the group
 			const { res } = await fetchRequest('POST', `group/${json}/tag/create`, {
-				name: 'Uncategorised' //Default
+				name: 'Uncategorised'
 			});
 
-			if (res.ok) {
-				if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') becomeMemberOfGroup(blockchain_id);
-				goto(`/groups/${json}`);
-			} else status = statusMessageFormatter(res, json);
-		} else goto(`/groups/${groupToEdit}`);
-		loading = false;
+			if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') becomeMemberOfGroup(blockchain_id);
+			goto(`/groups/${json}`);
+		}
 	};
 
 	const deleteGroup = async () => {
 		const { res } = await fetchRequest('POST', `group/${groupToEdit}/delete`);
 
 		if (!res.ok) {
-			poppup = { message: 'Could not delete group', success: false };
+			ErrorHandlerStore.set({ message: 'Could not delete group', success: false });
 			return;
 		}
 
@@ -105,7 +111,6 @@
 		if (json.cover_image) coverImage = `${env.PUBLIC_API_URL}${json.cover_image}`;
 
 		oldGroup = { ...json, image, coverImage };
-		console.log(oldGroup, 'oldGroup');
 	};
 
 	const resetEdits = async () => {
@@ -117,7 +122,7 @@
 		if (oldGroup.image) image = oldGroup.image;
 		if (oldGroup.cover_image) coverImage = oldGroup.coverImage;
 
-		poppup = { message: 'Successfully reverted edits', success: true };
+		ErrorHandlerStore.set({ message: 'Successfully reverted edits', success: true });
 	};
 
 	onMount(() => {
@@ -126,7 +131,9 @@
 		}
 	});
 
-	$: console.log(oldGroup?.image, 'oldGroup.image', image, 'image');
+	$: if (!publicGroup) {
+		useInvite = true;
+	}
 </script>
 
 <svelte:head>
@@ -134,7 +141,7 @@
 </svelte:head>
 
 <form
-	on:submit|preventDefault={createGroup}
+	on:submit|preventDefault={createEditGroup}
 	class={`dark:text-darkmodeText bg-white dark:bg-darkobject ${Class}`}
 >
 	<Loader bind:loading>
@@ -144,33 +151,34 @@
 			{/if}
 
 			<TextInput label="Title" bind:value={name} required />
-			<TextArea label="Description" bind:value={description} inputClass="whitespace-pre-wrap"/>
+			<TextArea label="Description" bind:value={description} inputClass="whitespace-pre-wrap" />
 
 			<FIleUpload icon={faUser} isProfile bind:imageString={image} label="Upload Image" />
 			<FIleUpload icon={faFileImage} bind:imageString={coverImage} label="Upload Banner" />
 
 			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
 				<RadioButtons
-					bind:Yes={useInvite}
-					label={'Invitation Required?'}
-					Class="flex items-center justify-between gap-3 w-full"
-				/>
-				<RadioButtons
 					bind:Yes={publicGroup}
 					label={'Public?'}
 					Class="flex items-center justify-between gap-3 w-full"
 				/>
 				<RadioButtons
+					bind:Yes={useInvite}
+					label={'Invitation Required?'}
+					Class="flex items-center justify-between gap-3 w-full"
+					dislabed={!publicGroup}
+				/>
+				<RadioButtons
 					bind:Yes={hiddenGroup}
-					label={'Hide proposal creator?'}
+					label={'Hide creators?'}
 					Class="flex items-center justify-between gap-3 w-full"
 				/>
 			{/if}
 
-			<StatusMessage bind:status />
+			 
 
 			<div class="flex gap-4">
-				<Button type="submit" disabled={loading} buttonStyle="primary-light" Class="w-1/2"
+				<Button type="submit" disabled={loading} buttonStyle="primary" Class="w-1/2"
 					><div class="flex justify-center gap-3 items-center">
 						{$_(groupToEdit ? 'Update' : 'Create')}
 					</div>
@@ -178,7 +186,7 @@
 				{#if groupToEdit}
 					<Button
 						onClick={resetEdits}
-						buttonStyle="primary-light"
+						buttonStyle="secondary"
 						disabled={oldGroup?.name === name &&
 							oldGroup?.description === description &&
 							oldGroup?.image === image &&
@@ -190,30 +198,24 @@
 					</Button>
 				{/if}
 				{#if groupToEdit && !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
-					<Modal bind:open={DeleteGroupModalShow}>
+					<Modal
+						bind:open={DeleteGroupModalShow}
+						Class="max-w-[400px]"
+						buttons={[
+							{ label: 'Yes', type: 'warning', onClick: deleteGroup },
+							{ label: 'Cancel', type: 'default', onClick: () => (DeleteGroupModalShow = false) }
+						]}
+					>
 						<div slot="header">{$_('Deleting group')}</div>
 						<div slot="body">{$_('Are you sure you want to delete this group?')}</div>
-						<div slot="footer">
-							<div class="flex justify-center gap-2">
-								<Button onClick={deleteGroup} Class="w-1/2" buttonStyle="warning">{$_('Yes')}</Button>
-								<Button
-									onClick={() => (DeleteGroupModalShow = false)}
-									Class="bg-gray-400 w-1/2">{$_('Cancel')}</Button
-								>
-							</div>
-						</div>
 					</Modal>
-					<Button
-						buttonStyle="warning-light"
-						Class="w-1/2"
-						onClick={() => (DeleteGroupModalShow = true)}>{$_('Delete Group')}</Button
+					<Button buttonStyle="warning" Class="w-1/2" onClick={() => (DeleteGroupModalShow = true)}
+						>{$_('Delete Group')}</Button
 					>
 				{/if}
 				{#if !groupToEdit && !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
-					<Button
-						buttonStyle="warning-light"
-						Class="w-1/2"
-						onClick={() => (goto(`/groups`))}>{$_('Cancel')}</Button
+					<Button buttonStyle="default" Class="w-1/2" onClick={() => goto(`/groups`)}
+						>{$_('Cancel')}</Button
 					>
 				{/if}
 			</div>
@@ -221,4 +223,4 @@
 	</Loader>
 </form>
 
-<Poppup bind:poppup />
+ 

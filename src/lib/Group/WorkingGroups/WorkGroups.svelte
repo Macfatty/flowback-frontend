@@ -8,16 +8,13 @@
 	} from './interface';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import WorkingGroup from './WorkGroup.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
 	import { _ } from 'svelte-i18n';
-	import Fa from 'svelte-fa';
-	import { faPlus } from '@fortawesome/free-solid-svg-icons';
-	import { getUserIsGroupAdmin } from '$lib/Generic/GenericFunctions';
+	import { groupUserStore } from '$lib/Group/interface';
 	import Loader from '$lib/Generic/Loader.svelte';
 
 	let workGroups: WorkingGroupType[] = [],
@@ -32,13 +29,13 @@
 			previous: '',
 			total_page: 0,
 			joined: false,
-			chat: 1
+			chat: 1,
+			requested_access: false
 		},
-		poppup: poppup,
+		 
 		open = false,
 		search: string,
 		invites: WorkGroupInvite[] = [],
-		isAdmin = false,
 		loading = true;
 
 	const getWorkingGroupList = async () => {
@@ -48,11 +45,11 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: 'Could not fetch work groups', success: false };
+			ErrorHandlerStore.set({ message: 'Could not fetch work groups', success: false });
 			return;
 		}
 
-		workGroups = json.results;
+		workGroups = json?.results;
 	};
 
 	const createWorkingGroup = async () => {
@@ -64,14 +61,14 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to create work group', success: false };
+			ErrorHandlerStore.set({ message: 'Failed to create work group', success: false });
 			return;
 		}
 
 		await getWorkingGroupList();
 
 		workGroupEdit = {
-			direct_join: false,
+			direct_join: true,
 			members: null,
 			name: '',
 			id: 0,
@@ -81,7 +78,8 @@
 			previous: '',
 			total_page: 0,
 			joined: false,
-			chat: 1
+			chat: 1,
+			requested_access: false
 		};
 
 		open = false;
@@ -89,17 +87,15 @@
 
 	const getWorkGroupInvite = async () => {
 		invites = [];
-		workGroups.forEach(async (workGroup) => {
-			const { res, json } = await fetchRequest(
-				'GET',
-				`group/workgroup/${workGroup.id}/joinrequest/list`
-			);
 
-			if (!res.ok) return;
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/${$page.params.groupId}/workgroup/joinrequest/list`
+		);
 
-			if (json.results[0]) invites.push(json.results[0]);
-			invites = invites;
-		});
+		if (!res.ok) return;
+
+		invites = json.results;
 	};
 
 	const addUserToGroup = async (groupUserId: number, workGroupId: number) => {
@@ -109,16 +105,25 @@
 		});
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to add user to group', success: false };
+			ErrorHandlerStore.set({ message: 'Failed to add user to group', success: false });
 			return;
 		}
 
 		invites = invites.filter((invite) => invite.work_group_id !== workGroupId);
-		workGroups.forEach((workGroup) => {
-			if (workGroup.id === workGroupId && groupUserId === Number(localStorage.getItem('userId')))
-				workGroup.joined = true;
-		});
+
+		let workGroup = workGroups.find((workGroup) => workGroup.id === workGroupId);
+		if (workGroup) {
+			workGroup.requested_access = false;
+			workGroup.member_count++;
+			workGroup.joined = true;
+		}
+
 		workGroups = workGroups;
+	};
+
+	const handleRemoveGroup = (id: number) => {
+		workGroups = workGroups.filter((group) => group.id !== id);
+		getWorkGroupInvite();
 	};
 
 	onMount(async () => {
@@ -127,17 +132,14 @@
 		await getWorkingGroupList();
 
 		getWorkGroupInvite();
-		isAdmin = await getUserIsGroupAdmin($page.params.groupId);
 		loading = false;
 	});
-
-	const handleRemoveGroup = (id: number) => {
-		workGroups = workGroups.filter((group) => group.id !== id);
-	};
 </script>
 
-<div class="flex items-center gap-3 mb-4">
-	<div class="bg-white dark:bg-darkobject p-4 shadow rounded flex-1 flex flex-col gap-2">
+<div class="flex items-center gap-4 mb-2">
+	<div
+		class="bg-white text-black dark:text-darkmodeText dark:bg-darkobject p-4 shadow rounded flex-1 flex flex-col gap-2"
+	>
 		<span class="text-sm"
 			>{$_(
 				`Being a part of a work group means that you will join that work group's chat, have access to viewing and creating tasks, events, and posts assigned to that work group. Work groups have no individual pages.`
@@ -152,54 +154,64 @@
 			onInput={getWorkingGroupList}
 		/>
 	</div>
-
-	{#if isAdmin}
-		<Button onClick={() => (open = true)} Class="w-10 h-10 flex items-center justify-center">
-			<Fa icon={faPlus} class="text-lg" />
-		</Button>
-	{/if}
 </div>
 
 <Loader bind:loading>
-	{#if isAdmin && invites?.length > 0}
-		<div class="flex flex-col gap-4 mt-4">
-			{#key invites}
-				{#each invites as invite}
-					<div
-						class="bg-white w-full px-4 py-2 flex gap-2 shadow rounded dark:bg-darkobject min-h-14"
-					>
-						<div class="flex justify-between w-full">
-							<div>
-								<b class="font-semibold">{invite.group_user.user.username}</b>
-								{$_('wants to join')} <b class="font-semibold">{invite.work_group_name}</b>
-							</div>
-							<Button
-								buttonStyle="primary-light"
-								onClick={() => addUserToGroup(invite.group_user.id, invite.work_group_id)}
-								>{$_('Add User')}</Button
-							>
+	{#if $groupUserStore?.is_admin && invites?.length > 0}
+		<div
+			class="bg-white shadow rounded flex flex-col dark:bg-darkobject gap-4 dark:text-darkmodeText"
+		>
+			{#each invites as invite}
+				<div class="w-full px-4 py-2 flex gap-2 min-h-14">
+					<div class="flex justify-between w-full">
+						<div>
+							<b class="font-semibold">{invite.group_user.user.username}</b>
+							{$_('wants to join')} <b class="font-semibold">{invite.work_group_name}</b>
 						</div>
+						<Button
+							buttonStyle="primary-light"
+							onClick={() => addUserToGroup(invite.group_user.id, invite.work_group_id)}
+							>{$_('Add User')}</Button
+						>
 					</div>
-				{/each}
-			{/key}
+				</div>
+			{/each}
 		</div>
 	{/if}
-	<div class="flex flex-col gap-4 mt-4">
+
+	{#if $groupUserStore?.is_admin}
+		<button
+			on:click={() => (open = true)}
+			class="mt-2 text-left bg-white hover:bg-gray-100 cursor-pointer active:bg-gray-200 dark:bg-darkobject shadow rounded-sm dark:text-darkmodeText w-full px-4 py-2 flex justify-between items-center min-h-14"
+		>
+			<span class="text-primary dark:text-secondary w-[40%] font-semibold break-words"
+				>{$_('+ Add Workgroup')}</span
+			>
+		</button>
+	{/if}
+
+	<div class="bg-white shadow rounded-sm dark:bg-darkobject flex flex-col gap-4 mt-2">
 		{#each workGroups as workingGroup}
 			<WorkingGroup
 				{getWorkGroupInvite}
 				bind:workGroup={workingGroup}
 				{workGroups}
 				{handleRemoveGroup}
-				bind:isAdmin
 			/>
 		{/each}
 	</div>
 </Loader>
 
-<Poppup bind:poppup />
+ 
 
-<Modal bind:open>
+<Modal
+	bind:open
+	Class="max-w-[500px]"
+	buttons={[
+		{ label: 'Create', type: 'primary', onClick: createWorkingGroup },
+		{ label: 'Cancel', type: 'default', onClick: () => (open = false) }
+	]}
+>
 	<div slot="header" class="w-full"><span>{$_('Create work group')}</span></div>
 	<form slot="body" class="w-full" on:submit|preventDefault={createWorkingGroup}>
 		<TextInput label="Name" required bind:value={workGroupEdit.name} />
@@ -211,6 +223,5 @@
 			label="Direct Join?"
 			name="direct_join"
 		/>
-		<Button Class="px-2" type="submit">{$_('Create')}</Button>
 	</form>
 </Modal>

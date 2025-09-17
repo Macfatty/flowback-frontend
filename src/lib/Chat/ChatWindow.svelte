@@ -1,21 +1,18 @@
 <script lang="ts">
-	// @ts-ignore
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { type Message, type Message1, type PreviewMessage } from './interfaces';
 	import Button from '$lib/Generic/Button.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import type { User } from '$lib/User/interfaces';
+	import { userStore } from '$lib/User/interfaces';
 	import { formatDate } from '$lib/Generic/DateFormatter';
 	import { _ } from 'svelte-i18n';
 	import { browser } from '$app/environment';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import Fa from 'svelte-fa';
-	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons/faPaperPlane';
-	import { faSmile } from '@fortawesome/free-solid-svg-icons/faSmile';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
-	import sendMessage, { messageStore } from './Socket';
-	import { onMount } from 'svelte';
+	import { faPaperPlane, faSmile, faUsers } from '@fortawesome/free-solid-svg-icons';
+	import { messageStore } from './Socket';
+	import { onMount, onDestroy } from 'svelte';
 	import Socket from './Socket';
-	import { updateUserData } from './functions';
 	import { chatWindow as chatWindowLimit } from '../Generic/APILimits.json';
 	import { env } from '$env/dynamic/public';
 	import Modal from '$lib/Generic/Modal.svelte';
@@ -23,21 +20,14 @@
 
 	export let selectedChat: number | null,
 		selectedChatChannelId: number | null,
-		user: User,
 		selectedPage: 'direct' | 'group',
 		previewDirect: PreviewMessage[] = [],
-		previewGroup: PreviewMessage[] = [],
 		isLookingAtOlderMessages: boolean;
 
-	// User Action variables
-	let message: string = env.PUBLIC_MODE === 'DEV' ? 'a' : '',
+	let message: string = '',
 		olderMessages: string,
 		newerMessages: string,
 		showEmoji = false,
-		status: {
-			message: any;
-			success: boolean;
-		},
 		messages: Message[] = [],
 		socket: WebSocket,
 		chatWindow: any,
@@ -45,248 +35,251 @@
 		participants: any[] = [],
 		participantsModalOpen = false;
 
-	const getRecentMesseges = async () => {
+	// Fetch recent messages for the selected chat
+	const getRecentMessages = async () => {
 		if (!selectedChatChannelId) return;
-
 		const { res, json } = await fetchRequest(
 			'GET',
 			`chat/message/channel/${selectedChatChannelId}/list?order_by=created_at_desc&limit=${chatWindowLimit}`
 		);
-
 		if (!res.ok) {
 			selectedChat = null;
 			messages = [];
 			errorState = true;
 			return;
 		}
-
-		messages = json.results.reverse();
-
-		//Temporary fix before json.next issue is fixed
-		//TODO: Fix it
+		messages = json?.results.reverse();
 		olderMessages = json.next;
 		newerMessages = '';
 	};
 
-	const getChannelId = async (id: number) => {
-		const { res, json } = await fetchRequest('GET', `user/chat?target_user_ids=${id}`);
-		return json;
-	};
-
-	//Runs when changing chats
 	const postMessage = async () => {
-		if (!selectedChat) return;
-		if (message.length === 0) return;
-		//If only spaces, return
-		if (message.match(/^\s+$/)) return;
+		if (!selectedChat || !selectedChatChannelId || message.length === 0 || message.match(/^\s+$/))
+			return;
 
-		//When sending, go to most recent messages
-		if (newerMessages) getRecentMesseges();
+		if (newerMessages) await getRecentMessages();
 
-		//Updates preview window to display recently typed chat message
-		let previewMessage = (selectedPage === 'group' ? previewGroup : previewDirect).find(
-			(previewMessage) =>
-				(selectedPage === 'direct' &&
-					((previewMessage.user_id === user.id && previewMessage.target_id === selectedChat) ||
-						(previewMessage.target_id === user.id && previewMessage.user_id === selectedChat))) ||
-				(selectedPage === 'group' && previewMessage.group_id === selectedChat)
+		let previewMessage = previewDirect.find(
+			(p) => p.id === selectedChat || p.group_id === selectedChat
 		);
+
 		if (previewMessage) {
 			previewMessage.message = message;
 			previewMessage.created_at = new Date().toString();
-		}
-
-		selectedPage === 'direct' ? (previewDirect = previewDirect) : (previewGroup = previewGroup);
-
-		let channelId = selectedChat;
-		if (selectedPage === 'direct') channelId = selectedChat;
-
-		if (!channelId) return;
-
-		if (!selectedChatChannelId) return;
-
-		const didSend = await sendMessage.sendMessage(socket, selectedChatChannelId, message, 1);
-
-		if (!didSend) status = { message: 'Could not send message', success: false };
-		else
-			messages.push({
+			previewMessage.notified = false;
+			previewMessage = previewMessage;
+		} else {
+			previewMessage = {
 				id: Date.now(),
 				message,
-				user: { username: user.username, id: user.id, profile_image: user.profile_image || '' },
 				created_at: new Date().toString(),
-				active: true,
-				channel_id: selectedChatChannelId || selectedChat,
-				channel_origin_name: selectedPage === 'direct' ? 'user' : 'group',
-				type: 'message',
-				updated_at: new Date().toString(),
-				attachments: [],
-				channel_title: '',
-				parent: 0,
-				topic_id: 0
-			});
+				timestamp: new Date().toString(),
+				notified: false,
+				profile_image: $userStore?.profile_image || '',
+				user_id: $userStore?.id || -1,
+				user: {
+					id: $userStore?.id || -1,
+					username: $userStore?.username || '',
+					profile_image: $userStore?.profile_image || '',
+					banner_image: ''
+				},
+				channel_id: selectedChatChannelId,
+				...(selectedPage === 'direct' ? { target_id: selectedChat } : { group_id: selectedChat })
+			};
+		}
 
+		const didSend = await Socket.sendMessage(socket, selectedChatChannelId, message, 1);
+		if (!didSend) {
+			ErrorHandlerStore.set({ message: 'Could not send message', success: false });
+			return;
+		}
+
+		const preview = previewDirect.find((p) => p.channel_id === selectedChatChannelId);
+		if (preview) {
+			preview.message = message;
+		}
+		previewDirect = previewDirect;
+
+		messages.push({
+			id: Date.now(),
+			message,
+			user: {
+				username: $userStore?.username || '',
+				id: $userStore?.id || -1,
+				profile_image: $userStore?.profile_image || ''
+			},
+			created_at: new Date().toString(),
+			active: true,
+			channel_id: selectedChatChannelId,
+			channel_origin_name: 'group',
+			type: 'message',
+			updated_at: new Date().toString(),
+			attachments: [],
+			channel_title: '',
+			parent: 0,
+			topic_id: 0
+		});
 		messages = messages;
-		message = env.PUBLIC_MODE === 'DEV' ? message + 'a' : '';
 
-		updateUserData(selectedChat, new Date());
+		message = '';
 	};
 
+	// Fetch older messages
 	const showOlderMessages = async () => {
-		console.log(olderMessages, 'NEEEXY');
+		if (!olderMessages) return;
 		const { res, json } = await fetchRequest('GET', olderMessages);
-
 		if (!res.ok) return;
 		newerMessages = json.previous;
 		olderMessages = json.next;
-
-		messages = json.results.reverse();
+		messages = json?.results.reverse();
 	};
 
-	const showEarlierMessages = async () => {
+	// Fetch newer messages
+	const showNewerMessages = async () => {
+		if (!newerMessages) return;
 		const { res, json } = await fetchRequest('GET', newerMessages);
-
 		olderMessages = json.next;
 		newerMessages = json.previous;
-
-		messages = json.results.reverse();
+		messages = json?.results.reverse();
 	};
 
-	//Uses svelte stores to recieve messages
-	const recieveMessage = () => {
-		messageStore.subscribe((message: Message1) => {
-			if (!message) return;
+	// Handle incoming messages and set notifications
+	const handleReceiveMessage = (preview: PreviewMessage[], message: Message1) => {
+		if (message.channel_id === selectedChatChannelId) {
+			if (messages.some((m) => m.id === message.id)) return;
 
-			if (message.channel_origin_name === 'group') {
-				handleRecieveMessage(previewGroup, message);
-				previewGroup = previewGroup;
-			} else if (message.channel_origin_name === 'user') {
-				handleRecieveMessage(previewDirect, message);
-				previewDirect = previewDirect;
-			}
-		});
-	};
-
-	const handleRecieveMessage = (preview: PreviewMessage[], message: Message1) => {
-		if (message.channel_id !== selectedChat) {
-			let notifiedChannel = preview.find((info) => {
-				return info.channel_id === message.channel_id;
-			});
-
-			// If no channel has started yet, start it. New chats will work like this
-			if (!notifiedChannel) {
-				preview.push({
-					created_at: message.created_at.toString(),
-					id: message.id,
-					message: message.message,
-					notified: true,
-					profile_image: message.user.profile_image,
-					timestamp: new Date().toString(),
-					user: message.user,
-					user_id: message.user.id,
-					channel_id: message.channel_id
-				});
-				preview = preview;
-			} else {
-				notifiedChannel.notified = true;
-				notifiedChannel.message = message.message;
-				preview = preview;
-			}
-		} else if (message.channel_id === selectedChat) {
-			//@ts-ignore
 			messages.push({
+				id: message.id,
 				message: message.message,
 				user: {
-					id: message.id,
-					username: message.user.username,
-					profile_image: message.user.profile_image
-				}
+					id: message.user?.id,
+					username: message.user?.username,
+					profile_image: message.user?.profile_image
+				},
+				created_at: message.created_at.toString(),
+				active: true,
+				channel_id: message.channel_id,
+				channel_origin_name: message.channel_origin_name,
+				type: message.type,
+				updated_at: message.updated_at.toString(),
+				attachments: [],
+				channel_title: '',
+				parent: message.parent,
+				topic_id: message.topic_id
 			});
 			messages = messages;
+			// updateUserData(selectedChatChannelId, new Date());
+		} else {
+			let previewMessage = preview.find((p) => p.channel_id === message.channel_id);
+			if (!previewMessage) {
+				previewMessage = {
+					id: message.id,
+					message: message.message,
+					created_at: message.created_at.toString(),
+					timestamp: new Date().toString(),
+					notified: true,
+					profile_image: message.user?.profile_image,
+					user_id: message.user?.id,
+					user: message.user,
+					channel_id: message.channel_id,
+					...(message.channel_origin_name === 'group'
+						? { group_id: message.channel_id }
+						: { target_id: message.user?.id })
+				};
+				preview.push(previewMessage);
+			} else {
+				previewMessage.message = message.message;
+				previewMessage.created_at = message.created_at.toString();
+				previewMessage.notified = true;
+			}
+			preview = [...preview];
 		}
+
+		const _preview = previewDirect.find((p) => p.channel_id === selectedChatChannelId);
+		if (_preview) {
+			_preview.message = message.message;
+		}
+		previewDirect = previewDirect;
 	};
 
+	// Subscribe to incoming messages
+	const receiveMessage = () => {
+		const unsubscribe = messageStore.subscribe((message: Message1 | null) => {
+			if (!message || message.user?.id === $userStore?.id) return;
+			handleReceiveMessage(previewDirect, message);
+			previewDirect = previewDirect;
+		});
+		return unsubscribe;
+	};
+
+	// Adjust chat window height based on header
 	const correctHeightRelativeToHeader = () => {
 		const headerHeight = document.querySelector('#header')?.clientHeight;
 		if (headerHeight && chatWindow)
 			chatWindow.style.height = `calc(100% - ${headerHeight.toString()}px)`;
 	};
 
+	// Fetch channel participants
 	const getChannelParticipants = async () => {
+		if (!selectedChatChannelId) return;
 		const { res, json } = await fetchRequest(
 			'GET',
 			`chat/message/channel/${selectedChatChannelId}/participant/list`
 		);
 		if (!res.ok) {
 			console.error('Failed to fetch channel participants:', json);
-			return [];
+			return;
 		}
-		participants = json.results;
+		participants = json?.results;
 	};
 
+	let unsubscribeMessageStore: () => void;
+
 	onMount(() => {
-		recieveMessage();
+		unsubscribeMessageStore = receiveMessage();
 		correctHeightRelativeToHeader();
 		window.addEventListener('resize', correctHeightRelativeToHeader);
 	});
 
-	//Whenever user has switched chat, show messages in the new chat
-	$: (selectedPage || selectedChat) && getRecentMesseges();
-	$: (selectedPage || selectedChat) && getChannelParticipants();
+	onDestroy(() => {
+		if (unsubscribeMessageStore) unsubscribeMessageStore();
+		window.removeEventListener('resize', correctHeightRelativeToHeader);
+	});
 
-	//Behavior is different when looking at older chat messages
-	$: {
-		if (newerMessages) isLookingAtOlderMessages = true;
-		else isLookingAtOlderMessages = false;
-	}
-
-	//When messages are recieved and not looking at history, scroll to bottom.
-	//TODO: Question if we need this, discord doesn't have this feature and I like that.
+	// Reactive updates
+	$: (selectedPage || selectedChatChannelId) && getRecentMessages();
+	$: (selectedPage || selectedChatChannelId) && getChannelParticipants();
+	$: isLookingAtOlderMessages = !!newerMessages;
+	$: if ($userStore) socket = Socket.createSocket($userStore?.id);
 	$: messages &&
-		(async () => {
+		browser &&
+		setTimeout(() => {
 			if (newerMessages) return;
-			if (!browser) return;
-
-			await setTimeout(() => {
-				const d = document.querySelector('#chat-window');
-				d?.scroll(0, 100000);
-			}, 100);
-		})();
-
-	$: {
-		if (newerMessages) isLookingAtOlderMessages = true;
-		else isLookingAtOlderMessages = false;
-	}
-
-	//@ts-ignore
-	$: if (user) socket = Socket.createSocket(user.id);
+			const d = document.querySelector('#chat-window');
+			d?.scroll(0, 100000);
+		}, 100);
 </script>
 
-{#if selectedChat !== null || true}
+{#if selectedChatChannelId !== null}
 	<div class="flex flex-col h-full">
-		<ul class="grow overflow-y-auto px-2 break-all" id="chat-window" bind:this={chatWindow}>
-			{#if messages.length === 0 && selectedChat !== undefined && selectedChat !== 0 && selectedChat !== null}
+		<ul class="grow overflow-y-auto px-2 break-word" id="chat-window" bind:this={chatWindow}>
+			{#if messages.length === 0 && selectedChatChannelId}
 				<span class="self-center">{$_('Chat is currently empty, maybe say hello?')}</span>
-			{:else if selectedChat === undefined || selectedChat === null}
-				<span class="self-center">{$_('')}</span>
 			{/if}
 			{#if olderMessages}
 				<li class="text-center mt-6 mb-6">
 					<Button onClick={showOlderMessages}>{$_('Show older messages')}</Button>
 				</li>
 			{/if}
-
-			{#each messages as message}
+			{#each messages as message (message.id)}
 				{#if message.type === 'info'}
-					<li class="px-4 py-2 max-w-[80%] text-center">
-						{message.message}
-					</li>
+					<li class="px-4 py-2 max-w-[80%] text-center">{message.message}</li>
 				{:else}
-					{@const sentByUser =
-						message.user.id.toString() === localStorage.getItem('userId') || false}
+					{@const sentByUser = message.user?.id === $userStore?.id}
 					<li class="px-4 py-2 max-w-[80%]" class:ml-auto={sentByUser}>
 						<span>{message.user?.username}</span>
 						<p
-							class="p-2 rounded-xl"
+							class="p-2 rounded-xl break-words"
 							class:bg-primary={sentByUser}
 							class:text-white={sentByUser}
 							class:bg-gray-300={!sentByUser}
@@ -295,82 +288,83 @@
 						>
 							{message.message}
 						</p>
-						<span class="text-[14px]text-gray-400 ml-3"
-							>{formatDate(message.created_at || new Date())}</span
-						>
+						<span class="text-[14px] text-gray-400 ml-3">
+							{formatDate(message.created_at || new Date())}
+						</span>
 					</li>
 				{/if}
 			{/each}
 			{#if newerMessages}
 				<li class="text-center mt-6 mb-6">
-					<Button onClick={showEarlierMessages} buttonStyle="secondary"
-						>{$_('Show earlier messages')}</Button
-					>
+					<Button onClick={showNewerMessages} buttonStyle="secondary">
+						{$_('Show earlier messages')}
+					</Button>
 				</li>
 			{/if}
-			<StatusMessage bind:status disableSuccess />
 		</ul>
-		<!-- <div class:invisible={!showEmoji} class="fixed">
-	</div> -->
-		{#if selectedChatChannelId !== 0 && selectedChatChannelId !== undefined && selectedChatChannelId !== null}
-			<div class="border-t-2 border-t-gray-200 w-full">
-				<!-- Here the user writes a message to be sent -->
-				<form
-					class="flex gap-1 justify-center items-center w-full mt-2"
-					on:submit|preventDefault={postMessage}
-				>
-					<TextArea
-						autofocus
-						label=""
-						onKeyPress={(e) => {
-							if (e.key === 'Enter' && !e.shiftKey) {
-								postMessage();
-								e.preventDefault();
-							}
-						}}
-						max={3000}
-						rows={1}
-						bind:value={message}
-						placeholder={$_('Write a message...')}
-						Class="justify-center w-full h-2rem"
-						inputClass="border-0 bg-gray-100 placeholder-gray-700 pl-2 pt-1 resize-y min-h-[2rem] max-h-[6rem] overflow-auto"
-					/>
-
-					{#if env.PUBLIC_MODE === 'DEV'}
-						<Button
-							onClick={() => (showEmoji = !showEmoji)}
-							Class="rounded-full pl-3 pr-3 pt-3 pb-3 h-1/2"><Fa icon={faSmile} /></Button
-						>
-					{/if}
-
+		<div class="border-t-2 border-t-gray-200 w-full">
+			<form
+				class="flex gap-1 justify-center items-center w-full mt-2"
+				on:submit|preventDefault={postMessage}
+			>
+				<TextArea
+					autofocus
+					label=""
+					onKeyPress={(e) => {
+						if (e.key === 'Enter' && !e.shiftKey) {
+							postMessage();
+							e.preventDefault();
+						}
+					}}
+					max={3000}
+					displayMax={false}
+					rows={1}
+					bind:value={message}
+					placeholder={$_('Write a message...')}
+					Class="justify-center w-full h-2rem"
+					inputClass="border-0 bg-gray-100 placeholder-gray-700 pl-2 pt-1 resize-y min-h-[2rem] max-h-[6rem] overflow-auto"
+				/>
+				<!-- {#if env.PUBLIC_MODE === 'DEV'}
 					<Button
-						type="submit"
-						Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2"
-						><Fa class="text-blue-600 text-lg" icon={faPaperPlane} /></Button
+						onClick={() => (showEmoji = !showEmoji)}
+						Class="rounded-full pl-3 pr-3 pt-3 pb-3 h-1/2"
 					>
-				</form>
-			</div>
-		{/if}
+						<Fa icon={faSmile} />
+					</Button>
+				{/if} -->
+				<Button
+					type="submit"
+					Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2 hover:bg-gray-100 active:bg-gray-200"
+				>
+					<Fa class="text-blue-600 text-lg" icon={faPaperPlane} />
+				</Button>
+				<Button
+					Class="bg-transparent border-none flex items-center justify-center p-3 h-1/2 hover:bg-gray-100 active:bg-gray-200"
+					onClick={() => (participantsModalOpen = true)}
+					><Fa class="text-blue-600 text-lg" icon={faUsers} /></Button
+				>
+			</form>
+		</div>
 	</div>
-	<Button onClick={() => (participantsModalOpen = true)}>Show users</Button>
 {:else}
 	<div>{'No chat selected'}</div>
 {/if}
 
-<Modal bind:open={participantsModalOpen}>
+<Modal bind:open={participantsModalOpen} Class="max-w-[200px]">
+	<div slot="header">{$_('Participants')}</div>
 	<div slot="body">
 		{#if participants.length > 0}
 			<ul>
 				{#each participants as participant (participant.id)}
 					<ProfilePicture
 						displayName
-						username={participant.user.username}
-						profilePicture={participant.user.profile_image}
+						username={participant.user?.username}
+						profilePicture={participant.user?.profile_image}
 					/>
 				{/each}
 			</ul>
 		{:else}
-			<p>No participants found.</p>
+			<p>{$_('No participants found.')}</p>
 		{/if}
 	</div>
 </Modal>

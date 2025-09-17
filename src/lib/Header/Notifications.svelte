@@ -9,7 +9,8 @@
 	import TimeAgo from 'javascript-time-ago';
 	import { faX } from '@fortawesome/free-solid-svg-icons/faX';
 	import { goto } from '$app/navigation';
-	import {notifications as notificationLimit} from '$lib/Generic/APILimits.json';
+	import { notifications as notificationLimit } from '$lib/Generic/APILimits.json';
+	import { darkModeStore } from '$lib/Generic/DarkMode';
 
 	let notifications: notification[],
 		hovered: number[] = [];
@@ -19,9 +20,10 @@
 		if (location.pathname === '/login') return;
 		const { json, res } = await fetchRequest(
 			'GET',
-			`notification/list?order_by=notification_object__timestamp_desc&limit=${notificationLimit}`
+			`notification/list`
+			//?order_by=timestamp_desc&limit=${notificationLimit}
 		);
-		if (res.ok) notifications = json.results;
+		if (res.ok) notifications = json?.results;
 	};
 
 	const closeWindowWhenClickingOutside = () => {
@@ -65,7 +67,7 @@
 				'GET',
 				`home/polls?id=${notification.channel_sender_id}`
 			);
-			const groupId = json.results[0].group_id;
+			const groupId = json?.results[0].group_id;
 			goto(`/groups/${groupId}/polls/${notification.channel_sender_id}`);
 		}
 	};
@@ -88,7 +90,7 @@
 	class="small-notification relative cursor-pointer"
 	on:click={() => (notificationsOpen = !notificationsOpen)}
 >
-	<Fa icon={faBell} size={'1.3x'} />
+	<Fa icon={faBell} color={$darkModeStore ? 'white' : 'black'} size={'1.3x'} />
 	<div
 		class:hidden={notifications?.length === 0 || notifications?.length === undefined}
 		class="w-[2em] h-[2em] flex items-center justify-center rounded-full absolute -top-1.5 -right-1.5 text-[10px] text-white bg-secondary"

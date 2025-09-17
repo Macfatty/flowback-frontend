@@ -14,7 +14,7 @@
 		open_tools = false;
 
 	const logOut = async () => {
-		await UsersApi.logout();
+		// await UsersApi.logout();
 		localStorage.removeItem('token');
 		localStorage.removeItem('sessionExpirationTime');
 		goto('/login');
@@ -56,9 +56,9 @@
 	});
 </script>
 
-<button
+<div
 	class:hidden={!sideHeaderOpen}
-	class="absolute top-[6rem] right-0 bg-white z-50 select-none shadow slide-animation dark:bg-darkobject dark:text-darkmodeText flex flex-col"
+	class="absolute top-[4.5rem] right-0 bg-white z-50 select-none shadow slide-animation dark:bg-darkobject dark:text-darkmodeText flex flex-col"
 	id="side-header"
 	on:click={() => (sideHeaderOpen = !sideHeaderOpen)}
 >
@@ -70,7 +70,7 @@
 			{$_(nav.title)}
 		</button>
 	{/each}
-</button>
+</div>
 
 {#if env.PUBLIC_SUPPORT_PHONE || env.PUBLIC_SUPPORT_MAIL}
 	<Modal bind:open={open_support}>

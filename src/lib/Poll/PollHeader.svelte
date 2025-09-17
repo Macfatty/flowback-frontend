@@ -16,10 +16,9 @@
 	import { _ } from 'svelte-i18n';
 	import NewDescription from './NewDescription.svelte';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
-	import DeletePollModal from './DeletePollModal.svelte';
-	import ReportPollModal from './ReportPollModal.svelte';
+	import ReportPostModal from './ReportPostModal.svelte';
+	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
+	import DeletePostModal from './DeletePostModal.svelte';
 
 	export let poll: poll,
 		displayTag = false,
@@ -29,7 +28,7 @@
 	let deletePollModalShow = false,
 		reportPollModalShow = false,
 		choicesOpen = false,
-		poppup: poppup;
+		source = new URLSearchParams(window.location.search).get('source');
 </script>
 
 <div
@@ -37,7 +36,11 @@
 >
 	<button
 		class="cursor-pointer bg-white dark:bg-darkobject dark:text-darkmodeText justify-center m-auto"
-		on:click={() => goto(`/groups/${$page.params.groupId}`)}
+		on:click={() => {
+			if (source === 'home') goto('/home');
+			else if (source === 'group') goto(`/groups/${$page.params.groupId}?page=flow`);
+			else if (source === 'delegate-history') history.back();
+		}}
 	>
 		<!-- NOTE: In +layout, rote folder, there are URL related behaviours which are affected by this. -->
 		<Fa icon={faArrowLeft} />
@@ -57,25 +60,31 @@
 			Class="justify-self-center mt-2"
 			ClassOpen="right-0"
 		/>
-		<!-- {#if groupUser?.is_admin} -->
+
 		<MultipleChoices
 			bind:choicesOpen
-			labels={phase === 'result' || phase === 'prediction_vote'
-				? [$_('Delete Poll'), $_('Report Poll')]
-				: [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]}
+			labels={!(phase === 'result' || phase === 'prediction_vote') &&
+			poll?.allow_fast_forward &&
+			($groupUserPermissionStore?.poll_fast_forward || $groupUserStore?.is_admin)
+				? [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]
+				: [$_('Delete Poll'), $_('Report Poll')]}
 			functions={[
-				() => (deletePollModalShow = true, choicesOpen = false),
-				() => (reportPollModalShow = true, choicesOpen = false),
-				async () => (phase = await nextPhase(poll?.poll_type, $page.params.pollId, phase))
+				() => ((deletePollModalShow = true), (choicesOpen = false)),
+				() => ((reportPollModalShow = true), (choicesOpen = false)),
+				...($groupUserStore?.is_admin
+					? [async () => (phase = await nextPhase(poll?.poll_type, $page.params.pollId, phase))]
+					: [])
 			]}
 			Class="justify-self-center mt-2"
+			id="poll-header-multiple-choices"
 		/>
-		<!-- {/if} -->
 	</div>
 
 	<div class="flex gap-4 items-baseline grid-area-items my-1">
+		{#if poll?.work_group_id}
+			{$_('Workgroup')}: {poll.work_group_id}
+		{/if}
 		{#if poll?.poll_type === 4}
-			<!-- TODO make it easy to change poll types e.t.c -->
 			<HeaderIcon Class="cursor-default" icon={faAlignLeft} text={'Text Poll'} />
 		{:else if poll?.poll_type === 3}
 			<HeaderIcon Class="cursor-default" icon={faCalendarAlt} text={'Date Poll'} />
@@ -91,12 +100,12 @@
 				class="text-black dark:text-darkmodeText"
 			>
 				<img
-					class="h-8 w-8 inline rounded-full break-all"
-					src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
+					class="h-8 w-8 inline rounded-full break-word"
+					src={poll?.group_image ? `${env.PUBLIC_API_URL}${poll?.group_image}` : DefaultBanner}
 					alt="group thumbnail"
 					on:error={(e) => onThumbnailError(e, DefaultBanner)}
 				/>
-				<span class="inline break-all">{poll?.group_name}</span>
+				<span class="inline break-word">{poll?.group_name}</span>
 			</a>
 			<!-- Current Phase -->
 			{#if pollType === 4}
@@ -135,16 +144,21 @@
 	</div>
 {/if}
 
-<DeletePollModal bind:deletePollModalShow pollId={$page.params.pollId} />
-<ReportPollModal bind:reportPollModalShow pollId={$page.params.pollId} />
+<DeletePostModal bind:deleteModalShow={deletePollModalShow} postId={$page.params.pollId} />
 
-<Poppup bind:poppup />
+<ReportPostModal
+	post_type="poll"
+	group_id={poll.group_id}
+	post_id={poll.id}
+	post_title={poll.title || ''}
+	post_description={poll.description || ''}
+	bind:reportModalShow={reportPollModalShow}
+/>
 
 <style>
 	.poll-header-grid {
 		display: grid;
 		grid-template-columns: 0.3fr 4fr 0.3fr;
-		/* grid-template-rows: 0.1fr 0.2fr 1fr; */
 	}
 
 	.grid-area-items {

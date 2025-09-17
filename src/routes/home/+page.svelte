@@ -1,11 +1,7 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import Layout from '$lib/Generic/Layout.svelte';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
-	import type { poll } from '$lib/Poll/interface';
-	import PollThumbnails from '$lib/Poll/PollThumbnails.svelte';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import { homePolls as homePollsLimit } from '$lib/Generic/APILimits.json';
@@ -23,8 +19,7 @@
 		profile_image: string;
 	}
 
-	let invitations: Invitation[] = [],
-		status: StatusMessageInfo;
+	let invitations: Invitation[] = [];
 
 	onMount(async () => {
 		if (env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') goto('groups/1');
@@ -36,7 +31,7 @@
 
 	const getInvitations = async () => {
 		const { res, json } = await fetchRequest('GET', 'group/invites');
-		invitations = json.results;
+		invitations = json?.results;
 	};
 
 	const acceptInvitation = async (id: number) => {
@@ -57,26 +52,24 @@
 
 	const getPolls = async () => {
 		const { res, json } = await fetchRequest('GET', `home/polls?limit=${homePollsLimit}`);
-		status = statusMessageFormatter(res, json);
 	};
 
 	const getHome = async () => {
 		const { res, json } = await fetchRequest('GET', `user/home`);
-		status = statusMessageFormatter(res, json);
 	};
 </script>
 
 <Layout centered>
-	{#if invitations && invitations?.length > 0}
+	{#if invitations && invitations.length > 0}
 		<ul class="w-full mt-6 flex flex-col gap-6 max-w-[700px]">
 			{#each invitations as invite}
-				{#if !invite.external}
+				{#if !invite?.external}
 					<li class="bg-white p-6 shadow rounded dark:bg-darkobject dark:text-darkmodeText">
-						<span>{$_('You have been invited to')} {invite.group_name}</span>
+						<span>{$_('You have been invited to')} {invite?.group_name}</span>
 
 						<div class="mt-4">
-							<Button onClick={() => acceptInvitation(invite.group)}>{$_('Accept')}</Button>
-							<Button onClick={() => rejectInvitation(invite.group)}>{$_('Reject')}</Button>
+							<Button onClick={() => acceptInvitation(invite?.group)}>{$_('Accept')}</Button>
+							<Button onClick={() => rejectInvitation(invite?.group)}>{$_('Reject')}</Button>
 						</div>
 					</li>
 				{/if}

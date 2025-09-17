@@ -8,7 +8,7 @@
 		phase: Phase = 'area_vote';
 
 	let genericStyle =
-		'bg-white dark:bg-darkobject dark:text-darkmodeText p-4 h-[100%] h-full rounded shadow-md';
+		'bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md';
 
 	onMount(() => {});
 </script>
@@ -17,6 +17,7 @@
 	class={`${Class} ${
 		poll ? 'poll-grid' : 'poll-grid-no-timeline'
 	} p-12 max-w-[1200px] w-full gap-4 lg:gap-6`}
+	id="poll-structure"
 >
 	{#if poll}
 		<Timeline

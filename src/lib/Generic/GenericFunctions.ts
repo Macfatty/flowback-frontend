@@ -1,9 +1,15 @@
 import { fetchRequest } from '$lib/FetchRequest';
-import type { GroupUser } from '$lib/Group/interface';
-import type { Permission } from '$lib/Group/Permissions/interface';
 import type { User } from '$lib/User/interfaces';
-import { writable } from 'svelte/store';
-import { page } from '$app/stores';
+import { get, writable } from 'svelte/store';
+import { groupUserStore, type GroupUser } from '$lib/Group/interface';
+import { userStore } from '$lib/User/interfaces';
+import type { Permissions } from '$lib/Group/Permissions/interface';
+
+let groupUserInfo: GroupUser | null = null;
+
+groupUserStore.subscribe((value) => {
+	groupUserInfo = value;
+});
 
 //Hack to create a deep copy of an object
 export const deepCopy = (object: object) => {
@@ -49,7 +55,7 @@ export const onThumbnailError = (event: any, picture: string) => {
 
 interface UserInfo {
 	user: User;
-	permission?: Permission;
+	permission?: Permissions;
 	groupuser?: GroupUser;
 	groupId?: number;
 }
@@ -59,10 +65,10 @@ interface UserInfo {
 export let userInfo = writable<UserInfo>();
 
 //Get info about user (the information you'd see on the user page)
-export const getUserInfo = async () => {
+export const getUserInfo = async (): Promise<User> => {
 	const { res, json } = await fetchRequest('GET', `user`);
-	if (!res.ok) return {};
-	return json;
+	if (!res.ok) return {} as User;
+	return json as User;
 };
 
 //Get info about user as in the group (permissions, is admin, workgroups and the user itself)
@@ -71,11 +77,11 @@ export const getGroupUserInfo = async (groupId: number | string) => {
 
 	const { res, json } = await fetchRequest(
 		'GET',
-		`group/${groupId}/users?user_id=${localStorage.getItem('userId')}`
+		`group/${groupId}/users?user_id=${get(userStore)?.id || -1}`
 	);
 
 	if (!res.ok) return;
-	return json.results[0];
+	return json?.results[0];
 };
 
 export const getPermissions = async (groupId: number | string, permissionId: number | string) => {
@@ -87,18 +93,14 @@ export const getPermissions = async (groupId: number | string, permissionId: num
 		`group/${groupId}/permissions?id=${permissionId}`
 	);
 
-	return json.results[0];
+	return json?.results[0];
 };
 
 export const getPermissionsFast = async (groupId: number | string) => {
+	if (!groupUserInfo) return;
 
-	const userInfo = await getGroupUserInfo(groupId);
-
-	if (userInfo === undefined) return;
-
-	if (userInfo?.permission_id) {
-		const permissions = await getPermissions(groupId, userInfo?.permission_id);
-		console.log(permissions, groupId, userInfo?.permission_id, "PERMISSIONS FAST");
+	if (groupUserInfo.permission_id) {
+		const permissions = await getPermissions(groupId, groupUserInfo.permission_id);
 		return permissions
 	}
 }
@@ -107,22 +109,15 @@ export const elipsis = (label: string, charMax = 30) => {
 	return label.length > charMax ? label.substring(0, charMax) + '...' : label
 }
 
-// Returns true if user is admin in the given group, false otherwise.
-// TODO: Make sure that as the user navigates the site, between different groups, that there will be dynamic loading of it's group user information. Right now the code is a mess! 
-export const getUserIsGroupAdmin = async (groupId: number | string) => {
-	const userData = await fetchRequest('GET', 'user');
-	const groupAdmins = await fetchRequest(
-		'GET',
-		`group/${groupId}/users?is_admin=true`
-	);
-
-	if (groupAdmins.json.results.find(
-		(user: any) => user.user.id === userData.json.id && user.is_admin
-	) !== undefined)
-		return true
-	else return false;
-};
-
 export const commaCleanup = (api: string) => {
 	return api?.replace('%2C', ',');
 };
+
+export const linkToPost = (postId: number, groupId: number, postType: 'poll' | 'thread') => {
+	let _postType = '';
+	if (postType === 'poll') _postType = 'polls';
+	if (postType === 'thread') _postType = 'thread';
+
+	return `/groups/${groupId}/${_postType}/${postId}`;
+}
+

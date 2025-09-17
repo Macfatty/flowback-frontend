@@ -1,33 +1,28 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { _ } from 'svelte-i18n';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import Button from '$lib/Generic/Button.svelte';
-	import type { Comment, Phase, poll, proposal } from '$lib/Poll/interface';
+	import type { Comment, Phase, proposal } from '$lib/Poll/interface';
 	import Proposal from './Proposal.svelte';
 	import { proposals as proposalsLimit } from '../Generic/APILimits.json';
 	import { onMount } from 'svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import VotingSlider from './VotingSlider.svelte';
-	import { getGroupUserInfo } from '$lib/Generic/GenericFunctions';
-
-	import type { groupUser } from '$lib/Group/interface';
+	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
+	import Button from '$lib/Generic/Button.svelte';
 
 	export let proposals: proposal[],
-		isVoting: boolean = false,
 		selectedProposal: proposal | null = null,
 		phase: Phase,
 		proposalsToPredictionMarket: proposal[] = [],
 		Class = '',
-		comments: Comment[],
-		poll: poll;
+		comments: Comment[];
 
 	let voting: { score: number; proposal: number }[] = [],
 		needsReload = 0,
-		poppup: poppup,
 		commentFilterProposalId: number | null = null,
-		delegateRelations: any[] = [],
-		delegates: any[] = [];
+		// What my delegate has voted on
+		delegateVoting: { score: number; proposal: number }[] = [];
 
 	onMount(async () => {
 		await getProposals();
@@ -37,8 +32,14 @@
 			proposal: proposal.id
 		}));
 
-		await getDelegateVotes();
-		await getVotes();
+		if (phase === 'delegate_vote' || phase === 'vote' || phase === 'result') {
+			await getDelegateVotes();
+		}
+
+		if (phase === 'vote' || phase === 'result') {
+			await getVotes();
+		}
+
 		needsReload++;
 	});
 
@@ -50,132 +51,85 @@
 
 		if (!res.ok) return;
 
-		proposals = json.results;
+		proposals = json?.results;
 	};
 
+	// Getting one's own votes
 	const getVotes = async () => {
-		const { json } = await fetchRequest(
+		const { json, res } = await fetchRequest(
 			'GET',
 			`group/poll/${$page.params.pollId}/proposal/votes?limit=${proposalsLimit}`
 		);
 
-		if (!json?.results || json?.results?.length === 0) return;
+		if (!res.ok) return;
+
+		if (json.results.length === 0) return;
 
 		voting = voting.map((vote) => ({
-			score: (vote.score = json.results.find(
+			score: (vote.score = json?.results?.find(
 				(score: { score: number; proposal: number }) => score.proposal === vote.proposal
 			).raw_score),
 			proposal: vote.proposal
 		}));
+
 		voting = voting;
 	};
 
-	const getDelegatePools = async () => {
-		const { json, res } = await fetchRequest(
-			'GET',
-			`group/${$page.params.groupId}/delegate/pools?limit=1000`
-		);
-
-		if (!res.ok) return;
-
-		delegates = json.results.map((delegatePool: any) => {
-			return { ...delegatePool.delegates[0].group_user, pool_id: delegatePool.id };
-		});
-	};
-
-	const getDelegateRelations = async () => {
-		const { json } = await fetchRequest(
-			'GET',
-			`group/${$page.params.groupId}/delegates?limit=1000`
-		);
-
-		//Determines whether to show the "remove as delegate" or "add as delegate" buttons, depening on if user already has delegated or not earlier.
-		json.results.forEach((relation: any) => {
-			delegates.map((delegate) => {
-				if (delegate.pool_id === relation.delegate_pool_id) delegate.isInRelation = true;
-				return delegate;
-			});
-		});
-		// delegateRelations = json.results;
-		delegateRelations = json.results;
-	};
-
+	// Getting the vote from one's delegate
 	const getDelegateVotes = async () => {
-		const user: groupUser = await getGroupUserInfo($page.params.groupId);
-
-		await getDelegatePools();
-		await getDelegateRelations();
-		const delegate = delegateRelations.find((relation) =>
-			relation.tags.find((tag: any) => tag.id === poll.tag_id)
-		);
-		console.log(user, delegate, delegateRelations, 'USER');
-		// {
-		// 	await fetchRequest(
-		// 	'GET',
-		// 	`group/${$page.params.groupId}/delegate/pools`
-		// );
-
-		// }
-
-		const { json } = await fetchRequest(
+		const { res, json } = await fetchRequest(
 			'GET',
-			`group/poll/pool/${delegate.delegate_pool_id}/votes?poll_id=${$page.params.pollId}`
+			`group/poll/pool/votes?group_id=${$page.params.groupId}&poll_id=${$page.params.pollId}`
 		);
 
-		if (!json?.results || json?.results?.length === 0) return;
+		if (!res.ok) {
+			console.error('Error fetching votes:', json.detail);
+			return;
+		}
 
-		const votes = json.results[0].vote;
+		delegateVoting = json?.results[0]?.vote.map((vote: any) => ({
+			score: vote.raw_score,
+			proposal: vote.proposal_id
+		}));
 
-		voting.forEach((proposal) => {
-			votes.forEach((vote: any) => {
-				if (proposal.proposal === vote.proposal_id) {
-					proposal.score = vote.raw_score;
-					console.log(proposal, vote, 'proposal.score = vote.raw_score');
-				}
-			});
-		});
+		if (phase === 'delegate_vote')
+			voting = json?.results[0]?.vote.map((vote: any) => ({
+				score: vote.raw_score,
+				proposal: vote.proposal_id
+			}));
 
 		voting = voting;
-
-		// voting = voting.map((vote) => ({
-		// 	score: (vote.score = json.results.find((v:any) => {
-		// 		console.log(vote, v, 'VOTINGÖÖ');
-		// 		//@ts-ignore
-		// 		(score: { score: number; proposal: number }) => score.proposal_id === vote.proposal_id;
-		// 	})?.raw_score),
-		// 	proposal: vote.proposal
-		// }));
-
-		// voting = voting;
+		delegateVoting = delegateVoting;
 	};
 
+	// Voting as a delegate
 	const delegateVote = async () => {
 		const { json, res } = await fetchRequest(
 			`POST`,
 			`group/poll/${$page.params.pollId}/proposal/vote/delegate/update`,
 			{
-				proposals: voting.map((vote) => vote.proposal),
-				scores: voting.map((vote) => vote.score)
+				proposals: delegateVoting?.map((vote) => vote.proposal),
+				scores: delegateVoting?.map((vote) => vote.score)
 			}
 		);
 
 		if (!res.ok) {
-			if (json.detail[0] === 'groupuserdelegatepool does not exist')
-				poppup = {
+			if (json?.detail[0] === 'groupuserdelegatepool does not exist')
+				ErrorHandlerStore.set({
 					message: 'You cannot vote on this poll since you are not a delegate',
 					success: false
-				};
+				});
 			else
-				poppup = {
+				ErrorHandlerStore.set({
 					message: 'Vote Failed',
 					success: false
-				};
+				});
 			return;
 		}
-		poppup = {
+		ErrorHandlerStore.set({
 			message: 'Successfully voted',
 			success: true
-		};
+		});
 	};
 
 	const vote = async () => {
@@ -183,32 +137,55 @@
 			`POST`,
 			`group/poll/${$page.params.pollId}/proposal/vote/update`,
 			{
-				proposals: voting.map((vote) => vote.proposal),
-				scores: voting.map((vote) => vote.score)
+				proposals: voting?.map((vote) => vote.proposal),
+				scores: voting?.map((vote) => vote.score)
 			}
 		);
 
 		if (!res.ok) {
-			poppup = {
+			ErrorHandlerStore.set({
 				message: 'Vote Failed',
 				success: false
-			};
+			});
 			return;
 		}
 
-		poppup = {
+		ErrorHandlerStore.set({
 			message: 'Successfully voted',
 			success: true
-		};
+		});
 	};
 
 	const changingVote = (score: number | string, proposalId: number) => {
-		//@ts-ignore
-		// let newScore = e?.target?.value;
-		const i = voting.findIndex((vote) => vote.proposal === proposalId);
-		voting[i].score = Number(score);
-		voting = voting;
+		if (!voting) return;
+
+		if (phase === 'delegate_vote') {
+			const i = delegateVoting?.findIndex((vote) => vote.proposal === proposalId);
+			delegateVoting[i].score = Number(score);
+			delegateVoting = delegateVoting;
+		} else if (phase === 'vote') {
+			const i = voting?.findIndex((vote) => vote.proposal === proposalId);
+			voting[i].score = Number(score);
+			voting = voting;
+		}
+
+		needsReload++;
 	};
+
+	const getScore = (proposal: proposal) => {
+		console.log(
+			delegateVoting,
+			'VOTING',
+			proposal,
+			delegateVoting?.find((vote) => vote.proposal === proposal.id)
+		);
+		if (phase === 'delegate_vote')
+			return delegateVoting?.find((vote) => vote.proposal === proposal.id)?.score ?? 0;
+		else if (phase === 'vote')
+			return voting?.find((vote) => vote.proposal === proposal.id)?.score ?? 0;
+	};
+
+	$: console.log(voting, delegateVoting, 'VOTE');
 </script>
 
 <div class={`box-border ${Class}`}>
@@ -221,26 +198,42 @@
 							bind:proposalsToPredictionMarket
 							bind:commentFilterProposalId
 							bind:selectedProposal
-							bind:comments
+							bind:filteredComments={comments}
 							bind:phase
-							onChange={() => {}}
 							{proposal}
-							{isVoting}
-							{voting}
 						>
 							{#if phase === 'delegate_vote' || phase === 'vote'}
-								{@const score = voting.find((vote) => vote.proposal === proposal.id)?.score}
+								{@const score = getScore(proposal)}
 
-								<VotingSlider
-									onSelection={(pos) => {
-										//@ts-ignore
-										changingVote(pos, proposal.id);
-										if (phase === 'delegate_vote') delegateVote();
-										else if (phase === 'vote') vote();
-									}}
-									{score}
-									isVoting={true}
-								/>
+								{#key voting || delegateVoting}
+									<VotingSlider
+										bind:phase
+										onSelection={(pos) => {
+											//@ts-ignore
+											changingVote(pos, proposal.id);
+											if (phase === 'delegate_vote') delegateVote();
+											else if (phase === 'vote') vote();
+										}}
+										disabled={(phase === 'delegate_vote' &&
+											$groupUserStore?.delegate_pool_id === null) ||
+											(phase === 'vote' && !$groupUserPermissionStore?.allow_vote)}
+										{score}
+										style={(() => {
+											if (phase === 'vote' && voting === delegateVoting) return 'gray';
+											else return 'purple';
+										})()}
+									/>
+								{/key}
+							{/if}
+
+							{#if phase === 'vote' && $groupUserPermissionStore?.allow_vote}
+								<Button
+									onClick={() => {
+										const dVote = delegateVoting.find((vote) => vote.proposal === proposal.id);
+										if (dVote) changingVote(dVote.score, dVote.proposal);
+										vote();
+									}}>{$_('Reset to delegate votes')}</Button
+								>
 							{/if}
 						</Proposal>
 					</div>
@@ -249,10 +242,3 @@
 		{/if}
 	</div>
 </div>
-
-<!-- {#if isVoting}
-	<Button action={() => (false ? delegateVote() : vote())} Class="w-[30%]">Save Votings</Button> -->
-<!-- <Button action={() => (groupUser.is_delegate ? delegateVote() : vote())} Class="w-[30%]" -->
-<!-- {/if} -->
-
-<Poppup bind:poppup />

@@ -5,12 +5,13 @@
 	import { onMount } from 'svelte';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
-	import SuccessPoppup from './SuccessPoppup.svelte';
 	import { page } from '$app/stores';
+	import { darkModeStore } from '$lib/Generic/DarkMode';
+	import { ErrorHandlerStore } from './ErrorHandlerStore';
 
 	export let notificationOpen = false,
 		categories: string[],
-		type: 'poll' | 'group' | 'group_thread',
+		type: 'poll' | 'group' | 'thread',
 		labels: string[],
 		api: string,
 		id: number,
@@ -18,9 +19,7 @@
 		ClassOpen = '',
 		hoverEffect = true;
 
-	let popupMessage: string = '',
-		notifications: NotificationObject[] = [],
-		show = false;
+	let notifications: NotificationObject[] = [];
 
 	interface NotificationObject {
 		channel_category: string;
@@ -48,23 +47,34 @@
 
 	const getNotifications = async () => {
 		const { res, json } = await fetchRequest('GET', 'notification/subscription');
-		notifications = json.results.filter(
+		notifications = json?.results.filter(
 			(notificationObject: any) => notificationObject.channel_sender_id === id
 		);
 	};
 
+	const getNotificationList = async () => {
+		const { res, json } = await fetchRequest('GET', 'notification/list');
+		// notifications = json?.results.filter(
+		// 	(notificationObject: any) => notificationObject.channel_sender_id === id
+		// );
+	};
+
 	const notificationSubscription = async (category: string) => {
-		const { res, json } = await fetchRequest('POST', `${api}/subscribe`, {
-			categories: [category]
+		const { res, json } = await fetchRequest('POST', `${api}/notification/subscribe`, {
+			tags: [category]
 		});
-		if (res.ok) {
-			notifications.push({
-				channel_category: category,
-				channel_sender_id: id,
-				channel_sender_type: type
-			});
-			popupMessage = 'Subscribed';
-		} else popupMessage = 'Something went wrong';
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: 'Failed to subscribe', success: false });
+			return;
+		}
+
+		notifications.push({
+			channel_category: category,
+			channel_sender_id: id,
+			channel_sender_type: type
+		});
+
+		ErrorHandlerStore.set({ message: 'Subscribed', success: true });
 
 		notifications = notifications;
 	};
@@ -75,17 +85,30 @@
 			channel_category: category,
 			channel_sender_type: type
 		});
-		if (res.ok) {
-			notifications = notifications.filter((object) => object.channel_category !== category);
-			popupMessage = 'Unsubscribed';
-		} else popupMessage = 'Something went wrong';
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: 'Failed to unsubscribe', success: false });
+			return;
+		}
+
+		notifications = notifications.filter((object) => object.channel_category !== category);
+		ErrorHandlerStore.set({ message: 'Subscribed', success: true });
+	};
+
+	const groupSubcribe = async () => {
+		const { res, json } = await fetchRequest('POST', `group/${groupId}/notification/subscribe`, {
+			tags: ['group', 'group_user', 'kanban', 'poll', 'schedule_event', 'thread']
+		});
 	};
 
 	onMount(() => {
-		closeWindowWhenClickingOutside();
+		// closeWindowWhenClickingOutside();
+		// groupSubcribe();
 	});
 
-	$: if (notificationOpen) getNotifications();
+	$: if (notificationOpen) {
+		// getNotificationList();
+		// getNotifications();
+	}
 </script>
 
 <div class={`${Class} notifications-clickable-region`}>
@@ -96,11 +119,13 @@
 		}}
 		on:keydown
 	>
-		<Fa
-			class={'hover:cursor-pointer hover:text-primary dark:text-secondary'}
-			icon={faBell}
-			size={'1.2x'}
-		/>
+		{#key darkModeStore}
+			<Fa
+				class={'hover:cursor-pointer hover:text-primary dark:text-secondary'}
+				icon={faBell}
+				size={'1.2x'}
+			/>
+		{/key}
 	</button>
 
 	{#if notificationOpen && categories}
@@ -108,7 +133,7 @@
 			<div class="text-xs p-2">{$_('Manage Subscriptions')}</div>
 			{#each categories as category, i}
 				<button
-					class="bg-gray-200 w-full p-2 px-5 flex justify-between items-center transition-all"
+					class="bg-gray-200 dark:bg-gray-700 w-full p-2 px-5 flex justify-between items-center transition-all"
 					class:active:bg-gray-400={hoverEffect}
 					class:dark:active:bg-slate-700={hoverEffect}
 					class:dark:active:bg-slate-900={hoverEffect}
@@ -148,4 +173,3 @@
 		</div>
 	{/if}
 </div>
-<SuccessPoppup bind:show bind:message={popupMessage} />

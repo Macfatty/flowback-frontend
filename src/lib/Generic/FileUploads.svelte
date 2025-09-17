@@ -46,7 +46,7 @@
 		icon={faPaperclip}
 		bind:croppedImage={file}
 		minimalist
-		Class=""
+		Class="dark:text-white"
 		label=""
 		iconSize="1.2x"
 		disableImagePreview

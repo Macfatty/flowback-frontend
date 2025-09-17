@@ -3,9 +3,6 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import type { Account } from './interface';
 	import { goto } from '$app/navigation';
 
@@ -14,7 +11,6 @@
 
 	const removeAccount = async () => {
 		const { res, json } = await fetchRequest('POST', `ledgeraccounts/${account.id}/delete`);
-		const status = statusMessageFormatter(res, json);
 		if (res.ok) goto(`/accounts`);
 	};
 </script>

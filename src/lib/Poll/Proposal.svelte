@@ -1,4 +1,3 @@
-<!-- The new Proposal file, <Proposal/> is depricated. TODO: Remove Proposal, renmae ProposalNew to Proposal -->
 <script lang="ts">
 	import type { Comment, Phase, proposal } from './interface';
 	import { _ } from 'svelte-i18n';
@@ -12,59 +11,56 @@
 	import { faSquare } from '@fortawesome/free-regular-svg-icons';
 	import Fa from 'svelte-fa';
 	import commentSymbol from '$lib/assets/iconComment.svg';
-	import { fetchRequest } from '$lib/FetchRequest';
-	import { page } from '$app/stores';
+	import { commentsStore } from '$lib/Comments/commentStore';
+	import { darkModeStore } from '$lib/Generic/DarkMode';
+	import { predictionStatementsStore } from './PredictionMarket/interfaces';
 
 	export let proposal: proposal,
 		Class = '',
-		onChange = (e: Event) => {},
-		isVoting = true,
-		voting: { score: number; proposal: number }[] = [],
 		selectedProposal: proposal | null = null,
 		proposalsToPredictionMarket: proposal[] = [],
 		phase: Phase,
-		comments: Comment[] = [],
+		filteredComments: Comment[] = [],
 		allComments: Comment[] = [],
-		predictionCount = 0,
-		commentFilterProposalId: number | null = null,
-		selectedForCommentFiltering = false;
+		commentFilterProposalId: number | null = null;
 
 	export const id: number = 0;
 
-	const filterComments = () => {
+	const handleClickedCommentSymbol = () => {
+		// Scroll to the comments section
+		const comments = document.getElementById('comments');
+		scrollTo({
+			top: comments?.offsetTop,
+			behavior: 'smooth'
+		});
+
+		//Filtering comments by proposal
 		if (commentFilterProposalId === proposal.id) {
-			comments = allComments;
+			commentsStore.filterByProposal(null);
 			commentFilterProposalId = null;
 		} else {
-			comments = allComments;
-			comments = comments.filter(
-				//@ts-ignore
-				(comment) => comment.message.includes(`#${proposal.title.replaceAll(' ', '-')}`)
-			);
+			commentsStore.filterByProposal(proposal);
 
 			commentFilterProposalId = proposal.id;
 		}
 	};
 
-	const getPredictionCount = async () => {
-		const { json } = await fetchRequest(
-			'GET',
-			`group/${$page.params.groupId}/poll/prediction/statement/list?poll_id=${$page.params.pollId}&proposals=${proposal.id}`
-		);
-		predictionCount = json.results.length;
-	};
-
 	onMount(() => {
 		checkForLinks(proposal.description, `proposal-${proposal.id}-description`);
-		getPredictionCount();
-		allComments = comments;
+		// getPredictionCount();
+
+		allComments = filteredComments;
 	});
+
+	$: if (filteredComments) {
+	}
 </script>
 
-<button
+<div
 	class={`dark:bg-darkobject bg-white w-full py-3 px-3 transition-all
 	 dark:border-gray-500 ${Class}`}
-	class:!bg-blue-100={selectedProposal === proposal}
+	class:!bg-blue-100={selectedProposal === proposal && !$darkModeStore}
+	class:!bg-slate-700={selectedProposal === proposal && $darkModeStore}
 	class:border-l-2={selectedProposal === proposal}
 	class:border-primary={selectedProposal === proposal}
 >
@@ -112,7 +108,7 @@
 
 	<div class="flex justify-between w-full items-center">
 		<div class="flex justify-between gap-10">
-			<button class="flex" on:click={filterComments}>
+			<button class="flex" on:click={handleClickedCommentSymbol}>
 				<img
 					src={commentSymbol}
 					alt="Comment"
@@ -120,51 +116,38 @@
 					class:saturate-0={commentFilterProposalId !== proposal.id &&
 						commentFilterProposalId !== null}
 				/>
-				{allComments.filter((comment) => comment?.message?.includes(proposal.title)).length}
+
+				{$commentsStore.allComments.filter((comment) =>
+					comment?.message?.includes(`#${proposal.title.replaceAll(' ', '-')}`)
+				).length}
 			</button>
 
 			{#if phase !== 'proposal'}
 				<button
 					class="flex items-center"
 					on:click={() => {
-						console.log(proposal, "PROPOSAL1");
-						
 						selectedProposal = proposal;
 					}}
 				>
-				<Fa icon={faMagnifyingGlassChart} class="mr-4 text-primary" size="md" />
-				{predictionCount}
-			</button>
+					<Fa icon={faMagnifyingGlassChart} class="mr-4 text-primary" size="md" />
+					{$predictionStatementsStore.filter((statement) =>
+						statement.segments.find((segment) => segment.proposal_id === proposal.id)
+					).length}
+				</button>
 			{/if}
 		</div>
-		
+
 		<button
-		on:click={() => {
-				console.log(proposal, "PROPOSAL1");
+			on:click={() => {
 				selectedProposal = proposal;
 			}}
-			class="hover:underline cursor-pointer flex gap-2 items-baseline text-sm text-gray-700"
+			class="hover:underline cursor-pointer flex gap-2 items-baseline text-sm text-gray-700 dark:text-darkmodeText"
 		>
 			{$_('See More')}
 			<Fa icon={faChevronRight} size="xs" />
 		</button>
 	</div>
-</button>
-
-{#if isVoting}
-	<input
-		value={voting.find((vote) => vote.proposal === proposal.id)?.score}
-		id="amount"
-		class="dark:bg-darkobject dark:border-gray-600 dark:hover:brightness-110 border-b-2"
-		type="number"
-		on:change={(e) => onChange(e)}
-		min={0}
-		max={100}
-	/>
-{:else}
-	<!-- Ensures flex design stays intact -->
-	<div />
-{/if}
+</div>
 
 <style>
 	.elipsis {

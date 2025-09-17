@@ -2,79 +2,33 @@
 	import '../app.css';
 	import { initializeLocalization } from '$lib/Localization/i18n';
 	import Header from '$lib/Header/Header.svelte';
-	import { beforeNavigate, goto, onNavigate } from '$app/navigation';
-	import {
-		getGroupUserInfo,
-		getUserInfo,
-		userInfo,
-		getPermissions
-	} from '$lib/Generic/GenericFunctions';
+	import { beforeNavigate, goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import type { GroupUser } from '$lib/Group/interface';
-	import type { Permission } from '$lib/Group/Permissions/interface';
+	import { groupUserPermissionStore, groupUserStore } from '$lib/Group/interface';
 	import Chat from '$lib/Chat/Chat.svelte';
 	import { _ } from 'svelte-i18n';
 	import { env } from '$env/dynamic/public';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { workGroupsStore } from '$lib/Group/WorkingGroups/interface';
 	import LogBackInModal from '$lib/Generic/LogBackInModal.svelte';
-	import { addDateOffset } from '$lib/Generic/Dates';
-
-	export const prerender = true;
+	import { userStore } from '$lib/User/interfaces';
+	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import {setUserGroupPermissionInfo} from '$lib/Group/functions';
 
 	let showUI = false,
 		scrolledY = '',
-		openLoginModal = false;
-
-	const updateUserInfo = async () => {
-		let userNeedsUpdate = false;
-		let groupId = Number($page.params.groupId);
-
-		userInfo.update((user) => {
-			if (!user || !user.user || ($page.params.groupId !== undefined && groupId !== user.groupId)) {
-				userNeedsUpdate = true;
-			}
-			return user;
-		});
-
-		if (userNeedsUpdate) {
-			const userData = await getUserInfo();
-			let groupUserData: GroupUser, permissions: Permission;
-			if (groupId) {
-				groupUserData = await getGroupUserInfo(groupId);
-				if (groupUserData?.permission_id)
-					permissions = await getPermissions(groupId, groupUserData.permission_id);
-			}
-
-			userInfo.update((user) => {
-				if (!user) user = { user: userData };
-				else user.user = userData;
-
-				if (!user.groupId && groupId) user.groupId = groupId;
-				if (user && !user.groupuser && groupId) user.groupuser = groupUserData;
-				if (user && !user.permission && groupId) user.permission = permissions;
-
-				if (!groupId) {
-					user.groupuser = undefined;
-					user.groupId = undefined;
-					user.permission = undefined;
-				}
-				return user;
-			});
-		}
-	};
+		openLoginModal = false,
+		isBrowser = false,
+		errorhandler: any;
 
 	const shouldShowUI = () => {
 		let pathname = window?.location?.pathname;
 
-		if (pathname === '/login') return false;
+		if (pathname.includes('/login')) return false;
 		else if (pathname === '/') return false;
-		else if (
-			window.localStorage.getItem('token') === undefined ||
-			window.localStorage.getItem('userId') === undefined
-		)
-			return false;
+		else if (window.localStorage.getItem('token') === undefined) return false;
 
 		return true;
 	};
@@ -82,39 +36,41 @@
 	//TODO: Avoid code duplication and introduce group stores for storing group data.
 	const getGrouplist = async () => {
 		const { res, json } = await fetchRequest('GET', 'group/list');
+		console.log(res, 'Group-List');
+
 		if (!res.ok) return;
-		else return json.results;
+		else return json?.results;
 	};
 
 	const redirect = async () => {
-		const groups = await getGrouplist();
-		const relativePath = new URL(location.href).pathname;
+		if (!isBrowser) return;
+
+		const relativePath = window.location.pathname;
 
 		let pathname = window?.location?.pathname;
 
-		if (window.localStorage.getItem('token') === undefined && relativePath !== '/login')
+		const sessionExpirationTime = window.localStorage.getItem('sessionExpirationTime');
+		if (
+			sessionExpirationTime &&
+			!relativePath.includes('/login') &&
+			sessionExpirationTime < new Date().getTime().toString()
+		) {
+			localStorage.removeItem('token');
+			goto('/login');
+		} else if (!window.localStorage.getItem('token') && !relativePath.includes('/login'))
 			goto('/login');
 		else if (
 			//For one group flowback, if no group has been setup, redirect to create group.
 			env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' &&
-			relativePath !== '/creategroup' &&
-			groups.length === 0
-		)
-			goto('/creategroup');
-		else if (pathname === '/') goto('/home');
-
-		const sessionExpiration = window.localStorage.getItem('sessionExpirationTime');
-		if (
-			sessionExpiration &&
-			relativePath !== '/login' &&
-			sessionExpiration < new Date().getTime().toString()
+			relativePath !== '/creategroup'
 		) {
-			localStorage.removeItem('token');
-			goto('/login');
-		}
+			const groups = await getGrouplist();
+			if (groups.length === 0) goto('/creategroup');
+		} else if (pathname === '/') goto('/home');
 	};
 
 	const getWorkingGroupList = async () => {
+		if (!$page.params.groupId) return;
 		const { res, json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/list?limit=100&order_by=name_asc`
@@ -122,7 +78,7 @@
 
 		if (!res.ok) return;
 
-		workGroupsStore.set(json.results);
+		workGroupsStore.set(json?.results);
 	};
 
 	const checkSessionExpiration = () => {
@@ -138,42 +94,80 @@
 		}
 	};
 
+	const setUserGroupInfo = async () => {
+		if (!$page.params.groupId) return;
+
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/${$page.params.groupId}/users?user_id=${$userStore?.id || -1}`
+		);
+
+		if (!res.ok || json?.results.length === 0) {
+			groupUserStore.set(null);
+			history.back();
+			return;
+		}
+
+		groupUserStore.set(json?.results[0]);
+	};
+
+	const setUserInfo = async () => {
+		const { json } = await fetchRequest('GET', 'user');
+		userStore.set(json);
+	};
+
 	beforeNavigate(() => {
-		scrolledY = $page.params.pollId;
+		scrolledY = $page.params.pollId ?? '';
 	});
 
-	onNavigate(() => {
-		getWorkingGroupList();
+	$: if ($page.url.pathname && isBrowser) onPathChange();
 
-		showUI = shouldShowUI();
+	const onPathChange = async () => {
 		redirect();
-		if (showUI) updateUserInfo();
+		getWorkingGroupList();
+		showUI = shouldShowUI();
+
 		setTimeout(() => {
 			const html = document.getElementById(`poll-thumbnail-${scrolledY}`);
 			html?.scrollIntoView();
 		}, 200);
 
 		checkSessionExpiration();
-	});
+		setUserInfo();
+		await setUserGroupInfo();
+		groupUserPermissionStore.set(await setUserGroupPermissionInfo($groupUserStore));
+	};
 
 	//Initialize Translation, which should happen before any lifecycle hooks.
 	initializeLocalization();
 
-	onMount(() => {
+	onMount(async () => {
+		groupUserPermissionStore.set(await setUserGroupPermissionInfo($groupUserStore));
+		isBrowser = true;
 		getWorkingGroupList();
 		showUI = shouldShowUI();
 		redirect();
-		if (showUI) updateUserInfo();
+
 		setTimeout(() => {
 			const html = document.getElementById(`poll-thumbnail-${scrolledY}`);
 			html?.scrollIntoView();
 		}, 200);
 
 		checkSessionExpiration();
+
+		ErrorHandlerStore.subscribe((_errorhandler) => {
+			if (!_errorhandler) return;
+			if (_errorhandler.message === '') return;
+
+			errorhandler.addPopup({
+				message: _errorhandler.message,
+				success: _errorhandler.success
+			});
+		});
 	});
 </script>
 
-<main class="">
+<main class="min-h-[100vh]">
 	{#if showUI}
 		<Chat />
 		<Header />
@@ -186,6 +180,8 @@
 </div>
 
 <LogBackInModal bind:open={openLoginModal} />
+
+<ErrorHandler bind:this={errorhandler} />
 
 <style>
 	#mobile-support {

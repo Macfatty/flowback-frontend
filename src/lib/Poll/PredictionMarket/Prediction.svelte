@@ -10,8 +10,7 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { formatDate } from '$lib/Generic/DateFormatter';
 	import { onMount } from 'svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { createPredictionBet as createPredictionBetBlockchain } from '$lib/Blockchain_v1_Ethereum/javascript/predictionsBlockchain';
 	import VotingSlider from '../VotingSlider.svelte';
 	import { env } from '$env/dynamic/public';
@@ -24,7 +23,7 @@
 
 	let score: null | number = null,
 		showDetails = false,
-		poppup: poppup;
+		errorHandler: any;
 
 	function hasEndDatePassed(): boolean {
 		const currentDateTime = new Date();
@@ -46,11 +45,11 @@
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to send probability', success: false };
+			ErrorHandlerStore.set({ message: 'Failed to send probability', success: false });
 			return;
 		}
 
-		poppup = { message: 'Probability successfully sent', success: true, show: true };
+		ErrorHandlerStore.set({ message: 'Probability successfully sent', success: true, show: true });
 	};
 
 	const predictionBetDelete = async () => {
@@ -63,11 +62,12 @@
 
 		loading = false;
 
-		if (!res.ok) {
-			poppup = { message: 'Failed to change probability', success: false };
+		if (!res.ok) {			
+			ErrorHandlerStore.set({ message: 'Failed to change probability', success: false });
 			return;
 		}
-		poppup = { message: 'Probability successfully sent', success: true };
+		
+		ErrorHandlerStore.set({ message: 'Probability successfully sent', success: true });
 	};
 
 	const createEvaluation = async (vote: boolean) => {
@@ -77,12 +77,12 @@
 			{ vote }
 		);
 
-		if (!res.ok) {
-			poppup = { message: 'Evaluation failed', success: false };
+		if (!res.ok) {			
+			ErrorHandlerStore.set({ message: 'Evaluation failed', success: false });
 			return;
 		}
-
-		poppup = { message: 'Successfully evaluated consequence', success: true };
+		
+		ErrorHandlerStore.set({ message: 'Successfully evaluated consequence', success: true });
 		prediction.user_prediction_statement_vote = vote;
 	};
 
@@ -93,7 +93,7 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: 'Something went wrong', success: false };
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		}
 
@@ -110,11 +110,11 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: 'Something went wrong', success: false };
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		}
-
-		poppup = { message: 'Successfully evaluated consequence', success: true };
+				
+		ErrorHandlerStore.set({ message: 'Successfully evaluated consequence', success: true });
 
 		prediction.user_prediction_statement_vote = vote;
 	};
@@ -128,13 +128,7 @@
 	};
 
 	const handleChangeBetScore = async (newScore: number | null) => {
-		console.log(newScore, 'SCORE');
-
-		// predictionBetCreate(newScore);
 		if (newScore === null || newScore === 2.5) predictionBetDelete();
-		// else if (score === null) {
-		// predictionBetCreate(newScore);
-		// }
 		else predictionBetUpdate(newScore);
 
 		if (
@@ -143,7 +137,7 @@
 			prediction.blockchain_id &&
 			score
 		)
-			createPredictionBetBlockchain(poll.blockchain_id, prediction.blockchain_id, score);
+			// createPredictionBetBlockchain(poll.blockchain_id, prediction.blockchain_id, score);
 
 		score = Number(newScore);
 	};
@@ -168,7 +162,7 @@
 			onSelection={handleChangeBetScore}
 			lineWidth={50}
 			score={prediction.user_prediction_bet}
-			isVoting={false}
+			bind:phase
 		/>
 		{#if env.PUBLIC_FLOWBACK_AI_MODULE === 'TRUE'}
 			<Button onClick={getAIPredictionBets}>
@@ -246,4 +240,4 @@
 	</div>
 </Modal>
 
-<Poppup bind:poppup />
+ 

@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { type Permissions } from './Permissions/interface';
 
 export type SelectablePage =
 	| 'flow'
@@ -14,6 +15,7 @@ export type SelectablePage =
 	| 'schedule'
 	| 'threads'
 	| 'working-groups'
+	| 'delegation'
 	;
 
 export interface User {
@@ -21,17 +23,6 @@ export interface User {
 	id: number;
 	profile_image: null;
 	user_id: number;
-}
-
-export interface GroupUser {
-	group_image: string;
-	group_name: string;
-	id: number;
-	is_admin: boolean;
-	delegate_pool_id: boolean;
-	permission_id: number | null;
-	permission_name: string;
-	user: { banner_image: string; id: number; profile_image: string; username: string };
 }
 
 export interface DelegatePools {
@@ -71,8 +62,8 @@ export interface Group {
 	joined: boolean;
 	name: string;
 	public: boolean;
-	pending_join:boolean;
-	pending_invite:boolean;
+	pending_join: boolean;
+	pending_invite: boolean;
 }
 
 export interface GroupDetails {
@@ -96,51 +87,56 @@ export interface Tag {
 	imac: number;
 }
 
-export interface groupUser extends User {
-	user_id: number;
-	delegate_pool_id: boolean;
+export interface GroupUser {
+	user: {
+		id: number;
+		username: string;
+		profile_image: null;
+		banner_image: null;
+		public_status: 'private';
+		chat_status: 'private';
+	};
 	is_admin: boolean;
-	permission_id: number;
+	active: boolean;
+	permission_id: null | number;
 	permission_name: string;
-	user: { id: number; username: string; profile_image: null | string; banner_image: null | string };
+	group_id: number;
+	group_name: string;
+	group_image: string;
+	delegate_pool_id: null | number;
+	role_name?: string;
+	role_id?: number;
+	id: number;
+	work_groups: any[];
 }
 
 export type SelectablePages = 'Members' | 'Pending Invites' | 'Invite';
 
-/*
-	"userGroupInfo" is unused at the moment due to it not working. 
-	TODO: Make it into a typescript class with derivable stores 
-	Reference: https://javascript.plainenglish.io/writing-a-svelte-store-with-typescript-22fa1c901a4 
-*/
-export const userGroupInfo = writable({
-	banner_image: '',
-	delegate: false,
-	id: 0,
+export const groupUserStore = writable<GroupUser | null>({
+	user: {
+		id: 0,
+		username: '',
+		profile_image: null,
+		banner_image: null,
+		public_status: 'private',
+		chat_status: 'private'
+	},
 	is_admin: false,
+	active: false,
 	permission_id: null,
 	permission_name: '',
-	profile_image: null,
-	user_id: 0,
-	username: ''
+	group_id: 0,
+	group_name: '',
+	group_image: '',
+	delegate_pool_id: null,
+	id: 0,
+	work_groups: []
 });
 
-/*
-	This works though
-*/
-export const userIsDelegateStore = writable(false);
-export const userIdStore = writable(0);
+export const groupUserPermissionStore = writable<Permissions>();
 
 export interface Thread {
-	created_by: {
-		id: number;
-		username: string;
-		profile_image: null | string;
-		banner_image: null | string;
-		is_admin: boolean;
-		permission_id: number;
-		permission_name: string;
-		group_id: number;
-	};
+	created_by: GroupUser;
 	title: string;
 	id: number;
 	total_comments: number;
@@ -154,6 +150,10 @@ export interface Thread {
 		id: number;
 		name: string;
 	};
+	group_name: string;
+	group_id: number;
+	group_image: string;
+	public:boolean;
 }
 
 export interface GroupFilter { joined: 'all' | 'member' | 'not-member', search: string }

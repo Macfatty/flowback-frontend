@@ -1,12 +1,17 @@
 <script lang="ts">
+	import Button from './Button.svelte';
+	import { _ } from 'svelte-i18n';
 	import CrossButton from './CrossButton.svelte';
+	import type { ModalButton } from './interfaces';
 	//TODO: Make the design nicer and larger, make it draggable, add more options
 
 	export let open = false,
 		Class = '',
 		onOpen = () => {},
 		onClose = () => {},
-		onSubmit = () => {};
+		onSubmit = () => {},
+		buttons: ModalButton[] = [],
+		id = 'popup-modal';
 
 	const closeModal = (event: MouseEvent) => {
 		event.stopPropagation();
@@ -49,23 +54,23 @@
 	role="button"
 >
 	<div
-		id="popup-modal"
+		{id}
 		tabindex="-1"
-		class={`max-w-[1400px] w-[80%] max-h-[80vh] mt-10 dark:bg-darkbackground bg-white overflow-y-auto overflow-x-hidden border
-		border-gray-300 rounded shadow-xl fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-50 ${Class}`}
+		class={`w-[80%] max-h-[80vh] mt-10 dark:bg-darkbackground bg-white overflow-y-auto overflow-x-hidden border
+		border-gray-300 rounded shadow-xl fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-50 max-w-[400px] ${Class}`}
 		on:click={stopPropagation}
 		on:keydown
 		role="button"
 	>
 		<div class="dark:text-darkmodeText relative p-4 w-full h-full">
-			<!-- <div class="text-xl border-b-2 border-gray-300 border-solid  break-all"> -->
-			<div class="text-xl break-all">
+			<!-- <div class="text-xl border-b-2 border-gray-300 border-solid  break-word"> -->
+			<div class="text-xl break-word">
 				<slot name="header" />
 				<CrossButton action={() => (open = false)} />
 			</div>
 			{#if onSubmit !== (() => {})}
 				<form on:submit|preventDefault={onSubmit}>
-					<div class="p-6 text-center break-all">
+					<div class="p-6 text-center break-word">
 						<slot name="body" />
 					</div>
 					<slot name="footer" />
@@ -76,6 +81,13 @@
 				</div>
 				<slot name="footer" />
 			{/if}
+			<div class="flex justify-center gap-2">
+				{#each buttons as button}
+					<Button id={button.label} buttonStyle={button.type} Class={`flex-1 ${button.class || ''}`} onClick={button.onClick}>
+						{$_(button.label)}
+					</Button>
+				{/each}
+			</div>
 		</div>
 	</div>
 </div>

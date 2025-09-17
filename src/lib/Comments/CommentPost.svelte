@@ -11,8 +11,11 @@
 	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import { onMount } from 'svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import { commentsStore } from './commentStore';
+	import { getCommentDepth } from './functions';
+	import { onDestroy } from 'svelte';
+	import { userStore } from '$lib/User/interfaces';
 
 	export let comments: Comment[] = [],
 		proposals: proposal[] = [],
@@ -29,7 +32,11 @@
 		showMessage = '',
 		recentlyTappedButton = '',
 		darkmode = false,
-		poppup: poppup;
+		 
+		filteredProposal: proposal | null = null;
+
+	// Reactive subscription to the filtered proposal in the commentsStore
+	$: filteredProposal = $commentsStore.filterByProposal;
 
 	const getId = () => {
 		if (api === 'poll') return `poll/${$page.params.pollId}`;
@@ -39,11 +46,17 @@
 
 	const commentCreate = async () => {
 		const formData = new FormData();
+
+		// Prepend the hashtag to the message if a proposal is filtered
+		if (filteredProposal) {
+			message = `#${filteredProposal.title.replaceAll(' ', '-')} ${message}`;
+		}
+
 		if (message !== '') formData.append('message', message);
 		if (parent_id) formData.append('parent_id', parent_id.toString());
 		if (files)
-			files.forEach((image) => {
-				formData.append('attachments', image);
+			files.forEach((file) => {
+				formData.append('attachments', file);
 			});
 
 		const { res, json } = await fetchRequest(
@@ -55,56 +68,43 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to post comment', success: false };
+			ErrorHandlerStore.set({ message: 'Failed to post comment', success: false });
 			return;
 		}
 
-		let newComment: Comment = {
-			user_vote: true,
-			active: true,
-			author_id: Number(window.localStorage.getItem('userId')) || 0,
-			author_name: window.localStorage.getItem('userName') || '',
-			being_edited: false,
-			being_replied: false,
-			score: 1,
-			edited: false,
-			attachments: files.map((file) => {
-				return { file: URL.createObjectURL(file) };
-			}),
-			message,
-			id: json,
-			parent_id,
-			author_profile_image: window.localStorage.getItem('pfp-link') || '',
-			being_edited_message: '',
-			reply_depth: comments.find((comment) => comment.id === parent_id)?.reply_depth || 0
-		};
+		// Calculate the reply_depth based on the parent comment
+		let replyDepth = 0;
 
-		// Find the index where to insert the new reply
-		let insertIndex;
-		if (parent_id) {
-			// Find the last reply in the chain for this parent
-			let parentIndex = comments.findIndex((c) => c.id === parent_id);
-			let replyDepth = comments[parentIndex].reply_depth + 1;
+		const parentComment = $commentsStore.filteredComments.find(
+			(comment) => comment.id === parent_id
+		);
 
-			// Find the last comment in the reply chain
-			insertIndex = parentIndex + 1;
-			while (
-				insertIndex < comments.length &&
-				comments[insertIndex].reply_depth > comments[parentIndex].reply_depth
-			) {
-				insertIndex++;
-			}
-
-			newComment.reply_depth = replyDepth;
-		} else {
-			// If it's a top-level comment, add it to the beginning
-			insertIndex = 0;
-			newComment.reply_depth = 0;
+		if (parentComment) {
+			replyDepth = getCommentDepth(parentComment, $commentsStore.filteredComments) + 1;
 		}
 
-		// Insert the new comment at the correct position
-		comments.splice(insertIndex, 0, newComment);
+		const newComment: Comment = {
+			id: json,
+			message,
+			attachments: files.map((file) => ({ file: URL.createObjectURL(file) })),
+			parent_id,
+			reply_depth: replyDepth,
+			author_id: $userStore?.id || -1,
+			author_name: $userStore?.username || '',
+			author_profile_image: $userStore?.profile_image || '',
+			score: 1,
+			active: true,
+			edited: false,
+			being_edited: false,
+			being_replied: false,
+			being_reported: false,
+			user_vote: true,
+			being_edited_message: ''
+		};
+
 		comments = comments;
+
+		commentsStore.add(newComment);
 
 		showMessage = 'Successfully posted comment';
 		show = true;
@@ -118,7 +118,7 @@
 		const formData = new FormData();
 
 		if (message === '' && files.length === 0) {
-			poppup = { message: 'Cannot create empty comment', success: false };
+			ErrorHandlerStore.set({ message: 'Cannot create empty comment', success: false });
 			return;
 		}
 
@@ -140,14 +140,14 @@
 		beingEdited = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to edit comment', success: false };
+			ErrorHandlerStore.set({ message: 'Failed to edit comment', success: false });
 			return;
 		}
 
 		show = true;
 		showMessage = $_('Edited Comment');
-		const index = comments.findIndex((comment) => comment.id === id);
-		let comment = comments.find((comment) => comment.id === id);
+		const index = comments?.findIndex((comment) => comment.id === id);
+		let comment = comments?.find((comment) => comment.id === id);
 		if (comment) {
 			comment.message = message;
 			comments.splice(index, 1, comment);
@@ -161,15 +161,27 @@
 
 	//TODO: Optimize so that this doesn't fire every time a comment is made
 	const subscribeToReplies = async () => {
-		const { res, json } = await fetchRequest('POST', `group/${getId()}/subscribe`, {
-			categories: ['comment_self']
+		const { res, json } = await fetchRequest('POST', `group/${getId()}/notification/subscribe`, {
+			tags: ['comment_self']
 		});
 	};
 
+	const handleKeyDown = (event: KeyboardEvent) => {
+		// Check for a specific key, e.g., the "k" key:
+		if (event.ctrlKey && event.key === 'Enter' && message.trim() !== '') {
+			beingEdited ? commentUpdate() : commentCreate();
+		}
+	};
+
 	onMount(() => {
+		document.addEventListener('keydown', handleKeyDown);
 		darkModeStore.subscribe((value) => {
 			darkmode = value;
 		});
+	});
+
+	onDestroy(() => {
+		// document.removeEventListener('keydown', handleKeyDown);
 	});
 </script>
 
@@ -182,21 +194,24 @@
 		class="hidden absolute z-50 bg-white dark:bg-darkbackground shadow w-full top-full border-gray-300 rounded"
 		class:!block={recentlyTappedButton === '#'}
 	>
-		{#if proposals?.length > 0}
-			<div class="max-h-48 overflow-y-auto">
+		{#if proposals?.length > 0 && api === 'poll'}
+			<div class="max-h-30 overflow-y-auto">
 				<div class="px-4 py-2 font-semibold text-sm text-gray-600 border-b border-gray-200">
 					{$_('All proposals')}
 				</div>
 				<ul class="divide-y divide-gray-200">
 					{#each proposals as proposal}
-						<li
-							class="hover:bg-gray-100 dark:hover:bg-darkbackground dark:hover:brightness-125 cursor-pointer px-4 py-2"
-							on:click={() => {
-								message = `${message}${proposal.title.replaceAll(' ', '-')} `;
-								recentlyTappedButton = '';
-							}}
-						>
-							{proposal.title}
+						<li class="px-4 py-2">
+							<button
+								type="button"
+								class="w-full text-left hover:bg-gray-100 dark:hover:bg-darkbackground dark:hover:brightness-125 cursor-pointer"
+								on:click={() => {
+									message = `${message}${proposal.title.replaceAll(' ', '-')} `;
+									recentlyTappedButton = '';
+								}}
+							>
+								{proposal.title}
+							</button>
 						</li>
 					{/each}
 				</ul>
@@ -213,24 +228,26 @@
 				Class="w-full"
 				placeholder={$_('Write a comment...')}
 				displayMax={false}
-				id="comment"
+				id="textarea-comment"
 			/>
 		</div>
-		<div class="flex ml-2 gap-2 items-start">
+		<div class="flex ml-2 items-start">
 			<FileUploads
 				bind:files
 				minimalist
 				disableCropping
-				Class="content-center p-2 rounded hover:bg-gray-100 h-10"
+				Class="content-center p-2 rounded dark:hover:bg-gray-700 hover:bg-gray-100 h-10"
 			/>
-			<Button
-				Class="bg-white dark:bg-darkbackground hover:!brightness-100 hover:bg-gray-100 p-2 h-10 m-auto"
-				type="submit"
-				label=""
-				><Fa icon={faPaperPlane} color={darkmode ? 'white' : 'black'} class="text-lg" /></Button
-			>
+			<div class="p-2 m-auto">
+				<Button
+					Class=" bg-white dark:bg-darkbackground hover:!brightness-100 dark:hover:!bg-gray-700 hover:bg-gray-100"
+					type="submit"
+					label=""
+					><Fa icon={faPaperPlane} color={darkmode ? 'white' : 'black'} class="text-lg" /></Button
+				>
+			</div>
 		</div>
 	</div>
 </form>
 
-<Poppup bind:poppup />
+ 

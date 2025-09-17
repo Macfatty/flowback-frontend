@@ -1,11 +1,9 @@
 <script lang="ts">
 	import GroupSidebarButton from '$lib/Group/GroupSidebarButton.svelte';
 	import type { GroupDetails, SelectablePage } from '$lib/Group/interface';
-	import workgroupsymbol from '$lib/assets/workgroupsymbol.svg';
 	import { page } from '$app/stores';
 	import Fa from 'svelte-fa';
 	import {
-		faPeopleGroup,
 		faUserGroup,
 		faCircleInfo,
 		faVideoCamera,
@@ -16,22 +14,19 @@
 		faX,
 		faCog,
 		faListCheck,
-		faPeopleCarryBox
+		faPeopleCarryBox,
+		faPeopleArrows
 	} from '@fortawesome/free-solid-svg-icons';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import { onMount } from 'svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
-	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 	import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons/faCalendarAlt';
-	import { faCoins, faLink } from '@fortawesome/free-solid-svg-icons';
+	import { faCoins } from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
 	import { removeGroupMembership } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
 	import { env } from '$env/dynamic/public';
-	import { getPermissionsFast, getUserIsGroupAdmin } from '$lib/Generic/GenericFunctions';
-	import Permissions from './Permissions/Permissions.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
-	import Poppup from '$lib/Generic/Poppup.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 
 	export let selectedPage: SelectablePage = 'flow',
 		group: GroupDetails,
@@ -39,17 +34,24 @@
 
 	let innerWidth = 0,
 		clickedExpandSidebar = false,
-		userIsOwner = false,
 		areYouSureModal = false,
-		userIsPermittedToCreatePost = false,
-		poppup: poppup;
+		errorHandler: any;
 
 	const leaveGroup = async () => {
-		const { res } = await fetchRequest('POST', `group/${$page.params.groupId}/leave`);
-		if (res.ok) {
-			removeGroupMembership(Number($page.params.groupId));
-			goto('/home');
+		const { res, json } = await fetchRequest('POST', `group/${$page.params.groupId}/leave`);
+
+		if (!res.ok) {
+			ErrorHandlerStore.set({
+				message: json.detail[0] || json.detail || 'An error occurred while leaving the group',
+				success: false
+			});
+			return;
 		}
+
+		if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE')
+			removeGroupMembership(Number($page.params.groupId));
+
+		goto('/home');
 	};
 
 	const action = (page: SelectablePage) => {
@@ -57,14 +59,6 @@
 		selectedPage = page;
 		goto(`?page=${page}`, { noScroll: true });
 	};
-
-	onMount(async () => {
-		userIsOwner = await getUserIsGroupAdmin($page.params.groupId);
-
-		const permission: Permissions = await getPermissionsFast($page.params.groupId);
-		userIsPermittedToCreatePost =
-			(permission !== undefined && permission !== null && permission.create_poll) || userIsOwner;
-	});
 
 	//@ts-ignore
 	$: selectedPage = $page.url.searchParams.get('page') || 'flow';
@@ -98,19 +92,23 @@
 		<div class="mb-6 w-full">
 			<GroupSidebarButton
 				action={() => {
-					if (userIsPermittedToCreatePost)
+					if ($groupUserPermissionStore?.create_poll || $groupUserStore?.is_admin)
 						goto(
 							`/createpoll?id=${$page.params.groupId}&type=${
 								selectedPage === 'threads' ? 'thread' : 'poll'
 							}`
 						);
-					else poppup = { message: 'You do not have permission to create a post', success: false };
+					else
+						ErrorHandlerStore.set({
+							message: 'You do not have permission to create a post',
+							success: false
+						});
 				}}
 				text="Create a post"
-				disabled={!userIsPermittedToCreatePost}
+				disabled={!$groupUserPermissionStore?.create_poll && !$groupUserStore?.is_admin}
 				faIcon={faCheckToSlot}
 				isSelected={false}
-				Class="text-white hover:!bg-blue-800 active:!bg-blue-900 bg-primary shadow rounded w-full"
+				Class="text-white hover:!bg-blue-800 active:!bg-blue-900 bg-primary dark:saturate-50 shadow rounded w-full"
 			/>
 		</div>
 		<div class="bg-white dark:bg-darkobject shadow rounded flex flex-col">
@@ -146,13 +144,21 @@
 			/> -->
 			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
 				<GroupSidebarButton
-					action={() => action('kanban')}
+					action={() => goto(`/delegations?groupId=${$page.params.groupId}`)}
+					isSelected={selectedPage === 'delegation'}
+					text="Delegation"
+					faIcon={faPeopleArrows}
+				/>
+
+				<GroupSidebarButton
+					action={() => goto(`/kanban?groupId=${$page.params.groupId}`)}
 					isSelected={selectedPage === 'kanban'}
 					text="Group Tasks"
 					faIcon={faListCheck}
 				/>
+
 				<GroupSidebarButton
-					action={() => action('schedule')}
+					action={() => goto(`/schedule?groupId=${$page.params.groupId}`)}
 					isSelected={selectedPage === 'schedule'}
 					text="Group schedule"
 					faIcon={faCalendarAlt}
@@ -193,15 +199,15 @@
 			{/if}
 		</div>
 		{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
-		<div class="bg-white dark:bg-darkobject shadow rounded flex flex-col mt-6">
-			<GroupSidebarButton
-						Class="w-full"
-						action={() => (areYouSureModal = true)}
-						text="Leave group"
-						faIcon={faPersonRunning}
-						isSelected={false}
-					/>
-			{#if env.PUBLIC_FLOWBACK_LEDGER_MODULE === 'TRUE'}
+			<div class="bg-white dark:bg-darkobject shadow rounded flex flex-col mt-6">
+				<GroupSidebarButton
+					Class="w-full"
+					action={() => (areYouSureModal = true)}
+					text="Leave group"
+					faIcon={faPersonRunning}
+					isSelected={false}
+				/>
+				{#if env.PUBLIC_FLOWBACK_LEDGER_MODULE === 'TRUE'}
 					<a class="text-inherit w-full" href={`/ledger`}>
 						<GroupSidebarButton
 							Class="w-full"
@@ -213,7 +219,7 @@
 				{/if}
 			</div>
 		{/if}
-		{#if userIsOwner}
+		{#if $groupUserStore?.is_admin}
 			<div class="bg-white dark:bg-darkobject shadow rounded flex flex-col mt-6">
 				<GroupSidebarButton
 					action={() => action('email')}
@@ -232,13 +238,17 @@
 	{/if}
 </nav>
 
-<Modal bind:open={areYouSureModal}>
+<Modal
+	bind:open={areYouSureModal}
+	Class="max-w-[400px]"
+	buttons={[
+		{ label: 'Yes', type: 'warning', onClick: leaveGroup },
+		{ label: 'No', type: 'default', onClick: () => (areYouSureModal = false) }
+	]}
+>
+	>
 	<div slot="header">{$_('Are you sure?')}</div>
 	<div slot="body">{$_('You are about to leave the group!')}</div>
-	<div slot="footer">
-		<Button onClick={leaveGroup} Class="bg-red-500">{$_('Yes')}</Button>
-		<Button onClick={() => (areYouSureModal = false)} Class="bg-gray-600 w-1/2">{$_('No')}</Button>
-	</div>
 </Modal>
 
-<Poppup bind:poppup />
+ 

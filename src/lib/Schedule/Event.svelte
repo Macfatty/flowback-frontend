@@ -1,261 +1,216 @@
+<!-- Event.svelte -->
 <script lang="ts">
+	import { onMount, onDestroy } from 'svelte';
 	import { _ } from 'svelte-i18n';
-	import Modal from '$lib/Generic/Modal.svelte';
-	import Button from '$lib/Generic/Button.svelte';
-	import TextInput from '$lib/Generic/TextInput.svelte';
-	import TextArea from '$lib/Generic/TextArea.svelte';
-	import Select from '$lib/Generic/Select.svelte';
-	import Loader from '$lib/Generic/Loader.svelte';
-	import type { scheduledEvent, WorkGropuSchdeuledEventCreate } from './interface';
+	import { browser } from '$app/environment';
+	import type { scheduledEvent } from '$lib/Schedule/interface';
+	import { fetchRequest } from '$lib/FetchRequest';
+	import { page } from '$app/stores';
+	import CreateEventModal from './Modals/CreateEventModal.svelte';
+	import EditEventModal from './Modals/EditEventModal.svelte';
+	import ViewEventModal from './Modals/ViewEventModal.svelte';
 
-	export let showEvent = false,
+	export let advancedTimeSettingsDates: Date[] = [],
 		showCreateScheduleEvent = false,
+		showEvent = false,
 		showEditScheduleEvent = false,
+		month: number,
+		year: number,
+		events: scheduledEvent[] = [],
 		selectedEvent: scheduledEvent,
 		workGroups: any[] = [],
-		type = '',
-		loading = false;
+		type: 'user' | 'group',
+		scheduleEventCreate: (event: scheduledEvent) => Promise<void>,
+		scheduleEventEdit: (event: scheduledEvent) => Promise<void>,
+		scheduleEventDelete: (eventId: number) => Promise<void>;
 
-	export let scheduleEventCreate = () => {},
-		scheduleEventEdit = () => {},
-		scheduleEventDelete = () => {};
+	// Members list and selections
+	let members: { id: number; name: string }[] = [],
+		selectedMembers: number[] = [],
+		selectedReminders: number[] = [],
+		// Default to Daily
+		selectedFrequency: number = 1,
+		choicesOpenMembers = false,
+		choicesOpenReminders = false,
+		errorHandler: any;
+
+	const groupId = $page.params.groupId || '1';
+
+	onMount(async () => {
+		const today = new Date();
+		let tomorrow = new Date();
+		tomorrow.setDate(today.getDate());
+		advancedTimeSettingsDates = [today, tomorrow];
+		if (type === 'group') {
+			await fetchMembers();
+		}
+		window.addEventListener('click', handleOutsideClick);
+	});
+
+	onDestroy(() => {
+		if (!browser) return;
+		window.removeEventListener('click', handleOutsideClick);
+		restoreBackgroundScroll();
+	});
+
+	$: if (showEvent || showCreateScheduleEvent || showEditScheduleEvent) {
+		preventBackgroundScroll();
+	} else {
+		restoreBackgroundScroll();
+	}
+
+	const firstDayInMonthWeekday = () => {
+		return new Date(year, month, 0).getDay();
+	};
+
+	const getDay = (x: number, y: number) => {
+		return -firstDayInMonthWeekday() + x + 7 * (y - 1);
+	};
+
+	// Frequency options
+	let frequencyOptions = [
+		{ id: 0, name: 'Once' },
+		{ id: 1, name: 'Daily' },
+		{ id: 2, name: 'Weekly' },
+		{ id: 3, name: 'Monthly' },
+		{ id: 4, name: 'Yearly' }
+	];
+
+	// Reminder options (in seconds)
+	let reminderOptions = [
+		{ id: 300, name: '5 minutes before' },
+		{ id: 600, name: '10 minutes before' },
+		{ id: 1800, name: '30 minutes before' },
+		{ id: 3600, name: '1 hour before' },
+		{ id: 86400, name: '1 day before' }
+	];
+
+	const getGroupUsers = async () => {
+		let api = `group/${groupId}/users?limit=100`;
+		const { json, res } = await fetchRequest('GET', api);
+		if (!res.ok) return [];
+		return json?.results;
+	};
+
+	const fetchMembers = async () => {
+		if (type === 'group') {
+			const users = await getGroupUsers();
+			members = users.map((user: any) => ({
+				id: user.id,
+				name: user.user?.username || `User ${user.id}`
+			}));
+		}
+	};
+
+	const handleOutsideClick = (e: MouseEvent) => {
+		if (!browser) return;
+
+		const modal = document.querySelector('.modal-content');
+		const membersRegion = document.querySelector('.members-clickable-region');
+		const remindersRegion = document.querySelector('.reminders-clickable-region');
+
+		if (modal && !modal.contains(e.target as Node)) {
+			choicesOpenMembers = false;
+			choicesOpenReminders = false;
+			return;
+		}
+
+		if (choicesOpenMembers && membersRegion && !membersRegion.contains(e.target as Node)) {
+			choicesOpenMembers = false;
+		}
+		if (choicesOpenReminders && remindersRegion && !remindersRegion.contains(e.target as Node)) {
+			choicesOpenReminders = false;
+		}
+	};
+
+	const preventBackgroundScroll = () => {
+		if (!browser) return;
+		document.body.style.overflow = 'hidden';
+	};
+
+	const restoreBackgroundScroll = () => {
+		if (!browser) return;
+		document.body.style.overflow = '';
+	};
+
+	// Initialize values when opening modals
+	const initializeModalValues = () => {
+		if (showCreateScheduleEvent) {
+			selectedFrequency = 1;
+			selectedMembers = [];
+		} else if (showEditScheduleEvent || showEvent) {
+			selectedFrequency =
+				selectedEvent.repeat_frequency &&
+				frequencyOptions.some((opt) => opt.id === selectedEvent.repeat_frequency)
+					? selectedEvent.repeat_frequency
+					: 1;
+			selectedMembers =
+				selectedEvent.assignee_ids?.map((member: any) => {
+					return member.id;
+				}) || [];
+		}
+	};
+
+	$: if (showCreateScheduleEvent || showEditScheduleEvent || showEvent) {
+		initializeModalValues();
+	}
+
+	const handleSubmit = async () => {
+		const updatedEvent = {
+			...selectedEvent,
+			assignee_ids: type === 'group' ? selectedMembers : undefined,
+			reminders: selectedReminders,
+			repeat_frequency: type === 'group' ? selectedFrequency : undefined
+		};
+
+		try {
+			if (showCreateScheduleEvent) {
+				await scheduleEventCreate(selectedEvent);
+				// showCreateScheduleEvent = false;
+			} else if (showEditScheduleEvent) {
+				await scheduleEventEdit(selectedEvent);
+				showEditScheduleEvent = false;
+			}
+		} catch (error) {
+			console.error('Error submitting event:', error);
+		}
+	};
 </script>
 
-<!-- Allows user to see event -->
-<Modal bind:open={showEvent} Class="min-w-[400px] max-w-[500px] z-50">
-	<div slot="body">
-		<div class="text-center">
-			<h2 class="pb-1 font-semibold break-words text-xl w-full">{selectedEvent.title}</h2>
-			{#if type === 'group'}
-				<p class="w-full">{selectedEvent.work_group?.name || $_('No workgroup assigned')}</p>
-			{/if}
-		</div>
-		<div class="flex flex-col gap-1 mt-4 w-full">
-			<div class="flex justify-between w-full">
-				<p class="font-bold">{$_('From')}</p>
-				<p>
-					{selectedEvent.start_date
-						? new Intl.DateTimeFormat('sv-SE', {
-								weekday: 'short',
-								day: '2-digit',
-								month: 'long',
-								hour: '2-digit',
-								minute: '2-digit'
-						  })
-								.format(new Date(selectedEvent.start_date))
-								.replace(/\b\w/g, (char) => char.toUpperCase())
-						: $_('No start date set')}
-				</p>
-			</div>
-			<div class="flex justify-between w-full">
-				<p class="font-bold">{$_('To')}</p>
-				<p>
-					{selectedEvent.end_date
-						? new Intl.DateTimeFormat('sv-SE', {
-								weekday: 'short',
-								day: '2-digit',
-								month: 'long',
-								hour: '2-digit',
-								minute: '2-digit'
-						  })
-								.format(new Date(selectedEvent.end_date))
-								.replace(/\b\w/g, (char) => char.toUpperCase())
-						: $_('No end date set')}
-				</p>
-			</div>
-		</div>
-		{#if selectedEvent?.meeting_link && selectedEvent.meeting_link !== ''}
-			<div class="text-left mt-1 w-full">
-				<p class="font-bold">{$_('Meeting link')}</p>
-				<p class="w-full}">{selectedEvent.meeting_link}</p>
-			</div>
-		{/if}
-		{#if selectedEvent.description && selectedEvent.description !== ''}
-			<div class="text-left mt-1 w-full">
-				<p class="font-bold">{$_('Description')}</p>
-				<p class="max-h-[25vh] overflow-scroll break-words w-full whitespace-pre-wrap">
-					{selectedEvent.description}
-				</p>
-			</div>
-		{/if}
-		<div class="text-left mt-1 w-full">
-			<p class="font-bold">{$_('Attachments')}</p>
-		</div>
-	</div>
-	<div slot="footer" class="flex justify-between gap-4 mx-6 mb-3">
-		<Button
-			Class="w-full py-1"
-			buttonStyle="primary-light"
-			onClick={() => {
-				showEditScheduleEvent = true;
-				showEvent = false;
-			}}>{$_('Edit')}</Button
-		>
-		<Button Class="w-full py-1" buttonStyle="warning-light" onClick={scheduleEventDelete}
-			>{$_('Delete')}</Button
-		>
-	</div>
-</Modal>
+<!-- Modal 1: Create Event Modal -->
+{#if showCreateScheduleEvent}
+	<CreateEventModal
+		bind:selectedEvent
+		bind:showCreateScheduleEvent
+		bind:selectedReminders
+		on:submit={handleSubmit}
+		{type}
+		{workGroups}
+		{members}
+		{reminderOptions}
+		{frequencyOptions}
+	/>
+{/if}
+<!-- Modal 2: Edit Event Modal -->
+<EditEventModal
+	bind:selectedEvent
+	bind:showEditScheduleEvent
+	bind:showEvent
+	bind:events
+	editedEvent={selectedEvent}
+	{type}
+	{workGroups}
+	{reminderOptions}
+	{frequencyOptions}
+/>
 
-<!-- Modal for creating one's own/group scheduled event -->
-<Modal Class="min-w-[400px] md:w-[700px] " bind:open={showCreateScheduleEvent}>
-	<div slot="body">
-		<Loader bind:loading>
-			<form>
-				<h1 class="text-lg pb-3 text-left text-primary dark:text-secondary font-semibold">
-					{$_('Create Event')}
-				</h1>
-				<div class="pb-2">
-					<TextInput Class="text-md" label="Title" bind:value={selectedEvent.title} required />
-				</div>
-				<TextArea
-					Class="text-md"
-					inputClass="whitespace-pre-wrap"
-					label="Description"
-					bind:value={selectedEvent.description}
-				/>
-				{#if type === 'group'}
-					<div class="text-left">
-						<label class="block text-md py-3" for="work-group">
-							{$_('Work Group')}
-							<Select
-								Class="width:100%"
-								bind:value={selectedEvent.work_group}
-								labels={workGroups.map((group) => group.name)}
-								values={workGroups.map((group) => group.id)}
-								innerLabel={$_('No workgroup assigned')}
-								innerLabelOn={true}
-							/>
-						</label>
-					</div>
-				{/if}
-				<div class="w-full md:flex md:gap-4">
-					<div class="text-left flex-1">
-						<label class="block text-md pt-2" for="create-start-date">
-							{$_('From')}
-						</label>
-						<input
-							id="create-start-date"
-							type="datetime-local"
-							bind:value={selectedEvent.start_date}
-							class="w-full border rounded p-1 border-gray-300 dark:border-gray-600 dark:bg-darkobject
-						   {selectedEvent.start_date ? 'text-black' : 'text-gray-500'}"
-						/>
-					</div>
+<!-- Modal 3: View Event Modal -->
 
-					<div class="text-left flex-1">
-						<label class="block text-md pt-2" for="create-end-date">
-							{$_('To')}
-						</label>
-						<input
-							id="create-end-date"
-							type="datetime-local"
-							bind:value={selectedEvent.end_date}
-							class="w-full border rounded p-1 border-gray-300 dark:border-gray-600 dark:bg-darkobject
-							{selectedEvent.end_date ? 'text-black' : 'text-gray-500'}"
-						/>
-					</div>
-				</div>
-				<div class="pt-2">
-					<TextInput label="Meeting link" bind:value={selectedEvent.meeting_link} />
-				</div>
-			</form>
-		</Loader>
-	</div>
-	<div slot="footer" class="flex justify-between gap-4 mx-6 mb-3">
-		<Button
-			Class="w-full py-1"
-			buttonStyle="primary-light"
-			type="submit"
-			onClick={scheduleEventCreate}>{$_('Create')}</Button
-		>
-		<Button
-			Class="w-full py-1"
-			buttonStyle="warning-light"
-			onClick={() => (showCreateScheduleEvent = false)}>{$_('Cancel')}</Button
-		>
-	</div>
-</Modal>
-
-<!-- Opens a window which allows users to edit a schedule (TODO: refactor so there's just one combined modal for edit and create) -->
-<Modal bind:open={showEditScheduleEvent} Class="min-w-[400px] md:w-[700px] z-50">
-	<!-- <div slot="header">{$_('Edit Event')}</div> -->
-	<div slot="body">
-		<Loader bind:loading>
-			<form on:submit|preventDefault={scheduleEventEdit}>
-				<!-- <DateInput bind:value={start_date} format="yyyy-MM-dd HH:mm" />
-				<DateInput bind:value={end_date} format="yyyy-MM-dd HH:mm" /> -->
-				<!-- min={start_date ? addDateOffset(start_date, 1, 'hour') : new Date()} -->
-				<div class="pb-2">
-					<TextInput label="Title" bind:value={selectedEvent.title} required />
-				</div>
-				<TextArea
-					label="Description"
-					bind:value={selectedEvent.description}
-					rows={3}
-					Class="overflow-scroll"
-					inputClass="whitespace-pre-wrap"
-				/>
-				{#if type === 'group'}
-					<div class="text-left">
-						<label class="block text-md">
-							{$_('Work Group')}
-						</label>
-						<Select
-							Class="width:100%"
-							classInner="border-gray-300 rounded border"
-							labels={workGroups.map((group) => group.name)}
-							values={workGroups.map((group) => group.id)}
-							value={selectedEvent.work_group?.id || ''}
-							innerLabel={$_('No workgroup assigned')}
-							innerLabelOn={true}
-						/>
-					</div>
-				{/if}
-				<div class="md:flex md:gap-4">
-					<div class="text-left flex-1">
-						<label class="block text-md pt-2" for="edit-start-date">
-							{$_('From')}
-						</label>
-
-						<input
-							id="edit-start-date"
-							type="datetime-local"
-							bind:value={selectedEvent.start_date}
-							class="w-full border rounded p-1 border-gray-300 dark:border-gray-600 dark:bg-darkobject
-						   {selectedEvent.start_date ? 'text-black' : 'text-gray-500'}"
-						/>
-					</div>
-					<div class="text-left flex-1">
-						<label class="block text-md pt-2" for="edit-end-date">
-							{$_('To')}
-						</label>
-						<input
-							id="edit-end-date"
-							type="datetime-local"
-							bind:value={selectedEvent.end_date}
-							class="w-full border rounded p-1 border-gray-300 dark:border-gray-600 dark:bg-darkobject
-							{selectedEvent.start_date ? 'text-black' : 'text-gray-500'}"
-						/>
-					</div>
-				</div>
-				<div class="pt-2">
-					<TextInput label="Meeting link" bind:value={selectedEvent.meeting_link} />
-				</div>
-			</form>
-		</Loader>
-	</div>
-	<div slot="footer" class="flex justify-between gap-4 mx-6 mb-3">
-		<Button
-			Class="w-full py-1"
-			buttonStyle="primary-light"
-			type="submit"
-			onClick={scheduleEventEdit}>{$_('Confirm')}</Button
-		>
-		<Button
-			Class="w-full py-1"
-			buttonStyle="warning-light"
-			onClick={() => (showEditScheduleEvent = false)}>{$_('Cancel')}</Button
-		>
-	</div>
-</Modal>
+<ViewEventModal
+	bind:selectedEvent
+	bind:showEvent
+	bind:showEditScheduleEvent
+	on:delete={() => scheduleEventDelete(selectedEvent.event_id)}
+	{type}
+	{scheduleEventDelete}
+/>

@@ -9,35 +9,34 @@
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import { onMount } from 'svelte';
 	import { getPhase, getPhaseUserFriendlyNameWithNumber, nextPhase } from './functions';
-	import DefaultBanner from '$lib/assets/default_banner_group.png';
-	import { elipsis, getPermissionsFast, onThumbnailError } from '$lib/Generic/GenericFunctions';
+	import { getPermissionsFast } from '$lib/Generic/GenericFunctions';
 	import Select from '$lib/Generic/Select.svelte';
-	import { getTags, getUserIsOwner } from '$lib/Group/functions';
+	import { getTags } from '$lib/Group/functions';
 	import type { Tag as TagType } from '$lib/Group/interface';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import Button from '$lib/Generic/Button.svelte';
 	import NewDescription from './NewDescription.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { env } from '$env/dynamic/public';
 	import {
 		faAnglesRight,
 		faThumbtack,
-		faComment,
 		faAlignLeft,
 		faCalendarAlt,
-		faSlash
+		faSlash,
+		faGlobe,
+		faLock
 	} from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import DeletePollModal from './DeletePollModal.svelte';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import Timeline from './NewDesign/Timeline.svelte';
-	import ReportPollModal from './ReportPollModal.svelte';
-	import type { Permission, Permissions } from '$lib/Group/Permissions/interface';
+	import ReportPostModal from './ReportPostModal.svelte';
+	import type { Permissions } from '$lib/Group/Permissions/interface';
+	import { groupUserStore } from '$lib/Group/interface';
+	import DeletePostModal from './DeletePostModal.svelte';
 
-	export let poll: poll,
-		isAdmin = false;
+	export let poll: poll;
 
 	let onHoverGroup = false,
 		phase: Phase,
@@ -47,21 +46,26 @@
 		selectedTag: number,
 		darkMode: boolean,
 		voting = true,
-		poppup: poppup,
+		 
 		choicesOpen = false,
 		deletePollModalShow = false,
 		reportPollModalShow = false,
 		hovering = false,
 		showGroupInfo = !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') && !$page.params.groupId,
-		permissions: Permissions,
-		userIsOwner: boolean;
+		permissions: Permissions;
 
 	//When adminn presses the pin tack symbol, pin the poll
 	const pinPoll = async () => {
 		const { json, res } = await fetchRequest('POST', `group/poll/${poll?.id}/update`, {
 			pinned: !poll?.pinned
 		});
-		if (res.ok) poll.pinned = !poll?.pinned;
+
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: 'Could not pin poll', success: false });
+			return;
+		}
+
+		poll.pinned = !poll?.pinned;
 	};
 
 	const submitTagVote = async (tag: number) => {
@@ -71,7 +75,7 @@
 		});
 
 		if (!res.ok) {
-			poppup = { message: 'Could not submit tag vote', success: false };
+			ErrorHandlerStore.set({ message: 'Could not submit tag vote', success: false });
 			return;
 		}
 
@@ -83,7 +87,8 @@
 
 		if (!res.ok) return;
 
-		let selectedTagName = json.results.find((tag: Tag) => tag.user_vote === true)?.tags[0].tag_name;
+		let selectedTagName = json?.results.find((tag: Tag) => tag.user_vote === true)?.tags[0]
+			.tag_name;
 
 		if (selectedTagName) {
 			selectedTag = tags?.find((tag) => tag.name === selectedTagName)?.id || 0;
@@ -99,8 +104,6 @@
 		}
 
 		permissions = await getPermissionsFast(Number(poll.group_id));
-		userIsOwner = await getUserIsOwner(poll?.group_id);
-
 		darkModeStore.subscribe((dark) => (darkMode = dark));
 	});
 
@@ -120,9 +123,8 @@
 </script>
 
 <div
-	class="bg-white dark:bg-darkobject dark:text-darkmodeText poll-thumbnail-shadow rounded-md p-4"
+	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded-sm p-4"
 	class:poll-thumbnail-shadow={!darkMode}
-	class:poll-thumbnail-shadow-dark={darkMode}
 	id={`poll-thumbnail-${poll?.id.toString()}`}
 >
 	<div class="mx-2">
@@ -133,15 +135,16 @@
 					class:hover:underline={poll?.group_joined}
 					class="text-black dark:text-darkmodeText flex items-center"
 				>
-					<img
-						class="h-6 w-6 mr-1 rounded-full break-all"
+					<!-- <img
+						class="h-6 w-6 mr-1 rounded-full break-word"
 						src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
-						on:error={(e) => onThumbnailError(e, DefaultBanner)}
 						alt={'Poll Thumbnail'}
-					/>
-					<span class="break-all text-sm text-gray-700">{poll?.group_name}</span>
+						on:error={(e) => onThumbnailError(e, DefaultBanner)}
+					/> -->
+					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
+						>{poll?.group_name}</span
+					>
 				</a>
-
 				<div class="flex gap-4 items-baseline">
 					<NotificationOptions
 						type="poll"
@@ -152,8 +155,8 @@
 						Class="text-black dark:text-darkmodeText"
 						ClassOpen="right-0"
 					/>
-					{#if isAdmin || poll?.pinned}
-						<button class:cursor-pointer={isAdmin} on:click={pinPoll}>
+					{#if $groupUserStore?.is_admin || poll?.pinned}
+						<button class:cursor-pointer={$groupUserStore?.is_admin} on:click={pinPoll}>
 							<Fa
 								size="1.2x"
 								icon={faThumbtack}
@@ -165,12 +168,11 @@
 
 					<MultipleChoices
 						bind:choicesOpen
-						labels={phase === 'result' ||
-						phase === 'prediction_vote' ||
-						!poll?.allow_fast_forward ||
-						(!permissions?.poll_fast_forward && !userIsOwner)
-							? [$_('Delete Poll'), $_('Report Poll')]
-							: [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]}
+						labels={!(phase === 'result' || phase === 'prediction_vote') ||
+						(poll?.allow_fast_forward &&
+							(permissions?.poll_fast_forward || $groupUserStore?.is_admin))
+							? [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]
+							: [$_('Delete Poll'), $_('Report Poll')]}
 						functions={[
 							() => ((deletePollModalShow = true), (choicesOpen = false)),
 							() => ((reportPollModalShow = true), (choicesOpen = false)),
@@ -182,15 +184,36 @@
 			</div>
 			<a
 				class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"
-				href={`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}`}
+				href={`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+					$page.params.groupId ? 'group' : 'home'
+				}`}
 			>
 				{poll?.title}
 			</a>
 		{:else}
+			{#if poll?.created_by?.user}
+				<div class="text-black dark:text-darkmodeText flex items-center">
+					<!-- <img
+						class="h-6 w-6 mr-1 rounded-full break-word"
+						src={`${
+							poll?.created_by?.user?.profile_image
+								? env.PUBLIC_API_URL + poll?.created_by?.user?.profile_image
+								: DefaultPFP
+						}`}
+						alt={'poll Thumbnail'}
+						on:error={(e) => onThumbnailError(e, DefaultPFP)}
+					/> -->
+					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
+						>{poll?.created_by?.user?.username}</span
+					>
+				</div>
+			{/if}
 			<div class="flex justify-between items-start gap-4 pb-2">
 				<a
 					class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"
-					href={`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}`}
+					href={`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+						$page.params.groupId ? 'group' : 'home'
+					}`}
 				>
 					{poll?.title}
 				</a>
@@ -205,8 +228,8 @@
 						Class="text-black dark:text-darkmodeText"
 						ClassOpen="right-0"
 					/>
-					{#if isAdmin || poll?.pinned}
-						<button class:cursor-pointer={isAdmin} on:click={pinPoll}>
+					{#if $groupUserStore?.is_admin || poll?.pinned}
+						<button class:cursor-pointer={$groupUserStore?.is_admin} on:click={pinPoll}>
 							<Fa
 								size="1.2x"
 								icon={faThumbtack}
@@ -218,12 +241,11 @@
 
 					<MultipleChoices
 						bind:choicesOpen
-						labels={phase === 'result' ||
-						phase === 'prediction_vote' ||
-						!poll?.allow_fast_forward ||
-						(!permissions?.poll_fast_forward && !userIsOwner)
-							? [$_('Delete Poll'), $_('Report Poll')]
-							: [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]}
+						labels={!(phase === 'result' || phase === 'prediction_vote') &&
+						poll?.allow_fast_forward &&
+						(permissions?.poll_fast_forward || $groupUserStore?.is_admin)
+							? [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]
+							: [$_('Delete Poll'), $_('Report Poll')]}
 						functions={[
 							() => ((deletePollModalShow = true), (choicesOpen = false)),
 							() => ((reportPollModalShow = true), (choicesOpen = false)),
@@ -243,13 +265,23 @@
 				<HeaderIcon Class="!p-0 !cursor-default" icon={faCalendarAlt} text={'Date Poll'} />
 			{/if}
 
+			{#if poll.public}
+				<HeaderIcon Class="!p-0 !cursor-default" icon={faGlobe} text={'Public Poll'} />
+			{:else}
+				<HeaderIcon Class="!p-0 !cursor-default" icon={faLock} text={'Private Poll'} />
+			{/if}
+
 			<!-- Fast Forward Icon -->
 			{#if poll?.allow_fast_forward}
 				<HeaderIcon Class="!p-0 !cursor-default" icon={faAnglesRight} text={'Fast Forward'} />
 			{:else}
 				<div
+					role="button"
+					tabindex="0"
 					on:mouseover={() => (hovering = true)}
 					on:mouseleave={() => (hovering = false)}
+					on:focus={() => (hovering = true)}
+					on:blur={() => (hovering = false)}
 					class="relative w-4 h-4"
 				>
 					<Fa style="position:absolute" icon={faAnglesRight} />
@@ -268,9 +300,16 @@
 				class="flex gap-1 items-center text-black dark:text-darkmodeText hover:bg-gray-100 dark:hover:bg-slate-500 cursor-pointer text-sm"
 				href={onHoverGroup
 					? '/groups/1'
-					: `/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?section=comments`}
+					: `/groups/${poll?.group_id || $page.params.groupId}/polls/${
+							poll?.id
+					  }?section=comments&source=${$page.params.groupId ? 'group' : 'home'}`}
 			>
-				<img class="w-5" src={ChatIcon} alt="open chat" />
+				<img
+					class="w-5"
+					src={ChatIcon}
+					alt="open chat"
+					style:filter={darkMode ? 'brightness(0) invert(1)' : 'none'}
+				/>
 				<span class="inline">{poll?.total_comments}</span>
 			</a>
 
@@ -317,7 +356,6 @@
 							Class="w-[47%] "
 							classInner="w-full !p-2 bg-white p-4 border-gray-400 rounded-md border"
 							onInput={() => (voting = true)}
-							defaultValue=""
 						/>
 						{#if voting}
 							<Button type="submit" Class="w-[47%]" buttonStyle="primary-light"
@@ -336,7 +374,9 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=0`
+									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=0&source=${
+										$page.params.groupId ? 'group' : 'home'
+									}`
 								)}>{$_('See Proposals')} ({poll?.total_proposals})</Button
 						>
 						<Button
@@ -344,7 +384,9 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=1`
+									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=1&source=${
+										$page.params.groupId ? 'group' : 'home'
+									}`
 								)}>{$_('Create a Proposal')}</Button
 						>
 					</div>
@@ -357,7 +399,9 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=0`
+									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=0&source=${
+										$page.params.groupId ? 'group' : 'home'
+									}`
 								)}>{$_('See Consequences')} ({poll?.total_predictions})</Button
 						>
 						<Button
@@ -365,7 +409,9 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=1`
+									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=1&source=${
+										$page.params.groupId ? 'group' : 'home'
+									}`
 								)}>{$_('Create a Consequence')}</Button
 						>
 					</div>
@@ -377,7 +423,9 @@
 							Class="w-[47%]"
 							buttonStyle="primary-light"
 							onClick={() =>
-								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}`)}
+								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+										$page.params.groupId ? 'group' : 'home'
+									}`)}
 							>{$_('Manage Probabilities')}</Button
 						>
 						<!-- <p class="w-[47%]">{$_('You have not betted yet!')}</p> -->
@@ -390,7 +438,9 @@
 							Class="w-[47%]"
 							buttonStyle="primary-light"
 							onClick={() =>
-								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}`)}
+								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+										$page.params.groupId ? 'group' : 'home'
+									}`)}
 							>{$_('Manage votes')}</Button
 						>
 						<!-- <p class="w-[47%]">{$_('You have not voted yet!')}</p> -->
@@ -403,7 +453,9 @@
 							Class="w-[47%]"
 							buttonStyle="primary-light"
 							onClick={() =>
-								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}`)}
+								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+										$page.params.groupId ? 'group' : 'home'
+									}`)}
 							>{$_('View results & evaluate consequences')}</Button
 						>
 					</div>
@@ -413,10 +465,18 @@
 	</div>
 </div>
 
-<DeletePollModal bind:deletePollModalShow pollId={poll?.id} />
-<ReportPollModal bind:reportPollModalShow pollId={$page.params.pollId} />
+<DeletePostModal bind:deleteModalShow={deletePollModalShow} postId={poll?.id} />
 
-<Poppup bind:poppup />
+<ReportPostModal
+	post_type="poll"
+	group_id={poll.group_id}
+	post_id={poll.id}
+	post_title={poll.title}
+	post_description={poll.description}
+	bind:reportModalShow={reportPollModalShow}
+/>
+
+ 
 
 <style>
 	.poll-thumbnail-shadow {
@@ -424,6 +484,6 @@
 	}
 
 	.poll-thumbnail-shadow-dark {
-		box-shadow: 0 0 10px rgb(24, 24, 24);
+		box-shadow: 0 0 5px rgb(77, 77, 77);
 	}
 </style>

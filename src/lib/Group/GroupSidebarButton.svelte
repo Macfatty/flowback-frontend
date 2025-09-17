@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { faBarsProgress, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
-	import { faPoll } from '@fortawesome/free-solid-svg-icons/faPoll';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
 
@@ -30,6 +29,7 @@
 		${disabled ? 'opacity-50 saturate-0 cursor-not-allowed' : ''}
 	`}
 		aria-disabled={disabled}
+		id={`${text.replace(' ', '-').replace(' ', '-').toLowerCase()}-sidebar-button`}
 	>
 		<div class="w-6 flex items-center justify-center">
 			<Fa icon={faIcon} class="w-6 h-6" />

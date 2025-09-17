@@ -1,13 +1,7 @@
 <script lang="ts">
 	import GroupHeader from '$lib/Group/GroupHeader.svelte';
-	import PollThumbnails from '$lib/Poll/PollThumbnails.svelte';
 	import Members from '$lib/Group/Members.svelte';
-	import {
-		userIsDelegateStore,
-		type GroupDetails,
-		type SelectablePage
-	} from '$lib/Group/interface';
-	import Delegation from '$lib/Group/Delegation/Delegation.svelte';
+	import { type GroupDetails, type SelectablePage } from '$lib/Group/interface';
 	import GroupSidebar from '$lib/Group/GroupSidebar.svelte';
 	import Layout from '$lib/Generic/Layout.svelte';
 	import Documents from '$lib/Group/Documents/Documents.svelte';
@@ -18,17 +12,14 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { page } from '$app/stores';
 	import Tags from '$lib/Group/Tags.svelte';
-	import Kanban from '$lib/Group/Kanban/KanbanBoard.svelte';
 	import { _ } from 'svelte-i18n';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import Permissions from '$lib/Group/Permissions/Permissions.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import Schedule from '$lib/Schedule/Schedule.svelte';
-	import Threads from '$lib/Poll/Threads.svelte';
-	import { pushState } from '$app/navigation';
 	import WorkGroups from '$lib/Group/WorkingGroups/WorkGroups.svelte';
 	import { env } from '$env/dynamic/public';
 	import PollThreadThumbnails from '$lib/Poll/PollThreadThumbnails.svelte';
+	import Threads from '$lib/Thread/Threads.svelte';
 
 	let selectedPage: SelectablePage = 'flow';
 	let group: GroupDetails = {
@@ -51,16 +42,7 @@
 	onMount(() => {
 		loading = true;
 		getGroupInfo();
-		setUserGroupInfo();
 	});
-
-	const setUserGroupInfo = async () => {
-		const { res, json } = await fetchRequest('GET', `group/${$page.params.groupId}/users?id=${1}`);
-		if (!res.ok) return;
-		userIsDelegateStore.set(json.results[0].delegate);
-		statusMessageFormatter(res, json);
-		loading = false;
-	};
 
 	const getGroupInfo = async () => {
 		//TODO: detail is outdated
@@ -72,7 +54,6 @@
 		// console.log(group, 'GROUPPP');
 		memberCount = json.member_count;
 		userInGroup = !(json.detail && json.detail[0] === 'User is not in group');
-		statusMessageFormatter(res, json);
 	};
 
 	let hasMounted = false;
@@ -97,18 +78,22 @@
 </script>
 
 <svelte:head>
-	<title>{group.name} at {selectedPage}</title>
+	{#if group.name && selectedPage}
+		<title>{group.name} at {selectedPage}</title>
+	{:else}
+		<title>Flowback</title>
+	{/if}
 </svelte:head>
 
 <Layout>
 	{#if loading}
-		<Loader bind:loading Class="mt-24" />
+		<Loader bind:loading />
 	{:else if userInGroup}
 		<div class="flex flex-col items-center">
 			<GroupHeader bind:selectedPage {group} {memberCount} />
-			<div class="flex justify-center mt-4 md:mt-10 lg:mt-16 gap-4 md:gap-10 lg:gap-16 mb-16">
+			<div class="flex justify-center gap-6 mt-12">
 				<main
-					class={`w-full sm:w-[400px] md:w-[500px] lg:w-[760px] xl:w-[1000px] 
+					class={`w-[70vw] max-w-[800px] 
 				`}
 				>
 					<!-- Here is where the different pages on a group are selected and switched around with, such as "Flow" page which is 
@@ -117,17 +102,10 @@
 					<!-- TODO: Simplify this, look in SideBarButtons file to simplify more there -->
 
 					{#if selectedPage === 'flow'}
-						<!-- <PollThumbnails
-							infoToGet={env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? 'user' : 'group'}
-							Class={`w-full mx-auto my-0`}
-						/> -->
-
 						<PollThreadThumbnails
 							infoToGet={env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? 'user' : 'group'}
 							Class={`w-full mx-auto my-0`}
 						/>
-					{:else if selectedPage === 'delegation'}
-						<Delegation />
 					{:else if selectedPage === 'members'}
 						<Members />
 					{:else if selectedPage === 'documents'}
@@ -141,7 +119,7 @@
 					{:else if selectedPage === 'tags'}
 						<Tags />
 					{:else if selectedPage === 'kanban'}
-						<Kanban type="group" />
+						<!-- <KanbanBoard type="group" /> -->
 					{:else if selectedPage === 'perms'}
 						<Permissions />
 					{:else if selectedPage === 'schedule'}
@@ -158,7 +136,7 @@
 		</div>
 	{:else}
 		<div class="bg-white w-full text-center md:w-1/2 shadow rounded p-16 mt-8">
-			{$_('You are not a memeber of this group!')}
+			{$_('You are not a member of this group!')}
 		</div>
 	{/if}
 </Layout>

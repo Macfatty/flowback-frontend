@@ -8,22 +8,22 @@
 	import FileUploads from '$lib/Generic/FileUploads.svelte';
 	import type { GroupUser } from '../interface';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import type { poppup } from '$lib/Generic/Poppup';
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
-	import type { kanban } from './Kanban';
+	import type { Filter, kanban } from './Kanban';
 	import Select from '$lib/Generic/Select.svelte';
-	import { onMount } from 'svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import { userStore } from '$lib/User/interfaces';
 
-	export let type: 'home' | 'group',
+	export let filter: Filter,
 		open: boolean = false,
 		users: GroupUser[] = [],
 		kanbanEntries: kanban[],
 		workGroups: WorkGroup[] = [],
 		lane: number = 1,
-		groupId;
+		groupId: string,
+		getKanbanEntries: () => Promise<void>;
 
-	//TODO: the interfaces "kanban" and "KanbanEntry" are equivalent, make them use the same interface.
 	let description = '',
 		title = '',
 		assignee: number | null = null,
@@ -35,27 +35,17 @@
 			'Low priority',
 			'Very low priority'
 		],
-		priority: undefined | number = 3,
-		end_date: null | string = new Date().toISOString().slice(0, 16),
+		priority: number | undefined = 3,
+		end_date: string | null = new Date().toISOString().slice(0, 16),
 		loading = false,
-		poppup: poppup,
-		images: File[],
-		workGroup: number;
+		 
+		images: File[] = [],
+		workGroup: number | undefined;
 
 	const createKanbanEntry = async () => {
 		loading = true;
 
 		const formData = new FormData();
-
-		if (end_date) {
-			const _endDate = new Date(end_date || '');
-			const isoDate = _endDate?.toISOString();
-			const dateString = `${isoDate?.slice(
-				0,
-				10
-			)}T${_endDate?.getHours()}:${_endDate?.getMinutes()}`;
-			if (_endDate) formData.append('end_date', dateString);
-		}
 
 		formData.append('title', title);
 		formData.append('tag', lane.toString());
@@ -65,17 +55,28 @@
 		if (priority) formData.append('priority', priority.toString());
 		if (workGroup) formData.append('work_group_id', workGroup.toString());
 
+		if (end_date) {
+			const _endDate = new Date(end_date);
+			const isoDate = _endDate.toISOString();
+			const dateString = `${isoDate.slice(0, 10)}T${_endDate.getHours()}:${_endDate.getMinutes()}`;
+			formData.append('end_date', dateString);
+			console.log('Sending end_date:', dateString); // Debug log
+		} else {
+			formData.append('end_date', '');
+		}
+
 		description = description.trim() === '' ? $_('No description provided') : description;
+
 		formData.append('description', description);
-		// if (description !== '') formData.append('description', description);
-		if (images)
+		if (images) {
 			images.forEach((image) => {
 				formData.append('attachments', image);
 			});
+		}
 
 		const { res, json } = await fetchRequest(
 			'POST',
-			type === 'group' ? `group/${groupId}/kanban/entry/create` : 'user/kanban/entry/create',
+			filter.type === 'group' ? `group/${groupId}/kanban/entry/create` : 'user/kanban/entry/create',
 			formData,
 			true,
 			false
@@ -84,22 +85,16 @@
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to create kanban task', success: false };
+			ErrorHandlerStore.set({ message: 'Failed to create kanban task', success: false });
 			return;
 		}
 
-		console.log(
-			Number(localStorage.getItem('userId')),
-			localStorage.getItem('pfp-link') || '',
-			localStorage.getItem('userName') || ''
-		);
-
-		poppup = { message: 'Successfully created kanban task', success: true };
+		ErrorHandlerStore.set({ message: 'Successfully created kanban task', success: true });
 
 		const userAssigned = users.find((user) => assignee === user.user.id);
 		const _assignee = assignee
 			? {
-					id: assignee || 0,
+					id: assignee,
 					profile_image: userAssigned?.user.profile_image || '',
 					username: userAssigned?.user.username || ''
 			  }
@@ -107,36 +102,43 @@
 
 		kanbanEntries.push({
 			assignee: _assignee,
-			group: { id: 0, image: '', name: '' },
+			// group: { id: 0, image: '', name: '' },
 			description,
 			lane,
 			title,
 			id: json,
 			created_by: {
-				id: Number(localStorage.getItem('userId')),
+				id: $userStore?.id || -1,
 				profile_image: localStorage.getItem('pfp-link') || '',
-				username: localStorage.getItem('userName') || ''
+				username:  $userStore?.username || '',
 			},
 			origin_id: 1,
-			origin_type: type === 'group' ? 'group' : 'user',
+			origin_type: filter.type === 'group' ? 'group' : 'user',
 			group_name: '',
 			priority,
-			end_date: end_date?.toString() || null,
-			//@ts-ignore
-			work_group: {
-				id: workGroup,
-				name: workGroups.find((group) => group.id === workGroup)?.name
-			},
+			end_date: end_date || null,
+			work_group: workGroup
+				? {
+						id: workGroup,
+						name: workGroups.find((group) => group.id === workGroup)?.name || ''
+				  }
+				: undefined,
 			attachments: []
 		});
 
 		kanbanEntries = kanbanEntries;
 		open = false;
 
+		// Reset form
 		description = '';
 		title = '';
+		assignee = null;
 		priority = 3;
-		end_date = null;
+		end_date = new Date().toISOString().slice(0, 16); // Reset to current date/time
+		images = [];
+		workGroup = workGroups[0]?.id || undefined;
+
+		await getKanbanEntries();
 	};
 
 	const handleChangeAssignee = (e: any) => {
@@ -153,23 +155,36 @@
 	};
 </script>
 
-<!-- Creating a new Kanban or Editing a new Kanban -->
-<Modal bind:open Class="min-w-[400px] max-w-[500px]" onSubmit={createKanbanEntry}>
-	<!-- <div slot="header">{$_('Create Task')}</div> -->
+<Modal
+	bind:open
+	Class="min-w-[400px] max-w-[500px]"
+	onSubmit={createKanbanEntry}
+	id="create-kanban-entry-modal"
+>
+	<div slot="header">
+		<h2 class="text-xl">{$_('Create Kanban Entry')}</h2>
+	</div>
 	<div slot="body">
 		<Loader bind:loading>
 			<div on:submit|preventDefault={createKanbanEntry}>
 				<div class="pb-2">
-					<TextInput Class="text-md" required label="Title" bind:value={title} />
+					<TextInput
+						id="create-kanban-text"
+						Class="text-md"
+						required
+						label="Title"
+						bind:value={title}
+					/>
 				</div>
 				<TextArea
+					id={`create-kanban-textarea`}
 					Class="text-md"
 					inputClass="whitespace-pre-wrap"
 					label="Description"
 					bind:value={description}
 				/>
 
-				{#if type === 'group' && workGroups?.length > 0}
+				{#if filter.type === 'group' && workGroups?.length > 0}
 					<div class="text-left">
 						<label class="block text-md" for="work-group">
 							{$_('Work Group')}
@@ -180,7 +195,6 @@
 							labels={workGroups.map((group) => elipsis(group.name))}
 							values={workGroups.map((group) => group.id)}
 							bind:value={workGroup}
-							defaultValue=""
 							onInput={handleChangeWorkGroup}
 							innerLabel={$_('No workgroup assigned')}
 							innerLabelOn={true}
@@ -197,6 +211,7 @@
 						   {end_date ? 'text-black' : 'text-gray-500'}"
 						type="datetime-local"
 						id="end_date"
+						placeholder={$_('No end date set')}
 					/>
 				</div>
 				<div class="text-left">
@@ -214,7 +229,7 @@
 					/>
 					<div class="flex gap-6 justify-between mt-2 flex-col" />
 
-					{#if type === 'group'}
+					{#if filter.type === 'group'}
 						<div class="text-left">
 							<label class="block text-md" for="handle-change-assignee">
 								{$_('Assignee')}
@@ -225,7 +240,6 @@
 								labels={users.map((user) => user.user.username)}
 								values={users.map((user) => user.user.id)}
 								bind:value={assignee}
-								defaultValue=""
 								onInput={handleChangeAssignee}
 								innerLabel={$_('No assignee')}
 								innerLabelOn={true}
@@ -236,17 +250,19 @@
 						<span class="block text-md">
 							{$_('Attachments')}
 						</span>
-						<FileUploads bind:files={images} />
+						<FileUploads bind:files={images} disableCropping/>
 					</div>
 				</div>
 			</div>
 		</Loader>
 	</div>
 
-	<div slot="footer" class="flex justify-between gap-4 mx-6 mb-2">
-		<Button Class="w-full py-1" buttonStyle="primary-light" type="submit">{$_('Confirm')}</Button>
-		<Button Class="w-full py-1" buttonStyle="warning-light" onClick={() => (open = false)}
+	<div slot="footer" class="flex">
+		<Button Class="py-1 flex-1" buttonStyle="primary" type="submit">{$_('Confirm')}</Button>
+		<Button Class="py-1 flex-1" buttonStyle="warning" onClick={() => (open = false)}
 			>{$_('kanbanEntry.Cancel', { default: 'Cancel' })}</Button
 		>
 	</div>
 </Modal>
+
+ 

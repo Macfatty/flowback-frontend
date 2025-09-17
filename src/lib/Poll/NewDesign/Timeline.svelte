@@ -5,14 +5,8 @@
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
 	import { dateLabels as dateLabelsTextPoll, dateLabelsDatePoll } from '../functions';
-	import {
-		faCircle,
-		faCircleCheck,
-		faCircleExclamation,
-		faMinus
-	} from '@fortawesome/free-solid-svg-icons';
+	import { faCircle, faCircleCheck, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 	import type { Phase, poll } from '../interface';
-	import { onMount } from 'svelte';
 
 	export let enableDetails = false,
 		displayTimeline = true,
@@ -91,7 +85,7 @@
 
 <div class={`relative flex flex-col items-center ${Class}`}>
 	{#if displayTimelinePhase}
-		<div class="text-center">
+		<div class="text-center dark:text-darkmodeText">
 			<span class="font-semibold text-primary dark:text-secondary">
 				{$_('Current')}:
 			</span>
@@ -103,7 +97,8 @@
 
 	{#if displayTimeline}
 		<div
-			class={`mt-4 flex gap-20 justify-between rounded-md 
+			class={`mt-4 flex justify-between rounded-md 
+			${horizontal ? '' : 'gap-20'}
 			${horizontal ? 'flex-row' : 'flex-col'}
 			${horizontal ? 'w-full' : 'w-4'}
 			${horizontal ? 'max-h-4' : 'max-w-4'}

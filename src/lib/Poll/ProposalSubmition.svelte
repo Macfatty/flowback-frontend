@@ -6,16 +6,14 @@
 	import { page } from '$app/stores';
 	import { _ } from 'svelte-i18n';
 	import Loader from '$lib/Generic/Loader.svelte';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
 	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
 	import type { poll, proposal } from './interface';
 	import { getProposals } from '$lib/Generic/AI';
 	import { proposalCreate as proposalCreateBlockchain } from '$lib/Blockchain_v1_Ethereum/javascript/pollsBlockchain';
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
 	import FileUploads from '$lib/Generic/FileUploads.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import { userStore } from '$lib/User/interfaces';
 	import { env } from '$env/dynamic/public';
 
 	export let proposals: proposal[] = [],
@@ -25,8 +23,8 @@
 	let title: string,
 		description: string,
 		loading = false,
-		status: StatusMessageInfo,
-		poppup: poppup = { message: '', success: true, show: true },
+  
+		 
 		blockchain = true,
 		images: File[];
 
@@ -60,9 +58,12 @@
 		const id = json;
 		statusMessageFormatter(res, id);
 
-		if (!res.ok) return;
-
-		poppup = { message: 'Successfully added proposal', success: true };
+		if (!res.ok)  {			
+			ErrorHandlerStore.set({ message: 'Failed to add proposal', success: false });
+			return;
+		}
+				
+		ErrorHandlerStore.set({ message: 'Successfully added proposal', success: true });
 
 		let created_by = await getUserInfo();
 		loading = false;
@@ -73,7 +74,8 @@
 			id,
 			created_by,
 			poll: Number($page.params.pollId),
-			attachments: []
+			attachments: [],
+			score:0
 		});
 		proposals = proposals;
 
@@ -85,10 +87,10 @@
 	const getUserInfo = async () => {
 		const { res, json } = await fetchRequest(
 			'GET',
-			`group/${$page.params.groupId}/users?user_id=${Number(localStorage.getItem('userId'))}`
+			`group/${$page.params.groupId}/users?user_id=${$userStore?.id || -1}`
 		);
 		if (!res.ok) return;
-		return json.results[0].id;
+		return json?.results[0].id;
 	};
 
 	const cancelSubmission = () => {
@@ -113,12 +115,13 @@
 				bind:value={description}
 			/>
 		</div>
+		
 		{#if env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE'}
 			<RadioButtons bind:Yes={blockchain} label="Push to Blockchain" />
 		{/if}
 
-		<FileUploads bind:files={images} />
-		<StatusMessage bind:status />
+		<FileUploads Class="mt-4" bind:files={images} />
+		 
 
 		<Button
 			buttonStyle="primary-light"
@@ -147,4 +150,4 @@
 	</Loader>
 </form>
 
-<Poppup bind:poppup />
+ 

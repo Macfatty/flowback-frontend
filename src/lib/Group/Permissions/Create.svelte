@@ -6,8 +6,7 @@
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { _ } from 'svelte-i18n';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { onMount } from 'svelte';
 	import type { Permissions } from './interface';
 
@@ -70,7 +69,6 @@
 	];
 
 	let loading = false,
-		poppup: poppup,
 		roleName = '',
 		rolePerms = new Array(perms.length).fill(false);
 
@@ -104,10 +102,11 @@
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Could not create role', success: false };
+			ErrorHandlerStore.set({ message: 'Could not create role', success: false });
 			return;
 		}
-		poppup = { message: 'Successfully created role', success: true };
+
+		ErrorHandlerStore.set({ message: 'Successfully created role', success: true });
 	};
 
 	const permissionUpdate = async () => {
@@ -141,15 +140,17 @@
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Could not update role', success: false };
+			ErrorHandlerStore.set({ message: 'Could not update role', success: false });
 			return;
 		}
-		poppup = { message: 'Successfully updated role', success: true };
+
+		ErrorHandlerStore.set({ message: 'Successfully updated role', success: true });
 		selectedRole = undefined;
 		selectedPage = 'list';
 	};
 
 	const transformIntoRolePermType = (permissions: Permissions) => {
+		//TODO: Turn this into a for loop?
 		roleName = permissions.role_name;
 		rolePerms[0] = permissions.invite_user;
 		rolePerms[1] = permissions.create_poll;
@@ -200,5 +201,3 @@
 		</form>
 	</div>
 </Loader>
-
-<Poppup bind:poppup />

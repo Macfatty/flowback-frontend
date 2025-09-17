@@ -14,10 +14,9 @@
 	import TransactionFilter from '$lib/Ledger/TransactionFilter.svelte';
 	import formatDate from '$lib/Ledger/formatDate';
 	import { generateAndDownloadHTML } from '$lib/Ledger/HTML';
-	import type { User } from '$lib/User/interfaces';
-	import Pagination from '$lib/Generic/Pagination.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import Pagination from '$lib/Generic/Pagination.svelte';	
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import { userStore } from '$lib/User/interfaces';
 
 	let loading: boolean = true,
 		transactions: TransactionType[] = [],
@@ -37,7 +36,7 @@
 		accounts: Account[] = [],
 		next: string,
 		prev: string,
-		poppup: poppup,
+		 
 		totalBalance = 0,
 		filter: Filter = {
 			account_ids: [],
@@ -45,13 +44,11 @@
 			date_before: null,
 			description: null
 		},
-		user: User,
 		limit = 20;
 
 	onMount(async () => {
 		loading = true;
 		await getAccounts();
-		await getUserInfo();
 		await getTransactions();
 		await calculateTotalBalance();
 		loading = false;
@@ -69,16 +66,16 @@
 		// loading = true;
 		const { res, json } = await fetchRequest('GET', `ledger/account/list`);
 		if (!res.ok) {
-			poppup = { message: 'Something went wrong', success: false };
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		}
 		// loading = false;
-		accounts = json.results;
+		accounts = json?.results;
 		setAccountFilter(json);
 	};
 
 	const setAccountFilter = (json: any) => {
-		filter.account_ids = json.results.map((result: Account) => {
+		filter.account_ids = json?.results.map((result: Account) => {
 			return { id: result.id, checked: false, label: result.account_name };
 		});
 	};
@@ -106,15 +103,15 @@
 		const { res, json } = await fetchRequest('GET', api);
 
 		if (!res.ok) {
-			poppup = { message: 'Something went wrong', success: false };
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		}
 
 		next = json.next;
 		prev = json.previous;
 
-		transactions = json.results.filter(
-			(transaction: Transaction) => transaction.account.created_by.id === user?.id
+		transactions = json?.results.filter(
+			(transaction: Transaction) => transaction.account.created_by.id === $userStore?.id
 		);
 		// loading = false;
 	};
@@ -137,11 +134,11 @@
 
 		if (!res.ok) {
 			show_poppup = true;
-			poppup = { message: 'Something went wrong', success: false };
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		} else {
 			show_poppup = true;
-			poppup = { message: 'Successfully created transaction', success: true };
+			ErrorHandlerStore.set({ message: 'Successfully created transaction', success: true });
 		}
 
 		transactions.push({
@@ -181,11 +178,11 @@
 
 		if (!res.ok) {
 			show_poppup = true;
-			poppup = { message: 'Something went wrong', success: false };
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		} else {
-			show_poppup = true;
-			poppup = { message: 'Successfully created account', success: true };
+			show_poppup = true;			
+			ErrorHandlerStore.set({ message: 'Successfully created account', success: true });
 			accounts.push({
 				account_name,
 				account_number,
@@ -203,12 +200,12 @@
 		loading = false;
 
 		if (!res.ok) {
-			show_poppup = true;
-			poppup = { message: 'Something went wrong', success: false };
+			show_poppup = true;			
+			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 			return;
 		} else {
 			show_poppup = true;
-			poppup = { message: 'Successfully deleted account', success: true };
+			ErrorHandlerStore.set({ message: 'Successfully deleted account', success: true });
 			accounts = accounts.filter((account) => account_id !== account.id);
 		}
 	};
@@ -267,12 +264,6 @@
     `;
 	};
 
-	export const getUserInfo = async () => {
-		const { res, json } = await fetchRequest('GET', `users?id=${localStorage.getItem('userId')}`);
-		if (!res.ok) return {};
-		user = json.results[0];
-	};
-
 	$: transactions && calculateTotalBalance();
 </script>
 
@@ -305,7 +296,7 @@
 									//@ts-ignore
 									acc.checked = false;
 								});
-							}}>{$_("Clear Filter")}</Button
+							}}>{$_('Clear Filter')}</Button
 						>
 					{/if}
 					<TransactionFilter bind:filter {handleSearch} bind:accounts />
@@ -318,15 +309,16 @@
 							newTransaction = true;
 						}}>Add Transaction</Button
 					>
-					<Button onClick={() => (show_account = true)}>{$_("Create Account")}</Button>
-					<Button onClick={() => (showDeleteAccount = true)}>{$_("Delete An Account")}</Button>
+					<Button onClick={() => (show_account = true)}>{$_('Create Account')}</Button>
+					<Button onClick={() => (showDeleteAccount = true)}>{$_('Delete An Account')}</Button>
 					<Button onClick={() => generateAndDownloadHTML(generateHTMLContent)}
-						>{$_("Generate Printable HTML file")} {filter.date_before !== null || filter.date_after !== null
+						>{$_('Generate Printable HTML file')}
+						{filter.date_before !== null || filter.date_after !== null
 							? 'between selected dates'
 							: ''}</Button
 					>
 					<div class="mt-4 flex gap-2">
-						{$_("Show on page")}:
+						{$_('Show on page')}:
 						<Select
 							labels={['20', '50', '100', 'All']}
 							values={[20, 50, 100, 10000]}
@@ -472,7 +464,7 @@
 	</div>
 </Modal>
 
-<Poppup bind:poppup />
+ 
 
 <Modal bind:open={showDeleteAccount}>
 	<div slot="body">
@@ -493,6 +485,6 @@
 		</div>
 	</div>
 	<div slot="footer">
-		<Button onClick={deleteAccount} buttonStyle="warning">{$_("Delete Account")}</Button>
+		<Button onClick={deleteAccount} buttonStyle="warning">{$_('Delete Account')}</Button>
 	</div>
 </Modal>

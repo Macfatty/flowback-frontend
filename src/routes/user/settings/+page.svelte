@@ -6,16 +6,19 @@
 		faBell,
 		faPieChart,
 		faArrowLeft,
-		faInfo
+		faInfo,
+		faWarning
 	} from '@fortawesome/free-solid-svg-icons';
 	import { _ } from 'svelte-i18n';
 	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { onMount } from 'svelte';
 	import { configToReadable } from '$lib/utils/configToReadable';
-	import { env } from '$env/dynamic/public';
+	import type { report } from '$lib/Generic/interfaces';
+	import { linkToPost } from '$lib/Generic/GenericFunctions';
+	import Modal from '$lib/Generic/Modal.svelte';
 
-	let selectedPage: 'profile' | 'notifications' | 'poll-process' | 'info' = 'profile',
+	let selectedPage: 'profile' | 'notifications' | 'poll-process' | 'info' | 'reports' = 'profile',
 		optionsDesign =
 			'flex items-center gap-3 w-full cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-2 transition-all',
 		userConfig = {
@@ -47,9 +50,19 @@
 				voting: false
 			}
 		},
-		version = '0.1.29',
+		reports: report[] = [],
 		serverConfig: any = {},
-		reports: any = [];
+		version = '21',
+		open = false,
+		selectedRepport: report = {
+			description: '',
+			group_id: 0,
+			post_id: 0,
+			post_type: 'poll',
+			post_title: '',
+			post_description: '',
+			title: ''
+		};
 
 	const userUpdate = async () => {
 		const { res, json } = await fetchRequest('POST', 'user/update', {
@@ -68,9 +81,7 @@
 	const getUserConfig = async () => {
 		const { res, json } = await fetchRequest('GET', 'user');
 
-		if (res.ok && json.user_config) {
-			userConfig = JSON.parse(json.user_config);
-		}
+		if (res.ok && json.user_config) userConfig = JSON.parse(json.user_config);
 	};
 
 	const saveUserConfig = async () => {
@@ -84,7 +95,7 @@
 
 		if (!res.ok) return;
 
-		reports = json.results;
+		reports = json?.results;
 	};
 
 	const a = (key1: string, key2: string = '') => {
@@ -100,13 +111,6 @@
 		getUserConfig();
 		getServerConfig();
 		getReportList();
-
-		console.log(
-			env.PUBLIC_API_URL,
-			env.PUBLIC_DISABLE_GROUP_CREATION,
-			env.PUBLIC_FLOWBACK_AI_MODULE,
-			env.PUBLIC_LOGO
-		);
 	});
 </script>
 
@@ -126,13 +130,14 @@
 					{$_('Settings')}
 				</h1>
 			</div>
-			<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
+
+			<!-- TODO: Put an #each here for iterating over the buttons for cleanup and easier maintainability -->
 			<div class="mt-4">
 				<button
 					on:click={() => (selectedPage = 'profile')}
 					class={`${optionsDesign}`}
 					class:bg-gray-100={selectedPage === 'profile'}
+					class:dark:bg-gray-800={selectedPage === 'profile'}
 					class:border-l-2={selectedPage === 'profile'}
 					class:border-primary={selectedPage === 'profile'}
 				>
@@ -142,6 +147,7 @@
 					on:click={() => (selectedPage = 'notifications')}
 					class={`${optionsDesign}`}
 					class:bg-gray-100={selectedPage === 'notifications'}
+					class:dark:bg-gray-800={selectedPage === 'notifications'}
 					class:border-l-2={selectedPage === 'notifications'}
 					class:border-primary={selectedPage === 'notifications'}
 				>
@@ -151,6 +157,7 @@
 					on:click={() => (selectedPage = 'poll-process')}
 					class={`${optionsDesign}`}
 					class:bg-gray-100={selectedPage === 'poll-process'}
+					class:dark:bg-gray-800={selectedPage === 'poll-process'}
 					class:border-l-2={selectedPage === 'poll-process'}
 					class:border-primary={selectedPage === 'poll-process'}
 				>
@@ -160,10 +167,21 @@
 					on:click={() => (selectedPage = 'info')}
 					class={`${optionsDesign}`}
 					class:bg-gray-100={selectedPage === 'info'}
+					class:dark:bg-gray-800={selectedPage === 'info'}
 					class:border-l-2={selectedPage === 'info'}
 					class:border-primary={selectedPage === 'info'}
 				>
 					<Fa icon={faInfo} class="w-5 h-5" />{$_('Information')}
+				</button>
+				<button
+					on:click={() => (selectedPage = 'reports')}
+					class={`${optionsDesign}`}
+					class:bg-gray-100={selectedPage === 'reports'}
+					class:dark:bg-gray-800={selectedPage === 'reports'}
+					class:border-l-2={selectedPage === 'reports'}
+					class:border-primary={selectedPage === 'reports'}
+				>
+					<Fa icon={faWarning} class="w-5 h-5" />{$_('Reports')}
 				</button>
 			</div>
 		</div>
@@ -256,17 +274,45 @@
 						{/each}
 					</ul>
 				{:else if selectedPage === 'info'}
-					<div>Version: {version}</div>
-					<!-- <div>Version Backend: {serverConfig.GIT_HASH}</div> -->
-
-					{#each reports as reports}
-						<div class="flex justify-between p-2 rounded hover:bg-gray-100">
-							<span>{reports?.title}</span>
-							<span>{reports?.description}</span>
-						</div>
-					{/each}
+					<div>{$_('Frontend version')}: {version}</div>
+					<div>{$_('Backend version')}: {serverConfig.VERSION}</div>
+				{:else if selectedPage === 'reports'}
+					{#if reports?.length > 0}
+						<span>{$_('Reports')}</span>
+						{#each reports as report}
+							<button
+								on:click={() => {
+									selectedRepport = report;
+									open = true;
+								}}
+								class="flex justify-between p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+							>
+								<span>{report?.title}</span>
+								<span>{report?.description}</span>
+							</button>
+						{/each}
+					{:else}
+						{$_('There are currently no reports')}
+					{/if}
 				{/if}
 			</ul>
 		</div>
 	</div>
 </Layout>
+
+<Modal bind:open>
+	<div slot="header">{$_('Report Details')}</div>
+	<div slot="body" class="flex flex-col gap-2">
+		<span>{selectedRepport?.post_title}</span>
+		<span>{selectedRepport?.post_description}</span>
+		<span>{selectedRepport?.title}</span>
+		<span>{selectedRepport?.description}</span>
+		<a
+			href={`${linkToPost(
+				selectedRepport.post_id,
+				selectedRepport.group_id,
+				selectedRepport.post_type
+			)}`}>goto</a
+		>
+	</div>
+</Modal>

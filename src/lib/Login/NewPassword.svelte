@@ -2,15 +2,13 @@
 	import { goto } from '$app/navigation';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	export let email: string;
 	let password: string;
 	let verification_code: string;
-	let status: StatusMessageInfo;
+
 
 	const registerAccount = async () => {
 		const { res, json } = await fetchRequest(
@@ -26,13 +24,13 @@
 				{ username: email, password },
 				false
 			);
-			status = { message: 'Successfully registered', success: true };
+			ErrorHandlerStore.set({ message: 'Successfully registered', success: true });
 
 			if (res.ok) {
 				localStorage.setItem('token', json.token);
 				goto('/home');
 			}
-		} else status = { message: 'Could not register', success: false };
+		} else ErrorHandlerStore.set({ message: 'Could not register', success: false });
 	};
 </script>
 
@@ -40,6 +38,6 @@
 	<TextInput label={'New Password'} bind:value={password} type="password" required />
 	<TextInput label={'Verification Code'} bind:value={verification_code} required />
 
-	<StatusMessage bind:status />
+	 
 	<Button type="submit" label="Send" />
 </form>

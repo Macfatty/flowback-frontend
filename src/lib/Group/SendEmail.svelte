@@ -4,14 +4,13 @@
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { page } from '$app/stores';
 	import TextArea from '$lib/Generic/TextArea.svelte';
-	import StatusMessage from '$lib/Generic/StatusMessage.svelte';
-	import type { StatusMessageInfo } from '$lib/Generic/GenericFunctions';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import {env} from "$env/dynamic/public";
 
 	let title: string,
 		message: string,
-		status: StatusMessageInfo,
+  
 		loading = false;
 
 	const sendEmail = async () => {
@@ -22,10 +21,10 @@
 		});
 
 		if (res.ok) {
-			status = { message: 'Skickade Mail', success: true };
+			ErrorHandlerStore.set({ message: 'Skickade Mail', success: true });
 		} else if (json.detail) {
 			const errorMessage = json.detail[Object.keys(json.detail)[0]][0];
-			if (errorMessage) status = { message: errorMessage, success: false };
+			if (errorMessage) ErrorHandlerStore.set({ message: errorMessage, success: false });
 		}
 		loading = false;
 	};
@@ -37,7 +36,7 @@
 			<h1 class="text-3xl">Send Mail</h1>
 			<TextInput required label="Title" bind:value={title} />
 			<TextArea required label="Message" bind:value={message} />
-			<StatusMessage bind:status />
+			 
 			<div class="font-bold">
 				Warning: This will send a mail to {env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE'
 					? 'everyone'

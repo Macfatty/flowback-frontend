@@ -1,24 +1,24 @@
-<!-- TODO: Split up this file into two files, one about functionality and the other about visuals -->
-
+<!-- Schedule.svelte -->
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 	import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft';
 	import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import type { scheduledEvent } from '$lib/Schedule/interface';
+	import type { Filter, scheduledEvent } from '$lib/Schedule/interface';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
-	import Button from '$lib/Generic/Button.svelte';
 	import { page } from '$app/stores';
-	import { addDateOffset, setDateToMidnight } from '$lib/Generic/Dates';
 	import Day from './Day.svelte';
+	import type { Group } from '$lib/Group/interface';
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import Button from '$lib/Generic/Button.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import { elipsis } from '$lib/Generic/GenericFunctions';
+	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
 	import Event from './Event.svelte';
 	import Select from '$lib/Generic/Select.svelte';
-	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
 
 	export let Class = '',
 		type: 'user' | 'group';
@@ -38,8 +38,7 @@
 		'Dec'
 	];
 
-	const currentDate = new Date(),
-		groupId = $page.params.groupId || '1';
+	const currentDate = new Date();
 
 	let month = currentDate.getMonth(),
 		year = currentDate.getFullYear(),
@@ -49,8 +48,36 @@
 		showCreateScheduleEvent = false,
 		showEditScheduleEvent = false,
 		showEvent = false,
-		//A fix due to class struggle
 		selectedDatePosition = '0-0',
+		selectedEvent: scheduledEvent = {
+			title: '',
+			description: '',
+			start_date: '',
+			end_date: '',
+			meeting_link: '',
+			event_id: 0,
+			schedule_origin_name: type,
+			created_by: 0,
+			work_group: undefined,
+			assignee_ids: [],
+			reminders: [],
+			repeat_frequency: 0
+		},
+		deleteSelection = () => {},
+		advancedTimeSettingsDates: Date[] = [],
+		notActivated = true,
+		groupList: Group[] = [],
+		workGroups: WorkGroup[] = [],
+		workGroupFilter: number[] = [],
+		filter: Filter = {
+			assignee: null,
+			group: $page.url.searchParams.get('groupId'),
+			search: '',
+			type: 'group',
+			workgroup: null
+		};
+
+	const resetSelectedEvent = () => {
 		selectedEvent = {
 			title: '',
 			description: '',
@@ -59,14 +86,13 @@
 			meeting_link: '',
 			event_id: 0,
 			schedule_origin_name: type,
-			created_by: 0
-		},
-		deleteSelection = () => {},
-		advancedTimeSettingsDates: Date[] = [],
-		notActivated = true,
-		workGroups: WorkGroup[] = [],
-		workGroupFilter: number[] = [],
-		poppup: poppup;
+			created_by: 0,
+			work_group: undefined,
+			assignee_ids: [],
+			reminders: [],
+			repeat_frequency: 0
+		};
+	};
 
 	const updateMonth = () => {
 		if (month === 12) {
@@ -82,9 +108,8 @@
 	const setUpScheduledPolls = async () => {
 		let _api = '';
 
-		if (type === 'group') {
-			_api = `group/${groupId}/schedule?limit=1000&`;
-
+		if (filter.type === 'group') {
+			_api = `group/${filter.group}/schedule?limit=1000&`;
 			if (workGroupFilter.length > 0) {
 				_api += 'work_group_ids=';
 				workGroupFilter.forEach((groupId) => {
@@ -96,27 +121,35 @@
 		}
 
 		const { json, res } = await fetchRequest('GET', _api);
-		events = json.results;
-		console.log(events, 'events');
+		events = json?.results?.sort((a: scheduledEvent, b: scheduledEvent) => {
+			const dateA = new Date(a.start_date).getTime();
+			const dateB = new Date(b.start_date).getTime();
+			return dateA === dateB ? a.event_id - b.event_id : dateA - dateB;
+		});
 	};
 
-	const scheduleEventCreate = async () => {
+	const scheduleEventCreate = async (newEvent: scheduledEvent) => {
 		loading = true;
 
 		let API = '';
-		let payload: any = selectedEvent;
+		let payload: any = {
+			title: newEvent.title,
+			start_date: newEvent.start_date,
+			end_date: newEvent.end_date
+		};
 
-		if (selectedEvent.meeting_link !== '') payload['meeting_link'] = selectedEvent.meeting_link;
-		if (selectedEvent.meeting_link === '' || selectedEvent.meeting_link === undefined)
-			delete payload.meeting_link;
+		if (newEvent.description) payload.description = newEvent.description;
+		if (newEvent.meeting_link) payload.meeting_link = newEvent.meeting_link;
+		if (newEvent.repeat_frequency) payload.repeat_frequency = newEvent.repeat_frequency;
+		if (newEvent.reminders) payload.reminders = [newEvent.reminders];
 
-		if (selectedEvent.description === '' || selectedEvent.description === null)
-			delete payload.description;
-
-		if (type === 'user') {
-			API += `user/schedule/create`;
-		} else if (type === 'group') {
-			API += `group/${$page.params.groupId || 1}/schedule/create`;
+		if (filter.type === 'group') {
+			payload.group_id = parseInt(filter.group ?? '1');
+			if (newEvent.work_group) payload.work_group_id = newEvent.work_group.id;
+			if (newEvent.assignee_ids?.length) payload.assignee_ids = newEvent.assignee_ids;
+			API = `group/${filter.group}/schedule/create`;
+		} else {
+			API = `user/schedule/create`;
 		}
 
 		const { res, json } = await fetchRequest('POST', API, payload);
@@ -124,145 +157,159 @@
 		loading = false;
 
 		if (!res.ok) {
-			console.log(res, json);
-			poppup = { message: 'Failed to create event', success: false };
+			ErrorHandlerStore.set({ message: 'Failed to create event', success: false });
 			return;
 		}
 
-		poppup = { message: 'Successfully created event', success: true };
+		ErrorHandlerStore.set({ message: 'Successfully created event', success: true });
 		showCreateScheduleEvent = false;
-		events.push(selectedEvent);
-		events = events;
 
-		selectedEvent = {
-			title: '',
-			description: '',
-			start_date: '',
-			end_date: '',
-			meeting_link: '',
-			event_id: 0,
-			schedule_origin_name: 'group' as const,
-			created_by: 0
+		const createdEvent: scheduledEvent = {
+			...newEvent,
+			event_id: json.event_id,
+			schedule_origin_name: type,
+			created_by: newEvent.created_by || 0,
+			work_group: newEvent.work_group || undefined,
+			assignee_ids: newEvent.assignee_ids || [],
+			reminders: newEvent.reminders || [],
+			repeat_frequency: newEvent.repeat_frequency || 0
 		};
+
+		events = [...events, createdEvent]?.sort((a, b) => {
+			const dateA = new Date(a.start_date).getTime();
+			const dateB = new Date(b.start_date).getTime();
+			return dateA === dateB ? a.event_id - b.event_id : dateA - dateB;
+		});
+
+		await setUpScheduledPolls();
+		resetSelectedEvent();
 	};
 
-	const scheduleEventUpdate = async () => {
-		// Clone the current event so we keep its values
-		const updatedEvent = { ...selectedEvent };
-
-		// Build payload from the cloned object
-		let payload: any = { ...updatedEvent };
-
-		if (updatedEvent.meeting_link !== '') payload['meeting_link'] = updatedEvent.meeting_link;
-
-		if (updatedEvent.description === '' || updatedEvent.description === null)
-			delete payload.description;
-
-		if (updatedEvent.meeting_link === '' || updatedEvent.meeting_link === null)
-			delete payload.meeting_link;
-
+	const scheduleEventUpdate = async (updatedEvent: scheduledEvent) => {
 		loading = true;
+
+		let payload: any = {
+			event_id: updatedEvent.event_id,
+			title: updatedEvent.title,
+			start_date: updatedEvent.start_date,
+			end_date: updatedEvent.end_date
+		};
+
+		if (updatedEvent.description) payload.description = updatedEvent.description;
+		if (updatedEvent.meeting_link) payload.meeting_link = updatedEvent.meeting_link;
+		if (updatedEvent.repeat_frequency) payload.repeat_frequency = updatedEvent.repeat_frequency;
+		if (updatedEvent.reminders) payload.reminders = updatedEvent.reminders;
+
+		if (type === 'group') {
+			if (updatedEvent.work_group) payload.work_group = updatedEvent.work_group;
+			if (updatedEvent.assignee_ids?.length) payload.assignee_ids = updatedEvent.assignee_ids;
+		}
 
 		const { res, json } = await fetchRequest(
 			'POST',
-			type === 'group' ? `group/${groupId}/schedule/update` : `user/schedule/update`,
+			type === 'group' ? `group/${filter.group}/schedule/update` : `user/schedule/update`,
 			payload
 		);
 
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to edit event', success: false };
+			ErrorHandlerStore.set({ message: 'Failed to update event', success: false });
 			return;
 		}
 
-		// Update the events array using the temporary updatedEvent
-		events = events.map((event) =>
-			event.event_id === updatedEvent.event_id ? updatedEvent : event
-		);
+		ErrorHandlerStore.set({ message: 'Event successfully updated', success: true });
 
-		// Now reset selectedEvent
-		selectedEvent = {
-			title: '',
-			description: '',
-			start_date: '',
-			end_date: '',
-			meeting_link: '',
-			event_id: 0,
-			schedule_origin_name: 'group' as const,
-			created_by: 0
-		};
+		events = events
+			.map((event) => (event.event_id === updatedEvent.event_id ? { ...updatedEvent } : event))
+			?.sort((a, b) => {
+				const dateA = new Date(a.start_date).getTime();
+				const dateB = new Date(b.start_date).getTime();
+				return dateA === dateB ? a.event_id - b.event_id : dateA - dateB;
+			});
+		resetSelectedEvent();
+		showEditScheduleEvent = false;
+
+		await setUpScheduledPolls();
 	};
 
-	showEditScheduleEvent = false;
-
-	const scheduleEventDelete = async () => {
-		console.log(groupId, 'GRUPP');
+	const scheduleEventDelete = async (eventId: number) => {
+		loading = true;
 
 		const { res, json } = await fetchRequest(
 			'POST',
-			type === 'group' ? `group/${groupId}/schedule/delete` : `user/schedule/delete`,
-			{
-				event_id: selectedEvent.event_id
-			}
+			type === 'group' ? `group/${filter.group}/schedule/delete` : `user/schedule/delete`,
+			{ event_id: eventId }
 		);
 
 		loading = false;
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to delete event', success: false };
+			ErrorHandlerStore.set({ message: 'Failed to delete event', success: false });
 			return;
 		}
 
-		poppup = { message: 'Event deleted', success: true };
-		events = events.filter((event) => event.event_id !== selectedEvent.event_id);
-		events = events;
-
+		ErrorHandlerStore.set({ message: 'Event deleted', success: true });
+		events = events.filter((event) => event.event_id !== eventId);
 		showEvent = false;
+		resetSelectedEvent();
+
+		await setUpScheduledPolls();
 	};
 
-	const handleShowEvent = (event: scheduledEvent) => {
-		selectedEvent = {
-			...event,
-			description: event.description || '',
-			meeting_link: event.meeting_link || ''
-		};
-		showEvent = true;
+	const getGroups = async () => {
+		loading = true;
+		let urlFilter = '&joined=true';
+
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/list?limit=${groupMembersLimit}` + urlFilter
+		);
+
+		if (!res.ok) return;
+
+		groupList = json?.results
+			.reverse()
+			?.sort((group1: any, group2: any) => +group2.joined - +group1.joined);
+
+		loading = false;
 	};
 
 	const getWorkGroupList = async () => {
-		const { res, json } = await fetchRequest('GET', `group/${groupId}/list`);
-
+		const { res, json } = await fetchRequest('GET', `group/${filter.group}/list`);
 		if (!res.ok) return;
-		workGroups = json.results.filter((group: WorkGroup) => group.joined === true);
+		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
 	};
 
-	const onFilterWorkGroup = (workGroup: WorkGroup) => {
-		//Once backend is fixed, use the commented out version
-
-		if (workGroupFilter.find((groupId) => groupId === workGroup.id))
-			workGroupFilter = workGroupFilter.filter((groupId) => groupId !== workGroup.id);
-		else workGroupFilter.push(workGroup.id);
-
-		// workGroupFilter = [workGroup.id];
-
-		workGroupFilter = workGroupFilter;
-
-		setUpScheduledPolls();
+	const formatDateToLocalTime = (date: Date): string => {
+		try {
+			const offset = date.setTime(date.getTime() - date.getTimezoneOffset() * 60000);
+			return new Date(offset).toISOString();
+		} catch (error) {
+			console.error('Error converting date to string:', error);
+			return date.toString();
+		}
 	};
 
 	onMount(async () => {
-		//Prevents "document not found" error
 		deleteSelection = () => {
 			document.getElementById(selectedDatePosition)?.classList.remove('selected');
 		};
 
+		const groupId = $page.url.searchParams.get('groupId') ?? null;
+		if (groupId) {
+			filter.group = groupId;
+			filter.type = 'group';
+		} else {
+			filter.type = 'home';
+		}
+
 		setUpScheduledPolls();
+		getGroups();
 		getWorkGroupList();
 	});
 
 	$: month && year && deleteSelection();
-
 	$: month && updateMonth();
 
 	$: if (showCreateScheduleEvent && notActivated) {
@@ -270,20 +317,46 @@
 	}
 
 	$: if (!showCreateScheduleEvent) notActivated = true;
+
+	$: filter && setUpScheduledPolls();
+	$: filter.group && getWorkGroupList();
 </script>
 
 <div class={`flex bg-white dark:bg-darkobject dark:text-darkmodeText ${Class}`}>
 	<div class="border-right-2 border-black p-4 pl-6 pr-6 w-1/4">
-		{$_('Scheduled events for')}
-		{selectedDate.getDate()}/{selectedDate.getMonth() + 1}
-		{selectedDate.getFullYear()}
+		<Button
+			onClick={() => history.back()}
+			Class="p-3 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90"
+		>
+			<div class="text-gray-800 dark:text-gray-200">
+				<Fa icon={faArrowLeft} />
+			</div>
+		</Button>
+
+		<div>
+			{$_('Scheduled events for')}
+			{selectedDate.getDate()}/{selectedDate.getMonth() + 1}
+			{selectedDate.getFullYear()}
+		</div>
 
 		<div class="pt-3 pb-3">
 			<button
 				on:click={() => {
+					const dateStr = selectedDate.toISOString().slice(0, 16);
+					selectedEvent = {
+						start_date: dateStr,
+						end_date: dateStr,
+						title: '',
+						description: '',
+						meeting_link: '',
+						event_id: 0,
+						schedule_origin_name: 'group',
+						created_by: 0,
+						work_group: undefined
+					};
 					showCreateScheduleEvent = true;
-					selectedEvent.start_date = selectedDate.toISOString().slice(0, 16);
-					selectedEvent.end_date = selectedDate.toISOString().slice(0, 16);
+					selectedEvent.start_date = formatDateToLocalTime(selectedDate).slice(0, 16);
+					selectedEvent.end_date = formatDateToLocalTime(selectedDate).slice(0, 16);
 				}}
 			>
 				<Fa
@@ -292,57 +365,6 @@
 					icon={faPlus}
 				/>
 			</button>
-			<!-- {#each events.filter((poll) => setDateToMidnight(new Date(poll.start_date)) <= selectedDate && new Date(poll.end_date) >= selectedDate) as event}
-				<div class="mt-2">
-					<a
-						class="hover:underline cursor-pointer text-xs text-center color-black dark:text-darkmodeText text-black flex justify-between items-center gap-3"
-						class:hover:bg-gray-300={event.poll}
-						href={event.poll ? `groups/${event.group_id}/polls/${event.poll}` : location.href}
-						on:click={() => {
-							handleShowEvent(event);
-						}}
-					>
-						<span class="break-all">{event.title}</span>
-						<span
-							>{(() => {
-								const startDate = new Date(event.start_date);
-								const endDate = new Date(event.end_date);
-
-								if (selectedDate.getDate() === startDate.getDate())
-									return `${$_('Start:')} ${
-										startDate.getHours() > 9 ? startDate.getHours() : '0' + startDate.getHours()
-									}:${
-										startDate.getMinutes() > 9
-											? startDate.getMinutes()
-											: '0' + startDate.getMinutes()
-									}`;
-								else if (selectedDate.getDate() === endDate.getDate())
-									return `${$_('Ends:')} ${
-										endDate.getHours() > 9 ? endDate.getHours() : '0' + endDate.getHours()
-									}:${
-										endDate.getMinutes() > 9 ? endDate.getMinutes() : '0' + endDate.getMinutes()
-									}`;
-								else return 'whole day';
-							})()}</span
-						>
-					</a>
-				</div>
-			{/each} -->
-		</div>
-
-		<div class="flex flex-col">
-			{#each workGroups as workGroup}
-				<div class="flex items-center gap-2">
-					<input
-						type="checkbox"
-						id={workGroup.id.toString()}
-						value={workGroupFilter.find((_workGroup) => _workGroup === workGroup.id)}
-						on:input={() => onFilterWorkGroup(workGroup)}
-					/>
-
-					<span>{workGroup.name}</span>
-				</div>
-			{/each}
 		</div>
 	</div>
 
@@ -356,7 +378,6 @@
 					<Fa icon={faChevronLeft} size="1.5x" />
 				</button>
 				<div class="text-xl text-center w-16">{year}</div>
-
 				<button
 					class="cursor-pointer rounded-full hover:bg-gray-200 dark:hover:bg-slate-700"
 					on:click={() => year++}
@@ -373,13 +394,57 @@
 					<Fa icon={faChevronLeft} size="1.5x" />
 				</button>
 				<div class="w-10 text-center">{$_(months[month])}</div>
-
 				<button
 					class="cursor-pointer rounded-full hover:bg-gray-200 dark:hover:bg-slate-700"
 					on:click={() => month++}
 				>
 					<Fa icon={faChevronRight} size="1.5x" />
 				</button>
+			</div>
+
+			<div class="flex items-center justify-center gap-16 ml-6 px-2">
+				<Select
+					labels={['home', 'group']}
+					values={['home', 'group']}
+					bind:value={filter.type}
+					label="Select Type"
+					disableFirstChoice
+				/>
+
+				{#if filter.type === 'group'}
+					<div class="flex flex-row flex-1 gap-2 items-center">
+						<label class="block text-md whitespace-nowrap" for="group">
+							{$_('Group')}:
+						</label>
+						<select
+							style="width:100%"
+							class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
+							on:change={(e) => (filter.group = e?.target?.value)}
+							id="group"
+						>
+							<option value={null}>{$_('None')}</option>
+							{#each groupList as group}
+								<option value={group.id}>{elipsis(group.name)}</option>
+							{/each}
+						</select>
+					</div>
+					<div class="flex flex-row flex-1 gap-2 items-center">
+						<label class="block text-md whitespace-nowrap" for="work-group">
+							{$_('Work Group')}:
+						</label>
+						<select
+							style="width:100%"
+							class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
+							on:change={(e) => (filter.workgroup = e?.target?.value)}
+							id="work-group"
+						>
+							<option value="">{$_('All')}</option>
+							{#each workGroups as group}
+								<option value={group.id}>{elipsis(group.name)}</option>
+							{/each}
+						</select>
+					</div>
+				{/if}
 			</div>
 		</div>
 		<div id="calendar" class="calendar w-full">
@@ -408,27 +473,22 @@
 	bind:showCreateScheduleEvent
 	bind:showEditScheduleEvent
 	bind:selectedEvent
-	bind:workGroups
 	bind:showEvent
-	bind:loading
 	bind:type
+	bind:events
+	bind:workGroups
 	{scheduleEventCreate}
 	scheduleEventEdit={scheduleEventUpdate}
 	{scheduleEventDelete}
+	{month}
+	{year}
 />
-
-<Poppup bind:poppup />
 
 <style>
 	.calendar {
 		display: grid;
 		grid-template-columns: repeat(7, 1fr);
 		grid-template-rows: repeat(6, 1fr);
-		/* 100vh to stretch the calendar to the bottom, then we subtract 2 rem from the padding
-    on the header, 40px from the height of each symbol/the logo on the header, and 
-    28 px for the controlls on the calendar. This scuffed solution might need to be improved 
-	
-	TODO: Don't do this*/
 		height: calc(100vh - 2rem - 40px - 28px);
 	}
 </style>

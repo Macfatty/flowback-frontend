@@ -1,14 +1,8 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { Comment, proposal } from '$lib/Poll/interface';
-	import {
-		faArrowDown,
-		faArrowUp,
-		faReply,
-		faThumbsUp,
-		faThumbsDown,
-		faSpinner
-	} from '@fortawesome/free-solid-svg-icons';
+	import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
+	import { userStore } from '$lib/User/interfaces';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
 	import { page } from '$app/stores';
@@ -16,28 +10,26 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { onMount } from 'svelte';
 	import { env } from '$env/dynamic/public';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import Modal from '$lib/Generic/Modal.svelte';
-	import Button from '$lib/Generic/Button.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import TextArea from '$lib/Generic/TextArea.svelte';
+	import { commentsStore } from './commentStore';
 
 	export let comment: Comment,
-		comments: Comment[],
 		api: 'poll' | 'thread' | 'delegate-history',
 		proposals: proposal[] = [], // Give it a default empty array
 		delegate_pool_id: number | null = null;
 
 	let userUpVote: -1 | 0 | 1 = 0,
-		poppup: poppup,
+		comments: Comment[],
+		 
 		isVoting = false,
 		ReportCommentModalShow = false,
 		reportTitle: string,
 		reportDescription: string,
 		images: File[] = [];
 
-	let reporting = false;
 	const commentDelete = async (id: number) => {
 		let _api = `group/`;
 
@@ -50,16 +42,15 @@
 		const { res, json } = await fetchRequest('POST', _api);
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to delete comment', success: false };
+			ErrorHandlerStore.set({ message: 'Failed to delete comment', success: false });
 			return;
 		}
 
-		comments.map((comment) => {
+		comments?.map((comment) => {
 			if (comment.id !== id) return comment;
 
 			comment.message = '[Deleted]';
 			comment.active = false;
-			console.log(comment, 'COMMNEt');
 			return comment;
 		});
 		comments = comments;
@@ -70,13 +61,13 @@
 
 		let data = {
 			title: reportTitle,
-			description: reportDescription,
+			description: reportDescription
 		};
 
 		const { res, json } = await fetchRequest('POST', _api, data);
 
 		if (!res.ok) {
-			poppup = { message: 'Failed to report comment', success: false };
+			ErrorHandlerStore.set({ message: 'Failed to report comment', success: false });
 			return;
 		}
 
@@ -85,6 +76,7 @@
 
 			// comment.message = '[Reported]';
 			comment.active = false;
+			comment.being_reported = true;
 			return comment;
 		});
 		comments = comments;
@@ -112,7 +104,7 @@
 		const { res, json } = await fetchRequest('POST', _api, vote);
 
 		if (!res.ok) {
-			poppup = { message: 'Comment vote failed', success: false };
+			ErrorHandlerStore.set({ message: 'Comment vote failed', success: false });
 			return;
 		}
 
@@ -140,18 +132,11 @@
 		if (comment.user_vote === null || comment.user_vote === undefined) userUpVote = 0;
 		else if (comment.user_vote === true) userUpVote = 1;
 		else if (comment.user_vote === false) userUpVote = -1;
+
+		commentsStore.subscribe((store) => {
+			comments = store.allComments;
+		});
 	});
-
-	$: if (images) {
-		console.log(images, 'IMAGES');
-		console.log(comment.attachments, 'comment.attachments');
-	}
-
-	console.log(
-		comment.author_id,
-		Number(localStorage.getItem('userId')),
-		Number(localStorage.getItem('userId')) !== comment.author_id
-	);
 </script>
 
 {#if comment.being_edited}
@@ -170,7 +155,7 @@
 	<!-- class:bg-gray-100={comment.reply_depth % 2 === 1} -->
 	<!-- class:dark:bg-darkbackground={comment.reply_depth % 2 === 1} -->
 	<div
-		class={`p-3 text-sm border-0 border-l-gray-400`}
+		class={`p-3 text-sm border-0 border-l-gray-400  dark:text-darkmodeText`}
 		style:margin-left={`${comment.reply_depth * 20}px`}
 		class:border-l-2={comment.reply_depth > 0}
 	>
@@ -212,6 +197,9 @@
 							class="text-primary dark:text-secondary hover:underline"
 						>
 							{$_('View File')}
+
+							<!-- {typeof attachment?.file}
+							{attachment?.file} -->
 						</a>
 					{:else}
 						<img
@@ -224,6 +212,8 @@
 							})()}
 							alt="Attachment to the comment"
 						/>
+						<!-- {typeof attachment?.file}
+						{attachment?.file} -->
 					{/if}
 				{/each}
 			</div>
@@ -231,7 +221,6 @@
 
 		{#if comment.active}
 			<div class="flex gap-6 text-xs pl-14">
-				<!-- {#if comment.author_id !== Number(localStorage.getItem('userId'))} -->
 				<div class="flex items-center gap-2">
 					<button
 						class:text-primary={comment.user_vote === true}
@@ -258,16 +247,16 @@
 					<!-- <Fa icon={faReply} /> -->
 					{$_('Reply')}
 				</button>
-				{#if Number(localStorage.getItem('userId')) !== comment.author_id}
+				{#if ($userStore?.id || -1) !== comment.author_id}
 					<button
 						class="flex items-center gap-1 hover:text-red-900 text-gray-600 dark:text-darkmodeText dark:hover:text-red-400 cursor-pointer transition-colors hover:underline"
-						on:click={() => (comment.being_reported = true)}
+						on:click={() => (ReportCommentModalShow = true)}
 					>
 						{$_('Report')}
 					</button>
 				{/if}
 
-				{#if Number(localStorage.getItem('userId')) === comment.author_id}
+				{#if Number($userStore?.id || -1) === comment.author_id}
 					<button
 						class="hover:text-gray-900 text-gray-600 dark:text-darkmodeText hover:dark:text-gray-400 cursor-pointer transition-colors hover:underline"
 						on:click={() => commentDelete(comment.id)}
@@ -285,28 +274,28 @@
 					</button>
 				{/if}
 
-				<Modal bind:open={ReportCommentModalShow}>
+				<Modal
+					bind:open={ReportCommentModalShow}
+					buttons={[
+						{
+							label: 'Report',
+							type: 'warning',
+							onClick: () => commentReport(comment.id, comment.message || '')
+						},
+						{ label: 'Cancel', type: 'secondary', onClick: () => (ReportCommentModalShow = false) }
+					]}
+				>
 					<div slot="header">{$_('Report Comment')}</div>
 					<div class="flex flex-col gap-3" slot="body">
 						<TextInput inputClass="bg-white" required label="Title" bind:value={reportTitle} />
-						<TextArea label="Description" required bind:value={reportDescription} inputClass="whitespace-pre-wrap" />
-					</div>
-					<div slot="footer">
-						<div class="flex justify-center gap-2">
-							<Button onClick={() => commentReport(comment.id, comment.message || '')} Class="w-1/2" buttonStyle="warning">{$_('Report')}</Button>
-							<Button
-								onClick={() => (ReportCommentModalShow = false)}
-								Class="bg-gray-400 w-1/2">{$_('Cancel')}</Button
-							>
-						</div>
+						<TextArea
+							label="Description"
+							required
+							bind:value={reportDescription}
+							inputClass="whitespace-pre-wrap"
+						/>
 					</div>
 				</Modal>
-				<button
-					class="flex items-center gap-1 hover:text-gray-900 text-gray-600 dark:text-darkmodeText dark:hover:text-gray-400 cursor-pointer transition-colors hover:underline"
-					on:click={() => (ReportCommentModalShow = true)}
-				>
-					{$_('Report')}
-				</button>
 			</div>
 		{/if}
 	</div>
@@ -324,4 +313,4 @@
 	/>
 {/if}
 
-<Poppup bind:poppup />
+ 

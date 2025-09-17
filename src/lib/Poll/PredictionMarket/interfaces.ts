@@ -1,3 +1,7 @@
+import { writable } from 'svelte/store';
+
+export const predictionStatementsStore = writable<PredictionStatement[]>([]);
+
 export interface PredictionStatement {
 	title: string;
 	blockchain_id: number | null;

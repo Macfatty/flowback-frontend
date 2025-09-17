@@ -4,15 +4,14 @@
 	import { onMount } from 'svelte';
 	import Tag from '$lib/Group/Tag.svelte';
 	import Button from '$lib/Generic/Button.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import { _ } from 'svelte-i18n';
 	import Question from '$lib/Generic/Question.svelte';
 
 	let tags: Tag[] = [],
 		selectedTag: number | null = null,
-		poppup: poppup;
+		errorHandler: any;
 
 	const getTags = async () => {
 		const { json, res } = await fetchRequest(
@@ -20,37 +19,16 @@
 			`group/${$page.params.groupId}/tags?limit=1000&active=true`
 		);
 		if (!res.ok) {
-			poppup = { message: 'Could not get tags', success: false };
+			ErrorHandlerStore.set({ message: 'Could not get tags', success: false });
 			return;
 		}
 
-		tags = json.results;
+		tags = json?.results;
 	};
 
-	// const vote = async (tagId: number) => {
-	// 	const { json, res } = await fetchRequest(
-	// 		'POST',
-	// 		`group/poll/${$page.params.pollId}/area/update`,
-	// 		{
-	// 			tag: tagId,
-	// 			vote: true
-	// 		}
-	// 	);
-
-	// 	if (!res.ok) {
-	// 		poppup = { message: 'Could not vote on tag', success: false };
-	// 		return;
-	// 	}
-
-	// 	if (tagId === selectedTag) selectedTag = null;
-	// 	else selectedTag = tagId;
-
-	// 	poppup = { message: 'Successfully voted for area', success: true };
-	// };
-
 	const submitVote = async () => {
-		if (selectedTag === null) {
-			poppup = { message: 'Please select a tag before submitting.', success: false };
+		if (selectedTag === null) {			
+			ErrorHandlerStore.set({ message: 'Please select a tag before submitting.', success: false });
 			return;
 		}
 
@@ -59,12 +37,12 @@
 			vote: true
 		});
 
-		if (!res.ok) {
-			poppup = { message: 'Could not vote on tag', success: false };
+		if (!res.ok) {			
+			ErrorHandlerStore.set({ message: 'Could not vote on tag', success: false });
 			return;
 		}
 
-		poppup = { message: 'Successfully voted for area', success: true };
+		ErrorHandlerStore.set({ message: 'Successfully voted for area', success: true });
 	};
 
 	const getAreaVote = async () => {
@@ -72,7 +50,7 @@
 
 		if (!res.ok) return;
 
-		let selectedTagName = json.results.find((tag: Tag) => tag.user_vote === true)?.tags[0].tag_name;
+		let selectedTagName = json?.results.find((tag: Tag) => tag.user_vote === true)?.tags[0].tag_name;
 
 		if (selectedTagName) {
 			selectedTag = tags.find((tag) => tag.name === selectedTagName)?.id;
@@ -80,8 +58,8 @@
 	};
 
 	const cancelVote = () => {
-		selectedTag = null;
-		poppup = { message: 'Vote cancelled', success: true };
+		selectedTag = null;		
+		ErrorHandlerStore.set({ message: 'Vote cancelled', success: true });
 	};
 
 	onMount(async () => {
@@ -90,15 +68,7 @@
 	});
 </script>
 
-<!-- <RadioButtons2
-		name="vote"
-		labels={tags.map((tag) => tag.name)}
-		values={tags.map((tag) => tag.id)}
-		ClassInner="block"
-		bind:value={selectedTag}
-	/>  -->
-
-<div class="m-4 flex flex-col h-[800px]">
+<div class="flex flex-col h-[40vh] md:h-[50vh] lg:h-[60vh] xl:h-[70vh] max-h-[800px]">
 	<h2 class="text-xl font-semibold mb-4 text-primary dark:text-secondary">
 		{$_('Areas')} ({tags.length})
 	</h2>
@@ -145,4 +115,4 @@
 	</div>
 </div>
 
-<Poppup bind:poppup />
+ 

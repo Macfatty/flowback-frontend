@@ -13,8 +13,10 @@ export interface WorkGroup {
 	total_page: number;
 	joined: boolean
 	next: string;
-	previous: string
-	chat: 1
+	previous: string;
+	chat: 1;
+	requested_access: boolean;
+	group_id?: number;
 }
 
 export interface WorkGroupUser {

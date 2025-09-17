@@ -1,103 +1,29 @@
 <script lang="ts">
 	import HeaderIcon from './HeaderIcon.svelte';
+	import { userStore } from '$lib/User/interfaces';
 	import Logo from '$lib/assets/Logo.png';
 	import Reforum from '$lib/assets/ReforumTransparent.png';
 	import DefaultPFP from '$lib/assets/abstract-user-flat-4.svg';
 	import SideHeader from './SideHeader.svelte';
-	import { onMount } from 'svelte';
-	import { fetchRequest } from '$lib/FetchRequest';
 	import Notifications from './Notifications.svelte';
-	import { changeDarkMode } from '$lib/Generic/DarkMode';
-	import type { Group, GroupUser } from '$lib/Group/interface';
-	import { pfpStore } from '$lib/Login/stores';
+	import { darkModeStore, toggleDarkMode } from '$lib/Generic/DarkMode';
 	import {
 		faCalendarDays,
 		faCoins,
 		faHouse,
 		faMoon,
-		faUserFriends,
 		faPeopleGroup,
 		faArrowsSpin,
-		faCog,
 		faPeopleArrows,
 		faListCheck
 	} from '@fortawesome/free-solid-svg-icons';
 	import Sun from './Sun.svelte';
 	import { env } from '$env/dynamic/public';
 	import Fa from 'svelte-fa';
-	import CalendarIcon from '$lib/assets/Date_range_fill.svg';
-	import HomeIcon from '$lib/assets/Home_fill.svg';
-	import KanbanIcon from '$lib/assets/kanbanzoomedin.svg';
-	import AutomationIcon from '$lib/assets/Rectangle 4202.svg';
+	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 
 	let sideHeaderOpen = false,
-		profileImage: string | null = DefaultPFP,
-		darkMode: boolean = false,
-		isAdmin = false,
-		ledgerExists = true,
 		selectedHref = '';
-
-	onMount(() => {
-		if (location.pathname !== '/login') {
-			getProfileImage();
-			setPfP();
-		}
-
-		ensureDarkMode();
-
-		pfpStore.subscribe((s) => {
-			getProfileImage();
-		});
-	});
-
-	const setPfP = () => {
-		if (!profileImage) getProfileImage();
-		else {
-			const pfpLink = localStorage.getItem('pfp-link');
-			console.log(typeof pfpLink, 'PFPLINK');
-
-			if (pfpLink !== 'null') profileImage = pfpLink;
-			else profileImage = null;
-		}
-	};
-
-	const ensureDarkMode = () => {
-		if (localStorage.getItem('theme') === 'light') {
-			darkMode = false;
-			return;
-		} else if (localStorage.getItem('theme') === 'dark') {
-			darkMode = true;
-			return;
-		}
-
-		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			darkMode = true;
-		} else darkMode = false;
-	};
-
-	const getProfileImage = async () => {
-		const { res, json } = await fetchRequest('GET', 'user');
-
-		if (res.ok && json.profile_image) profileImage = json.profile_image;
-
-		localStorage.setItem('pfp-link', json.profile_image);
-
-		if (env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') getIsAdmin(json?.id);
-	};
-
-	const getIsAdmin = async (userId: number) => {
-		const { res, json } = await fetchRequest('GET', 'group/list');
-		if (!res.ok) return;
-		const group: Group = json?.results[0];
-		{
-			const { res, json } = await fetchRequest('GET', `group/${group.id}/users`);
-			if (!res.ok) return;
-
-			const admins = json?.results.filter((user: GroupUser) => user.is_admin === true);
-
-			if (admins.find((admin: GroupUser) => admin.user.id === userId)) isAdmin = true;
-		}
-	};
 </script>
 
 <header
@@ -117,7 +43,6 @@
 		<nav class="flex items-baseline p-6 justify-evenly md:justify-center md:gap-[10%] w-[70%]">
 			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
 				<HeaderIcon disableTextOnHover icon={faHouse} text="Home" href="home" bind:selectedHref />
-				<!-- <HeaderIcon disableTextOnHover icon={faGlobeEurope} text="Public" href="public" /> -->
 				<HeaderIcon
 					disableTextOnHover
 					icon={faPeopleGroup}
@@ -175,7 +100,7 @@
 					disableTextOnHover
 					icon={faPeopleArrows}
 					text={'Delegations'}
-					href="automate"
+					href="delegations"
 					bind:selectedHref
 				/>
 			{/if}
@@ -185,14 +110,10 @@
 			<div class="mr-5 flex gap-4 items-center">
 				<button
 					class="dark:text-darkmodeText cursor-pointer pl-2"
-					title={`Enable ${darkMode ? 'lightmode' : 'darkmode'}`}
-					on:keydown={() => {}}
-					on:click={() => {
-						changeDarkMode(darkMode ? 'light' : 'dark');
-						darkMode = !darkMode;
-					}}
+					title={`Enable ${$darkModeStore ? 'lightmode' : 'darkmode'}`}
+					on:click={toggleDarkMode}
 				>
-					{#if darkMode}
+					{#if $darkModeStore}
 						<Sun />
 					{:else}
 						<Fa icon={faMoon} size={'1.3x'} />
@@ -202,11 +123,12 @@
 			</div>
 			<button id="side-header" on:click={() => (sideHeaderOpen = !sideHeaderOpen)}>
 				<img
-					src={profileImage ? `${env.PUBLIC_API_URL}${profileImage}` : DefaultPFP}
-					class={`w-8 h-8 rounded-full cursor-pointer ${
-						sideHeaderOpen && 'border-blue-500 border-4'
-					}`}
+					src={$userStore?.profile_image
+						? `${env.PUBLIC_API_URL}${$userStore?.profile_image}`
+						: DefaultPFP}
+					class={`w-8 h-8 rounded-full cursor-pointer ${sideHeaderOpen && 'ring-blue-500 ring-4'}`}
 					alt="default pfp"
+					on:error={(e) => onThumbnailError(e, DefaultPFP)}
 				/>
 			</button>
 		</div>
@@ -220,20 +142,10 @@
 		align-self: stretch;
 	}
 
-	/* header > .inline-flex {
-		gap: calc(8% - 60px);
-	} */
-
 	header {
 		flex-wrap: wrap-reverse;
 		padding: 0rem 1rem;
 	}
-
-	/* @media only screen and (max-width: 768px) {
-		header > .inline-flex {
-			gap: calc(15% - 70px);
-		}
-	} */
 
 	@media only screen and (max-width: 500px) {
 		header > div:last-child {

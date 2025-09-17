@@ -6,8 +6,7 @@
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import type { template } from './interface';
 	import { _ } from 'svelte-i18n';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';	
 	import Fa from 'svelte-fa';
 	import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 
@@ -23,7 +22,7 @@
 
 	let name: string,
 		templates: template[] = [],
-		poppup: poppup,
+		 
 		isUpdating: boolean = false,
 		currentTemplateId: number | null = null;
 
@@ -33,11 +32,11 @@
 		const { res, json } = await fetchRequest('GET', `group/${groupId}/poll/template/list`);
 
 		if (!res.ok) {
-			poppup = { message: 'Could not get templates', success: false };
+			ErrorHandlerStore.set({ message: 'Could not get templates', success: false });
 			return;
 		}
 
-		templates = json.results;
+		templates = json?.results;
 	};
 
 	const templateCreate = async () => {
@@ -62,12 +61,12 @@
 		);
 
 		if (!res.ok) {
-			poppup = { message: 'Could not create template', success: false };
+			ErrorHandlerStore.set({ message: 'Could not create template', success: false });
 			return;
 		}
 
-		templates = [...templates, json];
-		poppup = { message: 'Successfully saved timetemplate', success: true };
+		templates = [...templates, json];		
+		ErrorHandlerStore.set({ message: 'Successfully saved timetemplate', success: true });
 		await templateList();
 
 		name = '';
@@ -79,13 +78,13 @@
 			`group/poll/template/${template_id}/delete`
 		);
 
-		if (!res.ok) {
-			poppup = { message: 'Could not delete template', success: false };
+		if (!res.ok) {			
+			ErrorHandlerStore.set({ message: 'Could not delete template', success: false })
 			return;
 		}
 
 		templates = templates.filter(template => template.id !== template_id);
-		poppup = { message: 'Template deleted successfully', success: true };
+		ErrorHandlerStore.set({ message: 'Template deleted successfully', success: true });
 	};
 
 	//TODO: Fix a better templateUpdate using Update-API instead of Delete+Create
@@ -159,4 +158,4 @@
 	{/each}
 </div>
 
-<Poppup bind:poppup />
+ 

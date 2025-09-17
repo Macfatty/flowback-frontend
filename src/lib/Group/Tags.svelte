@@ -9,9 +9,7 @@
 	import Loader from '$lib/Generic/Loader.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { getTags } from './functions';
-	import Tag from './Tag.svelte';
-	import Poppup from '$lib/Generic/Poppup.svelte';
-	import type { poppup } from '$lib/Generic/Poppup';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import Fa from 'svelte-fa';
 	import { faTrash } from '@fortawesome/free-solid-svg-icons';
 	import Toggle from '$lib/Generic/Toggle.svelte';
@@ -22,7 +20,7 @@
 		selectedTag: TagType = { active: false, id: 0, name: '', imac: 0 },
 		loading = false,
 		areYouSureModal = false,
-		poppup: poppup,
+		 
 		tagDescription: string;
 
 	onMount(async () => {
@@ -32,7 +30,7 @@
 	const getTagsLocal = async () => {
 		loading = true;
 		tags = await getTags($page.params.groupId);
-		if (!tags) poppup = { message: 'Could not get poppups', success: false };
+		if (!tags) ErrorHandlerStore.set({ message: 'Could not get poppups', success: false })
 		loading = false;
 	};
 
@@ -152,4 +150,4 @@
 	</div>
 </Modal>
 
-<Poppup bind:poppup />
+ 
