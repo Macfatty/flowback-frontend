@@ -733,5 +733,7 @@
     "Failed to unsubscribe": "Misslyckades att avsluta prenumeration",
     "Subscribed": "Prenumererad",
     "Unsubscribed": "Avslutat prenumeration",
-    "Could not create Poll": "Kunde inte skapa omröstning"
+    "Could not create Poll": "Kunde inte skapa omröstning",
+    "Could not add tag": "Kunde inte lägga till ämnesområde",
+    "Successfully added tag": "Lyckades lägga till ämnesområde"
 }
