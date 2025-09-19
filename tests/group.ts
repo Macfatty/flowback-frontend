@@ -1,6 +1,12 @@
 import { expect } from "@playwright/test";
 
-export async function createGroup(page: any, group = { name: 'Test Group', public: false }) {
+export type group = {
+    name: string,
+    public?: boolean,
+    invite?: boolean
+}
+
+export async function createGroup(page: any, group:group = { name: 'Test Group', public: false, invite: false }) {
     await page.locator("#groups").click();
     await page.getByPlaceholder('Search groups').click();
     await page.getByPlaceholder('Search groups').fill(group.name);
@@ -26,6 +32,7 @@ export async function createGroup(page: any, group = { name: 'Test Group', publi
         await page.locator(".image-upload > input").nth(1).setInputFiles('./tests/forward-facing-niko-oneshot-isnt-real-it-cant-hurt-you-v0-3ggf23q4ijcf1.webp');
         await page.locator("#cropper-confirm").first().click();
         await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel(group.public ? 'Yes' : 'No').check();
+        await page.locator('fieldset').filter({ hasText: 'Invitation Required? Yes No' }).getByLabel(group.invite ? 'Yes' : 'No').check();
         await page.locator('fieldset').filter({ hasText: 'Hide creators? Yes No' }).getByLabel('No').check();
         await page.getByRole('button', { name: 'Create' }).click();
         try {
@@ -45,6 +52,11 @@ export async function gotoGroup(page: any, group = { name: 'Test Group' }) {
     await page.getByRole('heading', { name: group.name, exact: true }).click();
 }
 
+export async function gotoFirstGroup(page: any) {
+    await page.locator("#groups").click();
+    await page.locator("#groups-list > div").first().click();
+}
+
 export async function joinGroup(page: any, group = { name: 'Test Group' }) {
     await page.locator("#groups").click();
     await page.getByPlaceholder('Search groups').click();
@@ -52,7 +64,7 @@ export async function joinGroup(page: any, group = { name: 'Test Group' }) {
     await page.getByRole('heading', { name: group.name, exact: true });
     const joinButton = await page.locator('#groups-list div').filter({ hasText: group.name }).locator('#group-join-button');
     await expect(joinButton).toBeVisible();
-    if ((await joinButton.innerText()).trim() === "Join")
+    if ((await joinButton.innerText()).trim() === "Join" || (await joinButton.innerText()).trim() === "Ask to join")
         await joinButton.click();
 }
 
