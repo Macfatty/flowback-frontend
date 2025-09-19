@@ -6,7 +6,7 @@ export type group = {
     invite?: boolean
 }
 
-export async function createGroup(page: any, group:group = { name: 'Test Group', public: false, invite: false }) {
+export async function createGroup(page: any, group: group = { name: 'Test Group', public: false, invite: false }) {
     await page.locator("#groups").click();
     await page.getByPlaceholder('Search groups').click();
     await page.getByPlaceholder('Search groups').fill(group.name);
@@ -32,7 +32,8 @@ export async function createGroup(page: any, group:group = { name: 'Test Group',
         await page.locator(".image-upload > input").nth(1).setInputFiles('./tests/forward-facing-niko-oneshot-isnt-real-it-cant-hurt-you-v0-3ggf23q4ijcf1.webp');
         await page.locator("#cropper-confirm").first().click();
         await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel(group.public ? 'Yes' : 'No').check();
-        await page.locator('fieldset').filter({ hasText: 'Invitation Required? Yes No' }).getByLabel(group.invite ? 'Yes' : 'No').check();
+        if (group.public)
+            await page.locator('fieldset').filter({ hasText: 'Invitation Required? Yes No' }).getByLabel(group.invite ? 'Yes' : 'No').check();
         await page.locator('fieldset').filter({ hasText: 'Hide creators? Yes No' }).getByLabel('No').check();
         await page.getByRole('button', { name: 'Create' }).click();
         try {
