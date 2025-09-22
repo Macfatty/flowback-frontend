@@ -70,7 +70,7 @@
 				]}
 			>
 				<h2 slot="header">{$_('Confirm Deletion')}</h2>
-				<p slot="body">{$_('Are you sure you want to delete this workgroup?')}</p>
+				<p slot="body">{$_('Are you sure you want to delete this permission?')}</p>
 			</Modal>
 		{/if}
 	{/each}

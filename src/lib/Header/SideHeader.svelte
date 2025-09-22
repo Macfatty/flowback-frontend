@@ -53,7 +53,13 @@
 			}
 		},
 		{ title: 'TOS', action: () => (open_tos = true) },
-		{ title: 'Log Out', action: logOut }
+		{
+			title: 'Log Out',
+			action: () => {
+				chatOpenStore.set(false);
+				logOut();
+			}
+		}
 	];
 
 	onMount(() => {
