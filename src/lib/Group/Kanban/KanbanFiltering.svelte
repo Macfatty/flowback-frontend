@@ -154,11 +154,25 @@
 
 		{#each groupList as group}
 			<div>
-				<label><input type="checkbox" value={group.id} />{group.name}</label>
+				<label
+					><input
+						name="advanced-filtering-kanban"
+						type="radio"
+						value={group.id}
+						on:change={() => onGroupChange(group.id.toString())}
+					/>{group.name}</label
+				>
 
 				{#each workGroups as workgroup}
 					<div>
-						<label><input type="checkbox" value={group.id} />{workgroup.name}</label>
+						<label
+							><input
+								name="advanced-filtering-workgroup-kanban"
+								type="radio"
+								value={workgroup.id}
+								on:change={() => onWorkGroupChange(workgroup.id.toString())}
+							/>{workgroup.name}</label
+						>
 					</div>
 				{/each}
 			</div>
