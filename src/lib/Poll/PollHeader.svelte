@@ -72,7 +72,7 @@
 				() => ((deletePollModalShow = true), (choicesOpen = false)),
 				() => ((reportPollModalShow = true), (choicesOpen = false)),
 				...($groupUserStore?.is_admin
-					? [async () => (phase = await nextPhase(poll?.poll_type, $page.params.pollId, phase))]
+					? [async () => (phase = await nextPhase(poll?.poll_type, $page.params.pollId ?? "", phase))]
 					: [])
 			]}
 			Class="justify-self-center mt-2"
@@ -82,7 +82,7 @@
 
 	<div class="flex gap-4 items-baseline grid-area-items my-1">
 		{#if poll?.work_group_id}
-			{$_('Workgroup')}: {poll.work_group_id}
+			{$_('Workgroup')}: {poll.work_group_name}
 		{/if}
 		{#if poll?.poll_type === 4}
 			<HeaderIcon Class="cursor-default" icon={faAlignLeft} text={'Text Poll'} />
@@ -144,7 +144,7 @@
 	</div>
 {/if}
 
-<DeletePostModal bind:deleteModalShow={deletePollModalShow} postId={$page.params.pollId} />
+<DeletePostModal bind:deleteModalShow={deletePollModalShow} postId={$page.params.pollId ?? ""} />
 
 <ReportPostModal
 	post_type="poll"

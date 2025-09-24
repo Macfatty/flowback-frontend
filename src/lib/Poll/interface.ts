@@ -61,6 +61,7 @@ export interface poll {
 	pinned: boolean;
 	public: boolean;
 	work_group_id?: number | null;
+	work_group_name?: string | null;
 
 	// Status on calculating predictions.  1 is done, 2 is in progress, 0 is not started
 	status_prediction: 0 | 1 | 2;

@@ -22,19 +22,19 @@
 		const end_date = new Date(date);
 		end_date.setHours(date.getHours() + 1);
 
-		await ProposalsApi.createProposal(pollId, {
+		await ProposalsApi.createProposal(pollId ?? "", {
 			start_date: date,
 			end_date
 		});
 	}
 
 	async function fetchProposals() {
-		const response = await ProposalsApi.getProposals(pollId);
+		const response = await ProposalsApi.getProposals(pollId ?? "");
 		proposals = response.results;
 	}
 
 	async function fetchProposalVotes() {
-		const response = await ProposalsApi.getVotes(pollId);
+		const response = await ProposalsApi.getVotes(pollId ?? "");
 		votes = response.results.map((vote) => vote.proposal);
 	}
 
@@ -43,7 +43,7 @@
 			adding && !votes.includes(id) ? [...votes, id] : votes.filter((vote) => vote !== id);
 
 		votes = newVotes;
-		await ProposalsApi.updateVotes(pollId, newVotes);
+		await ProposalsApi.updateVotes(pollId ?? "", newVotes);
 	}
 
 	async function handleProposalSubmit() {
