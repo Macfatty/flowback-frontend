@@ -84,6 +84,9 @@
 		{#if poll?.work_group_id}
 			{$_('Workgroup')}: {poll.work_group_name}
 		{/if}
+		{#if poll?.interval_mean_absolute_correctness}
+			{$_('Historical imac value')}: {poll.interval_mean_absolute_correctness}
+		{/if}
 		{#if poll?.poll_type === 4}
 			<HeaderIcon Class="cursor-default" icon={faAlignLeft} text={'Text Poll'} />
 		{:else if poll?.poll_type === 3}

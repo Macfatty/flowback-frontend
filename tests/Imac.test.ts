@@ -34,14 +34,13 @@ test('Imac-Test', async ({ page }) => {
 
     await fastForward(page, 3);
 
-    await page.waitForTimeout(425000);
+    await page.waitForTimeout(42500);
 
     await page.reload();
 
     await page.locator('.text-center.dark\\:saturate-\\[60\\%\\].transition-colors.duration-50.w-12').first().click();
     await expect(page.getByText('Successfully evaluated')).toBeVisible();
-    await page.locator('.text-center.dark\\:saturate-\\[60\\%\\].transition-colors.duration-50.w-12.px-4.py-1.ml-2').click();
+    await page.locator('.text-center.dark\\:saturate-\\[60\\%\\].transition-colors.duration-50.w-12.px-4.py-1.ml-2').nth(1).click();
     await expect(page.getByText('Successfully evaluated')).toBeVisible();
-    await page.locator('.text-center.dark\\:saturate-\\[60\\%\\].transition-colors.duration-50.w-12').first().click();
 
 })

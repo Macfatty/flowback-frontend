@@ -26,10 +26,6 @@ export async function createPoll(page: any, {
     
     await page.getByRole('spinbutton').fill(phase_time.toString());
 
-    await expect(false)
-
-    await page.getByRole('spinbutton').press('Enter');
-
     await page.getByRole('button', { name: 'Post' }).click();
     await page.waitForTimeout(500);
     await expect(page.getByRole('heading', { name: title })).toBeVisible();

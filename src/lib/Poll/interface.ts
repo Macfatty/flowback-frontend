@@ -62,6 +62,7 @@ export interface poll {
 	public: boolean;
 	work_group_id?: number | null;
 	work_group_name?: string | null;
+	interval_mean_absolute_correctness: string | null;
 
 	// Status on calculating predictions.  1 is done, 2 is in progress, 0 is not started
 	status_prediction: 0 | 1 | 2;
