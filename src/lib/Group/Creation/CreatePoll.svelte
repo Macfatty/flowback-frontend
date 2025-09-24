@@ -221,6 +221,8 @@
 	<button
 		class="absolute -left-12 bg-white dark:bg-darkobject p-3 rounded shadow z-50 hover:bg-gray-100 active:bg-gray-200 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
 		on:click={goBack}
+		type="button"
+		aria-label="Go back"
 	>
 		<Fa icon={faArrowLeft} />
 	</button>

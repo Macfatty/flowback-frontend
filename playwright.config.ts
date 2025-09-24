@@ -8,7 +8,8 @@ const config: PlaywrightTestConfig = {
 		port: 4000,
 		reuseExistingServer: true,
 	},
-	timeout: 120000,
+	timeout: 60000,
+	workers:10
 
 };
 

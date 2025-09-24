@@ -9,13 +9,12 @@
 		score: number | null = null,
 		phase: Phase,
 		disabled = false,
-		style: 'purple' | 'gray' = 'purple';
+		style: 'purple' | 'gray' = 'purple',
+		maxScore = 5,
+		dragLinePosition: number | null = null,
+		currentSnapPosition: number | null = null;
 
-	const maxScore = 5;
 	const snapPoints = Array.from({ length: maxScore + 1 }, (_, i) => i); // [0,1,2,3,4,5]
-
-	let dragLinePosition: number | null = null;
-	let currentSnapPosition: number | null = null;
 
 	const snapToSnapPoint = (value: number) => {
 		const nearestSnap = snapPoints.reduce((prev, curr) =>
@@ -92,12 +91,12 @@
 				style="left: {index === 0
 					? '2px'
 					: index === snapPoints.length - 1
-					? 'calc(100% - 2px)'
-					: (point / maxScore) * 100 + '%'}; transform: {index === 0
+						? 'calc(100% - 2px)'
+						: (point / maxScore) * 100 + '%'}; transform: {index === 0
 					? 'translateY(-50%)'
 					: index === snapPoints.length - 1
-					? 'translate(-100%, -50%)'
-					: 'translate(-50%, -50%)'}"
+						? 'translate(-100%, -50%)'
+						: 'translate(-50%, -50%)'}"
 			/>
 		{/each}
 

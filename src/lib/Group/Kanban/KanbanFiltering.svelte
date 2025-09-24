@@ -8,17 +8,18 @@
 	import type { Group } from '$lib/Group/interface';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
-	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import { statusMessageFormatter } from '$lib/Generic/StatusMessage';
+	import Button from '$lib/Generic/Button.svelte';
+	import Modal from '$lib/Generic/Modal.svelte';
 
 	export let filter: Filter,
 		handleSearch: () => Promise<void>,
 		Class = '',
 		workGroups: WorkGroup[] = [];
 
-	let searched = true;
-	let groupList: Group[] = [],
-		loading = false;
+	let searched = true,
+		groupList: Group[] = [],
+		loading = false,
+		advancedFilterOpen = false;
 
 	const onGroupChange = async (id: string) => {
 		filter.group = id;
@@ -67,16 +68,7 @@
 		await handleSearch();
 	}}
 >
-	<!-- WIP -->
-	<!-- {#each groupList as group}
-		<label><input type="checkbox" value={group.id} />{group.name}</label>
-
-		{#each workGroups as workgroup}
-		<label><input type="checkbox" value={group.id} />------{workgroup.name}</label>
-		<label><input type="checkbox" value={group.id} />------{workgroup.name}</label>
-		<label><input type="checkbox" value={group.id} />------{workgroup.name}</label>
-		{/each}
-	{/each} -->
+	<Button onClick={() => (advancedFilterOpen = true)}>Advanced Filtering</Button>
 
 	<div class="w-full items-end gap-4">
 		<TextInput
@@ -155,3 +147,35 @@
 		</div>
 	</div>
 </form>
+
+<Modal bind:open={advancedFilterOpen} Class="min-w-[800px]">
+	<div slot="body">
+		<h2 class="text-xl">{$_('Advanced Filtering')}</h2>
+
+		{#each groupList as group}
+			<div>
+				<label
+					><input
+						name="advanced-filtering-kanban"
+						type="radio"
+						value={group.id}
+						on:change={() => onGroupChange(group.id.toString())}
+					/>{group.name}</label
+				>
+
+				{#each workGroups as workgroup}
+					<div>
+						<label
+							><input
+								name="advanced-filtering-workgroup-kanban"
+								type="radio"
+								value={workgroup.id}
+								on:change={() => onWorkGroupChange(workgroup.id.toString())}
+							/>{workgroup.name}</label
+						>
+					</div>
+				{/each}
+			</div>
+		{/each}
+	</div>
+</Modal>

@@ -32,13 +32,15 @@
 			proposal: proposal.id
 		}));
 
-		if (phase === 'delegate_vote' || phase === 'vote' || phase === 'result') {
-			await getDelegateVotes();
-		}
+		delegateVoting = voting
 
-		if (phase === 'vote' || phase === 'result') {
-			await getVotes();
-		}
+		// if (phase === 'delegate_vote' || phase === 'vote' || phase === 'result') {
+		// 	await getDelegateVotes();
+		// }
+
+		// if (phase === 'vote' || phase === 'result') {
+		// 	await getVotes();
+		// }
 
 		needsReload++;
 	});
@@ -83,7 +85,10 @@
 		);
 
 		if (!res.ok) {
-			console.error('Error fetching votes:', json.detail);
+			ErrorHandlerStore.set({
+				message: 'Failed to get delegate votes',
+				success: false
+			});
 			return;
 		}
 
@@ -100,6 +105,14 @@
 
 		voting = voting;
 		delegateVoting = delegateVoting;
+
+		console.log(voting, delegateVoting, 'DELEGATE VOTE');
+	};
+
+	const handleSliderClick = async (pos: any, proposal: proposal) => {
+		changingVote(pos, proposal.id);
+		if (phase === 'delegate_vote') delegateVote();
+		else if (phase === 'vote') vote();
 	};
 
 	// Voting as a delegate
@@ -157,6 +170,8 @@
 	};
 
 	const changingVote = (score: number | string, proposalId: number) => {
+		console.log('HELLOOOO', voting, delegateVoting);
+
 		if (!voting) return;
 
 		if (phase === 'delegate_vote') {
@@ -205,15 +220,13 @@
 							{#if phase === 'delegate_vote' || phase === 'vote'}
 								{@const score = getScore(proposal)}
 
+								<!-- {score}
+								{voting.length}
+								{delegateVoting.length} -->
 								{#key voting || delegateVoting}
 									<VotingSlider
 										bind:phase
-										onSelection={(pos) => {
-											//@ts-ignore
-											changingVote(pos, proposal.id);
-											if (phase === 'delegate_vote') delegateVote();
-											else if (phase === 'vote') vote();
-										}}
+										onSelection={(pos) => handleSliderClick(pos, proposal)}
 										disabled={(phase === 'delegate_vote' &&
 											$groupUserStore?.delegate_pool_id === null) ||
 											(phase === 'vote' && !$groupUserPermissionStore?.allow_vote)}
