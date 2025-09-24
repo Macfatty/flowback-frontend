@@ -1,0 +1,47 @@
+import test, { expect } from "@playwright/test";
+import { login } from "./generic";
+import { createArea, createGroup, gotoGroup } from "./group";
+import { areaVote, createPoll, createProposal, fastForward, predictionProbability, predictionStatementCreate } from "./poll";
+
+test('Imac-Test', async ({ page }) => {
+    test.setTimeout(0);
+
+    await login(page);
+
+    let group = { name: "Test Group Imac", public: true }
+
+    await createGroup(page, group)
+
+    await createArea(page, group, "Tag 1")
+
+    await gotoGroup(page, group);
+
+    await createPoll(page, { phase_time: 0 });
+
+    await areaVote(page);
+
+    await fastForward(page, 1);
+
+    await createProposal(page);
+
+    await fastForward(page, 1);
+
+    await predictionStatementCreate(page);
+
+    await fastForward(page, 1);
+
+    await predictionProbability(page);
+
+    await fastForward(page, 3);
+
+    await page.waitForTimeout(425000);
+
+    await page.reload();
+
+    await page.locator('.text-center.dark\\:saturate-\\[60\\%\\].transition-colors.duration-50.w-12').first().click();
+    await expect(page.getByText('Successfully evaluated')).toBeVisible();
+    await page.locator('.text-center.dark\\:saturate-\\[60\\%\\].transition-colors.duration-50.w-12.px-4.py-1.ml-2').click();
+    await expect(page.getByText('Successfully evaluated')).toBeVisible();
+    await page.locator('.text-center.dark\\:saturate-\\[60\\%\\].transition-colors.duration-50.w-12').first().click();
+
+})

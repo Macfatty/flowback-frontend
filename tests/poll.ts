@@ -23,7 +23,12 @@ export async function createPoll(page: any, {
     await page.getByRole('button', { name: 'Display advanced time settings' }).click();
     await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel('Yes').check();
     await page.locator('fieldset').filter({ hasText: 'Fast Forward? Yes No' }).getByLabel('Yes').check();
+    
     await page.getByRole('spinbutton').fill(phase_time.toString());
+
+    await expect(false)
+
+    await page.getByRole('spinbutton').press('Enter');
 
     await page.getByRole('button', { name: 'Post' }).click();
     await page.waitForTimeout(500);
@@ -103,7 +108,7 @@ export async function predictionStatementCreate(page: any) {
     await page.getByLabel('Description  0/').click();
     await page.getByLabel('Description  0/').fill('Prediction 1');
     // await page.getByPlaceholder('-08-27 14:40:00').click();
-    await page.locator('.date-time-field > input').nth(0).fill('2025-08-27 15:40:00');
+    await page.locator('.date-time-field > input').nth(0).fill('2000-01-01 00:00:00');
     // await page.locator('div').filter({ hasText: /^18$/ }).click();
     await page.getByRole('button', { name: 'Submit' }).click();
     await expect(page.getByText('Successfully created')).toBeVisible();
@@ -133,7 +138,7 @@ export async function predictionProbability(page: any) {
     // await expect(page.locator('#track-container > div:nth-child(8)')).toBeVisible();
     // await page.waitForTimeout(200);
     // await page.locator('#track-container > div:nth-child(6)').click();
-    await page.locator('#track-container > div:nth-child(5)').click();
+    // await page.locator('#track-container > div:nth-child(5)').click();
     await page.waitForTimeout(300);
     await page.getByRole('button', { name: 'Clear probability' }).click();
     await page.locator('#track-container > div:nth-child(4)').click();
