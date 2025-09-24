@@ -10,13 +10,12 @@
 	import Reforum from '$lib/assets/ReforumTransparent.png';
 	import { _ } from 'svelte-i18n';
 	import { goto } from '$app/navigation';
-	import {env} from "$env/dynamic/public";
-	
+	import { env } from '$env/dynamic/public';
 
 	let selectedPage = 'Login';
 
 	//Email is stored for automatic login when resetting password
-	let email = ''
+	let email = '';
 
 	onMount(() => {
 		const params = new URLSearchParams(window.location.search);
@@ -30,19 +29,30 @@
 
 		if (localStorage.getItem('token')) goto('/home');
 	});
-	
 </script>
 
 <svelte:head>
 	<title>{$_('Login to Flowback')}</title>
 </svelte:head>
 
-<div id="login-page" class="dark:bg-darkbackground bg-purple-50 min-h-[110vh]  flex flex-col items-center">
+<div
+	id="login-page"
+	class="dark:bg-darkbackground bg-purple-50 min-h-[110vh] flex flex-col items-center"
+>
 	<div class="mt-16">
-		<img src={env.PUBLIC_LOGO === "REFORUM" ? Reforum : Logo} class="w-[300px]" alt="flowback logo" />
+		<img
+			src={env.PUBLIC_LOGO === 'REFORUM' ? Reforum : Logo}
+			class="w-[300px]"
+			alt="flowback logo"
+		/>
 	</div>
-	<div class="bg-white dark:bg-darkobject dark:text-darkmodeText mt-12 rounded shadow-lg w-full max-w-[600px]">
-		<Tab bind:selectedPage tabs={env.PUBLIC_DISABLE_ACCOUNT_CREATION === "TRUE" ? ['Login'] : ['Login', 'Register']} />
+	<div
+		class="bg-white dark:bg-darkobject dark:text-darkmodeText mt-12 rounded shadow-lg w-full max-w-[600px]"
+	>
+		<Tab
+			bind:selectedPage
+			tabs={env.PUBLIC_DISABLE_ACCOUNT_CREATION === 'TRUE' ? ['Login'] : ['Login', 'Register']}
+		/>
 		<div>
 			{#if selectedPage === 'Login'}
 				<Login bind:selectedPage />
@@ -55,7 +65,7 @@
 			{:else if selectedPage === 'ForgotPassword'}
 				<ForgotPassword bind:selectedPage bind:email />
 			{:else if selectedPage === 'NewPassword'}
-				<NewPassword bind:email/>
+				<NewPassword bind:email />
 			{/if}
 		</div>
 	</div>

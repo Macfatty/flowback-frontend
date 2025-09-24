@@ -71,7 +71,7 @@
 		const { json, res } = await fetchRequest(
 			'POST',
 			'login',
-			{ username: $mailStore, password },
+			{ username, password },
 			false
 		);
 

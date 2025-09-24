@@ -64,10 +64,11 @@
 		const { res, json } = await fetchRequest('POST', `group/${group.id}/delegate/pool/create`, {});
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Could not create delegation pool', success: false });
+			ErrorHandlerStore.set({ message: 'Error when trying to become delegate', success: false });
 			return;
 		}
 
+		ErrorHandlerStore.set({ message: 'Successfully became delegate', success: true });
 		groupUser.delegate_pool_id = json;
 	};
 
@@ -125,7 +126,7 @@
 
 <Layout centered>
 	<div class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow w-full text-left">
-		
+		id:{groupUser?.delegate_pool_id}
 		<h1 class="text-xl font-semibold text-primary dark:text-secondary text-left">
 			{$_(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? 'Automate' : 'Manage Delegations')}
 		</h1>
@@ -149,7 +150,8 @@
 		</Button>
 		<div class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow w-[50%]">
 			{#if env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE'}
-			You are {userPermissions?.allow_vote || groupUser?.is_admin ? '' : 'not'} allowed to vote in this group: 
+				You are {userPermissions?.allow_vote || groupUser?.is_admin ? '' : 'not'} allowed to vote in
+				this group:
 				<Select
 					classInner="w-full bg-white dark:bg-darkobject dark:text-darkmodeText p-2 border-gray-300 rounded border"
 					labels={groups?.map((group) => group.name)}
@@ -216,13 +218,11 @@
 						>{$_('Become delegate')}</Button
 					>
 				{/if}
-			{:else if selectedPage === 'delegate'}
-				{#if group?.id}
-					{#if groupUser?.delegate_pool_id}
-						{$_('You cannot delegate as a delegate')}
-					{:else}
-						<Delegations bind:group bind:delegates />
-					{/if}
+			{:else if selectedPage === 'delegate' && group?.id}
+				{#if groupUser?.delegate_pool_id}
+					{$_('You cannot delegate as a delegate')}
+				{:else}
+					<Delegations bind:group bind:delegates />
 				{/if}
 			{/if}
 		</div>

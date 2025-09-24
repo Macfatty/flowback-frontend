@@ -1,4 +1,4 @@
-import { test, chromium } from '@playwright/test';
+import { test, chromium, expect } from '@playwright/test';
 import { login } from './generic';
 import { createPoll, createProposal, delegateVote, fastForward, goToPost } from './poll';
 import { createGroup, deleteGroup, gotoGroup, joinGroup } from './group';
@@ -59,8 +59,7 @@ test('Delegation-Poll', async ({ page }) => {
 
     await goToPost(bPage, { title });
 
-
-
+    await expect(page.getByText('Vote Failed').first()).not.toBeVisible();
 
     // await deleteGroup(page, group)
 
