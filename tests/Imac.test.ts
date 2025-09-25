@@ -4,7 +4,7 @@ import { createArea, createGroup, gotoGroup } from "./group";
 import { areaVote, createPoll, createProposal, fastForward, predictionProbability, predictionStatementCreate } from "./poll";
 
 test('Imac-Test', async ({ page }) => {
-    test.setTimeout(0);
+    test.setTimeout(1);
 
     await login(page);
 

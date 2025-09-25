@@ -148,8 +148,7 @@
 		{/each}
 	{/if}
 	{#each previewDirect as chatter}
-	{chatSearch}
-		{#if chatter.channel_title?.includes(chatSearch) && (chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup}
+		{#if chatter.channel_title?.includes(chatSearch) || (chatter.channel_origin_name === 'user' && creatingGroup)}
 			<button
 				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
 				class:bg-gray-200={selectedChat === chatter.channel_id}
