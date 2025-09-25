@@ -56,6 +56,7 @@
 				ErrorHandlerStore.set({ message: json?.detail?.non_field_errors[0], success: false });
 			else if (json?.detail?.username)
 				ErrorHandlerStore.set({ message: json?.detail?.username[0], success: false });
+			else if (json?.detail[0] === 'Email already registered') login();
 			else ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 
 			return;
@@ -71,7 +72,7 @@
 		const { json, res } = await fetchRequest(
 			'POST',
 			'login',
-			{ username, password },
+			{ username: $mailStore, password },
 			false
 		);
 
@@ -128,7 +129,6 @@
 
 <Loader bind:loading>
 	<form class="gap-6 p-6 mb-4 flex flex-col items-center" on:submit|preventDefault={verifyAccount}>
-		
 		<!-- <span
 			>{$_(
 				`We have sent a verification code to the provided email. Don't forget to check your junk mail!`
@@ -148,11 +148,9 @@
 			centering={true}
 			bind:Yes={acceptedEmailNotifications}
 		/>
-		 
+
 		<Button type="submit">
 			{$_('Send')}
 		</Button>
 	</form>
 </Loader>
-
- 

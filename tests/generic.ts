@@ -45,6 +45,9 @@ export async function loginEnter(page: any, {
 // Only works if PUBLIC_EMAIL_REGISTRATION=FALSE in .env
 // Email functionality appears to only be manually testable afaik 
 export async function register(page: any) {
+    const randomUSername = Math.random().toString(36).slice(2, 10);
+    const randomEmail = `${randomUSername}@flowback.test`;
+    
     await page.goto('/login');
     await expect(page.locator('#login-page')).toBeVisible();
     await page.waitForTimeout(500);
@@ -58,8 +61,6 @@ export async function register(page: any) {
     await page.getByRole('button', { name: 'Send' }).click();
     await expect(page.getByText('Email already exists.')).toBeVisible();
 
-    const randomUSername = Math.random().toString(36).slice(2, 10);
-    const randomEmail = `${randomUSername}@flowback.test`;
     await page.getByLabel('Email * 6/').fill(randomEmail);
 
     let registrationCode = '';
