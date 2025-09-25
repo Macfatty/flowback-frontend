@@ -99,6 +99,7 @@
 					class:selected={selected === user.user.id}
 					class="faPlus ml-auto cursor-pointer"
 					on:click={() => (selected === user.user.id ? (selected = -1) : (selected = user.user.id))}
+					id={`plus-${user.user.username}`}
 				>
 					<Fa icon={faPlus} size="lg" />
 				</button>

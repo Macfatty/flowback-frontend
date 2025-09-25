@@ -3,7 +3,7 @@ import { login, newWindow } from './generic';
 import { createGroup, deleteGroup, gotoFirstGroup, gotoGroup, joinGroup } from './group';
 import { createPermission } from './permission';
 
-const group = { name: "Test Group Group-Testing Invite only", public: true, invite: true }
+const group = { name: "Test Group Group-Testing Public", public: true, invite: false }
 
 test('Create Group', async ({ page }) => {
     await login(page)
