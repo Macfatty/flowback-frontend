@@ -12,7 +12,8 @@ test('Imac-Test', async ({ page }) => {
 
     await createGroup(page, group)
 
-    await createArea(page, group, "Tag unique qzug73dx")
+    const rand = Math.random().toString(36).slice(2, 10);
+    await createArea(page, group, "Tag imact test " + rand)
 
     await gotoGroup(page, group);
 
