@@ -1,6 +1,7 @@
 import test, { expect } from "@playwright/test";
-import { createGroup, createPermission, deleteGroup, gotoGroup, joinGroup } from "./group";
+import { createGroup, deleteGroup, gotoGroup, joinGroup } from "./group";
 import { login, newWindow } from "./generic";
+import { assignPermission, createPermission } from "./permission";
 
 test('Create-Permission-Full', async ({ page }) => {
     await login(page);
@@ -10,7 +11,7 @@ test('Create-Permission-Full', async ({ page }) => {
     await createGroup(page, group);
 
     await expect(page.locator('#group-header-title')).toHaveText(group.name);
-    await page.getByRole('button', { name: 'Edit Group' }).dispatchEvent('click');;
+    await page.getByRole('button', { name: 'Edit Group' }).dispatchEvent('click');
 
     await createPermission(page, group, [4, 5, 6, 11, 12, 13, 14, 16, 17, 18, 9, 8, 7, 10, 15, 19]);
 
@@ -30,14 +31,12 @@ test('Create-Permission-None', async ({ page }) => {
     await login(bPage, { email: 'b@b.se', password: 'b' });
     await joinGroup(bPage, group);
 
-    await page.getByRole('button', { name: 'Edit Group' }).click();
+    await page.getByRole('button', { name: 'Edit Group' }).dispatchEvent('click')
 
     await createPermission(page, group, []);
 
     await page.waitForTimeout(1000);
-    await page.getByRole('button', { name: 'Assign' }).click();
-    await page.getByRole('listitem').filter({ hasText: 'b Member Make admin b default' }).locator('path').click();
-    await page.getByRole('button', { name: 'Test Permission' }).click();
+    await assignPermission(page, group)
 
     await page.waitForTimeout(500);
     await gotoGroup(bPage, group);

@@ -70,12 +70,12 @@
 
 	// Update chat title
 	const updateChatTitle = async () => {
-		if (selectedChatChannelId) {
-			await fetchRequest('POST', 'user/chat/update', {
-				channel_id: selectedChatChannelId,
-				title: 'chat example'
-			});
-		}
+		// if (selectedChatChannelId) {
+		// 	await fetchRequest('POST', 'user/chat/update', {
+		// 		channel_id: selectedChatChannelId,
+		// 		title: 'chat example'
+		// 	});
+		// }
 	};
 
 	onMount(async () => {

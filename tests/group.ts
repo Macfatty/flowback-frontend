@@ -90,17 +90,3 @@ export async function createArea(page: any, group = { name: 'Test Group', public
     await page.getByRole('button', { name: 'Add' }).click();
     await expect(page.locator('div:nth-child(3) > div').filter({ hasText: tag })).toHaveText(tag);
 }
-
-export async function createPermission(page: any, group = { name: 'Test Group', public: false }, permissions = [0]) {
-    // Create, deactive and delete permission
-    await page.getByRole('button', { name: 'Permissions' }).click();
-    await page.getByRole('button', { name: 'Create' }).click();
-    await page.getByLabel('Role name * 0/').click();
-    await page.getByLabel('Role name * 0/').fill('Test Permission');
-    await page.getByLabel('Role name * 15/').click();
-    await page.locator('.slider').first().click();
-    for (const index of permissions) {
-        await page.locator(`div:nth-child(${index}) > .switch > .slider`).click();
-    }
-    await page.getByRole('button', { name: 'Create Role' }).click();
-}
