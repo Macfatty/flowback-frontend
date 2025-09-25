@@ -16,6 +16,7 @@ test('Imac-Test', async ({ page }) => {
 
     await gotoGroup(page, group);
 
+    //TODO: Make this test faster by decreasing time between phases more
     await createPoll(page, { phase_time: 0 });
 
     await areaVote(page);

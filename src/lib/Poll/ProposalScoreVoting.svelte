@@ -97,7 +97,7 @@
 			proposal: vote.proposal_id
 		}));
 
-		if (phase === 'delegate_vote')
+		if (phase === 'delegate_vote' && json?.results[0]?.vote?.length > 0)
 			voting = json?.results[0]?.vote.map((vote: any) => ({
 				score: vote.raw_score,
 				proposal: vote.proposal_id
@@ -219,7 +219,7 @@
 						>
 							{#if phase === 'delegate_vote' || phase === 'vote'}
 								{@const score = getScore(proposal)}
-
+						{$groupUserStore?.delegate_pool_id}
 								<!-- {score}
 								{voting.length}
 								{delegateVoting.length} -->
