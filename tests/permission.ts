@@ -15,7 +15,6 @@ export async function createPermission(page: any, group = { name: 'Test Group', 
     await page.getByLabel('Role name * 0/').click();
     await page.getByLabel('Role name * 0/').fill(permission_name);
     await page.getByLabel('Role name * 15/').click();
-    await page.locator('.slider').first().click();
     for (const index of permissions) {
         await page.locator('.slider').nth(index).click();
     }

@@ -13,7 +13,7 @@ test('Create-Permission-Full', async ({ page }) => {
     await expect(page.locator('#group-header-title')).toHaveText(group.name);
     await page.getByRole('button', { name: 'Edit Group' }).dispatchEvent('click');
 
-    await createPermission(page, group, [4, 5, 6, 11, 12, 13, 14, 16, 17, 18, 9, 8, 7, 10, 15, 19]);
+    await createPermission(page, group, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
     const bPage = await newWindow();
 
