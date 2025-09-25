@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { login, newWindow } from './generic';
-import { createGroup, createPermission, deleteGroup, gotoFirstGroup, gotoGroup, joinGroup } from './group';
+import { createGroup, createPermission, deleteGroup, gotoGroup, joinGroup } from './group';
 
 const group = { name: "Test Group Group-Testing Invite only", public: true, invite: true }
 

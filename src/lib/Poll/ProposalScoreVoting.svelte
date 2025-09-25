@@ -34,13 +34,13 @@
 
 		delegateVoting = voting
 
-		// if (phase === 'delegate_vote' || phase === 'vote' || phase === 'result') {
-		// 	await getDelegateVotes();
-		// }
+		if (phase === 'delegate_vote' || phase === 'vote' || phase === 'result') {
+			await getDelegateVotes();
+		}
 
-		// if (phase === 'vote' || phase === 'result') {
-		// 	await getVotes();
-		// }
+		if (phase === 'vote' || phase === 'result') {
+			await getVotes();
+		}
 
 		needsReload++;
 	});

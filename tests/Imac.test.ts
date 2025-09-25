@@ -12,7 +12,7 @@ test('Imac-Test', async ({ page }) => {
 
     await createGroup(page, group)
 
-    await createArea(page, group, "Tag 1")
+    await createArea(page, group, "Tag unique qzug73dx")
 
     await gotoGroup(page, group);
 

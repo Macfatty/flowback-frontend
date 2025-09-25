@@ -510,6 +510,7 @@
     "Successfully voted": "Röstade framgångsrikt",
     "Successfully evaluated consequence": "Konsekvens har utvärderats framgångsrikt",
     "Current phase:": "Pågående fas:",
+    "Current phase": "Pågående fas",
     "Could not submit tag vote": "Kunde inte skicka taggröstning",
     "Create consequence": "Skapa konsekvens",
     "Delete Consequence": "Ta bort konsekvens",
