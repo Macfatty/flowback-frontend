@@ -5,7 +5,8 @@
 	export let tag: Tag,
 		Class: string = '',
 		onclick = () => {},
-		displayImac: boolean = true;
+		displayImac: boolean = true,
+		id = 'tag';
 </script>
 
 <div class="flex">
@@ -15,6 +16,7 @@
 			' ' +
 			Class}
 		on:click={onclick}
+		{id}
 	>
 		{elipsis(tag?.name, 20)}
 	</button>

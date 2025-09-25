@@ -1,8 +1,9 @@
 import { test, chromium, expect } from '@playwright/test';
 import { login } from './generic';
 import { createPoll, createProposal, delegateVote, fastForward, goToPost } from './poll';
-import { createGroup, deleteGroup, gotoGroup, joinGroup } from './group';
+import { createGroup, gotoGroup, joinGroup } from './group';
 import { becomeDelegate } from './delegation';
+import { assignPermission, createPermission } from './permission';
 
 test('Become-Delegate', async ({ page }) => {
     await login(page);
@@ -43,6 +44,12 @@ test('Delegation-Poll', async ({ page }) => {
     await page.waitForTimeout(300)
     await bPage.getByRole('radio').first().check();
     await page.waitForTimeout(300)
+
+    await gotoGroup(page, group);
+    await page.getByRole('button', { name: 'Edit Group' }).dispatchEvent('click');
+    //Give b voting rights
+    await createPermission(page, group, [2]);
+    await assignPermission(page, group)
 
     await gotoGroup(page, group);
 

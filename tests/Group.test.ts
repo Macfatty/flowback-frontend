@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { login, newWindow } from './generic';
-import { createGroup, createPermission, deleteGroup, gotoFirstGroup, gotoGroup, joinGroup } from './group';
+import { createGroup, deleteGroup, gotoFirstGroup, gotoGroup, joinGroup } from './group';
+import { createPermission } from './permission';
 
-const group = { name: "Test Group Group-Testing Invite only", public: true, invite: true }
+const group = { name: "Test Group Group-Testing Public", public: true, invite: false }
 
 test('Create Group', async ({ page }) => {
     await login(page)
@@ -73,14 +74,15 @@ test('Delete Group Invite', async ({ page }) => {
 })
 
 // TODO: Have some "Dangerous tests" section?
-// test('Delete Many Group', async ({ page }) => {
-//     await login(page)
+test('Delete Many Group', async ({ page }) => {
+    test.setTimeout(1)
+    await login(page)
 
-//     for (let i = 0; i < 20; i++) {
-//         await gotoFirstGroup(page)
-//         await deleteGroup(page)
-//     }
-// })
+    for (let i = 0; i < 10; i++) {
+        await gotoFirstGroup(page)
+        await deleteGroup(page)
+    }
+})
 
 
 test('Create-Delete-Group', async ({ page }) => {

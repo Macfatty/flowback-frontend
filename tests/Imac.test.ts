@@ -12,10 +12,12 @@ test('Imac-Test', async ({ page }) => {
 
     await createGroup(page, group)
 
-    await createArea(page, group, "Tag 1")
+    const rand = Math.random().toString(36).slice(2, 10);
+    await createArea(page, group, "Tag imact test " + rand)
 
     await gotoGroup(page, group);
 
+    //TODO: Make this test faster by decreasing time between phases more
     await createPoll(page, { phase_time: 0 });
 
     await areaVote(page);

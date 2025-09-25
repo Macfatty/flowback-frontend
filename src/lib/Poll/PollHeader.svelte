@@ -113,7 +113,7 @@
 			<!-- Current Phase -->
 			{#if pollType === 4}
 				<div>
-					{$_('Current phase:')}
+					{$_('Current phase')}:
 					{$_(getPhaseUserFriendlyName(phase))}
 				</div>
 			{/if}
