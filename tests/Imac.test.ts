@@ -36,7 +36,8 @@ test('Imac-Test', async ({ page }) => {
 
     await fastForward(page, 3);
 
-    await page.waitForTimeout(42500);
+    //TODO Make the test shorter. There's a way to do this in pollCreate with all of the phase times being identical.
+    await page.waitForTimeout(490000);
 
     await page.reload();
 
