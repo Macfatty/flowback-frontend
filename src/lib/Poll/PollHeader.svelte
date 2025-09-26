@@ -103,7 +103,7 @@
 		/>
 	</div>
 
-	<div class="flex gap-4 items-baseline grid-area-items my-1">
+	<div class="flex gap-4 items-center grid-area-items my-1">
 		{#if poll?.work_group_id}
 			{$_('Workgroup')}: {poll.work_group_name}
 		{/if}
