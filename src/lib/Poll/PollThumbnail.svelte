@@ -43,10 +43,10 @@
 		// If text poll, have all phases. Date polls have fewer phases to display
 		dates: Date[],
 		tags: TagType[] = [],
+		tag: TagType,
 		selectedTag: number,
 		darkMode: boolean,
 		voting = true,
-		 
 		choicesOpen = false,
 		deletePollModalShow = false,
 		reportPollModalShow = false,
@@ -96,12 +96,24 @@
 		}
 	};
 
+	const getTag = async () => {
+		const { json, res } = await fetchRequest(
+			'GET',
+			`group/${poll.group_id}/tags?id=${poll.tag_id}`
+		);
+
+		if (!res.ok) return;
+
+		tag = json.results[0];
+	};
+
 	onMount(async () => {
 		phase = getPhase(poll);
 		if (phase === 'area_vote') {
 			tags = await getTags(poll?.group_id);
 			getAreaVote();
 		}
+		getTag();
 
 		permissions = await getPermissionsFast(Number(poll.group_id));
 		darkModeStore.subscribe((dark) => (darkMode = dark));
@@ -118,7 +130,7 @@
 						new Date(poll?.prediction_bet_end_date),
 						new Date(poll?.delegate_vote_end_date),
 						new Date(poll?.end_date)
-				  ]
+					]
 				: [new Date(poll?.start_date), new Date(poll?.end_date)];
 </script>
 
@@ -302,7 +314,7 @@
 					? '/groups/1'
 					: `/groups/${poll?.group_id || $page.params.groupId}/polls/${
 							poll?.id
-					  }?section=comments&source=${$page.params.groupId ? 'group' : 'home'}`}
+						}?section=comments&source=${$page.params.groupId ? 'group' : 'home'}`}
 			>
 				<img
 					class="w-5"
@@ -314,8 +326,8 @@
 			</a>
 
 			<!-- Tag -->
-			{#if poll?.poll_type === 4}
-				<Tag tag={{ name: poll?.tag_name, id: poll?.tag_id, active: true, imac: 0 }} />
+			{#if poll?.poll_type === 4 && tag}
+				<Tag bind:tag />
 			{/if}
 
 			{#if poll?.poll_type === 4}
@@ -423,10 +435,11 @@
 							Class="w-[47%]"
 							buttonStyle="primary-light"
 							onClick={() =>
-								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+								goto(
+									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
 										$page.params.groupId ? 'group' : 'home'
-									}`)}
-							>{$_('Manage Probabilities')}</Button
+									}`
+								)}>{$_('Manage Probabilities')}</Button
 						>
 						<!-- <p class="w-[47%]">{$_('You have not betted yet!')}</p> -->
 					</div>
@@ -438,10 +451,11 @@
 							Class="w-[47%]"
 							buttonStyle="primary-light"
 							onClick={() =>
-								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+								goto(
+									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
 										$page.params.groupId ? 'group' : 'home'
-									}`)}
-							>{$_('Manage votes')}</Button
+									}`
+								)}>{$_('Manage votes')}</Button
 						>
 						<!-- <p class="w-[47%]">{$_('You have not voted yet!')}</p> -->
 					</div>
@@ -453,10 +467,11 @@
 							Class="w-[47%]"
 							buttonStyle="primary-light"
 							onClick={() =>
-								goto(`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+								goto(
+									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
 										$page.params.groupId ? 'group' : 'home'
-									}`)}
-							>{$_('View results & evaluate consequences')}</Button
+									}`
+								)}>{$_('View results & evaluate consequences')}</Button
 						>
 					</div>
 				{/if}
@@ -475,8 +490,6 @@
 	post_description={poll.description}
 	bind:reportModalShow={reportPollModalShow}
 />
-
- 
 
 <style>
 	.poll-thumbnail-shadow {
