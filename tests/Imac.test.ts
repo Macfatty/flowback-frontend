@@ -13,7 +13,7 @@ test('Imac-Test', async ({ page }) => {
     await createGroup(page, group)
 
     const rand = Math.random().toString(36).slice(2, 10);
-    await createArea(page, group, "Tag imact test ")
+    await createArea(page, group, "Tag imact test " + rand)
 
     await gotoGroup(page, group);
 
@@ -36,7 +36,8 @@ test('Imac-Test', async ({ page }) => {
 
     await fastForward(page, 3);
 
-    await page.waitForTimeout(425000);
+    //TODO Make the test shorter. There's a way to do this in pollCreate with all of the phase times being identical.
+    await page.waitForTimeout(490000);
 
     await page.reload();
 

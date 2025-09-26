@@ -8,7 +8,12 @@
 	import { _ } from 'svelte-i18n';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import { onMount } from 'svelte';
-	import { getPhase, getPhaseUserFriendlyNameWithNumber, nextPhase } from './functions';
+	import {
+		getPhase,
+		getPhaseUserFriendlyNameWithNumber,
+		imacFormatting,
+		nextPhase
+	} from './functions';
 	import { getPermissionsFast } from '$lib/Generic/GenericFunctions';
 	import Select from '$lib/Generic/Select.svelte';
 	import { getTags } from '$lib/Group/functions';
@@ -331,7 +336,7 @@
 			{/if}
 
 			{#if poll?.interval_mean_absolute_correctness}
-				{$_('Historical imac value')}: {poll.interval_mean_absolute_correctness}
+				{$_('Historical imac value')}: {imacFormatting(poll.interval_mean_absolute_correctness)}
 			{/if}
 
 			{#if poll?.poll_type === 4}

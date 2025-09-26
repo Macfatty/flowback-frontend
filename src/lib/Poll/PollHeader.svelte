@@ -12,7 +12,7 @@
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
-	import { getPhaseUserFriendlyName, nextPhase } from './functions';
+	import { getPhaseUserFriendlyName, imacFormatting, nextPhase } from './functions';
 	import { _ } from 'svelte-i18n';
 	import NewDescription from './NewDescription.svelte';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
@@ -72,7 +72,10 @@
 				() => ((deletePollModalShow = true), (choicesOpen = false)),
 				() => ((reportPollModalShow = true), (choicesOpen = false)),
 				...($groupUserStore?.is_admin
-					? [async () => (phase = await nextPhase(poll?.poll_type, $page.params.pollId ?? "", phase))]
+					? [
+							async () =>
+								(phase = await nextPhase(poll?.poll_type, $page.params.pollId ?? '', phase))
+						]
 					: [])
 			]}
 			Class="justify-self-center mt-2"
@@ -85,7 +88,7 @@
 			{$_('Workgroup')}: {poll.work_group_name}
 		{/if}
 		{#if poll?.interval_mean_absolute_correctness}
-			{$_('Historical imac value')}: {poll.interval_mean_absolute_correctness}
+			{$_('Historical imac value')}: {imacFormatting(poll.interval_mean_absolute_correctness)}
 		{/if}
 		{#if poll?.poll_type === 4}
 			<HeaderIcon Class="cursor-default" icon={faAlignLeft} text={'Text Poll'} />
@@ -147,7 +150,7 @@
 	</div>
 {/if}
 
-<DeletePostModal bind:deleteModalShow={deletePollModalShow} postId={$page.params.pollId ?? ""} />
+<DeletePostModal bind:deleteModalShow={deletePollModalShow} postId={$page.params.pollId ?? ''} />
 
 <ReportPostModal
 	post_type="poll"
