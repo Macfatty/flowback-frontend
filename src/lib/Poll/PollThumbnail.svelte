@@ -330,7 +330,6 @@
 				<span class="inline">{poll?.total_comments}</span>
 			</a>
 
-			<!-- Tag -->
 			{#if poll?.poll_type === 4 && tag}
 				<Tag bind:tag />
 			{/if}

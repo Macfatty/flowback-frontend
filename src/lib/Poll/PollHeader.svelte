@@ -19,6 +19,9 @@
 	import ReportPostModal from './ReportPostModal.svelte';
 	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 	import DeletePostModal from './DeletePostModal.svelte';
+	import { fetchRequest } from '$lib/FetchRequest';
+	import type { Tag as TagType } from '$lib/Group/interface';
+	import { onMount } from 'svelte';
 
 	export let poll: poll,
 		displayTag = false,
@@ -28,7 +31,23 @@
 	let deletePollModalShow = false,
 		reportPollModalShow = false,
 		choicesOpen = false,
-		source = new URLSearchParams(window.location.search).get('source');
+		source = new URLSearchParams(window.location.search).get('source'),
+		tag: TagType;
+
+	const getTag = async () => {
+		const { json, res } = await fetchRequest(
+			'GET',
+			`group/${poll.group_id}/tags?id=${poll.tag_id}`
+		);
+
+		if (!res.ok) return;
+
+		tag = json.results[0];
+	};
+
+	onMount(() => {
+		getTag();
+	});
 </script>
 
 <div
@@ -95,9 +114,9 @@
 		{:else if poll?.poll_type === 3}
 			<HeaderIcon Class="cursor-default" icon={faCalendarAlt} text={'Date Poll'} />
 		{/if}
-		<!-- Group Profile -->
-		{#if displayTag}
-			<Tag tag={{ name: poll?.tag_name, id: poll?.tag_id, active: true, imac: 0 }} />
+
+		{#if displayTag && tag}
+			<Tag bind:tag />
 		{/if}
 		{#if env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE'}
 			<a
