@@ -63,6 +63,7 @@
 		}
 
 		if (env.PUBLIC_EMAIL_REGISTRATION !== 'TRUE') login();
+		else goto('/login');
 	}
 
 	const login = async () => {
