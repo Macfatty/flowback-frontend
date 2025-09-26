@@ -330,6 +330,10 @@
 				<Tag bind:tag />
 			{/if}
 
+			{#if poll?.interval_mean_absolute_correctness}
+				{$_('Historical imac value')}: {poll.interval_mean_absolute_correctness}
+			{/if}
+
 			{#if poll?.poll_type === 4}
 				<!-- Phase -->
 				<div class="text-sm font-semibold text-primary dark:text-secondary">
