@@ -22,6 +22,7 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { Tag as TagType } from '$lib/Group/interface';
 	import { onMount } from 'svelte';
+	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 
 	export let poll: poll,
 		displayTag = false,
@@ -118,21 +119,20 @@
 		{#if displayTag && tag}
 			<Tag bind:tag />
 		{/if}
+
 		{#if env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE'}
 			<a
 				href={`/groups/${$page.params.groupId}`}
 				class:hover:underline={poll?.group_joined}
 				class="text-black dark:text-darkmodeText"
 			>
-				<img
-					class="h-8 w-8 inline rounded-full break-word"
-					src={poll?.group_image ? `${env.PUBLIC_API_URL}${poll?.group_image}` : DefaultBanner}
-					alt="group thumbnail"
-					on:error={(e) => onThumbnailError(e, DefaultBanner)}
+				<ProfilePicture
+					displayName
+					profilePicture={poll?.group_image}
+					username={poll?.group_name}
 				/>
-				<span class="inline break-word">{poll?.group_name}</span>
 			</a>
-			<!-- Current Phase -->
+
 			{#if pollType === 4}
 				<div>
 					{$_('Current phase')}:

@@ -62,7 +62,7 @@
 			return;
 		}
 
-		login();
+		if (env.PUBLIC_EMAIL_REGISTRATION !== 'TRUE') login();
 	}
 
 	const login = async () => {
@@ -121,27 +121,16 @@
 		verification_code = urlParams.get('verification_code') || '';
 	});
 
-	$: {
-		username;
-		validateUsername();
-	}
+	$: username && validateUsername();
 </script>
 
 <Loader bind:loading>
 	<form class="gap-6 p-6 mb-4 flex flex-col items-center" on:submit|preventDefault={verifyAccount}>
-		<!-- <span
-			>{$_(
-				`We have sent a verification code to the provided email. Don't forget to check your junk mail!`
-			)}</span
-		> -->
 		{#if !$page.url.searchParams.get('verification_code')}
 			<TextInput label={'Verification Code'} bind:value={verification_code} required />
 		{/if}
 
 		<TextInput label={'Username'} bind:value={username} required />
-		<!-- {#if usernameError}
-			<p class="text-red-500 text-sm">{$_(usernameError)}</p>
-		{/if} -->
 		<TextInput label={'Choose a Password'} bind:value={password} type={'password'} required />
 		<RadioButtons
 			label="Do you want to receive Email Notifications?"
