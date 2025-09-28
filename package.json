@@ -1,6 +1,6 @@
 {
     "name": "flowback",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "scripts": {
         "dev": "vite dev",
         "comment": "What even is this? TODO: fix later",
