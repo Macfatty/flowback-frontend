@@ -85,6 +85,11 @@ export async function register(page: any) {
     await page.getByLabel('Verification Code * 13/').click();
     await page.getByLabel('Verification Code * 13/').press('Control+a');
     await page.getByLabel('Verification Code * 13/').fill(registrationCode.replace("\"", "").replace("\"", ""));
+    
+    //TODO Fix so it doesn't need to doubble click
+    await page.waitForTimeout(500)
+    await page.getByRole('button', { name: 'Send' }).click();
+    await page.waitForTimeout(500)
     await page.getByRole('button', { name: 'Send' }).click();
 
     await expect(page.getByText('Success')).toBeVisible();

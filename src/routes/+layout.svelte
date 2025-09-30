@@ -142,6 +142,7 @@
 	initializeLocalization();
 
 	onMount(async () => {
+		await setUserGroupInfo();
 		groupUserPermissionStore.set(await setUserGroupPermissionInfo($groupUserStore));
 		isBrowser = true;
 		getWorkingGroupList();
