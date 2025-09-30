@@ -73,18 +73,6 @@ test('Delete Group Invite', async ({ page }) => {
     await deleteGroup(page)
 })
 
-// TODO: Have some "Dangerous tests" section?
-test('Delete Many Group', async ({ page }) => {
-    test.setTimeout(1)
-    await login(page)
-
-    for (let i = 0; i < 10; i++) {
-        await gotoFirstGroup(page)
-        await deleteGroup(page)
-    }
-})
-
-
 test('Create-Delete-Group', async ({ page }) => {
     await login(page);
 

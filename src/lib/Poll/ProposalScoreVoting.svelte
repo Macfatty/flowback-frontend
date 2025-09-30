@@ -200,7 +200,7 @@
 	<div class="mt-4 h-[100%]">
 		{#if proposals}
 			{#key needsReload}
-				{#each proposals as proposal}
+				{#each proposals as proposal, i}
 					<div class="border-b-2 border-gray-300 select-none">
 						<Proposal
 							bind:proposalsToPredictionMarket
@@ -228,6 +228,7 @@
 											if (phase === 'vote' && voting === delegateVoting) return 'gray';
 											else return 'purple';
 										})()}
+										id={i.toString()}
 									/>
 								{/key}
 							{/if}

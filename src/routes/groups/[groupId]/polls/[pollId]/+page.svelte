@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Comments from '$lib/Comments/Comments.svelte';
-	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
+	import { groupUserPermissionStore } from '$lib/Group/interface';
 	import { onMount } from 'svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { page } from '$app/stores';
