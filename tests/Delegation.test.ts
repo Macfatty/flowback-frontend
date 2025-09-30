@@ -1,7 +1,7 @@
 import { test, chromium, expect } from '@playwright/test';
 import { login } from './generic';
 import { createPoll, createProposal, delegateVote, fastForward, goToPost } from './poll';
-import { createGroup, gotoGroup, joinGroup } from './group';
+import { createGroup, deleteGroup, gotoGroup, joinGroup } from './group';
 import { becomeDelegate } from './delegation';
 import { assignPermission, createPermission } from './permission';
 
@@ -68,6 +68,10 @@ test('Delegation-Poll', async ({ page }) => {
 
     await expect(page.getByText('Vote Failed').first()).not.toBeVisible();
 
-    // await deleteGroup(page, group)
+    await expect(bPage.locator('#track-container-0')).toContainClass('disabled')
+    await expect(page.locator('#track-container-0')).not.toContainClass('disabled')
+
+    await gotoGroup(page, group)
+    await deleteGroup(page, group)
 
 });

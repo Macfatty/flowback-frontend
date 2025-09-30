@@ -81,7 +81,7 @@ export async function deleteGroup(page: any, group = { name: 'Test Group', publi
 }
 
 export async function createArea(page: any, group = { name: 'Test Group', public: false }, tag = "Test Tag") {
-    await page.getByRole('button', { name: 'Edit Group' }).click();
+    await page.getByRole('button', { name: 'Edit Group' }).dispatchEvent('click')
     await expect(page.getByRole('button', { name: 'Areas' })).toBeVisible();
     await page.getByRole('button', { name: 'Areas' }).click();
     await page.getByLabel('Tag * 0/').click();

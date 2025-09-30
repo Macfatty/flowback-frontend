@@ -62,7 +62,7 @@
 			return;
 		}
 
-		if (env.PUBLIC_EMAIL_REGISTRATION !== 'TRUE') login();
+		if (!(env.PUBLIC_EMAIL_REGISTRATION === 'FALSE')) login();
 		else goto('/login');
 	}
 
@@ -94,7 +94,7 @@
 			});
 		}
 
-		//For one group flowback, immediately join the list of groups
+		//For one group flowback, immediately join the single group
 		if (env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') {
 			const { res } = await fetchRequest('POST', `group/1/join`, { to: 1 });
 			if (!res.ok) return;

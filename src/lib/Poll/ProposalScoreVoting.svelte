@@ -171,8 +171,6 @@
 	};
 
 	const changingVote = (score: number | string, proposalId: number) => {
-		console.log('HELLOOOO', voting, delegateVoting);
-
 		if (!voting) return;
 
 		if (phase === 'delegate_vote') {
@@ -189,12 +187,6 @@
 	};
 
 	const getScore = (proposal: proposal) => {
-		console.log(
-			delegateVoting,
-			'VOTING',
-			proposal,
-			delegateVoting?.find((vote) => vote.proposal === proposal.id)
-		);
 		if (phase === 'delegate_vote')
 			return delegateVoting?.find((vote) => vote.proposal === proposal.id)?.score ?? 0;
 		else if (phase === 'vote')
@@ -208,7 +200,7 @@
 	<div class="mt-4 h-[100%]">
 		{#if proposals}
 			{#key needsReload}
-				{#each proposals as proposal}
+				{#each proposals as proposal, i}
 					<div class="border-b-2 border-gray-300 select-none">
 						<Proposal
 							bind:proposalsToPredictionMarket
@@ -236,6 +228,7 @@
 											if (phase === 'vote' && voting === delegateVoting) return 'gray';
 											else return 'purple';
 										})()}
+										id={i.toString()}
 									/>
 								{/key}
 							{/if}
