@@ -6,8 +6,6 @@
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import { faAlignLeft } from '@fortawesome/free-solid-svg-icons/faAlignLeft';
 	import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons/faCalendarAlt';
-	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
-	import DefaultBanner from '$lib/assets/default_banner_group.png';
 	import { env } from '$env/dynamic/public';
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -132,6 +130,9 @@
 					username={poll?.group_name}
 				/>
 			</a>
+
+			{$_('Allowed to vote:')}
+			{$_($groupUserPermissionStore?.allow_vote.toString())}
 
 			{#if pollType === 4}
 				<div>

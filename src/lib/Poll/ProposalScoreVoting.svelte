@@ -171,8 +171,6 @@
 	};
 
 	const changingVote = (score: number | string, proposalId: number) => {
-		console.log('HELLOOOO', voting, delegateVoting);
-
 		if (!voting) return;
 
 		if (phase === 'delegate_vote') {
@@ -189,12 +187,6 @@
 	};
 
 	const getScore = (proposal: proposal) => {
-		console.log(
-			delegateVoting,
-			'VOTING',
-			proposal,
-			delegateVoting?.find((vote) => vote.proposal === proposal.id)
-		);
 		if (phase === 'delegate_vote')
 			return delegateVoting?.find((vote) => vote.proposal === proposal.id)?.score ?? 0;
 		else if (phase === 'vote')
