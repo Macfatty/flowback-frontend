@@ -212,10 +212,6 @@
 						>
 							{#if phase === 'delegate_vote' || phase === 'vote'}
 								{@const score = getScore(proposal)}
-								{$groupUserStore?.delegate_pool_id}
-								<!-- {score}
-								{voting.length}
-								{delegateVoting.length} -->
 								{#key voting || delegateVoting}
 									<VotingSlider
 										bind:phase
