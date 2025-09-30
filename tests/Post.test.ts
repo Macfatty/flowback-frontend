@@ -64,8 +64,8 @@ test('Proposal-Spam-Test', async ({ page }) => {
     expect(await expect(page.getByText('Description 0 Description 0 0')).toBeVisible())
 
     // Wait for all of the "Successfully added proposal" to go away before screenshotting, since they don't remain on reload 
-    await page.waitForTimeout(10000)
-    await page.mouse.wheel(200000,0)
+    await page.waitForTimeout(8000)
+    await page.mouse.wheel(-200000,0)
     await page.screenshot({ path: 'tests/screenshots/proposals.png', fullPage:true });
     // await expect(page).toHaveScreenshot('tests/screenshots/proposals.png');
     
