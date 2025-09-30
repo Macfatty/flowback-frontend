@@ -16,6 +16,65 @@ test('Go-To-Post', async ({ page }) => {
     await goToPost(page, poll);
 })
 
+test('Proposal-Test', async ({ page }) => {
+    await login(page);
+
+    let group = { name: "Test Group Poll", public: false }
+
+    await createGroup(page, group)
+
+    await createArea(page, group, "Tag 1")
+
+    await gotoGroup(page, group);
+
+    await createPoll(page, { phase_time: 1 });
+
+    await areaVote(page);
+
+    await fastForward(page, 1);
+
+    await createProposal(page, { title: "Lol", description: "Description funny" });
+
+})
+
+test('Proposal-Spam-Test', async ({ page }) => {
+    test.setTimeout(120000)
+    await login(page);
+
+    const rand = Math.random().toString(36).slice(2, 10);
+    let group = { name: "Test Group Proposals " + rand, public: false }
+
+    await createGroup(page, group)
+
+    await createArea(page, group, "Tag 1")
+
+    await gotoGroup(page, group);
+
+    await createPoll(page, { phase_time: 1 });
+
+    await areaVote(page);
+
+    await fastForward(page, 1);
+
+    for (let i = 0; i < 10; i++) {
+        await createProposal(page, { title: `Title {i}`, description: `Description ${i}` });
+    }
+
+    expect(await expect(page.getByText('Description 9 Description 9 0')).toBeVisible())
+    expect(await expect(page.getByText('Description 0 Description 0 0')).toBeVisible())
+
+    // Wait for all of the "Successfully added proposal" to go away before screenshotting, since they don't remain on reload 
+    await page.waitForTimeout(10000)
+    await page.screenshot({ path: 'tests/proposals.png', fullPage:true });
+    await expect(page).toHaveScreenshot('tests/proposals.png');
+    
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+
+    await expect(page).toHaveScreenshot('tests/proposals.png');
+
+
+})
 
 test('Poll-Start-To-Finish', async ({ page }) => {
     await login(page);

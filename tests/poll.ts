@@ -23,7 +23,7 @@ export async function createPoll(page: any, {
     await page.getByRole('button', { name: 'Display advanced time settings' }).click();
     await page.locator('fieldset').filter({ hasText: 'Public? Yes No' }).getByLabel('Yes').check();
     await page.locator('fieldset').filter({ hasText: 'Fast Forward? Yes No' }).getByLabel('Yes').check();
-    
+
     await page.getByRole('spinbutton').fill(phase_time.toString());
 
     await page.getByRole('button', { name: 'Post' }).click();
@@ -58,12 +58,18 @@ export async function areaVote(page: any, {
     await expect(page.getByText('Successfully voted for area')).toBeVisible();
 }
 
+//Only works in proposal phase
 export async function createProposal(page: any, {
     title = 'Test Proposal',
     description = 'Test Description',
 } = {}) {
-    //Proposal phase
-    await page.getByRole('button', { name: 'Add Proposal' }).click();
+    
+    try {
+        await expect(page.getByRole('button', { name: 'Add Proposal' })).not.toBeDisabled({timeout:300})
+        await page.getByRole('button', { name: 'Add Proposal' }).click();
+    }
+    catch {}
+
     await page.getByRole('textbox', { name: 'Title * 0/' }).click();
     await page.getByRole('textbox', { name: 'Title * 0/' }).fill(title);
     await page.getByLabel('Description  0/').click();
@@ -71,22 +77,14 @@ export async function createProposal(page: any, {
     await page.getByRole('button', { name: 'Cancel' }).click();
     await page.getByRole('button', { name: 'Add Proposal' }).click();
     await page.getByRole('textbox', { name: 'Title * 0/' }).click();
-    await page.getByRole('textbox', { name: 'Title * 0/' }).fill('description');
+    await page.getByRole('textbox', { name: 'Title * 0/' }).fill(description);
     await page.getByText('Description 0/').click();
     await page.getByLabel('Description  0/').click();
-    await page.getByLabel('Description  0/').fill('description');
+    await page.getByLabel('Description  0/').fill(description);
     await page.getByRole('button', { name: 'Confirm' }).click();
-    await expect(page.getByText('Successfully added proposal')).toBeVisible();
-    // await page.getByRole('button', { name: 'Add Proposal' }).click();
-
-    await page.getByRole('textbox', { name: 'Title * 0/' }).click();
-    await page.getByRole('textbox', { name: 'Title * 0/' }).fill('Proposal Test 3');
-    await page.getByText('Description 0/').click();
-    await page.getByLabel('Description  0/').click();
-    await page.getByLabel('Description  0/').fill('Proposal Test 3');
+    await expect(page.getByText('Successfully added proposal').first()).toBeVisible();
     await page.getByRole('button', { name: 'Confirm' }).click();
-    await expect(page.getByText('Successfully added proposal')).toBeVisible();
-    // await page.getByRole('button', { name: 'Proposal Test 3 Proposal Test' }).click();
+    await expect(page.getByText('Successfully added proposal').first()).toBeVisible();
 }
 
 export async function predictionStatementCreate(page: any) {
@@ -125,7 +123,7 @@ export async function predictionProbability(page: any) {
     await page.getByRole('button', { name: 'See More' }).nth(0).click();
     await expect(page.locator('#track-container-0')).toBeVisible();
     await page.waitForTimeout(300);
-    
+
     await page.locator('#track-container-0 > div').nth(5).click();
     await expect(page.getByText('Probability successfully sent').nth(0)).toBeVisible();
     await page.waitForTimeout(300);
