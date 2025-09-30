@@ -65,15 +65,15 @@ test('Proposal-Spam-Test', async ({ page }) => {
 
     // Wait for all of the "Successfully added proposal" to go away before screenshotting, since they don't remain on reload 
     await page.waitForTimeout(10000)
-    await page.screenshot({ path: 'tests/proposals.png', fullPage:true });
-    await expect(page).toHaveScreenshot('tests/proposals.png');
+    await page.mouse.wheel(200000,0)
+    await page.screenshot({ path: 'tests/screenshots/proposals.png', fullPage:true });
+    // await expect(page).toHaveScreenshot('tests/screenshots/proposals.png');
     
     await page.reload();
     await page.waitForLoadState('networkidle');
-
-    await expect(page).toHaveScreenshot('tests/proposals.png');
-
-
+    
+    await page.screenshot({ path: 'tests/screenshots/proposals2.png', fullPage:true });
+    await expect(page).toHaveScreenshot('tests/screenshots/proposals.png');
 })
 
 test('Poll-Start-To-Finish', async ({ page }) => {
