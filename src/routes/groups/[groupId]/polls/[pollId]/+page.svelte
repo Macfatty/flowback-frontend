@@ -158,7 +158,7 @@
 							}}>{$_('Add Proposal')}</Button
 						>
 					</div>
-					<div slot="right" class="relative h-full">
+					<div slot="right" class="relative h-[500px]">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
 								<span
@@ -212,7 +212,7 @@
 							}}>{$_('Create Consequence')}</Button
 						>
 					</div>
-					<div slot="right" class="relative h-full overflow-hidden">
+					<div slot="right" class="relative h-[500px] overflow-hidden">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
 								<div class="font-semibold text-primary dark:text-secondary text-lg">
@@ -245,7 +245,7 @@
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
-						<div class="max-h-full overflow-y-auto">
+						<div class="max-h-[500px] overflow-y-auto">
 							<ProposalScoreVoting bind:comments bind:phase bind:proposals bind:selectedProposal />
 						</div>
 					</div>
