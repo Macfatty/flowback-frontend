@@ -141,7 +141,7 @@
 				<!-- PHASE 2: PROPOSAL CREATION -->
 			{:else if phase === 'proposal'}
 				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-[380px] relative">
+					<div slot="left" class="h-[420px] relative">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
@@ -158,7 +158,7 @@
 							}}>{$_('Add Proposal')}</Button
 						>
 					</div>
-					<div slot="right" class="relative h-[380px]">
+					<div slot="right" class="relative h-[420px]">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
 								<span
@@ -189,7 +189,7 @@
 				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
 			{:else if phase === 'prediction_statement'}
 				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-[380px] relative">
+					<div slot="left" class="h-[420px] relative">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
@@ -212,7 +212,7 @@
 							}}>{$_('Create Consequence')}</Button
 						>
 					</div>
-					<div slot="right" class="relative h-[380px] overflow-hidden">
+					<div slot="right" class="relative h-[420px] overflow-hidden">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
 								<div class="font-semibold text-primary dark:text-secondary text-lg">
@@ -241,11 +241,11 @@
 				<!-- PHASE 4: PREDICTION BETTING -->
 			{:else if phase === 'prediction_bet'}
 				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-[380px]">
+					<div slot="left" class="h-[420px]">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
-						<div class="max-h-[380px] overflow-y-auto">
+						<div class="max-h-[420px] overflow-y-auto">
 							<ProposalScoreVoting bind:comments bind:phase bind:proposals bind:selectedProposal />
 						</div>
 					</div>
@@ -272,7 +272,7 @@
 				<!-- PHASE 5: DELEGATE VOTING -->
 			{:else if phase === 'delegate_vote'}
 				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-[380px]">
+					<div slot="left" class="h-[420px]">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
@@ -302,7 +302,7 @@
 				<!-- PHASE 6: NON-DELEGATE VOTING -->
 			{:else if phase === 'vote'}
 				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-[380px]" id="proposals-section">
+					<div slot="left" class="h-[420px]" id="proposals-section">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
@@ -333,7 +333,7 @@
 				<!-- PHASE 7: RESULTS AND EVALUATION -->
 			{:else if phase === 'result' || phase === 'prediction_vote'}
 				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-[380px] overflow-y-auto">
+					<div slot="left" class="h-[420px] overflow-y-auto">
 						{#if proposals}
 							<PredictionStatements
 								bind:phase
