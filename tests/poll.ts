@@ -84,20 +84,18 @@ export async function createProposal(page: any, {
 
 export async function predictionStatementCreate(page: any, proposal = { title: "Proposal Title" }, prediction = { title: "Prediction Title" }) {
     expect(await page.locator('#poll-timeline').filter({ hasText: 'Phase 3. Prediction statements creation' }))
+    await page.waitForTimeout(300);
     if (await page.locator(`#${idfy(proposal.title)}-selection`).isVisible())
         await page.locator(`#${idfy(proposal.title)}-selection`).first().click();
 
     expect(await page.getByText('To make a consequence, please')).not.toBeVisible()
 
-    // await page.locator('#test-proposal').getByRole('button').first().click();
-    // await page.getByRole('button', { name: 'Create Consequence' }).nth(0).click();
-
-    await page.getByRole('textbox', { name: 'Title * 0/' }).click();
     await page.getByRole('textbox', { name: 'Title * 0/' }).fill(prediction.title);
     await page.getByLabel('Description  0/').fill('Prediction 1');
     await page.locator('.date-time-field > input').nth(0).fill('2000-01-01 00:00:00');
     await page.locator('#poll-structure').click();
     await page.getByRole('button', { name: 'Submit' }).click();
+
     expect(await page.getByText('Successfully created').first()).toBeVisible();
 }
 
