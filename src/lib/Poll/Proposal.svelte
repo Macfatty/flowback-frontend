@@ -2,7 +2,7 @@
 	import type { Comment, Phase, proposal } from './interface';
 	import { _ } from 'svelte-i18n';
 	import { onMount } from 'svelte';
-	import { checkForLinks, idfy } from '$lib/Generic/GenericFunctions';
+	import { checkForLinks} from '$lib/Generic/GenericFunctions';
 	import {
 		faChevronRight,
 		faSquareCheck,
@@ -14,6 +14,7 @@
 	import { commentsStore } from '$lib/Comments/commentStore';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import { predictionStatementsStore } from './PredictionMarket/interfaces';
+	import { idfy } from '$lib/Generic/GenericFunctions2';
 
 	export let proposal: proposal,
 		Class = '',

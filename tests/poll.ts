@@ -1,5 +1,4 @@
-// import { idfy } from '$lib/Generic/GenericFunctions';
-// import { idfy } from '$lib/Generic/GenericFunctions';
+import { idfy } from '$lib/Generic/GenericFunctions2';
 import { expect } from '@playwright/test';
 
 export async function fastForward(page: any, times = 1) {

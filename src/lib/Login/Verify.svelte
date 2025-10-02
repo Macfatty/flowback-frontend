@@ -13,6 +13,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import { userStore } from '$lib/User/interfaces';
 
 	let verification_code: string,
 		password: string,
@@ -35,6 +36,7 @@
 		}
 	};
 
+	//Both verifies and logs in
 	async function verifyAccount() {
 		loading = true;
 		const { res, json } = await fetchRequest(
@@ -44,7 +46,6 @@
 			false
 		);
 
-		loading = false;
 		if (!res.ok) {
 			if (
 				json?.detail?.verification_code ||
@@ -56,37 +57,19 @@
 				ErrorHandlerStore.set({ message: json?.detail?.non_field_errors[0], success: false });
 			else if (json?.detail?.username)
 				ErrorHandlerStore.set({ message: json?.detail?.username[0], success: false });
-			else if (json?.detail[0] === 'Email already registered') login();
+			else if (json?.detail[0] === 'Email already registered')
+				ErrorHandlerStore.set({ message: json?.detail[0], success: false });
 			else ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
 
 			return;
 		}
 
-		if (!(env.PUBLIC_EMAIL_REGISTRATION === 'FALSE')) login();
-		else goto('/login');
-	}
-
-	const login = async () => {
-		// Getting username which is stored in the store from Register.svelte
-		// let email = '';
-		// mailStore.subscribe((mail) => (email = mail));
-		const { json, res } = await fetchRequest(
-			'POST',
-			'login',
-			{ username: $mailStore, password },
-			false
-		);
-
-		loading = false;
-
-		if (!res.ok || !json.token) {
-			ErrorHandlerStore.set({ message: 'Something went wrong', success: false });
-			return;
-		}
-
 		//Done with account registration, redirect
 		ErrorHandlerStore.set({ message: 'Success', success: true });
+
 		localStorage.setItem('token', json.token);
+
+		loading = false;
 
 		{
 			const { res, json } = await fetchRequest('POST', 'user/update', {
@@ -94,21 +77,24 @@
 			});
 		}
 
+		{
+			const { json } = await fetchRequest('GET', 'user');
+			userStore.set(json);
+		}
+
 		//For one group flowback, immediately join the single group
 		if (env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') {
 			const { res } = await fetchRequest('POST', `group/1/join`, { to: 1 });
-			if (!res.ok) return;
-
-			// if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') becomeMemberOfGroup(group?.blockchain_id);
-
-			goto('/home');
-
-			return;
+			if (!res.ok) {
+				ErrorHandlerStore.set({
+					message: 'Account was created but failed to join group',
+					success: false
+				});
+			}
 		}
 
-		//If multi-group flowback, just go to home
 		goto('/home');
-	};
+	}
 
 	const getVerificationCodeFromURL = () => {
 		verification_code = $page.url.searchParams.get('verification_code') || '';
