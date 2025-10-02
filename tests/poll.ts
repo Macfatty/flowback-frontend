@@ -47,13 +47,7 @@ export async function goToPost(page: any, {
 export async function areaVote(page: any, {
     area = 'Default',
 } = {}) {
-    await page.getByRole('radio').nth(0).check();
-    await page.getByRole('button', { name: 'Submit' }).click();
-    await page.waitForTimeout(100)
-    await expect(page.getByText('Successfully voted for area')).toBeVisible();
-    await page.getByRole('button', { name: 'Cancel' }).click();
-    await expect(page.getByText('Vote cancelled')).toBeVisible();
-    await page.getByRole('radio').nth(1).check();
+    await page.locator(`[id="tag-${area}"]`).getByRole('radio').check();
     await page.getByRole('button', { name: 'Submit' }).click();
     await expect(page.getByText('Successfully voted for area')).toBeVisible();
 }

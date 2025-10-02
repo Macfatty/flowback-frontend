@@ -9,7 +9,7 @@ const config: PlaywrightTestConfig = {
 		reuseExistingServer: true,
 	},
 	timeout: 30000,
-	workers:10
+	workers:1
 
 };
 

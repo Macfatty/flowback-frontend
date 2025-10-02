@@ -77,7 +77,7 @@
 	<div class="flex-grow flex flex-col gap-3 overflow-auto">
 		{#each tags as tag}
 			{#if tag.active}
-				<div class="flex items-center space-x-3 flex-wrap">
+				<div id={`tag-${tag.name}`} class="flex items-center space-x-3 flex-wrap">
 					<input
 						type="radio"
 						name="area"
