@@ -24,12 +24,14 @@ test('Imac-Test', async ({ page }) => {
 
     await fastForward(page, 1);
 
-    await createProposal(page, {title: "Test 1"});
-    await createProposal(page, {title: "Test 2"});
+    const proposal = {title: "Test 1"}
+    const proposal2 = {title: "Test 2"}
+    await createProposal(page, proposal);
+    await createProposal(page, proposal2);
 
     await fastForward(page, 1);
 
-    await predictionStatementCreate(page);
+    await predictionStatementCreate(page, proposal);
 
     // await fastForward(page, 1);
 

@@ -59,11 +59,8 @@ export async function createProposal(page: any, {
     description = 'Test Description',
 } = {}) {
 
-    try {
-        expect(await page.getByRole('button', { name: 'Add Proposal' })).not.toBeDisabled({ timeout: 300 })
+    if (!await page.getByRole('button', { name: 'Add Proposal' }).isDisabled())
         await page.getByRole('button', { name: 'Add Proposal' }).click();
-    }
-    catch { }
 
     await page.getByRole('textbox', { name: 'Title * 0/' }).click();
     await page.getByRole('textbox', { name: 'Title * 0/' }).fill(title);
@@ -99,14 +96,15 @@ export async function predictionStatementCreate(page: any, proposal = { title: "
     expect(await page.getByText('Successfully created').first()).toBeVisible();
 }
 
-export async function predictionProbability(page: any, proposal = { title: "Proposal Title" }, prediction = { title: "Prediction Title", vote: 1 }) {
-    //Prediction Betting
+//Prediction Betting
+export async function predictionProbability(page: any, proposal = { title: "Proposal Title" },
+    prediction = { title: "Prediction Title", vote: 1 }) {
     expect(await page.locator('#poll-timeline').filter({ hasText: 'Current: Phase 4. Consequence' }))
 
     // await page.locator(`#${idfy(proposal.title)}`).getByRole('button', { name: 'See More' }).click();
+    await page.locator(`#${idfy(proposal.title)}`).first().getByRole('button', { hasText: "See More" }).click();
 
     await page.getByRole('button', { name: 'See More' }).nth(0).click();
-    await page.getByRole('button', { name: 'See More' }).nth(1).click();
     await page.locator('#Prediction > div:nth-child(3)').click();
     await page.waitForTimeout(300);
     expect(await page.getByText('Probability successfully sent')).toBeVisible();

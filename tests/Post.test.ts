@@ -94,20 +94,20 @@ test('Proposal-Spam-Test', async ({ page }) => {
 
     await createPoll(page, { phase_time: 1 });
 
-    await areaVote(page);
+    await areaVote(page, {area:"Tag 1"});
 
     await fastForward(page, 1);
 
     for (let i = 0; i < 10; i++) {
-        await createProposal(page, { title: `Title {i}`, description: `Description ${i}` });
+        await createProposal(page, { title: `Title ${i}`, description: `Description ${i}` });
     }
 
-    expect(await expect(page.getByText('Description 9 Description 9 0')).toBeVisible())
-    expect(await expect(page.getByText('Description 0 Description 0 0')).toBeVisible())
+    expect(await expect(page.getByText('Title 9 Description 9 0')).toBeVisible())
+    expect(await expect(page.getByText('Title 0 Description 0 0')).toBeVisible())
 
     // Wait for all of the "Successfully added proposal" to go away before screenshotting, since they don't remain on reload 
     await page.waitForTimeout(8000)
-    await page.mouse.wheel(-200000, 0)
+    await page.mouse.wheel(0, -20000)
     await page.screenshot({ path: 'tests/screenshots/proposals.png', fullPage: true });
 
     await page.reload();
