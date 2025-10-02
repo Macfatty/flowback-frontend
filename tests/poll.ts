@@ -1,5 +1,5 @@
 // import { idfy } from '$lib/Generic/GenericFunctions';
-import { idfy } from '$lib/Generic/GenericFunctions';
+// import { idfy } from '$lib/Generic/GenericFunctions';
 import { expect } from '@playwright/test';
 
 export async function fastForward(page: any, times = 1) {
@@ -86,7 +86,7 @@ export async function createProposal(page: any, {
 export async function predictionStatementCreate(page: any, proposal = { title: "Proposal Title" }, prediction = { title: "Prediction Title" }) {
     // Prediction Statement Phase
     await page.waitForTimeout(600);
-    await page.locator(`#${idfy(proposal.title)}`)
+    // await page.locator(`#${idfy(proposal.title)}`)
     await page.getByRole('button', { name: 'See More' }).nth(1).click();
     await page.getByRole('button', { name: 'See More' }).nth(0).click();
 
