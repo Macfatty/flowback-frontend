@@ -2,7 +2,7 @@
 	import type { Comment, Phase, proposal } from './interface';
 	import { _ } from 'svelte-i18n';
 	import { onMount } from 'svelte';
-	import { checkForLinks } from '$lib/Generic/GenericFunctions';
+	import { checkForLinks, idfy } from '$lib/Generic/GenericFunctions';
 	import {
 		faChevronRight,
 		faSquareCheck,
@@ -63,6 +63,7 @@
 	class:!bg-slate-700={selectedProposal === proposal && $darkModeStore}
 	class:border-l-2={selectedProposal === proposal}
 	class:border-primary={selectedProposal === proposal}
+	id={`${idfy(proposal.title)}`}
 >
 	<div class="flex gap-2 items-center">
 		{#if phase === 'prediction_statement'}

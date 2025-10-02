@@ -121,3 +121,6 @@ export const linkToPost = (postId: number, groupId: number, postType: 'poll' | '
 	return `/groups/${groupId}/${_postType}/${postId}`;
 }
 
+export const idfy = (text: string) => {
+	return text.replace(' ', '-').replace(' ', '-').toLowerCase()
+}

@@ -30,7 +30,7 @@ test('Area Vote', async ({ page }) => {
 
     await createPoll(page, { phase_time: 1 });
 
-    // Testing reduntant voting, canceling and new votes
+    // Testing reduntant voting i.e canceling a vote and voting multiple times
     await page.getByRole('radio').nth(0).check();
     await page.getByRole('button', { name: 'Submit' }).click();
     await expect(page.getByText('Successfully voted for area')).toBeVisible();
@@ -45,10 +45,17 @@ test('Area Vote', async ({ page }) => {
 
     await fastForward(page, 1);
 
+    await page.waitForTimeout(1000)
     await expect(page.getByRole('button', { name: area })).toBeVisible();
-    
-    await page.reload();
 
+    await page.waitForTimeout(8000)
+    await page.mouse.wheel(0, -250000)
+    await page.screenshot({ path: 'tests/screenshots/area.png', fullPage: true });
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+
+    await expect(page).toHaveScreenshot('tests/screenshots/area.png');
     await expect(page.getByRole('button', { name: area })).toBeVisible();
 })
 
@@ -106,7 +113,6 @@ test('Proposal-Spam-Test', async ({ page }) => {
     await page.reload();
     await page.waitForLoadState('networkidle');
 
-    await page.screenshot({ path: 'tests/screenshots/proposals2.png', fullPage: true });
     await expect(page).toHaveScreenshot('tests/screenshots/proposals.png');
 })
 
