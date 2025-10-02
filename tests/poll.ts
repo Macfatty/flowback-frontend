@@ -82,7 +82,7 @@ export async function createProposal(page: any, {
 export async function predictionStatementCreate(page: any, proposal = { title: "Proposal Title" }, prediction = { title: "Prediction Title" }) {
     expect(await page.locator('#poll-timeline').filter({ hasText: 'Phase 3. Prediction statements creation' }))
     await page.waitForTimeout(300);
-    if (await page.locator(`#${idfy(proposal.title)}-selection`).isVisible())
+    if (await page.locator(`#${idfy(proposal.title)}-selection`).first().isVisible())
         await page.locator(`#${idfy(proposal.title)}-selection`).first().click();
 
     expect(await page.getByText('To make a consequence, please')).not.toBeVisible()
@@ -99,34 +99,10 @@ export async function predictionStatementCreate(page: any, proposal = { title: "
 //Prediction Betting
 export async function predictionProbability(page: any, proposal = { title: "Proposal Title" },
     prediction = { title: "Prediction Title", vote: 1 }) {
+
     expect(await page.locator('#poll-timeline').filter({ hasText: 'Current: Phase 4. Consequence' }))
-
-    // await page.locator(`#${idfy(proposal.title)}`).getByRole('button', { name: 'See More' }).click();
-    await page.locator(`#${idfy(proposal.title)}`).first().getByRole('button', { hasText: "See More" }).click();
-
-    await page.getByRole('button', { name: 'See More' }).nth(0).click();
-    await page.locator('#Prediction > div:nth-child(3)').click();
-    await page.waitForTimeout(300);
-    expect(await page.getByText('Probability successfully sent')).toBeVisible();
-    await page.locator('#track-container-0 > div:nth-child(5)').click();
-    await page.waitForTimeout(300);
-    await page.getByRole('button', { name: 'See More' }).nth(0).click();
-    expect(await page.locator('#track-container-0')).toBeVisible();
-    await page.waitForTimeout(300);
-
-    await page.locator('#track-container-0 > div').nth(5).click();
-    expect(await page.getByText('Probability successfully sent').nth(0)).toBeVisible();
-    await page.waitForTimeout(300);
-    await page.getByRole('button', { name: 'See More' }).nth(1).click();
-    await page.waitForTimeout(300);
-    // expect(await page.locator('#track-container-0 > div:nth-child(8)')).toBeVisible();
-    // await page.waitForTimeout(200);
-    // await page.locator('#track-container-0 > div:nth-child(6)').click();
-    // await page.locator('#track-container-0 > div:nth-child(5)').click();
-    await page.waitForTimeout(300);
-    await page.getByRole('button', { name: 'Clear probability' }).click();
-    await page.locator('#track-container-0 > div:nth-child(4)').click();
-    await page.waitForTimeout(300);
+    await page.locator(`#${idfy(proposal.title)}`).first().locator('button', { hasText: "See More" }).click();
+    await page.locator(`#track-container- > div:nth-child(${2 + prediction.vote})`).click();
     expect(await page.getByText('Probability successfully sent').nth(0)).toBeVisible();
 
 }

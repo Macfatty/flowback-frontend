@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { areaVote, createPoll, createProposal, delegateVote, fastForward, goToPost, predictionProbability, predictionStatementCreate, results, vote } from './poll';
 import { login, randomString } from './generic';
 import { gotoGroup, createArea, createGroup, deleteGroup } from './group';
+import { idfy } from '$lib/Generic/GenericFunctions2';
 
 test('Go-To-Post', async ({ page }) => {
     await login(page);
@@ -19,11 +20,11 @@ test('Go-To-Post', async ({ page }) => {
 test('Area Vote', async ({ page }) => {
     await login(page);
 
-    let group = { name: "Test Poll Area " + randomString(), public: false }
+    const group = { name: "Test Poll Area " + randomString(), public: false }
 
     await createGroup(page, group)
 
-    let area = "Test Tag " + randomString();
+    const area = "Test Tag " + randomString();
     await createArea(page, group, area)
 
     await gotoGroup(page, group);
@@ -62,7 +63,7 @@ test('Area Vote', async ({ page }) => {
 test('Proposal-Test', async ({ page }) => {
     await login(page);
 
-    let group = { name: "Test Group Poll", public: false }
+    const group = { name: "Test Group Poll", public: false }
 
     await createGroup(page, group)
 
@@ -72,7 +73,7 @@ test('Proposal-Test', async ({ page }) => {
 
     await createPoll(page, { phase_time: 1 });
 
-    await areaVote(page);
+    await areaVote(page, { area: "Tag 1" });
 
     await fastForward(page, 1);
 
@@ -84,7 +85,7 @@ test('Proposal-Spam-Test', async ({ page }) => {
     await login(page);
 
     const rand = randomString();
-    let group = { name: "Test Group Proposals " + rand, public: false }
+    const group = { name: "Test Group Proposals " + rand, public: false }
 
     await createGroup(page, group)
 
@@ -94,7 +95,7 @@ test('Proposal-Spam-Test', async ({ page }) => {
 
     await createPoll(page, { phase_time: 1 });
 
-    await areaVote(page, {area:"Tag 1"});
+    await areaVote(page, { area: "Tag 1" });
 
     await fastForward(page, 1);
 
@@ -120,11 +121,11 @@ test('Proposal-Spam-Test', async ({ page }) => {
 test('Prediction Creation', async ({ page }) => {
     await login(page);
 
-    let group = { name: "Test Poll Prediction " + randomString(), public: false }
+    const group = { name: "Test Poll Prediction " + randomString(), public: false }
 
     await createGroup(page, group)
 
-    let area = "Test Tag " + randomString();
+    const area = "Test Tag " + randomString();
     await createArea(page, group, area)
 
     await gotoGroup(page, group);
@@ -148,11 +149,87 @@ test('Prediction Creation', async ({ page }) => {
 
 })
 
+test('Prediction-Statements', async ({ page }) => {
+    // test.setTimeout(520000);
+
+    await login(page);
+
+    const group = { name: "Test Prediction Statement " + randomString(), public: true }
+
+    await createGroup(page, group)
+
+    const area = "Tag imact test " + Math.random().toString(36).slice(2, 10);
+    await createArea(page, group, area)
+
+    await gotoGroup(page, group);
+
+    //TODO: Make this test faster by decreasing time between phases more
+    await createPoll(page, { phase_time: 0 });
+
+    await areaVote(page, { area });
+
+    await fastForward(page, 1);
+
+    const proposal = { title: "Test 1" }
+    const proposal2 = { title: "Test 2" }
+    await createProposal(page, proposal);
+    await createProposal(page, proposal2);
+
+    await fastForward(page, 1);
+
+    await predictionStatementCreate(page, proposal);
+    await predictionStatementCreate(page, proposal);
+    await predictionStatementCreate(page, proposal);
+    await predictionStatementCreate(page, proposal2);
+    await predictionStatementCreate(page, proposal2);
+
+    //TODO Screenshot tests
+})
+
+test('Prediction-Probability', async ({ page }) => {
+    await login(page);
+
+    const group = { name: "Test Group Probability Voting", public: true }
+
+    await createGroup(page, group)
+
+    const area = "Tag imact test " + randomString()
+    await createArea(page, group, area)
+
+    await gotoGroup(page, group);
+
+    await createPoll(page, { phase_time: 1 });
+
+    await areaVote(page, { area });
+
+    await fastForward(page, 1);
+
+    const proposal = { title: "Test " + randomString() }
+    await createProposal(page, proposal);
+    await createProposal(page, proposal);
+
+    await fastForward(page, 1);
+
+    const prediction = { title: "Test Pred " + randomString(), vote: 2 }
+    await predictionStatementCreate(page, proposal);
+
+    await fastForward(page, 1);
+
+    await predictionProbability(page, proposal, prediction)
+
+    await fastForward(page, 1);
+
+    await page.waitForTimeout(400)
+    await page.reload();
+    await page.locator(`#${idfy(proposal.title)}`).first().locator('button', { hasText: "See More" }).click();
+    expect(await page.getByText('Probability: 40%').click());
+})
+
 
 test('Poll-Start-To-Finish', async ({ page }) => {
     await login(page);
 
-    let group = { name: "Test Group Poll", public: false }
+    const group = { name: "Test Group Poll", public: false }
 
     try {
         await gotoGroup(page, group)
@@ -169,7 +246,7 @@ test('Poll-Start-To-Finish', async ({ page }) => {
 
     await createPoll(page, { phase_time: 1 });
 
-    await areaVote(page);
+    await areaVote(page, { area: "Tag 1" });
 
     await fastForward(page, 1);
 
@@ -221,11 +298,11 @@ test('Date-Poll', async ({ page }) => {
     await expect(page.getByText('Results', { exact: true })).toBeVisible();
 });
 
-test('Thread-Create-Report-Delete', async ({ page }) => {
+test('Thread-Create-Report-Deconste', async ({ page }) => {
 
     await login(page);
 
-    let group = { name: "Test Group Thread", public: false }
+    const group = { name: "Test Group Thread", public: false }
 
     await createGroup(page, group)
 
@@ -260,11 +337,11 @@ test('Thread-Create-Report-Delete', async ({ page }) => {
     await page.locator("#report-description").click();
     await page.locator("#report-description").fill('This is a test report');
     await page.getByRole('button', { name: 'Report', exact: true }).click();
-    await page.getByRole('button', { name: 'Delete Thread' }).click();
+    await page.getByRole('button', { name: 'Deconste Thread' }).click();
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
-    await page.getByRole('button', { name: 'Delete Thread' }).click();
+    await page.getByRole('button', { name: 'Deconste Thread' }).click();
     await page.getByRole('button', { name: 'Remove', exact: true }).click();
-    await expect(page.getByText('Successfully deleted thread')).toBeVisible();
+    await expect(page.getByText('Successfully deconsted thread')).toBeVisible();
 
     await deleteGroup(page, group);
 });
