@@ -47,6 +47,8 @@
 	onMount(() => {
 		getTag();
 	});
+
+	$: poll && getTag()
 </script>
 
 <div

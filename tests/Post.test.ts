@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { areaVote, createPoll, createProposal, delegateVote, fastForward, goToPost, predictionProbability, predictionStatementCreate, results, vote } from './poll';
-import { login } from './generic';
+import { login, randomString } from './generic';
 import { gotoGroup, createArea, createGroup, deleteGroup } from './group';
 
 test('Go-To-Post', async ({ page }) => {
@@ -10,10 +10,53 @@ test('Go-To-Post', async ({ page }) => {
     await gotoGroup(page, group)
 
     //Random poll name
-    const pollTitle = `Test Poll ${Math.floor(Math.random() * 10000)}`;
+    const pollTitle = "Test Poll " + randomString();
     const poll = { title: pollTitle, date: false }
     await createPoll(page, poll);
     await goToPost(page, poll);
+})
+
+test('Area Vote', async ({ page }) => {
+    await login(page);
+
+    let group = { name: "Test Group Area " + randomString(), public: false }
+
+    await createGroup(page, group)
+
+    let area = "Test Tag " + randomString();
+    await createArea(page, group, area)
+
+    await gotoGroup(page, group);
+
+    await createPoll(page, { phase_time: 1 });
+
+    // Testing reduntant voting i.e canceling a vote and voting multiple times
+    await page.getByRole('radio').nth(0).check();
+    await page.getByRole('button', { name: 'Submit' }).click();
+    await expect(page.getByText('Successfully voted for area')).toBeVisible();
+    await page.getByRole('button', { name: 'Cancel' }).click();
+    await expect(page.getByText('Vote cancelled')).toBeVisible();
+    await page.getByRole('radio').nth(1).check();
+    await page.getByRole('button', { name: 'Submit' }).click();
+    await expect(page.getByText('Successfully voted for area')).toBeVisible();
+
+    // Voting for a specified area
+    await areaVote(page, { area });
+
+    await fastForward(page, 1);
+
+    await page.waitForTimeout(1000)
+    await expect(page.getByRole('button', { name: area })).toBeVisible();
+
+    await page.waitForTimeout(8000)
+    await page.mouse.wheel(0, -250000)
+    await page.screenshot({ path: 'tests/screenshots/area.png', fullPage: true });
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+
+    await expect(page).toHaveScreenshot('tests/screenshots/area.png');
+    await expect(page.getByRole('button', { name: area })).toBeVisible();
 })
 
 test('Proposal-Test', async ({ page }) => {
@@ -34,14 +77,13 @@ test('Proposal-Test', async ({ page }) => {
     await fastForward(page, 1);
 
     await createProposal(page, { title: "Lol", description: "Description funny" });
-
 })
 
 test('Proposal-Spam-Test', async ({ page }) => {
     test.setTimeout(120000)
     await login(page);
 
-    const rand = Math.random().toString(36).slice(2, 10);
+    const rand = randomString();
     let group = { name: "Test Group Proposals " + rand, public: false }
 
     await createGroup(page, group)
@@ -65,14 +107,12 @@ test('Proposal-Spam-Test', async ({ page }) => {
 
     // Wait for all of the "Successfully added proposal" to go away before screenshotting, since they don't remain on reload 
     await page.waitForTimeout(8000)
-    await page.mouse.wheel(-200000,0)
-    await page.screenshot({ path: 'tests/screenshots/proposals.png', fullPage:true });
-    // await expect(page).toHaveScreenshot('tests/screenshots/proposals.png');
-    
+    await page.mouse.wheel(-200000, 0)
+    await page.screenshot({ path: 'tests/screenshots/proposals.png', fullPage: true });
+
     await page.reload();
     await page.waitForLoadState('networkidle');
-    
-    await page.screenshot({ path: 'tests/screenshots/proposals2.png', fullPage:true });
+
     await expect(page).toHaveScreenshot('tests/screenshots/proposals.png');
 })
 

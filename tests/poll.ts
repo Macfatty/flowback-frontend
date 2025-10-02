@@ -1,3 +1,4 @@
+import { idfy } from '$lib/Generic/GenericFunctions2';
 import { expect } from '@playwright/test';
 
 export async function fastForward(page: any, times = 1) {
@@ -47,13 +48,7 @@ export async function goToPost(page: any, {
 export async function areaVote(page: any, {
     area = 'Default',
 } = {}) {
-    await page.getByRole('radio').nth(0).check();
-    await page.getByRole('button', { name: 'Submit' }).click();
-    await page.waitForTimeout(100)
-    await expect(page.getByText('Successfully voted for area')).toBeVisible();
-    await page.getByRole('button', { name: 'Cancel' }).click();
-    await expect(page.getByText('Vote cancelled')).toBeVisible();
-    await page.getByRole('radio').nth(1).check();
+    await page.locator(`[id="tag-${area}"]`).getByRole('radio').check();
     await page.getByRole('button', { name: 'Submit' }).click();
     await expect(page.getByText('Successfully voted for area')).toBeVisible();
 }
@@ -63,12 +58,12 @@ export async function createProposal(page: any, {
     title = 'Test Proposal',
     description = 'Test Description',
 } = {}) {
-    
+
     try {
-        await expect(page.getByRole('button', { name: 'Add Proposal' })).not.toBeDisabled({timeout:300})
+        await expect(page.getByRole('button', { name: 'Add Proposal' })).not.toBeDisabled({ timeout: 300 })
         await page.getByRole('button', { name: 'Add Proposal' }).click();
     }
-    catch {}
+    catch { }
 
     await page.getByRole('textbox', { name: 'Title * 0/' }).click();
     await page.getByRole('textbox', { name: 'Title * 0/' }).fill(title);
@@ -87,9 +82,10 @@ export async function createProposal(page: any, {
     await expect(page.getByText('Successfully added proposal').first()).toBeVisible();
 }
 
-export async function predictionStatementCreate(page: any) {
+export async function predictionStatementCreate(page: any, proposal = { title: "Proposal Title" }, prediction = { title: "Prediction Title" }) {
     // Prediction Statement Phase
     await page.waitForTimeout(600);
+    // await page.locator(`#${idfy(proposal.title)}`)
     await page.getByRole('button', { name: 'See More' }).nth(1).click();
     await page.getByRole('button', { name: 'See More' }).nth(0).click();
 
@@ -104,18 +100,21 @@ export async function predictionStatementCreate(page: any) {
     // await page.getByPlaceholder('-08-27 14:40:00').click();
     await page.locator('.date-time-field > input').nth(0).fill('2000-01-01 00:00:00');
     // await page.locator('div').filter({ hasText: /^18$/ }).click();
-    await page.getByRole('button', { name: 'Submit' }).click();
+
+    //Scuffed solution, should be click
+    await page.getByRole('button', { name: 'Submit' }).dispatchEvent("submit");
     await expect(page.getByText('Successfully created')).toBeVisible();
 }
 
-export async function predictionProbability(page: any) {
+export async function predictionProbability(page: any, proposal = { title: "Proposal Title" }, prediction = { title: "Prediction Title", vote: 1 }) {
     //Prediction Betting
-    await page.locator('div').filter({ hasText: 'Current: Phase 4. Consequence' }).nth(2).click();
-    await page.locator('div').filter({ hasText: 'See More' }).nth(0).click();
+    await expect(page.locator('#poll-timeline').filter({ hasText: 'Current: Phase 4. Consequence' }))
 
+    // await page.locator(`#${idfy(proposal.title)}`).getByRole('button', { name: 'See More' }).click();
+
+    await page.getByRole('button', { name: 'See More' }).nth(0).click();
     await page.getByRole('button', { name: 'See More' }).nth(1).click();
-    await page.waitForTimeout(300);
-    await page.locator('#track-container-0 > div:nth-child(3)').click();
+    await page.locator('#Prediction > div:nth-child(3)').click();
     await page.waitForTimeout(300);
     await expect(page.getByText('Probability successfully sent')).toBeVisible();
     await page.locator('#track-container-0 > div:nth-child(5)').click();

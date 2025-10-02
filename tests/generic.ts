@@ -47,7 +47,7 @@ export async function loginEnter(page: any, {
 export async function register(page: any) {
     const randomUSername = Math.random().toString(36).slice(2, 10);
     const randomEmail = `${randomUSername}@flowback.test`;
-    
+
     await page.goto('/login');
     await expect(page.locator('#login-page')).toBeVisible();
     await page.waitForTimeout(500);
@@ -85,7 +85,7 @@ export async function register(page: any) {
     await page.getByLabel('Verification Code * 13/').click();
     await page.getByLabel('Verification Code * 13/').press('Control+a');
     await page.getByLabel('Verification Code * 13/').fill(registrationCode.replace("\"", "").replace("\"", ""));
-    
+
     //TODO Fix so it doesn't need to doubble click
     await page.waitForTimeout(500)
     await page.getByRole('button', { name: 'Send' }).click();
@@ -106,3 +106,8 @@ export async function logout(page: any) {
     await expect(page.getByRole('img', { name: 'flowback logo' })).toBeVisible();
 };
 
+
+export function randomString() {
+    const rand = Math.random().toString(36).slice(2, 10);
+    return rand
+}
