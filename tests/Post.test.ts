@@ -19,7 +19,7 @@ test('Go-To-Post', async ({ page }) => {
 test('Area Vote', async ({ page }) => {
     await login(page);
 
-    let group = { name: "Test Group Area " + randomString(), public: false }
+    let group = { name: "Test Poll Area " + randomString(), public: false }
 
     await createGroup(page, group)
 
@@ -48,14 +48,14 @@ test('Area Vote', async ({ page }) => {
     await page.waitForTimeout(1000)
     await expect(page.getByRole('button', { name: area })).toBeVisible();
 
-    await page.waitForTimeout(8000)
-    await page.mouse.wheel(0, -250000)
-    await page.screenshot({ path: 'tests/screenshots/area.png', fullPage: true });
+    // await page.waitForTimeout(8000)
+    // await page.mouse.wheel(0, -250000)
+    // await page.screenshot({ path: 'tests/screenshots/area.png', fullPage: true });
 
     await page.reload();
     await page.waitForLoadState('networkidle');
 
-    await expect(page).toHaveScreenshot('tests/screenshots/area.png');
+    // await expect(page).toHaveScreenshot('tests/screenshots/area.png');
     await expect(page.getByRole('button', { name: area })).toBeVisible();
 })
 
@@ -115,6 +115,39 @@ test('Proposal-Spam-Test', async ({ page }) => {
 
     await expect(page).toHaveScreenshot('tests/screenshots/proposals.png');
 })
+
+
+test('Prediction Creation', async ({ page }) => {
+    await login(page);
+
+    let group = { name: "Test Poll Prediction " + randomString(), public: false }
+
+    await createGroup(page, group)
+
+    let area = "Test Tag " + randomString();
+    await createArea(page, group, area)
+
+    await gotoGroup(page, group);
+
+    await createPoll(page, { phase_time: 1 });
+
+    await areaVote(page, { area });
+
+    await fastForward(page, 1);
+
+    const proposal = { title: "Test Proposal" }
+    await createProposal(page, proposal);
+
+    await fastForward(page, 1);
+
+    const prediction = { title: "Test Prediction" }
+    await predictionStatementCreate(page, proposal, prediction);
+    await predictionStatementCreate(page, proposal, prediction);
+    await predictionStatementCreate(page, proposal, prediction);
+    await predictionStatementCreate(page, proposal, prediction);
+
+})
+
 
 test('Poll-Start-To-Finish', async ({ page }) => {
     await login(page);

@@ -2,7 +2,7 @@
 	import type { Comment, Phase, proposal } from './interface';
 	import { _ } from 'svelte-i18n';
 	import { onMount } from 'svelte';
-	import { checkForLinks} from '$lib/Generic/GenericFunctions';
+	import { checkForLinks } from '$lib/Generic/GenericFunctions';
 	import {
 		faChevronRight,
 		faSquareCheck,
@@ -73,6 +73,7 @@
 			)}
 			{#if proposalInList !== -1}
 				<button
+					id={`${idfy(proposal.title)}-selected`}
 					on:click={() => {
 						proposalsToPredictionMarket.splice(proposalInList, 1);
 						proposalsToPredictionMarket = proposalsToPredictionMarket;
@@ -82,6 +83,7 @@
 				</button>
 			{:else}
 				<button
+					id={`${idfy(proposal.title)}-selection`}
 					on:click={() => {
 						proposalsToPredictionMarket.push(proposal);
 						proposalsToPredictionMarket = proposalsToPredictionMarket;
