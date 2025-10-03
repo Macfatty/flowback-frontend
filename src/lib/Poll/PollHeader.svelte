@@ -48,7 +48,7 @@
 		getTag();
 	});
 
-	$: poll && getTag()
+	$: poll && getTag();
 </script>
 
 <div
@@ -117,7 +117,7 @@
 		{/if}
 
 		{#if displayTag && tag}
-			<Tag bind:tag />
+			<Tag id={'poll-tag'} bind:tag />
 		{/if}
 
 		{#if env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE'}
