@@ -14,6 +14,7 @@ export async function createPoll(page: any, {
     title = 'Test Poll', date = false, phase_time = 0 } = {}) {
     //Create a Poll
     await page.getByRole('button', { name: 'Create a post' }).click();
+    await page.waitForTimeout(300);
     expect(await page.getByText('PollThread')).toBeVisible();
     await page.getByLabel('Title * 0/').click();
     await page.getByLabel('Title * 0/').fill(title);

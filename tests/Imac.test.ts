@@ -81,7 +81,7 @@ test('Imac-Test-2-Users', async ({ page }) => {
     //TODO: Make this test faster by decreasing time between phases more
     const poll = { phase_time: 0, title: "Test Poll Imac 2 Users " + randomString() }
     await createPoll(page, poll);
-    await goToPost(bPage, { title: "Test Poll Imac 2 Users" });
+    await goToPost(bPage, poll);
 
     await areaVote(page, { area });
 
