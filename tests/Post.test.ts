@@ -187,6 +187,8 @@ test('Prediction-Statements', async ({ page }) => {
 })
 
 test('Prediction-Probability', async ({ page }) => {
+    test.setTimeout(50000);
+    // await page.waitForTimeout(12000)
     await login(page);
 
     const group = { name: "Test Group Probability Voting", public: true }
@@ -223,6 +225,53 @@ test('Prediction-Probability', async ({ page }) => {
     await page.reload();
     await page.locator(`#${idfy(proposal.title)}`).first().locator('button', { hasText: "See More" }).click();
     expect(await page.getByText('Probability: 40%').click());
+})
+
+test('Prediction-Probabilities', async ({ page }) => {
+    test.setTimeout(50000);
+    // await page.waitForTimeout(12000)
+    await login(page);
+
+    const group = { name: "Test Group Probability Voting", public: true }
+    const area = "Tag imact test " + randomString()
+    const proposal = { title: "Test " + randomString() }
+    const prediction = { title: "Test Pred " + randomString(), vote: 2 }
+
+    for (let i = 0; i < 3; i++) {
+
+        await createGroup(page, group)
+
+        await createArea(page, group, area)
+
+        await gotoGroup(page, group);
+
+        await createPoll(page, { phase_time: 1 });
+
+        await areaVote(page, { area });
+
+        await fastForward(page, 1);
+
+        await createProposal(page, proposal);
+        await createProposal(page, proposal);
+
+        await fastForward(page, 1);
+
+        await predictionStatementCreate(page, proposal);
+
+        await fastForward(page, 1);
+
+        await predictionProbability(page, proposal, prediction)
+
+        await fastForward(page, 1);
+        
+        await page.waitForTimeout(400)
+        await page.reload();
+        await page.locator(`#${idfy(proposal.title)}`).first().locator('button', { hasText: "See More" }).click();
+
+        expect(await page.getByText('Probability: 40%').click());
+
+        await fastForward(page, 2);
+    }
 })
 
 

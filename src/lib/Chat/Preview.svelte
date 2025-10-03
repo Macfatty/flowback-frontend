@@ -91,6 +91,7 @@
 	});
 
 	$: if (selectedChatChannelId) updateChatTitle();
+
 </script>
 
 <div class="max-h-[100%] pb-2">
