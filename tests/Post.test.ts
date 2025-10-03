@@ -229,7 +229,7 @@ test('Prediction-Probability', async ({ page }) => {
 
 test('Prediction-Probabilities', async ({ page }) => {
     test.setTimeout(50000);
-    // await page.waitForTimeout(12000)
+    await page.waitForTimeout(12000)
     await login(page);
 
     const group = { name: "Test Group Probability Voting", public: true }

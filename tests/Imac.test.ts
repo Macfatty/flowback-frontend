@@ -4,7 +4,7 @@ import { createArea, createGroup, gotoGroup } from "./group";
 import { areaVote, createPoll, createProposal, fastForward, predictionProbability, predictionStatementCreate } from "./poll";
 
 test('Imac-Test', async ({ page }) => {
-    // test.setTimeout(520000);
+    test.setTimeout(90000);
 
     await login(page);
 
@@ -25,27 +25,25 @@ test('Imac-Test', async ({ page }) => {
     await fastForward(page, 1);
 
     const proposal = {title: "Test 1"}
-    const proposal2 = {title: "Test 2"}
     await createProposal(page, proposal);
-    await createProposal(page, proposal2);
 
     await fastForward(page, 1);
 
     await predictionStatementCreate(page, proposal);
 
-    // await fastForward(page, 1);
+    await fastForward(page, 1);
 
-    // await predictionProbability(page);
+    await predictionProbability(page, proposal);
 
-    // await fastForward(page, 3);
+    await fastForward(page, 3);
 
     // //TODO Make the test shorter. There's a way to do this in pollCreate with all of the phase times being identical.
-    // await page.waitForTimeout(490000);
+    await page.waitForTimeout(70000);
 
-    // await page.reload();
+    await page.reload();
 
-    // await page.locator('.text-center.dark\\:saturate-\\[60\\%\\].transition-colors.duration-50.w-12').first().click();
-    // await expect(page.getByText('Successfully evaluated')).toBeVisible();
+    await page.locator('.text-center.dark\\:saturate-\\[60\\%\\].transition-colors.duration-50.w-12').first().click();
+    await expect(page.getByText('Successfully evaluated')).toBeVisible();
     // await page.locator('.text-center.dark\\:saturate-\\[60\\%\\].transition-colors.duration-50.w-12.px-4.py-1.ml-2').nth(1).click();
     // await expect(page.getByText('Successfully evaluated')).toBeVisible();
 
