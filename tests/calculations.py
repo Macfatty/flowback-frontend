@@ -3,28 +3,27 @@ import numpy as np
 
 # There are no current evaluations, because the evaluation phase is after betting phase
 def probability_estimation(historical_bets, historical_evaluations, current_bets):
-
-    # Calculate: Bias adjusted bets
+    # Calculates bias for each better
     # https://en.wikipedia.org/wiki/Bias_of_an_estimator#Definition
     # Where every bet has equal probability, so it's just divided by 1/n, hence the error_sum being just the average
-    def bias_estimation(historical_bets, historical_evaluations):
+    def bias_estimation(historical_bets):
         bias = 0
         for i in range(len(historical_bets)):
             assert 0 <= historical_bets[i] <= 1, "Bets must be between 0 and 1"
 
             # Make sure the evaluation exists
-            if i < len(
-                historical_evaluations
-            ):  # Some bets might not have been evaluated yet
+            if i < len(historical_evaluations):
+                # Some bets might not have been evaluated yet
                 bias += historical_bets[i] - historical_evaluations[i]
 
         return bias / len(historical_bets)
 
+    # Calculate bias for each better
     def bias_estimation_all(historical_bets, historical_evaluations):
         biases = []
         for i in range(len(historical_bets)):
             biases.append(
-                bias_estimation(historical_bets[i], historical_evaluations[i])
+                bias_estimation(historical_bets[i])
             )
         return biases
 
@@ -35,7 +34,7 @@ def probability_estimation(historical_bets, historical_evaluations, current_bets
     def bias_adjustment(bets, bias):
         adjusted_bets = []
         for i in range(len(bets)):
-            adjusted_bet = bets[i] - bias[i]
+            adjusted_bet = bets[i] - bias
 
             # Make sure the adjusted bet is between 0 and 1
             adjusted_bet = max(0, min(1, adjusted_bet))
@@ -49,7 +48,7 @@ def probability_estimation(historical_bets, historical_evaluations, current_bets
         for i in range(len(current_bets)):
             temp = []
             for j in range(len(current_bets[i])):
-                temp.append(bias_adjustment(current_bets[i][j], bias[i][j]))
+                temp.append(bias_adjustment(current_bets[i], bias[i]))
 
             adjusted_current_bets.append(np.array(temp))
 
@@ -119,20 +118,12 @@ def probability_estimation(historical_bets, historical_evaluations, current_bets
     transposed_bet_weights = np.transpose(bet_weights)
 
     print("Transposed_bet_weights:", transposed_bet_weights)
-    # print("Main bets:", main_bets)
-    # print("Bias_adjustments:", bias_adjustments)
-    # Calculate k's
-
+    
     # Edgecase: All bets are the same
     # Edgecase: No bets have been done
     # Edgecase: One better has made no bets
     # Edgecase: One better has made all bets
     # Edgecase: Evaluation has reached 50% on the vote (in this instance it counts as not evaluated)
-
-    # E(e^T e) = e^T e
-    # Otherwise take mean
-
-    # F_T are unbiased bets. Like b in Loke's article
 
 
 # Inputs: All historical bets, bets for the current poll, evaluations
@@ -144,7 +135,7 @@ historical_bets = (
 )
 
 # Example evaluations (1 for correct, 0 for incorrect)
-historical_evaluations = (np.array([1, 0, 1, 0]), np.array([0, 1, 0]))
+historical_evaluations =[1, 0, 1, 0]
 
 # Example current bets
 current_bets = (np.array([0.7, 1, 0.8, 0.5]), np.array([0.2, 0.4]))
