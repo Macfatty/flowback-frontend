@@ -45,6 +45,47 @@ bias = np.array(bias_estimation_all(historical_bets, historical_evaluations))
 print(bias)
 
 
+# bias = (sum(B_i - x_i))/N 
+# B är bet som inte är bias adjusted
+# b_j = B_j - bias_j
+
+def bias_adjustment(bets, bias):
+    adjusted_bets = []
+    for i in range(len(bets)):
+        adjusted_bet = bets[i] - bias[i]
+        
+        # Make sure the adjusted bet is between 0 and 1
+        adjusted_bet = max(0, min(1, adjusted_bet))
+        adjusted_bets.append(adjusted_bet)
+    return np.array(adjusted_bets)
+
+
+# The first F_T in Grangers paper
+adjusted_current_bets = []
+for i in range(len(current_bets)):
+    adjusted_current_bets.append(bias_adjustment(current_bets[i], bias[i]))
+
+# The second F_T in Grangers paper
+adjusted_historical_bets = []
+for i in range(len(historical_bets)):
+    adjusted_historical_bets.append(bias_adjustment(historical_bets[i], bias[i]))
+
+    
+
+print("Adjusted historical bets:", adjusted_historical_bets)
+
+
+
+# Calculate e's
+# Calculate covariance matrix
+
+# Calculate k's
+
+
+
+
+
+
 
 # Edgecase: All bets are the same
 # Edgecase: No bets have been done
@@ -52,8 +93,13 @@ print(bias)
 # Edgecase: One better has made all bets
 # Edgecase: Evaluation has reached 50% on the vote (in this instance it counts as not evaluated)
 
-# Calculate e's
-# Calculate covariance matrix
-# Calculate k's
-# Make sure dot product is 1
-# All in Loke's paper
+
+
+
+
+# E(e^T e) = e^T e
+
+# Otherwise take mean 
+
+#F_T are unbiased bets. Like b in Loke's article
+

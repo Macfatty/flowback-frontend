@@ -347,7 +347,7 @@ test('Date-Poll', async ({ page }) => {
     await expect(page.getByText('Results', { exact: true })).toBeVisible();
 });
 
-test('Thread-Create-Report-Deconste', async ({ page }) => {
+test('Thread-Create-Report-delete', async ({ page }) => {
 
     await login(page);
 
@@ -386,11 +386,11 @@ test('Thread-Create-Report-Deconste', async ({ page }) => {
     await page.locator("#report-description").click();
     await page.locator("#report-description").fill('This is a test report');
     await page.getByRole('button', { name: 'Report', exact: true }).click();
-    await page.getByRole('button', { name: 'Deconste Thread' }).click();
+    await page.getByRole('button', { name: 'delete Thread' }).click();
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
-    await page.getByRole('button', { name: 'Deconste Thread' }).click();
+    await page.getByRole('button', { name: 'delete Thread' }).click();
     await page.getByRole('button', { name: 'Remove', exact: true }).click();
-    await expect(page.getByText('Successfully deconsted thread')).toBeVisible();
+    await expect(page.getByText('Successfully deleted thread')).toBeVisible();
 
     await deleteGroup(page, group);
 });
