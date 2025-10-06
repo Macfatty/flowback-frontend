@@ -4,25 +4,28 @@ import { login, randomString } from './generic';
 import { gotoGroup, createArea, createGroup, deleteGroup } from './group';
 import { idfy } from '$lib/Generic/GenericFunctions2';
 
-test('Create-Post', async ({ page }) => {
-    await login(page);
+test.describe('Basic-Post-Integration-Tests', () => {
 
-    const group = { name: "Test Group Poll", public: false }
-    await createGroup(page, group)
-    //Random poll name
-    const poll = { title: "Test Poll Create and Go", date: false }
-    await createPoll(page, poll);
-})
+    test('Create-Post', async ({ page }) => {
+        await login(page);
 
-test('Go-To-Post', async ({ page }) => {
-    await login(page);
+        const group = { name: "Test Group Poll", public: false }
+        await createGroup(page, group)
+        //Random poll name
+        const poll = { title: "Test Poll Create and Go", date: false }
+        await createPoll(page, poll);
+    })
 
-    const group = { name: "Test Group Poll", public: false }
-    await gotoGroup(page, group)
+    test('Go-To-Post', async ({ page }) => {
+        await login(page);
 
-    //Random poll name
-    const poll = { title: "Test Poll Create and Go", date: false }
-    await goToPost(page, poll);
+        const group = { name: "Test Group Poll", public: false }
+        await gotoGroup(page, group)
+
+        //Random poll name
+        const poll = { title: "Test Poll Create and Go", date: false }
+        await goToPost(page, poll);
+    })
 })
 
 test('Area-Vote', async ({ page }) => {
@@ -278,16 +281,12 @@ test('Prediction-Probabilities', async ({ page }) => {
 
 
 test('Poll-Start-To-Finish', async ({ page }) => {
+    // test.setTimeout(0)
     await login(page);
 
-    const group = { name: "Test Group Poll", public: false }
+    const group = { name: "Test Poll start to finish " + randomString(), public: false }
 
-    try {
-        await gotoGroup(page, group)
-    }
-    catch {
-        await createGroup(page, group)
-    }
+    await createGroup(page, group)
 
     await createArea(page, group, "Tag 1")
 

@@ -5,34 +5,37 @@ import { createPermission } from './permission';
 
 const group = { name: "Test Group Group-Testing Public", public: true, invite: false }
 
-test('Create Group', async ({ page }) => {
-    await login(page)
-    await createGroup(page, group)
-})
+test.describe('Group-Integration-Tests', () => {
 
-test('Go To Group', async ({ page }) => {
-    await login(page)
-    await gotoGroup(page, group)
-})
+    test('Create Group', async ({ page }) => {
+        await login(page)
+        await createGroup(page, group)
+    })
 
-test('Join Group', async ({ page }) => {
-    await login(page, { email: "b@b.se", password: "b" })
-    await joinGroup(page, group)
-})
+    test('Go To Group', async ({ page }) => {
+        await login(page)
+        await gotoGroup(page, group)
+    })
 
-test('Leave Group', async ({ page }) => {
-    const bPage = await newWindow()
-    await login(bPage, { email: "b@b.se", password: "b" })
-    await gotoGroup(bPage, group)
-    await bPage.getByRole('button', { name: 'Leave group' }).click();
-    await bPage.getByRole('button', { name: 'Yes', exact: true }).click();
-})
+    test('Join Group', async ({ page }) => {
+        await login(page, { email: "b@b.se", password: "b" })
+        await joinGroup(page, group)
+    })
 
-test('Delete Group', async ({ page }) => {
-    await login(page)
-    await gotoGroup(page, group)
-    await deleteGroup(page)
-})
+    test('Leave Group', async ({ page }) => {
+        const bPage = await newWindow()
+        await login(bPage, { email: "b@b.se", password: "b" })
+        await gotoGroup(bPage, group)
+        await bPage.getByRole('button', { name: 'Leave group' }).click();
+        await bPage.getByRole('button', { name: 'Yes', exact: true }).click();
+    })
+
+    test('Delete Group', async ({ page }) => {
+        await login(page)
+        await gotoGroup(page, group)
+        await deleteGroup(page)
+    })
+});
 
 const groupInvite = { name: "Test Group Group-Testing Invite only", public: true, invite: true }
 

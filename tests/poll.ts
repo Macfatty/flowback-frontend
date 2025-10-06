@@ -3,9 +3,11 @@ import { expect } from '@playwright/test';
 
 export async function fastForward(page: any, times = 1) {
     expect(await page.locator('#poll-header-multiple-choices')).toBeVisible();
-    await page.locator('#poll-header-multiple-choices').click();
     for (let i = 0; i < times; i++) {
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(200);
+        const visible = await page.getByRole('button', { name: 'Fast Forward' }).isVisible();
+        if (!visible)
+            await page.locator('#poll-header-multiple-choices').click();
         await page.getByRole('button', { name: 'Fast Forward' }).click();
     }
 }
@@ -125,17 +127,13 @@ export async function delegateVote(page: any) {
 }
 
 export async function vote(page: any, proposal = { title: "Proposal Title", vote: 1 }) {
+    expect(proposal.vote >= 0 && proposal.vote <= 7, "Vote must be between 0 and 7");
     // Delegate Voting Phase
     expect(await page.locator('#poll-timeline').filter({ hasText: 'Phase 6. Voting for non-delegates' }))
+    page.locator(`#track-container-test-proposal > div:nth-child(3)`).first().click();
 
-    page.locator(`#track-container-${idfy(proposal.title)} > div:nth-child(${2 + proposal.vote})`).first().click();
-    // vote_slider.locator(`div:nth-child(${1 + proposal.vote})`).click();
-await page.locator('#track-container-test-proposal > div:nth-child(5)').click();
-    // await page.getByRole('button', { name: 'See More' }).nth(0).click();
-    // expect(await page.getByText('Probability: 80%')).toBeVisible();
-    // await page.getByRole('button', { name: 'See More' }).nth(1).click();
-    // expect(await page.getByText('Probability: 40%')).toBeVisible();
-
+    page.waitForTimeout(5000)
+    // await page.locator('#track-container-test-proposal > div:nth-child(4)').click();
     // await page.locator("#proposals-section").screenshot({ path: 'tests/voting.png', fullPage: true });
     // expect(await page.locator("#proposals-section")).toHaveScreenshot('tests/voting.png');
 
@@ -147,8 +145,10 @@ await page.locator('#track-container-test-proposal > div:nth-child(5)').click();
 }
 
 export async function results(page: any) {
+    expect(await page.locator('#poll-timeline').filter({ hasText: 'Current: Phase 7. Results and' }))
     expect(await page.getByText('Results', { exact: true })).toBeVisible();
 
+    //TODO: no need for canvas when there have been 0 votes
     expect(await page.locator('canvas')).toBeVisible();
 
     await page.locator('canvas').click({
@@ -157,5 +157,4 @@ export async function results(page: any) {
             y: 92
         }
     });
-    expect(await page.getByText('Current: Phase 7. Results and')).toBeVisible();
 }
