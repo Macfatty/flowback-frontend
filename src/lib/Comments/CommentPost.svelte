@@ -240,7 +240,7 @@
 			/>
 			<div class="p-2 m-auto">
 				<Button
-					Class=" bg-white dark:bg-darkbackground hover:!brightness-100 dark:hover:!bg-gray-700 hover:bg-gray-100"
+					Class="submit-button bg-white dark:bg-darkbackground hover:!brightness-100 dark:hover:!bg-gray-700 hover:bg-gray-100"
 					type="submit"
 					label=""
 					><Fa icon={faPaperPlane} color={darkmode ? 'white' : 'black'} class="text-lg" /></Button
