@@ -10,6 +10,7 @@
 	import VotingSlider from './VotingSlider.svelte';
 	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 	import Button from '$lib/Generic/Button.svelte';
+	import { idfy } from '$lib/Generic/GenericFunctions2';
 
 	export let proposals: proposal[],
 		selectedProposal: proposal | null = null,
@@ -224,7 +225,7 @@
 											if (phase === 'vote' && voting === delegateVoting) return 'gray';
 											else return 'purple';
 										})()}
-										id={i.toString()}
+										id={`${idfy(proposal.title)}`}
 									/>
 								{/key}
 							{/if}

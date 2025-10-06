@@ -11,6 +11,7 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { permissions as permissionsLimit } from '../../Generic/APILimits.json';
 	import Button from '$lib/Generic/Button.svelte';
+	import { idfy } from '$lib/Generic/GenericFunctions2';
 
 	let roles: GroupUser[] = [],
 		users: GroupUser[] = [];
@@ -125,7 +126,7 @@
 									tag={{ active: true, id: 1, name: role.role_name ?? '' }}
 									Class={`cursor-pointer ${user.user.id === role.id ? 'bg-blue-300' : 'bg-blue-600'}`}
 									displayImac={false}
-									id={`permission-${role.role_name}`}
+									id={`permission-${idfy(role.role_name ?? '')}`}
 								/>
 							</button>
 						</li>

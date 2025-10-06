@@ -25,6 +25,7 @@
 	{#if displayImac}
 		<div
 			class="border-accent-tertiary px-1 border-2 w-auto min-w-[20%] content-center text-center text-black text-xs dark:bg-slate-500 dark:text-darkmodeText rounded-r"
+			id={id + '-imac'}
 		>
 			{#if tag?.imac}
 				{imacFormatting(tag.imac)}

@@ -8,6 +8,7 @@
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import { _ } from 'svelte-i18n';
 	import Question from '$lib/Generic/Question.svelte';
+	import { idfy } from '$lib/Generic/GenericFunctions2';
 
 	let tags: Tag[] = [],
 		selectedTag: number | null = null,
@@ -77,7 +78,7 @@
 	<div class="flex-grow flex flex-col gap-3 overflow-auto">
 		{#each tags as tag}
 			{#if tag.active}
-				<div id={`tag-${tag.name}`} class="flex items-center space-x-3 flex-wrap">
+				<div id={`tag-${idfy(tag.name)}`} class="flex items-center space-x-3 flex-wrap">
 					<input
 						type="radio"
 						name="area"

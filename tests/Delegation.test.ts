@@ -1,26 +1,28 @@
 import { test, chromium, expect } from '@playwright/test';
-import { login } from './generic';
-import { createPoll, createProposal, delegateVote, fastForward, goToPost } from './poll';
+import { login, randomString } from './generic';
+import { createPoll, createProposal, fastForward, goToPost, vote } from './poll';
 import { createGroup, deleteGroup, gotoGroup, joinGroup } from './group';
 import { becomeDelegate } from './delegation';
 import { assignPermission, createPermission } from './permission';
+import { idfy } from '$lib/Generic/GenericFunctions2';
 
 test('Become-Delegate', async ({ page }) => {
     await login(page);
 
-    const group = { name: "Test Group Delegation", public: true }
+    const group = { name: "Test Group Delegation " + randomString(), public: true }
 
     await createGroup(page, group);
 
     await becomeDelegate(page, group);
 
+    await gotoGroup(page, group)
+    await deleteGroup(page, group);
 })
 
 test('Delegation-Poll', async ({ page }) => {
     await login(page);
 
-    const rand = Math.random().toString(36).slice(2, 10);
-    const group = { name: "Test Group Delegation" + rand, public: true }
+    const group = { name: "Test Group Delegation" + randomString(), public: true }
 
     await createGroup(page, group);
 
@@ -53,23 +55,30 @@ test('Delegation-Poll', async ({ page }) => {
 
     await gotoGroup(page, group);
 
-    const title = `Test Poll for Delegation ${Math.floor(Math.random() * 10000)}`;
-    await createPoll(page, { title, phase_time: 1 });
+    const poll = { title: `Test Poll for Delegation` + randomString() }
+    await createPoll(page, poll);
 
     await fastForward(page, 1);
-
-    await createProposal(page);
-
+    
+    const proposal = { title: "Proposal 1", vote: 3 };
+    await createProposal(page, proposal);
+    
     await fastForward(page, 3);
-
-    await delegateVote(page);
-
-    await goToPost(bPage, { title });
-
+    
+    await vote(page, proposal);
+    
+    await goToPost(bPage, poll);
+    
     await expect(page.getByText('Vote Failed').first()).not.toBeVisible();
-
-    await expect(bPage.locator('#track-container-0')).toContainClass('disabled')
-    await expect(page.locator('#track-container-0')).not.toContainClass('disabled')
+    
+    await expect(bPage.locator(`#track-container-${idfy(proposal.title)}`)).toContainClass('disabled')
+    await expect(page.locator(`#track-container-${idfy(proposal.title)}`)).not.toContainClass('disabled')
+    
+    await fastForward(page, 1);
+    
+    await bPage.reload();
+    await expect(bPage.locator(`#track-container-${idfy(proposal.title)}`)).not.toContainClass('disabled')
+    await expect(page.locator(`#track-container-${idfy(proposal.title)}`)).not.toContainClass('disabled')
 
     await gotoGroup(page, group)
     await deleteGroup(page, group)
