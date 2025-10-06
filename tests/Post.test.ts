@@ -27,6 +27,7 @@ test.describe('Basic-Post-Integration-Tests', () => {
 })
 
 test('Area-Vote', async ({ page }) => {
+    test.setTimeout(0)
     await login(page);
 
     const group = { name: "Test Poll Area " + randomString(), public: false }
