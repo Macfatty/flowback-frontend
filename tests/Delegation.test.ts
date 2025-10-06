@@ -15,6 +15,7 @@ test('Become-Delegate', async ({ page }) => {
 
     await becomeDelegate(page, group);
 
+    await gotoGroup(page, group)
     await deleteGroup(page, group);
 })
 
