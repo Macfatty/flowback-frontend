@@ -308,6 +308,8 @@ test('Poll-Start-To-Finish', async ({ page }) => {
 
     await predictionProbability(page, proposal);
 
+    await page.waitForTimeout(500);
+
     await fastForward(page, 2);
 
     await vote(page, proposal);
@@ -347,7 +349,6 @@ test('Date-Poll', async ({ page }) => {
 });
 
 test('Thread-Create-Report-Delete', async ({ page }) => {
-    test.setTimeout(0);
     await login(page);
 
     const group = { name: "Test Group Thread", public: false }
@@ -357,8 +358,9 @@ test('Thread-Create-Report-Delete', async ({ page }) => {
     await gotoGroup(page, group);
 
     await page.getByRole('button', { name: 'Create a post' }).click();
-    await page.getByRole('button', { name: 'Thread' }).click();
+
     await page.waitForTimeout(500);
+    await page.getByRole('button', { name: 'Thread' }).click();
     await page.getByLabel('Title * 0/').click();
     await page.getByLabel('Title * 0/').fill('Test Thread');
     await page.getByLabel('Description  0/').click();
