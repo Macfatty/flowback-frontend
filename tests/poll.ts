@@ -13,7 +13,7 @@ export async function fastForward(page: any, times = 1) {
 }
 
 export async function createPoll(page: any, {
-    title = 'Test Poll', date = false, phase_time = 0 } = {}) {
+    title = 'Test Poll', date = false, phase_time = 1 } = {}) {
     //Create a Poll
     await page.getByRole('button', { name: 'Create a post' }).click();
     await page.waitForTimeout(300);
@@ -90,9 +90,9 @@ export async function predictionStatementCreate(page: any, proposal = { title: "
     const visible = await page.getByText('To make a consequence, please').isVisible()
     if (visible)
         await page.locator(`#${idfy(proposal.title)}-selection`).first().click();
-    
+
     await expect(await page.getByText('To make a consequence, please')).not.toBeVisible()
-    
+
     await page.getByRole('textbox', { name: 'Title * 0/' }).fill(prediction.title);
     await page.getByLabel('Description  0/').fill('Prediction 1');
     await page.locator('.date-time-field > input').nth(0).fill('2000-01-01 00:00:00');
@@ -115,31 +115,13 @@ export async function predictionProbability(page: any, proposal = { title: "Prop
 
 }
 
-export async function delegateVote(page: any) {
-    // Delegate Voting Phase
-    await page.locator('div').filter({ hasText: 'Current: Phase 5. Delegate' }).nth(2).click();
-    await page.getByRole('button', { name: 'See more' }).nth(0).click();
-    await page.getByText('Successfully voted').isVisible();
-
-
-    await page.locator('#track-container-0 > div:nth-child(4)').click();
-    await page.locator('#track-container-1 > div:nth-child(6)').click();
-
-    await page.getByRole('button', { name: 'See More' }).nth(0).click();
-    // expect(await page.getByText('Probability: 80%')).toBeVisible();
-    await page.getByRole('button', { name: 'See More' }).nth(1).click();
-    // expect(await page.getByText('Probability: 40%')).toBeVisible();
-}
-
+// Works for both delegate and normal voting
 export async function vote(page: any, proposal = { title: "Proposal Title", vote: 1 }) {
-    expect(proposal.vote >= 0 && proposal.vote <= 7, "Vote must be between 0 and 7");
+    expect(proposal.vote >= 0 && proposal.vote <= 5, "Vote must be between 0 and 5");
     // Delegate Voting Phase
     expect(await page.locator('#poll-timeline').filter({ hasText: 'Phase 6. Voting for non-delegates' }))
     await page.waitForTimeout(400);
     expect(await page.locator(`#track-container-${idfy(proposal.title)}`)).toBeVisible();
-    console.log(`#track-container-${idfy(proposal.title)} > div:nth-child(${proposal.vote.toString()})`);
-    console.log(`#track-container-test-proposal > div:nth-child(3)`);
-
     await page.locator(`#track-container-${idfy(proposal.title)} > div:nth-child(${2 + proposal.vote})`).first().click();
 
     // await page.locator('#track-container-test-proposal > div:nth-child(4)').click();

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { areaVote, createPoll, createProposal, delegateVote, fastForward, goToPost, predictionProbability, predictionStatementCreate, results, vote } from './poll';
+import { areaVote, createPoll, createProposal, fastForward, goToPost, predictionProbability, predictionStatementCreate, results, vote } from './poll';
 import { login, randomString } from './generic';
 import { gotoGroup, createArea, createGroup, deleteGroup } from './group';
 import { idfy } from '$lib/Generic/GenericFunctions2';
