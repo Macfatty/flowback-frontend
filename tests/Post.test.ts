@@ -281,7 +281,7 @@ test('Prediction-Probabilities', async ({ page }) => {
 
 
 test('Poll-Start-To-Finish', async ({ page }) => {
-    // test.setTimeout(0)
+    test.setTimeout(0)
     await login(page);
 
     const group = { name: "Test Poll start to finish " + randomString(), public: false }

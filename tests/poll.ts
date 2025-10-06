@@ -4,7 +4,7 @@ import { expect } from '@playwright/test';
 export async function fastForward(page: any, times = 1) {
     expect(await page.locator('#poll-header-multiple-choices')).toBeVisible();
     for (let i = 0; i < times; i++) {
-        await page.waitForTimeout(200);
+        await page.waitForTimeout(300);
         const visible = await page.getByRole('button', { name: 'Fast Forward' }).isVisible();
         if (!visible)
             await page.locator('#poll-header-multiple-choices').click();
@@ -130,9 +130,13 @@ export async function vote(page: any, proposal = { title: "Proposal Title", vote
     expect(proposal.vote >= 0 && proposal.vote <= 7, "Vote must be between 0 and 7");
     // Delegate Voting Phase
     expect(await page.locator('#poll-timeline').filter({ hasText: 'Phase 6. Voting for non-delegates' }))
-    page.locator(`#track-container-test-proposal > div:nth-child(3)`).first().click();
+    await page.waitForTimeout(400);
+    expect(await page.locator(`#track-container-${idfy(proposal.title)}`)).toBeVisible();
+    console.log(`#track-container-${idfy(proposal.title)} > div:nth-child(${proposal.vote.toString()})`);
+    console.log(`#track-container-test-proposal > div:nth-child(3)`);
 
-    page.waitForTimeout(5000)
+    await page.locator(`#track-container-${idfy(proposal.title)} > div:nth-child(${2 + proposal.vote})`).first().click();
+
     // await page.locator('#track-container-test-proposal > div:nth-child(4)').click();
     // await page.locator("#proposals-section").screenshot({ path: 'tests/voting.png', fullPage: true });
     // expect(await page.locator("#proposals-section")).toHaveScreenshot('tests/voting.png');
