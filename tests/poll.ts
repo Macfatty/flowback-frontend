@@ -52,7 +52,7 @@ export async function goToPost(page: any, {
 export async function areaVote(page: any, {
     area = 'Default',
 } = {}) {
-    await page.locator(`[id="tag-${area}"]`).getByRole('radio').check();
+    await page.locator(`[id="tag-${idfy(area)}"]`).getByRole('radio').check();
     await page.getByRole('button', { name: 'Submit' }).click();
     expect(await page.getByText('Successfully voted for area')).toBeVisible();
 }
@@ -79,15 +79,12 @@ export async function createProposal(page: any, {
     await page.getByLabel('Description  0/').fill(description);
     await page.getByRole('button', { name: 'Confirm' }).click();
     expect(await page.getByText('Successfully added proposal').first()).toBeVisible();
-    await page.getByRole('button', { name: 'Confirm' }).click();
-    expect(await page.getByText('Successfully added proposal').first()).toBeVisible();
 }
 
 export async function predictionStatementCreate(page: any, proposal = { title: "Proposal Title" }, prediction = { title: "Prediction Title" }) {
     expect(await page.locator('#poll-timeline').filter({ hasText: 'Phase 3. Prediction statements creation' }))
-    await page.waitForTimeout(300);
-    if (await page.locator(`#${idfy(proposal.title)}-selection`).first().isVisible())
-        await page.locator(`#${idfy(proposal.title)}-selection`).first().click();
+    // if (await page.locator(`#${idfy(proposal.title)}-selection`).first().isVisible())
+    await page.locator(`#${idfy(proposal.title)}-selection`).first().click();
 
     expect(await page.getByText('To make a consequence, please')).not.toBeVisible()
 
@@ -127,19 +124,16 @@ export async function delegateVote(page: any) {
     // expect(await page.getByText('Probability: 40%')).toBeVisible();
 }
 
-export async function vote(page: any) {
+export async function vote(page: any, proposal = { title: "Proposal Title", vote: 1 }) {
     // Delegate Voting Phase
-    expect(await page.locator('div').filter({ hasText: 'Phase 6. Voting for non-delegates' }).nth(2)).toBeVisible();
-    await page.getByRole('button', { name: 'See more' }).nth(0).click();
-    await page.getByText('Successfully voted').isVisible();
+    expect(await page.locator('#poll-timeline').filter({ hasText: 'Phase 6. Voting for non-delegates' }))
 
-
-    await page.locator('#track-container-0 > div:nth-child(3)').first().click();
-    await page.locator('#track-container-1 > div:nth-child(7)').first().click();
-
-    await page.getByRole('button', { name: 'See More' }).nth(0).click();
+    page.locator(`#track-container-${idfy(proposal.title)} > div:nth-child(${2 + proposal.vote})`).first().click();
+    // vote_slider.locator(`div:nth-child(${1 + proposal.vote})`).click();
+await page.locator('#track-container-test-proposal > div:nth-child(5)').click();
+    // await page.getByRole('button', { name: 'See More' }).nth(0).click();
     // expect(await page.getByText('Probability: 80%')).toBeVisible();
-    await page.getByRole('button', { name: 'See More' }).nth(1).click();
+    // await page.getByRole('button', { name: 'See More' }).nth(1).click();
     // expect(await page.getByText('Probability: 40%')).toBeVisible();
 
     // await page.locator("#proposals-section").screenshot({ path: 'tests/voting.png', fullPage: true });

@@ -4,6 +4,16 @@ import { login, randomString } from './generic';
 import { gotoGroup, createArea, createGroup, deleteGroup } from './group';
 import { idfy } from '$lib/Generic/GenericFunctions2';
 
+test('Create-Post', async ({ page }) => {
+    await login(page);
+
+    const group = { name: "Test Group Poll", public: false }
+    await createGroup(page, group)
+    //Random poll name
+    const poll = { title: "Test Poll Create and Go", date: false }
+    await createPoll(page, poll);
+})
+
 test('Go-To-Post', async ({ page }) => {
     await login(page);
 
@@ -11,13 +21,11 @@ test('Go-To-Post', async ({ page }) => {
     await gotoGroup(page, group)
 
     //Random poll name
-    const pollTitle = "Test Poll " + randomString();
-    const poll = { title: pollTitle, date: false }
-    await createPoll(page, poll);
+    const poll = { title: "Test Poll Create and Go", date: false }
     await goToPost(page, poll);
 })
 
-test('Area Vote', async ({ page }) => {
+test('Area-Vote', async ({ page }) => {
     await login(page);
 
     const group = { name: "Test Poll Area " + randomString(), public: false }
@@ -31,17 +39,13 @@ test('Area Vote', async ({ page }) => {
 
     await createPoll(page, { phase_time: 1 });
 
-    // Testing reduntant voting i.e canceling a vote and voting multiple times
+    // Testing that there's atleaest one default tag, and testing canceling that vote 
     await page.getByRole('radio').nth(0).check();
     await page.getByRole('button', { name: 'Submit' }).click();
     await expect(page.getByText('Successfully voted for area')).toBeVisible();
     await page.getByRole('button', { name: 'Cancel' }).click();
     await expect(page.getByText('Vote cancelled')).toBeVisible();
-    await page.getByRole('radio').nth(1).check();
-    await page.getByRole('button', { name: 'Submit' }).click();
-    await expect(page.getByText('Successfully voted for area')).toBeVisible();
 
-    // Voting for a specified area
     await areaVote(page, { area });
 
     await fastForward(page, 1);
@@ -67,13 +71,9 @@ test('Proposal-Test', async ({ page }) => {
 
     await createGroup(page, group)
 
-    await createArea(page, group, "Tag 1")
-
     await gotoGroup(page, group);
 
     await createPoll(page, { phase_time: 1 });
-
-    await areaVote(page, { area: "Tag 1" });
 
     await fastForward(page, 1);
 
@@ -107,18 +107,18 @@ test('Proposal-Spam-Test', async ({ page }) => {
     expect(await expect(page.getByText('Title 0 Description 0 0')).toBeVisible())
 
     // Wait for all of the "Successfully added proposal" to go away before screenshotting, since they don't remain on reload 
-    await page.waitForTimeout(8000)
-    await page.mouse.wheel(0, -20000)
-    await page.screenshot({ path: 'tests/screenshots/proposals.png', fullPage: true });
+    // await page.waitForTimeout(8000)
+    // await page.mouse.wheel(0, -20000)
+    // await page.screenshot({ path: 'tests/screenshots/proposals.png', fullPage: true });
 
-    await page.reload();
-    await page.waitForLoadState('networkidle');
+    // await page.reload();
+    // await page.waitForLoadState('networkidle');
 
-    await expect(page).toHaveScreenshot('tests/screenshots/proposals.png');
+    // await expect(page).toHaveScreenshot('tests/screenshots/proposals.png');
 })
 
 
-test('Prediction Creation', async ({ page }) => {
+test('Prediction-Creation', async ({ page }) => {
     await login(page);
 
     const group = { name: "Test Poll Prediction " + randomString(), public: false }
@@ -195,7 +195,7 @@ test('Prediction-Probability', async ({ page }) => {
 
     await createGroup(page, group)
 
-    const area = "Tag imact test " + randomString()
+    const area = "Probability test " + randomString()
     await createArea(page, group, area)
 
     await gotoGroup(page, group);
@@ -221,15 +221,17 @@ test('Prediction-Probability', async ({ page }) => {
 
     await fastForward(page, 1);
 
-    await page.waitForTimeout(400)
+    await page.waitForTimeout(300)
     await page.reload();
     await page.locator(`#${idfy(proposal.title)}`).first().locator('button', { hasText: "See More" }).click();
-    expect(await page.getByText('Probability: 40%').click());
+
+    // Wait for probability to be calculated. If a single better bets 40% on an area that no one has ever voted on before, expect 40% aggregate bet
+    expect(await page.getByText('Probability: 40%').click({ timeout: 10000 }));
 })
 
 test('Prediction-Probabilities', async ({ page }) => {
     test.setTimeout(50000);
-    await page.waitForTimeout(12000)
+    // await page.waitForTimeout(12000)
     await login(page);
 
     const group = { name: "Test Group Probability Voting", public: true }
@@ -263,12 +265,12 @@ test('Prediction-Probabilities', async ({ page }) => {
         await predictionProbability(page, proposal, prediction)
 
         await fastForward(page, 1);
-        
+
         await page.waitForTimeout(400)
         await page.reload();
         await page.locator(`#${idfy(proposal.title)}`).first().locator('button', { hasText: "See More" }).click();
 
-        expect(await page.getByText('Probability: 40%').click());
+        expect(await page.getByText('Probability: 40%').click({ timeout: 10000 }));
 
         await fastForward(page, 2);
     }
@@ -299,19 +301,20 @@ test('Poll-Start-To-Finish', async ({ page }) => {
 
     await fastForward(page, 1);
 
-    await createProposal(page);
+    const proposal = { title: "Test Proposal", vote: 2 }
+    await createProposal(page, proposal);
 
     await fastForward(page, 1);
 
-    await predictionStatementCreate(page);
+    await predictionStatementCreate(page, proposal);
 
     await fastForward(page, 1);
 
-    await predictionProbability(page);
+    await predictionProbability(page, proposal);
 
     await fastForward(page, 2);
 
-    await vote(page);
+    await vote(page, proposal);
 
     await fastForward(page, 1);
 

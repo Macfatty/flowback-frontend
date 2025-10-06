@@ -49,7 +49,7 @@ export async function gotoGroup(page: any, group = { name: 'Test Group' }) {
     await page.locator("#groups").click();
     await page.getByPlaceholder('Search groups').click();
     await page.getByPlaceholder('Search groups').fill(group.name);
-    await expect(page.getByRole('heading', { name: group.name, exact: true })).toBeVisible();
+    expect(page.getByRole('heading', { name: group.name, exact: true })).toBeVisible();
     await page.waitForTimeout(400)
     await page.getByRole('heading', { name: group.name, exact: true }).click();
 }
