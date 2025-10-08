@@ -166,7 +166,7 @@ test('Prediction-Statements', async ({ page }) => {
     await gotoGroup(page, group);
 
     //TODO: Make this test faster by decreasing time between phases more
-    await createPoll(page, { phase_time: 0 });
+    await createPoll(page, { phase_time: 1 });
 
     await areaVote(page, { area });
 
@@ -179,11 +179,18 @@ test('Prediction-Statements', async ({ page }) => {
 
     await fastForward(page, 1);
 
-    await predictionStatementCreate(page, proposal);
-    await predictionStatementCreate(page, proposal);
-    await predictionStatementCreate(page, proposal);
-    await predictionStatementCreate(page, proposal2);
-    await predictionStatementCreate(page, proposal2);
+    await predictionStatementCreate(page, proposal, { title: "Pred1-1" });
+    await predictionStatementCreate(page, proposal, { title: "Pred1-2" });
+    await predictionStatementCreate(page, proposal, { title: "Pred1-3" });
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-1" });
+
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-2" });
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-3" });
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-4" });
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-5" });
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-6" });
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-7" });
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-8" });
 
     //TODO Screenshot tests
 })

@@ -212,7 +212,7 @@
 							}}>{$_('Create Consequence')}</Button
 						>
 					</div>
-					<div slot="right" class="relative h-[460px] overflow-hidden">
+					<div slot="right" class="relative h-[460px]">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
 								<div class="font-semibold text-primary dark:text-secondary text-lg">
