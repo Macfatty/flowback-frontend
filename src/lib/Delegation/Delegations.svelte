@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { onMount } from 'svelte';
-	import type { Group, Tag } from '../interface';
+	import type { Group, Tag } from '$lib/Group/interface';
 	import type { Delegate, DelegateRelation } from './interfaces';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
@@ -233,6 +233,7 @@
 									username={delegate.user.username}
 									userId={delegate.user.id}
 									profilePicture={delegate.user.profile_image}
+									href={`/user?id=${delegate.user.id}&delegate_id=${delegate.id}&group_id=${group.id}&is_admin=${delegate.is_admin}`}
 								/>
 								<!-- {delegate.user.username}
 								{delegate.delegates[0]} -->

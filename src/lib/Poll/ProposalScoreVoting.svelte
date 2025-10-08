@@ -10,6 +10,7 @@
 	import VotingSlider from './VotingSlider.svelte';
 	import { groupUserStore, groupUserPermissionStore } from '$lib/Group/interface';
 	import Button from '$lib/Generic/Button.svelte';
+	import { idfy } from '$lib/Generic/GenericFunctions2';
 
 	export let proposals: proposal[],
 		selectedProposal: proposal | null = null,
@@ -31,6 +32,8 @@
 			score: 0,
 			proposal: proposal.id
 		}));
+
+		delegateVoting = voting;
 
 		if (phase === 'delegate_vote' || phase === 'vote' || phase === 'result') {
 			await getDelegateVotes();
@@ -83,23 +86,35 @@
 		);
 
 		if (!res.ok) {
-			console.error('Error fetching votes:', json.detail);
+			ErrorHandlerStore.set({
+				message: 'Failed to get delegate votes',
+				success: false
+			});
 			return;
 		}
 
-		delegateVoting = json?.results[0]?.vote.map((vote: any) => ({
-			score: vote.raw_score,
-			proposal: vote.proposal_id
-		}));
-
-		if (phase === 'delegate_vote')
-			voting = json?.results[0]?.vote.map((vote: any) => ({
+		if (json?.results[0]?.vote?.length > 0) {
+			delegateVoting = json?.results[0]?.vote.map((vote: any) => ({
 				score: vote.raw_score,
 				proposal: vote.proposal_id
 			}));
 
+			if (phase === 'delegate_vote')
+				voting = json?.results[0]?.vote.map((vote: any) => ({
+					score: vote.raw_score,
+					proposal: vote.proposal_id
+				}));
+		}
 		voting = voting;
 		delegateVoting = delegateVoting;
+
+		console.log(voting, delegateVoting, 'DELEGATE VOTE');
+	};
+
+	const handleSliderClick = async (pos: any, proposal: proposal) => {
+		changingVote(pos, proposal.id);
+		if (phase === 'delegate_vote') delegateVote();
+		else if (phase === 'vote') vote();
 	};
 
 	// Voting as a delegate
@@ -173,12 +188,6 @@
 	};
 
 	const getScore = (proposal: proposal) => {
-		console.log(
-			delegateVoting,
-			'VOTING',
-			proposal,
-			delegateVoting?.find((vote) => vote.proposal === proposal.id)
-		);
 		if (phase === 'delegate_vote')
 			return delegateVoting?.find((vote) => vote.proposal === proposal.id)?.score ?? 0;
 		else if (phase === 'vote')
@@ -192,7 +201,7 @@
 	<div class="mt-4 h-[100%]">
 		{#if proposals}
 			{#key needsReload}
-				{#each proposals as proposal}
+				{#each proposals as proposal, i}
 					<div class="border-b-2 border-gray-300 select-none">
 						<Proposal
 							bind:proposalsToPredictionMarket
@@ -204,16 +213,10 @@
 						>
 							{#if phase === 'delegate_vote' || phase === 'vote'}
 								{@const score = getScore(proposal)}
-
 								{#key voting || delegateVoting}
 									<VotingSlider
 										bind:phase
-										onSelection={(pos) => {
-											//@ts-ignore
-											changingVote(pos, proposal.id);
-											if (phase === 'delegate_vote') delegateVote();
-											else if (phase === 'vote') vote();
-										}}
+										onSelection={(pos) => handleSliderClick(pos, proposal)}
 										disabled={(phase === 'delegate_vote' &&
 											$groupUserStore?.delegate_pool_id === null) ||
 											(phase === 'vote' && !$groupUserPermissionStore?.allow_vote)}
@@ -222,6 +225,7 @@
 											if (phase === 'vote' && voting === delegateVoting) return 'gray';
 											else return 'purple';
 										})()}
+										id={`${idfy(proposal.title)}`}
 									/>
 								{/key}
 							{/if}
@@ -232,7 +236,7 @@
 										const dVote = delegateVoting.find((vote) => vote.proposal === proposal.id);
 										if (dVote) changingVote(dVote.score, dVote.proposal);
 										vote();
-									}}>{$_('Reset to delegate votes')}</Button
+									}}>{$_($groupUserStore?.delegate_pool_id ? 'Reset to my delegate delegate votes' : 'Reset to delegate votes')}</Button
 								>
 							{/if}
 						</Proposal>

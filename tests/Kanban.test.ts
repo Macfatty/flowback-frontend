@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { login } from './generic';
-import { gotoGroup } from './group';
+import { login, randomString } from './generic';
+import { createGroup, gotoGroup } from './group';
 
 test('Kanban-User', async ({ page }) => {
   await login(page);
@@ -23,14 +23,15 @@ test('Kanban-User', async ({ page }) => {
   await page.locator('#create-kanban-text').fill('test kanban');
   await page.locator('#create-kanban-textarea').fill('test kanban description');
 
-  await page.locator('button', {hasText:"Confirm"}).click()
+  await page.locator('button', { hasText: "Confirm" }).click()
   await expect(createModal).toBeHidden();
 });
 
 test('Kanban-Group', async ({ page }) => {
   await login(page);
 
-  await gotoGroup(page);
+  // await gotoGroup(page);
+  await createGroup(page, { name: "Test Kanban Group " + randomString(), public: true, invite: false })
 
   await page.locator('#group-tasks-sidebar-button').click();
 
@@ -50,14 +51,13 @@ test('Kanban-Group', async ({ page }) => {
   await page.locator('#create-kanban-text').fill('test kanban');
   await page.locator('#create-kanban-textarea').fill('test kanban description');
 
-  await page.locator('button', {hasText:"Confirm"}).click()
+  await page.locator('button', { hasText: "Confirm" }).click()
   await expect(createModal).toBeHidden();
 });
 
 
 test('Kanban-Edit', async ({ page }) => {
   await login(page);
-
 
   // Navigate to the kanban page
   await page.goto('/kanban');

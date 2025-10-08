@@ -15,7 +15,7 @@
 	import { env } from '$env/dynamic/public';
 	import Fa from 'svelte-fa';
 	import { faArrowLeft, faPen, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-	import History from '$lib/Group/Delegation/History.svelte';
+	import History from '$lib/Delegation/History.svelte';
 	import { goto } from '$app/navigation';
 	import { getStores } from '$app/stores';
 	import { TelInput, normalizedCountries } from 'svelte-tel-input';
@@ -55,7 +55,6 @@
 		profileImagePreview = DefaultPFP,
 		bannerImagePreview = '',
 		currentlyEditing: null | 'bio' | 'web' | 'name' | 'phone' | 'email' = null,
-		 
 		currentlyCroppingProfile: boolean = false,
 		currentlyCroppingBanner = false,
 		oldProfileImagePreview = '',
@@ -137,7 +136,7 @@
 		const updatedUser = await getUserInfo();
 		userStore.set(updatedUser);
 		user = updatedUser;
-		
+
 		isEditing = false;
 		ErrorHandlerStore.set({ message: 'Profile successfully updated', success: true });
 	};
@@ -228,7 +227,6 @@
 					</div>
 				</Button>
 			{/if}
-			
 		</div>
 		<div class="flex justify-around w-full max-w-[850px]">
 			<img
@@ -409,7 +407,10 @@
 	{/if}
 
 	{#if $page.url.searchParams.get('delegate_id')}
-		<History history={Number($page.url.searchParams.get('delegate_id'))} groupId={1} />
+		<History
+			history={Number($page.url.searchParams.get('delegate_id'))}
+			groupId={Number($page.url.searchParams.get('group_id'))}
+		/>
 	{/if}
 </Layout>
 

@@ -9,7 +9,8 @@
 		Class = '',
 		//TODO: Fix so one can use size
 		size: number = 2, // Change this to pixel size once we upgrade to tailwind 4
-		userId: null | string | number = null;
+		userId: null | string | number = null,
+		href = `/user?id=${userId}`;
 
 	// Change this to pixel size once we upgrade to tailwind 4
 	const sizeClass =
@@ -30,7 +31,7 @@
 </script>
 
 {#if userId}
-	<a href={`/user?id=${userId}`} class={`flex gap-4 items-center ${Class}`}>
+	<a {href} class={`flex gap-4 items-center ${Class}`}>
 		{#if !profilePicture || profilePicture === '' || profilePicture === 'null'}
 			<img src={DefaultPFP} alt="avatar" class={`${sizeClass} rounded-full`} />
 		{:else}

@@ -6,9 +6,9 @@
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import Select from '$lib/Generic/Select.svelte';
 	import Toggle from '$lib/Generic/Toggle.svelte';
-	import type { Delegate } from '$lib/Group/Delegation/interfaces';
-	import Delegations from '$lib/Group/Delegation/Delegations.svelte';
-	import StopBeingDelegate from '$lib/Group/Delegation/StopBeingDelegate.svelte';
+	import type { Delegate } from '$lib/Delegation/interfaces';
+	import Delegations from '$lib/Delegation/Delegations.svelte';
+	import StopBeingDelegate from '$lib/Delegation/StopBeingDelegate.svelte';
 	import { groupUserPermissionStore, type Group, type GroupUser } from '$lib/Group/interface';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
@@ -126,7 +126,7 @@
 
 <Layout centered>
 	<div class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow w-full text-left">
-		id:{groupUser?.delegate_pool_id}
+		<!-- id:{groupUser?.delegate_pool_id} -->
 		<h1 class="text-xl font-semibold text-primary dark:text-secondary text-left">
 			{$_(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? 'Automate' : 'Manage Delegations')}
 		</h1>
