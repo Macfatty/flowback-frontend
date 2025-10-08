@@ -743,6 +743,8 @@
     "Successfully became delegate": "Lyckades bli delegat",
     "Historical imac value": "Historiskt imac värde",
     "Failed to update permission":"Misslyckades att updatera roll",
-    "Successfully updated permission":"Lyckades att updatera roll"
-    ,"Allowed to vote:":"Tillåten att rösta:"
+    "Successfully updated permission":"Lyckades att updatera roll",
+    "Allowed to vote:":"Tillåten att rösta:",
+    "Not allowed to vote":"Ej tillåten att rösta:",
+    "Could not create account": "Kunde inte skapa konto"
 }

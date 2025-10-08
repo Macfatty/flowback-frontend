@@ -34,7 +34,7 @@
 		proposals: proposal[],
 		selectedProposal: proposal | null,
 		proposalsToPredictionMarket: proposal[] = [],
-		height = "400",
+		height = '400',
 		displayForm: boolean,
 		comments: Comment[] = [],
 		loading = true;
@@ -306,7 +306,13 @@
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
-						<div>{$_('Allowed to vote: ')}{$groupUserPermissionStore?.allow_vote}</div>
+						<div>
+							{#if $groupUserPermissionStore?.allow_vote === true}
+								{$_('Allowed to vote')}
+							{:else}
+								{$_('Not allowed to vote')}
+							{/if}
+						</div>
 						<div class="max-h-[90%] overflow-y-auto">
 							<ProposalScoreVoting bind:comments bind:proposals bind:selectedProposal bind:phase />
 						</div>

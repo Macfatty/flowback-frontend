@@ -80,7 +80,4 @@ test('Delegation-Poll', async ({ page }) => {
     await expect(bPage.locator(`#track-container-${idfy(proposal.title)}`)).not.toContainClass('disabled')
     await expect(page.locator(`#track-container-${idfy(proposal.title)}`)).not.toContainClass('disabled')
 
-    await gotoGroup(page, group)
-    await deleteGroup(page, group)
-
 });
