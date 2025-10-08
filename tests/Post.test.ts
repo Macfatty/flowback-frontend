@@ -289,24 +289,24 @@ test('Prediction-Probabilities', async ({ page }) => {
 test('Poll-Start-To-Finish', async ({ page }) => {
     await login(page);
 
-    const group = { name: "Test Poll start to finish " + randomString(), public: false }
-
+    const group = { name: "Test Poll start to finish ", public: false }
     await createGroup(page, group)
 
     await createArea(page, group, "Tag 1")
 
-    await createArea(page, group, "Tag 2")
-
+    // for (let i = 0; i < 30; i++) {
     await gotoGroup(page, group);
 
-    await createPoll(page, { phase_time: 1 });
+    await createPoll(page, { title: "title" + randomString(), phase_time: 1 });
 
     await areaVote(page, { area: "Tag 1" });
 
     await fastForward(page, 1);
 
-    const proposal = { title: "Test Proposal", vote: 2 }
+    const proposal = { title: "Test Proposal" + randomString(), vote: 2 }
+    const proposal2 = { title: "Test Proposal 2" + randomString(), vote: 3 }
     await createProposal(page, proposal);
+    await createProposal(page, proposal2);
 
     await fastForward(page, 1);
 
@@ -321,11 +321,12 @@ test('Poll-Start-To-Finish', async ({ page }) => {
     await fastForward(page, 2);
 
     await vote(page, proposal);
+    await vote(page, proposal2);
 
     await fastForward(page, 1);
 
     await results(page);
-
+    // }
 });
 
 test('Date-Poll', async ({ page }) => {

@@ -1,17 +1,20 @@
 import { idfy } from '$lib/Generic/GenericFunctions2';
 import { expect } from '@playwright/test';
 
+// Only works inside a poll
 export async function fastForward(page: any, times = 1) {
     expect(await page.locator('#poll-header-multiple-choices')).toBeVisible();
     for (let i = 0; i < times; i++) {
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(500);
         const visible = await page.getByRole('button', { name: 'Fast Forward' }).isVisible();
         if (!visible)
             await page.locator('#poll-header-multiple-choices').click();
         await page.getByRole('button', { name: 'Fast Forward' }).click();
     }
+    await page.locator('#poll-header-multiple-choices').click();
 }
 
+// Only works inside a group. One could use goToGroup before this
 export async function createPoll(page: any, {
     title = 'Test Poll', date = false, phase_time = 1 } = {}) {
     //Create a Poll
@@ -93,8 +96,9 @@ export async function predictionStatementCreate(page: any, proposal = { title: "
 
     await expect(await page.getByText('To make a consequence, please')).not.toBeVisible()
 
-    await page.getByRole('textbox', { name: 'Title * 0/' }).fill(prediction.title);
-    await page.getByLabel('Description  0/').fill('Prediction 1');
+    await page.getByRole('textbox', { name: 'Title' }).fill(prediction.title);
+    await page.getByRole('textbox', { name: "Description" }).fill('Prediction 1');
+
     await page.locator('.date-time-field > input').nth(0).fill('2000-01-01 00:00:00');
     await page.locator('#poll-structure').click();
     await page.getByRole('button', { name: 'Submit' }).click();
