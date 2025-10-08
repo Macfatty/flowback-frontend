@@ -47,7 +47,8 @@ test('Imac-Test', async ({ page }) => {
     await expect(page.getByText('Successfully evaluated')).toBeVisible();
 
     await page.waitForTimeout(5000);
-    expect(page.locator('#poll-tag-imac').getByText("20%")).toBe({ timeout: 10000 });
+    await page.reload();
+    expect(page.locator('#poll-tag-imac').getByText("20%")).toBeVisible();
 
     // await page.locator('.text-center.dark\\:saturate-\\[60\\%\\].transition-colors.duration-50.w-12.px-4.py-1.ml-2').nth(1).click();
     // await expect(page.getByText('Successfully evaluated')).toBeVisible();

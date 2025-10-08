@@ -133,8 +133,13 @@
 				/>
 			</a>
 
-			{$_('Allowed to vote:')}
-			{$_($groupUserPermissionStore?.allow_vote.toString())}
+			<div>
+				{#if $groupUserPermissionStore?.allow_vote}
+					{$_('Allowed to vote')}
+				{:else}
+					{$_('Not allowed to vote')}
+				{/if}
+			</div>
 
 			{#if pollType === 4}
 				<div>

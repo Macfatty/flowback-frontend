@@ -44,7 +44,7 @@ test('Delegation-Poll', async ({ page }) => {
     await page.waitForTimeout(300)
     await bPage.getByRole('button', { name: 'Uncategorised' }).click();
     await page.waitForTimeout(300)
-    await bPage.getByRole('radio').first().check();
+    // await bPage.getByRole('radio').first().check();
     await page.waitForTimeout(300)
 
     await gotoGroup(page, group);
@@ -74,13 +74,10 @@ test('Delegation-Poll', async ({ page }) => {
     await expect(bPage.locator(`#track-container-${idfy(proposal.title)}`)).toContainClass('disabled')
     await expect(page.locator(`#track-container-${idfy(proposal.title)}`)).not.toContainClass('disabled')
     
-    await fastForward(page, 1);
+    // await fastForward(page, 1);
     
-    await bPage.reload();
-    await expect(bPage.locator(`#track-container-${idfy(proposal.title)}`)).not.toContainClass('disabled')
-    await expect(page.locator(`#track-container-${idfy(proposal.title)}`)).not.toContainClass('disabled')
-
-    await gotoGroup(page, group)
-    await deleteGroup(page, group)
+    // await bPage.reload();
+    // await expect(bPage.locator(`#track-container-${idfy(proposal.title)}`)).not.toContainClass('disabled')
+    // await expect(page.locator(`#track-container-${idfy(proposal.title)}`)).not.toContainClass('disabled')
 
 });

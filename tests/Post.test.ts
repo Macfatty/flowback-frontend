@@ -166,7 +166,7 @@ test('Prediction-Statements', async ({ page }) => {
     await gotoGroup(page, group);
 
     //TODO: Make this test faster by decreasing time between phases more
-    await createPoll(page, { phase_time: 0 });
+    await createPoll(page, { phase_time: 1 });
 
     await areaVote(page, { area });
 
@@ -179,11 +179,18 @@ test('Prediction-Statements', async ({ page }) => {
 
     await fastForward(page, 1);
 
-    await predictionStatementCreate(page, proposal);
-    await predictionStatementCreate(page, proposal);
-    await predictionStatementCreate(page, proposal);
-    await predictionStatementCreate(page, proposal2);
-    await predictionStatementCreate(page, proposal2);
+    await predictionStatementCreate(page, proposal, { title: "Pred1-1" });
+    await predictionStatementCreate(page, proposal, { title: "Pred1-2" });
+    await predictionStatementCreate(page, proposal, { title: "Pred1-3" });
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-1" });
+
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-2" });
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-3" });
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-4" });
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-5" });
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-6" });
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-7" });
+    await predictionStatementCreate(page, proposal2, { title: "Pred2-8" });
 
     //TODO Screenshot tests
 })
@@ -282,24 +289,24 @@ test('Prediction-Probabilities', async ({ page }) => {
 test('Poll-Start-To-Finish', async ({ page }) => {
     await login(page);
 
-    const group = { name: "Test Poll start to finish " + randomString(), public: false }
-
+    const group = { name: "Test Poll start to finish ", public: false }
     await createGroup(page, group)
 
     await createArea(page, group, "Tag 1")
 
-    await createArea(page, group, "Tag 2")
-
+    // for (let i = 0; i < 30; i++) {
     await gotoGroup(page, group);
 
-    await createPoll(page, { phase_time: 1 });
+    await createPoll(page, { title: "title" + randomString(), phase_time: 1 });
 
     await areaVote(page, { area: "Tag 1" });
 
     await fastForward(page, 1);
 
-    const proposal = { title: "Test Proposal", vote: 2 }
+    const proposal = { title: "Test Proposal" + randomString(), vote: 2 }
+    const proposal2 = { title: "Test Proposal 2" + randomString(), vote: 3 }
     await createProposal(page, proposal);
+    await createProposal(page, proposal2);
 
     await fastForward(page, 1);
 
@@ -314,11 +321,12 @@ test('Poll-Start-To-Finish', async ({ page }) => {
     await fastForward(page, 2);
 
     await vote(page, proposal);
+    await vote(page, proposal2);
 
     await fastForward(page, 1);
 
     await results(page);
-
+    // }
 });
 
 test('Date-Poll', async ({ page }) => {

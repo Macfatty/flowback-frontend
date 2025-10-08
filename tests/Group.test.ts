@@ -23,11 +23,10 @@ test.describe('Group-Integration-Tests', () => {
     })
 
     test('Leave Group', async ({ page }) => {
-        const bPage = await newWindow()
-        await login(bPage, { email: "b@b.se", password: "b" })
-        await gotoGroup(bPage, group)
-        await bPage.getByRole('button', { name: 'Leave group' }).click();
-        await bPage.getByRole('button', { name: 'Yes', exact: true }).click();
+        await login(page, { email: "b@b.se", password: "b" })
+        await gotoGroup(page, group)
+        await page.getByRole('button', { name: 'Leave group' }).click();
+        await page.getByRole('button', { name: 'Yes', exact: true }).click();
     })
 
     test('Delete Group', async ({ page }) => {
