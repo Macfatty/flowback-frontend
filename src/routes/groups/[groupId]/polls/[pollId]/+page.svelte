@@ -308,9 +308,9 @@
 						>
 						<div>
 							{#if $groupUserPermissionStore?.allow_vote === true}
-								{$_('Allowed to vote')}
+								{$_('You are allowed to vote')}
 							{:else}
-								{$_('Not allowed to vote')}
+								{$_('You are not allowed to vote')}
 							{/if}
 						</div>
 						<div class="max-h-[90%] overflow-y-auto">
