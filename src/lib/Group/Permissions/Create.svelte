@@ -181,7 +181,6 @@
 	});
 
 	onDestroy(() => {
-		console.log('DESTROYED?', roleName);
 		roleName = '';
 		selectedRole = undefined;
 	});
