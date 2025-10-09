@@ -64,6 +64,7 @@ export interface Group {
 	public: boolean;
 	pending_join: boolean;
 	pending_invite: boolean;
+	default_permission: number | null;
 }
 
 export interface GroupDetails {
