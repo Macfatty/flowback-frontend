@@ -77,7 +77,7 @@
 		{/if}
 	</div>
 
-	{#if $commentsStore.filteredComments.length === 0}
+	{#if $commentsStore?.filteredComments?.length === 0}
 		<div class="text-center mt-6 dark:text-darkmodeText">
 			{$_('There are currently no comments')}
 		</div>

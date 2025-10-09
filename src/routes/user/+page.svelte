@@ -271,13 +271,13 @@
 					target="_blank"
 					rel="noopener noreferrer"
 				>
-					{$_('Website')}: {user.website || ''}
+					{$_('Website')}: {user.website ?? $_('None provided')}
 				</a>
 				<p class="">
-					{$_('Phone number')}: {user.contact_phone || $_('None provided')}
+					{$_('Phone number')}: {user.contact_phone ?? $_('None provided')}
 				</p>
 				<p class="">
-					{$_('E-mail')}: {user.contact_email || $_('None provided')}
+					{$_('E-mail')}: {user.contact_email ?? $_('None provided')}
 				</p>
 			</div>
 		</div>

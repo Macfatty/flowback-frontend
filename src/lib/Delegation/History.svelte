@@ -214,12 +214,12 @@
 			{/if}
 		</div>
 		<div class="p-4 w-full max-w-screen-md mx-auto">
-			<!-- <Comments
+			<Comments
 				Class="bg-white dark:bg-darkobject p-4 shadow dark:text-darkmodeText"
 				api="delegate-history"
 				on:keydown={() => {}}
 				delegate_pool_id={history}
-			/> -->
+			/>
 		</div>
 	</div>
 </Loader>

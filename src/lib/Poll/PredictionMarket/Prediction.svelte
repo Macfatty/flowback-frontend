@@ -22,8 +22,7 @@
 		Class = '';
 
 	let score: null | number = null,
-		showDetails = false,
-		errorHandler: any;
+		showDetails = false;
 
 	function hasEndDatePassed(): boolean {
 		const currentDateTime = new Date();

@@ -147,8 +147,14 @@
 	<div class="mx-2">
 		{#if showGroupInfo}
 			<div class="flex gap-4 items-center pb-2 w-full justify-between dark:text-secondary">
-				<a
-					href={poll?.group_joined ? `groups/${poll?.group_id}` : ''}
+				<button
+					on:click={() =>
+						poll?.group_joined
+							? goto(`groups/${poll?.group_id}`)
+							: ErrorHandlerStore.set({
+									message: 'You must join the group to access it',
+									success: false
+								})}
 					class:hover:underline={poll?.group_joined}
 					class="text-black dark:text-darkmodeText flex items-center"
 				>
@@ -161,7 +167,7 @@
 					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
 						>{poll?.group_name}</span
 					>
-				</a>
+				</button>
 				<div class="flex gap-4 items-baseline">
 					<NotificationOptions
 						type="poll"
