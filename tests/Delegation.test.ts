@@ -44,7 +44,7 @@ test('Delegation-Poll', async ({ page }) => {
     await page.waitForTimeout(300)
     await bPage.getByRole('button', { name: 'Uncategorised' }).click();
     await page.waitForTimeout(300)
-    // await bPage.getByRole('radio').first().check();
+    await bPage.getByRole('radio').first().check();
     await page.waitForTimeout(300)
 
     await gotoGroup(page, group);
