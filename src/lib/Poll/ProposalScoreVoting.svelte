@@ -99,11 +99,11 @@
 				proposal: vote.proposal_id
 			}));
 
-			if (phase === 'delegate_vote')
-				voting = json?.results[0]?.vote.map((vote: any) => ({
-					score: vote.raw_score,
-					proposal: vote.proposal_id
-				}));
+			// Makes it so users vote matches their delegates vote
+			voting = json?.results[0]?.vote.map((vote: any) => ({
+				score: vote.raw_score,
+				proposal: vote.proposal_id
+			}));
 		}
 		voting = voting;
 		delegateVoting = delegateVoting;
