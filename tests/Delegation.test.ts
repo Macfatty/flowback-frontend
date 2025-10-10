@@ -41,11 +41,11 @@ test('Delegation-Poll', async ({ page }) => {
     await page.waitForTimeout(1000)
     await bPage.getByRole('link', { name: 'Delegations' }).click();
     await bPage.locator('#delegate-group-select').selectOption({ label: group.name });
-    await page.waitForTimeout(300)
+    await page.waitForTimeout(600)
     await bPage.getByRole('button', { name: 'Uncategorised' }).click();
-    await page.waitForTimeout(300)
+    await page.waitForTimeout(600)
     await bPage.getByRole('radio').first().check();
-    await page.waitForTimeout(300)
+    await page.waitForTimeout(600)
 
     await gotoGroup(page, group);
     await page.getByRole('button', { name: 'Edit Group' }).dispatchEvent('click');

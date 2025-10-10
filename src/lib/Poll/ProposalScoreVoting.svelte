@@ -236,7 +236,12 @@
 										const dVote = delegateVoting.find((vote) => vote.proposal === proposal.id);
 										if (dVote) changingVote(dVote.score, dVote.proposal);
 										vote();
-									}}>{$_($groupUserStore?.delegate_pool_id ? 'Reset to my delegate delegate votes' : 'Reset to delegate votes')}</Button
+									}}
+									>{$_(
+										$groupUserStore?.delegate_pool_id
+											? 'Reset to my delegate delegate votes'
+											: 'Reset to delegate votes'
+									)}</Button
 								>
 							{/if}
 						</Proposal>

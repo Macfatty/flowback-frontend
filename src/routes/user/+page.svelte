@@ -17,7 +17,6 @@
 	import { faArrowLeft, faPen, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import History from '$lib/Delegation/History.svelte';
 	import { goto } from '$app/navigation';
-	import { getStores } from '$app/stores';
 	import { TelInput, normalizedCountries } from 'svelte-tel-input';
 	import type { DetailedValue, CountryCode, E164Number } from 'svelte-tel-input/types';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
@@ -60,21 +59,15 @@
 		oldProfileImagePreview = '',
 		oldBannerImagePreview = '',
 		croppedImage: string,
-		loading = false;
+		loading = false,
+		// Any Country Code Alpha-2 (ISO 3166)
+		selectedCountry: CountryCode | null = 'SE',
+		// Validity
+		valid = true,
+		// Optional - Extended details about the parsed phone number
+		detailedValue: DetailedValue | null = null;
 
-	const { navigating: nav } = getStores();
-
-	// Any Country Code Alpha-2 (ISO 3166)
-	let selectedCountry: CountryCode | null = 'SE';
-
-	// You must use E164 number format. It's guarantee the parsing and storing consistency.
-	let value: E164Number | null = '';
-
-	// Validity
-	let valid = true;
-
-	// Optional - Extended details about the parsed phone number
-	let detailedValue: DetailedValue | null = null;
+	const blankSymbol = '___';
 
 	onMount(() => {
 		getUser();
@@ -94,29 +87,36 @@
 		user = isUser ? json : json?.results[0];
 		userEdit = user;
 
-		if (userEdit.bio === null) userEdit.bio = '';
-		if (userEdit.website === null) userEdit.website = '';
+		if (userEdit.bio === null || userEdit.bio === blankSymbol) userEdit.bio = '';
+		if (userEdit.website === null || userEdit.website === blankSymbol) userEdit.website = '';
 
 		if (user.profile_image) profileImagePreview = `${env.PUBLIC_API_URL}${user.profile_image}`;
 		if (user.banner_image) bannerImagePreview = `${env.PUBLIC_API_URL}${user.banner_image}`;
 
-		if (!user.contact_email) userEdit.contact_email = '';
-		if (!user.contact_phone) userEdit.contact_phone = '';
+		if (!user.contact_email || userEdit.contact_email === 'a@a.com') userEdit.contact_email = '';
+		if (!user.contact_phone || userEdit.contact_phone === '+4646464646')
+			userEdit.contact_phone = '';
 
 		document.title = `${user.username}'s profile`;
 	};
 
-	const updateProfile = async () => {
+	const editUser = async () => {
 		loading = true;
 		const imageToSend = await blobifyImages(profileImagePreview);
 		const bannerImageToSend = await blobifyImages(bannerImagePreview);
 
 		const formData = new FormData();
 		formData.append('username', userEdit.username);
-		formData.append('bio', userEdit.bio || '');
-		formData.append('website', userEdit.website || '');
-		formData.append('contact_email', userEdit.contact_email || '');
-		formData.append('contact_phone', userEdit.contact_phone || '');
+		formData.append('bio', userEdit.bio === '' ? blankSymbol : userEdit.bio);
+		formData.append('website', userEdit.website === '' ? blankSymbol : userEdit.website);
+		formData.append(
+			'contact_email',
+			userEdit.contact_email === '' ? `a@a.com` : userEdit.contact_email
+		);
+		formData.append(
+			'contact_phone',
+			userEdit.contact_phone === '' ? `+4646464646` : userEdit.contact_phone
+		);
 
 		if (bannerImagePreview !== '') formData.append('banner_image', bannerImageToSend);
 		if (profileImagePreview !== DefaultPFP) formData.append('profile_image', imageToSend);
@@ -240,7 +240,7 @@
 					{user.username}
 				</div>
 				<p class=" whitespace-pre-wrap">
-					{user.bio || $_('This user has no bio')}
+					{user.bio === blankSymbol ? $_('This user has no bio') : user.bio}
 				</p>
 			</div>
 			<div class="dark:text-darkmodeText py-6 w-[30%]">
@@ -271,13 +271,16 @@
 					target="_blank"
 					rel="noopener noreferrer"
 				>
-					{$_('Website')}: {user.website ?? $_('None provided')}
+					{$_('Website')}:
+					{user.website === blankSymbol ? $_('None provided') : user.website}
 				</a>
 				<p class="">
-					{$_('Phone number')}: {user.contact_phone ?? $_('None provided')}
+					{$_('Phone number')}: {user.contact_phone === '+4646464646' || user.contact_phone === ''
+						? $_('None provided')
+						: user.contact_phone}
 				</p>
 				<p class="">
-					{$_('E-mail')}: {user.contact_email ?? $_('None provided')}
+					{$_('E-mail')}: {user.contact_email === 'a@a.com' || user.contact_email === '' ? $_('None provided') : user.contact_email}
 				</p>
 			</div>
 		</div>
@@ -303,7 +306,7 @@
 			</label>
 			<form
 				class="bg-white w-full p-8 flex flex-col items-center justify-center dark:bg-darkobject dark:text-darkmodeText"
-				on:submit|preventDefault={updateProfile}
+				on:submit|preventDefault={editUser}
 			>
 				<div class="flex flex-row items-center justify-center gap-6 pb-6 w-full">
 					<label for="file-ip-1" class="inline">

@@ -18,7 +18,7 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { chatPartnerStore, chatOpenStore } from '$lib/Chat/functions';
-	import type { Delegate } from './Delegation/interfaces';
+	import type { Delegate } from '$lib/Delegation/interfaces';
 	import Select from '$lib/Generic/Select.svelte';
 	import { getUserChannelId } from '$lib/Chat/functions';
 
