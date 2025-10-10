@@ -261,26 +261,32 @@
 					{/await}
 				</div>
 
-				<a
-					class={``}
-					href={user.website
-						? user.website.startsWith('http://') || user.website.startsWith('https://')
+				{#if user.website !== 'a@a.com' && user.website !== ''}
+					<a
+						href={user.website.startsWith('http://') || user.website.startsWith('https://')
 							? user.website
-							: 'https://' + user.website
-						: '#'}
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					{$_('Website')}:
-					{user.website === blankSymbol ? $_('None provided') : user.website}
-				</a>
+							: 'https://' + user.website}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						{$_('Website')}:
+						{user.website}
+					</a>
+				{:else}
+					<span>
+						{$_('Website')}:
+						{$_('None provided')}
+					</span>
+				{/if}
 				<p class="">
 					{$_('Phone number')}: {user.contact_phone === '+4646464646' || user.contact_phone === ''
 						? $_('None provided')
 						: user.contact_phone}
 				</p>
 				<p class="">
-					{$_('E-mail')}: {user.contact_email === 'a@a.com' || user.contact_email === '' ? $_('None provided') : user.contact_email}
+					{$_('E-mail')}: {user.contact_email === 'a@a.com' || user.contact_email === ''
+						? $_('None provided')
+						: user.contact_email}
 				</p>
 			</div>
 		</div>
