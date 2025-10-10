@@ -3,9 +3,9 @@ import { login, newWindow } from './generic';
 import { createGroup, deleteGroup, gotoFirstGroup, gotoGroup, joinGroup } from './group';
 import { createPermission } from './permission';
 
-const group = { name: "Test Group Group-Testing Public", public: true, invite: false }
 
 test.describe('Group-Integration-Tests', () => {
+    const group = { name: "Test Group Group-Testing Public", public: true, invite: false }
 
     test('Create Group', async ({ page }) => {
         await login(page)
@@ -36,6 +36,7 @@ test.describe('Group-Integration-Tests', () => {
     })
 });
 
+test('Create-Delete-Group Invite only', async ({ page }) => {
 const groupInvite = { name: "Test Group Group-Testing Invite only", public: true, invite: true }
 
 test('Create Group Invite', async ({ page }) => {
@@ -74,6 +75,7 @@ test('Delete Group Invite', async ({ page }) => {
     await gotoGroup(page, groupInvite)
     await deleteGroup(page)
 })
+});
 
 test('Create-Delete-Group', async ({ page }) => {
     await login(page);
