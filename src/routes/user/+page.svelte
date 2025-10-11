@@ -24,6 +24,7 @@
 	import { getUserChannelId } from '$lib/Chat/functions';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { userStore } from '$lib/User/interfaces';
+	import History2 from '$lib/Delegation/History2.svelte';
 
 	let user: User = {
 		banner_image: '',
@@ -261,7 +262,7 @@
 					{/await}
 				</div>
 
-				{#if user.website !== 'a@a.com' && user.website !== ''}
+				{#if user.website && user.website !== 'a@a.com' && user.website !== ''}
 					<a
 						href={user.website.startsWith('http://') || user.website.startsWith('https://')
 							? user.website
@@ -416,7 +417,7 @@
 	{/if}
 
 	{#if $page.url.searchParams.get('delegate_id')}
-		<History
+		<History2
 			history={Number($page.url.searchParams.get('delegate_id'))}
 			groupId={Number($page.url.searchParams.get('group_id'))}
 		/>
