@@ -15,7 +15,6 @@
 	import { env } from '$env/dynamic/public';
 	import Fa from 'svelte-fa';
 	import { faArrowLeft, faPen, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-	import History from '$lib/Delegation/History.svelte';
 	import { goto } from '$app/navigation';
 	import { TelInput, normalizedCountries } from 'svelte-tel-input';
 	import type { DetailedValue, CountryCode, E164Number } from 'svelte-tel-input/types';
@@ -24,7 +23,7 @@
 	import { getUserChannelId } from '$lib/Chat/functions';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { userStore } from '$lib/User/interfaces';
-	import History2 from '$lib/Delegation/History2.svelte';
+	import History from '../../lib/Delegation/History.svelte';
 
 	let user: User = {
 		banner_image: '',
@@ -417,7 +416,7 @@
 	{/if}
 
 	{#if $page.url.searchParams.get('delegate_id')}
-		<History2
+		<History
 			history={Number($page.url.searchParams.get('delegate_id'))}
 			groupId={Number($page.url.searchParams.get('group_id'))}
 		/>

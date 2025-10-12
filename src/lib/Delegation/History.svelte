@@ -10,6 +10,7 @@
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import Select from '$lib/Generic/Select.svelte';
 	import { userStore } from '$lib/User/interfaces';
+	import Structure from '$lib/Poll/NewDesign/Structure.svelte';
 
 	export let history: null | number,
 		groupId = 0;
@@ -136,90 +137,95 @@
 				</div>
 			</form>
 		</div>
-		<div class="w-full max-w-screen-md mx-auto p-4 bg-white dark:bg-darkobject rounded shadow">
-			{#if filteredVotingHistory.length > 0}
-				<ul class="w-full">
-					{#each filteredVotingHistory as vote}
-						<li
-							class="bg-white dark:bg-darkobject dark:text-darkmodeText p-3 w-full border-b last:border-b-0 dark:border-gray-600"
-						>
-							<div class="flex flex-col gap-2">
-								<a
-									class="w-full break-words text-left text-xl p-1 pl-0 text-gray-900 dark:text-gray-300 cursor-pointer hover:underline"
-									href={`groups/${new URLSearchParams(window.location.search).get(
-										'group_id'
-									)}/polls/${vote?.poll_id}?source=delegate-history`}
-								>
-									{vote?.poll_title || $_('No title')}
-								</a>
+		<Structure Class="mx-auto !p-6 !pt-0 max-w-screen-xl" >
+			<div
+				slot="left"
+				class="p-4 bg-white dark:bg-darkobject rounded shadow"
+			>
+				{#if filteredVotingHistory.length > 0}
+					<ul class="w-full">
+						{#each filteredVotingHistory as vote}
+							<li
+								class="bg-white dark:bg-darkobject dark:text-darkmodeText p-3 w-full border-b last:border-b-0 dark:border-gray-600"
+							>
+								<div class="flex flex-col gap-2">
+									<a
+										class="w-full break-words text-left text-xl p-1 pl-0 text-gray-900 dark:text-gray-300 cursor-pointer hover:underline"
+										href={`groups/${new URLSearchParams(window.location.search).get(
+											'group_id'
+										)}/polls/${vote?.poll_id}?source=delegate-history`}
+									>
+										{vote?.poll_title || $_('No title')}
+									</a>
 
-								{#if vote?.poll_description}
-									<div class="text-sm text-gray-600 dark:text-gray-400 pl-1">
-										<p class="line-clamp-2">{vote?.poll_description}</p>
-									</div>
-								{/if}
-
-								<div class="flex flex-wrap gap-2 pl-1">
-									{#if vote?.tag_name}
-										<span
-											class="text-xs bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full"
-										>
-											{vote?.tag_name}
-										</span>
+									{#if vote?.poll_description}
+										<div class="text-sm text-gray-600 dark:text-gray-400 pl-1">
+											<p class="line-clamp-2">{vote?.poll_description}</p>
+										</div>
 									{/if}
 
-									{#if vote?.subject_area}
-										<span
-											class="text-xs bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full"
-										>
-											{vote?.subject_area}
-										</span>
-									{/if}
-
-									{#if vote?.created_at}
-										<span class="text-xs text-gray-500 dark:text-gray-400">
-											Created: {new Date(vote?.created_at).toLocaleDateString()}
-										</span>
-									{/if}
-								</div>
-
-								{#if vote?.historical_data}
-									<div class="mt-1 pl-1 text-sm">
-										<details>
-											<summary
-												class="cursor-pointer text-blue-600 dark:text-blue-400 hover:underline"
+									<div class="flex flex-wrap gap-2 pl-1">
+										{#if vote?.tag_name}
+											<span
+												class="text-xs bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full"
 											>
-												{$_('Historical IMAC')}
-											</summary>
-											<div class="p-2 bg-gray-50 dark:bg-gray-800 rounded mt-1">
-												<pre class="text-xs overflow-x-auto text-gray-900 dark:text-gray-300">
+												{vote?.tag_name}
+											</span>
+										{/if}
+
+										{#if vote?.subject_area}
+											<span
+												class="text-xs bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full"
+											>
+												{vote?.subject_area}
+											</span>
+										{/if}
+
+										{#if vote?.created_at}
+											<span class="text-xs text-gray-500 dark:text-gray-400">
+												Created: {new Date(vote?.created_at).toLocaleDateString()}
+											</span>
+										{/if}
+									</div>
+
+									{#if vote?.historical_data}
+										<div class="mt-1 pl-1 text-sm">
+											<details>
+												<summary
+													class="cursor-pointer text-blue-600 dark:text-blue-400 hover:underline"
+												>
+													{$_('Historical IMAC')}
+												</summary>
+												<div class="p-2 bg-gray-50 dark:bg-gray-800 rounded mt-1">
+													<pre class="text-xs overflow-x-auto text-gray-900 dark:text-gray-300">
 													{JSON.stringify(vote.historical_data, null, 2)}
 												</pre>
-											</div>
-										</details>
-									</div>
-								{/if}
-							</div>
-						</li>
-					{/each}
-				</ul>
-			{:else if filteredVotingHistory.length === 0 && searched}
-				<div class="p-3 text-center text-gray-500 dark:text-gray-400">
-					{$_('No polls match your search criteria')}
-				</div>
-			{:else}
-				<div class="p-3 text-center text-gray-500 dark:text-gray-400">
-					{$_('No delegate history')}
-				</div>
-			{/if}
-		</div>
-		<div class="p-4 w-full max-w-screen-md mx-auto">
-			<Comments
-				Class="bg-white dark:bg-darkobject p-4 shadow dark:text-darkmodeText"
-				api="delegate-history"
-				on:keydown={() => {}}
-				delegate_pool_id={history}
-			/>
-		</div>
+												</div>
+											</details>
+										</div>
+									{/if}
+								</div>
+							</li>
+						{/each}
+					</ul>
+				{:else if filteredVotingHistory.length === 0 && searched}
+					<div class="p-3 text-center text-gray-500 dark:text-gray-400">
+						{$_('No polls match your search criteria')}
+					</div>
+				{:else}
+					<div class="p-3 text-center text-gray-500 dark:text-gray-400">
+						{$_('No delegate history')}
+					</div>
+				{/if}
+			</div>
+			<div slot="right" class="p-4">
+				<Comments
+					Class="bg-white dark:bg-darkobject p-4 shadow dark:text-darkmodeText"
+					api="delegate-history"
+					on:keydown={() => {}}
+					delegate_pool_id={history}
+				/>
+			</div>
+		</Structure>
 	</div>
 </Loader>
