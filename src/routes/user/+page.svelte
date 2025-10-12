@@ -261,7 +261,7 @@
 					{/await}
 				</div>
 
-				{#if user.website && user.website !== 'a@a.com' && user.website !== ''}
+				{#if user.website && user.website !== blankSymbol && user.website !== ''}
 					<a
 						href={user.website.startsWith('http://') || user.website.startsWith('https://')
 							? user.website
