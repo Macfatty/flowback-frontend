@@ -93,7 +93,7 @@
 </script>
 
 <Loader bind:loading>
-	<div class="w-screen bg-[#faf5ff] dark:bg-darkbackground pt-4">
+	<div class="w-screen bg-[#faf5ff] dark:bg-darkbackground pt-4 p-4">
 		<div class="w-full max-w-screen-md mx-auto p-4 bg-white dark:bg-darkobject rounded shadow mb-4">
 			<span class="font-semibold text-sm text-gray-700 dark:text-darkmodeText pb-2">
 				{$_('Delegate history for')}
@@ -140,7 +140,7 @@
 		<Structure Class="mx-auto !p-6 !pt-0 max-w-screen-xl" >
 			<div
 				slot="left"
-				class="p-4 bg-white dark:bg-darkobject rounded shadow"
+				class="p-4 bg-white dark:bg-darkobject rounded shadow max-h-[100%] overflow-auto"
 			>
 				{#if filteredVotingHistory.length > 0}
 					<ul class="w-full">
