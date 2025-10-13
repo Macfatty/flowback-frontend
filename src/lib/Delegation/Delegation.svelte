@@ -17,6 +17,7 @@
 	import { userStore } from '$lib/User/interfaces';
 	import type { Permissions } from '$lib/Group/Permissions/interface';
 	import { getPermissionsFast } from '$lib/Generic/GenericFunctions';
+	import BackArrow from '$lib/Generic/BackArrow.svelte';
 
 	let group: Group,
 		groups: Group[],
@@ -147,6 +148,7 @@
 				<Fa icon={faArrowLeft} />
 			</div>
 		</Button>
+
 		<div class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow w-[50%]">
 			{#if env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE'}
 				You are {userPermissions?.allow_vote || groupUser?.is_admin ? '' : 'not'} allowed to vote in

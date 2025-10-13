@@ -65,7 +65,7 @@
 	};
 </script>
 
-<div
+<button
 	id={group.name.toLowerCase().replaceAll(' ', '-')}
 	class={`w-4/6 md:w-2/5 max-w-[650px] bg-white relative shadow-md dark:bg-darkobject dark:text-darkmodeText text-center ${
 		group.joined && 'cursor-pointer hover:shadow-xl vote-thumbnail'
@@ -126,7 +126,7 @@
 			{$_('Request sent')}
 		{/if}
 	</div>
-</div>
+</button>
 
 <Modal
 	bind:open={areYouSureModal}

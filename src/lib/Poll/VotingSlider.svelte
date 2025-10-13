@@ -71,12 +71,16 @@
 	class:cursor-grab={!disabled}
 	class:cursor-not-allowed={disabled}
 >
-	<div id={`track-container-${id}`} class="{disabled ? 'disabled' : ''} relative w-full h-3 bg-purple-200 rounded-full">
+	<div
+		id={`track-container-${id}`}
+		style={`color: ${style}`}
+		class="{disabled ? 'disabled' : ''} relative w-full h-3 bg-purple-200 rounded-full"
+	>
 		<!-- Active bar -->
 		<div
 			class="absolute top-0 left-0 h-full"
-			class:!dark:bg-gray-500={style === 'gray'}
-			class:!bg-gray-300={style === 'gray'}
+			class:!dark:bg-gray-500={style === 'gray' || disabled}
+			class:!bg-gray-300={style === 'gray' || disabled}
 			style="width: {lineWidth}%; background-color: {true ? '#a78bfa' : '#BBBBBB'};"
 		/>
 

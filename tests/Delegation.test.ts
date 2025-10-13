@@ -78,7 +78,7 @@ test('Delegation-Poll', async ({ page }) => {
 		'disabled'
 	);
 
-	await fastForward(page, 2);
+	// await fastForward(page, 2);
 
 	// await bPage.reload();
 	// await expect(bPage.locator(`#track-container-${idfy(proposal.title)}`)).not.toContainClass('disabled')

@@ -11,6 +11,7 @@
 	import Select from '$lib/Generic/Select.svelte';
 	import { userStore } from '$lib/User/interfaces';
 	import Structure from '$lib/Poll/NewDesign/Structure.svelte';
+	import Tag from '$lib/Group/Tag.svelte';
 
 	export let history: null | number,
 		groupId = 0;
@@ -137,14 +138,15 @@
 				</div>
 			</form>
 		</div>
-		<Structure Class="mx-auto !p-6 !pt-0 max-w-screen-xl" >
+
+		<Structure Class="mx-auto !p-6 !pt-0 max-w-screen-xl">
 			<div
 				slot="left"
 				class="p-4 bg-white dark:bg-darkobject rounded shadow max-h-[100%] overflow-auto"
 			>
 				{#if filteredVotingHistory.length > 0}
 					<ul class="w-full">
-						{#each filteredVotingHistory as vote}
+						{#each filteredVotingHistory as voteHistory}
 							<li
 								class="bg-white dark:bg-darkobject dark:text-darkmodeText p-3 w-full border-b last:border-b-0 dark:border-gray-600"
 							>
@@ -153,42 +155,42 @@
 										class="w-full break-words text-left text-xl p-1 pl-0 text-gray-900 dark:text-gray-300 cursor-pointer hover:underline"
 										href={`groups/${new URLSearchParams(window.location.search).get(
 											'group_id'
-										)}/polls/${vote?.poll_id}?source=delegate-history`}
+										)}/polls/${voteHistory?.poll_id}?source=delegate-history`}
 									>
-										{vote?.poll_title || $_('No title')}
+										{voteHistory?.poll_title || $_('No title')}
 									</a>
 
-									{#if vote?.poll_description}
+									{#if voteHistory?.poll_description}
 										<div class="text-sm text-gray-600 dark:text-gray-400 pl-1">
-											<p class="line-clamp-2">{vote?.poll_description}</p>
+											<p class="line-clamp-2">{voteHistory?.poll_description}</p>
 										</div>
 									{/if}
 
 									<div class="flex flex-wrap gap-2 pl-1">
-										{#if vote?.tag_name}
+										{#if voteHistory?.tag_name}
 											<span
 												class="text-xs bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full"
 											>
-												{vote?.tag_name}
+												{voteHistory?.tag_name}
 											</span>
 										{/if}
 
-										{#if vote?.subject_area}
+										{#if voteHistory?.subject_area}
 											<span
 												class="text-xs bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full"
 											>
-												{vote?.subject_area}
+												{voteHistory?.subject_area}
 											</span>
 										{/if}
 
-										{#if vote?.created_at}
+										{#if voteHistory?.created_at}
 											<span class="text-xs text-gray-500 dark:text-gray-400">
-												Created: {new Date(vote?.created_at).toLocaleDateString()}
+												Created: {new Date(voteHistory?.created_at).toLocaleDateString()}
 											</span>
 										{/if}
 									</div>
 
-									{#if vote?.historical_data}
+									{#if voteHistory?.historical_data}
 										<div class="mt-1 pl-1 text-sm">
 											<details>
 												<summary
@@ -198,12 +200,28 @@
 												</summary>
 												<div class="p-2 bg-gray-50 dark:bg-gray-800 rounded mt-1">
 													<pre class="text-xs overflow-x-auto text-gray-900 dark:text-gray-300">
-													{JSON.stringify(vote.historical_data, null, 2)}
+													{JSON.stringify(voteHistory.historical_data, null, 2)}
 												</pre>
 												</div>
 											</details>
 										</div>
 									{/if}
+
+									<div>
+										{$_('Area:')}
+										{voteHistory.tag_name ?? ''}
+									</div>
+
+									<div>
+										{$_('Historical IMAC:')}
+										{voteHistory.poll_interval_mean_absolute_correctness ??
+											"Wasn't calculated at the time"}
+									</div>
+									{#each voteHistory.vote as vote}
+										<div>{vote.proposal_title}</div>
+										<div>{vote.proposal_description}</div>
+										<div>{$_('Delegate voted:')} {vote.raw_score}</div>
+									{/each}
 								</div>
 							</li>
 						{/each}

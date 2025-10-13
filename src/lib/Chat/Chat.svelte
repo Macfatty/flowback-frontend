@@ -61,8 +61,8 @@
 		getPreview();
 		window.addEventListener('popstate', () => {
 			let url = new URL(window.location.toString());
-			if (url.searchParams.get('chatOpen') === 'true') chatOpen = true;
-			else chatOpen = false;
+			// if (url.searchParams.get('chatOpen') === 'true') chatOpen = true;
+			// else chatOpen = false;
 		});
 	});
 
@@ -72,7 +72,7 @@
 	//Handles the chatOpen=true in the URL for correct "going back in history" behaviour
 	$: (() => {
 		const url = new URL(window.location.toString());
-		url.searchParams.set('chatOpen', chatOpen.toString());
+		// url.searchParams.set('chatOpen', chatOpen.toString());
 		window.history.pushState({}, '', url);
 	})();
 
