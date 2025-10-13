@@ -32,7 +32,6 @@
 		showMessage = '',
 		recentlyTappedButton = '',
 		darkmode = false,
-		 
 		filteredProposal: proposal | null = null;
 
 	// Reactive subscription to the filtered proposal in the commentsStore
@@ -73,7 +72,29 @@
 		}
 
 		// Calculate the reply_depth based on the parent comment
+
+		const id = json;
+		getNewComment(id);
+	};
+
+	const getNewComment = async (id: number) => {
 		let replyDepth = 0;
+
+		const { res, json } = await fetchRequest('GET', `group/${getId()}/comment/list?id=${id}`);
+
+		if (res.ok) {
+			const newComment = json.results[0];
+			commentsStore.add(newComment);
+			comments = comments;
+			showMessage = 'Successfully posted comment';
+			show = true;
+			message = '';
+			replying = false;
+
+			subscribeToReplies();
+
+			return;
+		}
 
 		const parentComment = $commentsStore.filteredComments.find(
 			(comment) => comment.id === parent_id
@@ -249,5 +270,3 @@
 		</div>
 	</div>
 </form>
-
- 
