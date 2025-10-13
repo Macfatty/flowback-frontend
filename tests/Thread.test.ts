@@ -33,6 +33,10 @@ test('Thread-Comments', async ({ page }) => {
 	await page.getByPlaceholder('Write a comment...').nth(1).click();
 	await page.getByPlaceholder('Write a comment...').nth(1).fill('Test Reply with file');
 	await page.locator('.submit-button').nth(1).click();
+
+    // TODO Test images in comment
+    // TODO Test multiple users
+    // TODO Test likes
 });
 
 test('Thread-Create-Report-Delete', async ({ page }) => {

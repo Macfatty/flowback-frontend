@@ -149,8 +149,6 @@
 			</div>
 		</Button>
 
-		<BackArrow />
-
 		<div class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow w-[50%]">
 			{#if env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE'}
 				You are {userPermissions?.allow_vote || groupUser?.is_admin ? '' : 'not'} allowed to vote in

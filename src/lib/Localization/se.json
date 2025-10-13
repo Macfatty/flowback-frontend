@@ -748,5 +748,6 @@
     "Not allowed to vote":"Ej tillåten att rösta:",
     "Could not create account": "Kunde inte skapa konto",
     "You are allowed to vote": "Du har tillåtelse att rösta",
-    "You are not allowed to vote": "Du har inte tillåtelse att rösta"
+    "You are not allowed to vote": "Du har inte tillåtelse att rösta",
+    "Delegate voted":"Delegat röstade"
 }
