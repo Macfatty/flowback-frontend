@@ -15,7 +15,6 @@
 	import { env } from '$env/dynamic/public';
 	import Fa from 'svelte-fa';
 	import { faArrowLeft, faPen, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-	import History from '$lib/Delegation/History.svelte';
 	import { goto } from '$app/navigation';
 	import { TelInput, normalizedCountries } from 'svelte-tel-input';
 	import type { DetailedValue, CountryCode, E164Number } from 'svelte-tel-input/types';
@@ -24,6 +23,7 @@
 	import { getUserChannelId } from '$lib/Chat/functions';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { userStore } from '$lib/User/interfaces';
+	import History from '../../lib/Delegation/History.svelte';
 
 	let user: User = {
 		banner_image: '',
@@ -163,7 +163,7 @@
 	const openChat = async (userId: number) => {
 		const channelId = await getUserChannelId(userId);
 		if (!channelId) return;
-
+	
 		chatOpenStore.set(true);
 		// Need to wait a tick for chat to open before setting partner
 		await new Promise((resolve) => setTimeout(resolve, 0));
@@ -261,26 +261,32 @@
 					{/await}
 				</div>
 
-				<a
-					class={``}
-					href={user.website
-						? user.website.startsWith('http://') || user.website.startsWith('https://')
+				{#if user.website && user.website !== blankSymbol && user.website !== ''}
+					<a
+						href={user.website.startsWith('http://') || user.website.startsWith('https://')
 							? user.website
-							: 'https://' + user.website
-						: '#'}
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					{$_('Website')}:
-					{user.website === blankSymbol ? $_('None provided') : user.website}
-				</a>
+							: 'https://' + user.website}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						{$_('Website')}:
+						{user.website}
+					</a>
+				{:else}
+					<span>
+						{$_('Website')}:
+						{$_('None provided')}
+					</span>
+				{/if}
 				<p class="">
 					{$_('Phone number')}: {user.contact_phone === '+4646464646' || user.contact_phone === ''
 						? $_('None provided')
 						: user.contact_phone}
 				</p>
 				<p class="">
-					{$_('E-mail')}: {user.contact_email === 'a@a.com' || user.contact_email === '' ? $_('None provided') : user.contact_email}
+					{$_('E-mail')}: {user.contact_email === 'a@a.com' || user.contact_email === ''
+						? $_('None provided')
+						: user.contact_email}
 				</p>
 			</div>
 		</div>

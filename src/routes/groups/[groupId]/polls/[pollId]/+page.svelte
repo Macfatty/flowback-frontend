@@ -60,10 +60,8 @@
 
 		loading = false;
 
-		if (!res.ok) {
-			ErrorHandlerStore.set({ message: json.detail[0], success: false });
-			return;
-		}
+		if (!res.ok) return;
+		
 
 		poll = json?.results[0];
 		pollType = json?.results[0]?.poll_type;

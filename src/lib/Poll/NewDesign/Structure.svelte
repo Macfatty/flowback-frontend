@@ -55,7 +55,7 @@
 		}
 
 		.poll-grid-no-timeline {
-			grid-template-columns: 0.1fr 1fr;
+			grid-template-columns: 1fr 1fr;
 			display: grid;
 		}
 

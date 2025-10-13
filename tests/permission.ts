@@ -23,7 +23,7 @@ export async function createPermission(page: any, group = { name: 'Test Group', 
     await page.getByRole('button', { name: 'Create Role' }).click();
 }
 
-export async function assignPermission(page: any, group = { name: 'Test Group', public: false }, permission_name = "Test Permission") {
+export async function assignPermission(page: any, group = { name: 'Test Group', public: false }, permission_name = "Test Permission", user_name = "") {
 
     if (!page.getByRole('heading', { name: 'Admin Settings' }).isVisible()) {
         gotoGroup(page, group)
@@ -32,7 +32,7 @@ export async function assignPermission(page: any, group = { name: 'Test Group', 
 
     await page.getByRole('button', { name: 'Permissions' }).click();
     await page.getByRole('button', { name: 'Assign' }).click();
-    await page.locator('#plus-b').click()
+    await page.locator(`#plus-${user_name}`).click()
 
     await page.getByRole('listitem').locator(`id=permission-${idfy(permission_name)}`).nth(1).click();
 
