@@ -163,7 +163,7 @@
 	const openChat = async (userId: number) => {
 		const channelId = await getUserChannelId(userId);
 		if (!channelId) return;
-
+	
 		chatOpenStore.set(true);
 		// Need to wait a tick for chat to open before setting partner
 		await new Promise((resolve) => setTimeout(resolve, 0));
