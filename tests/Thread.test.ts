@@ -3,16 +3,36 @@ import { login } from './generic';
 import { createGroup, gotoGroup } from './group';
 import { createThread } from './thread';
 
+const group = { name: 'Test Group Thread', public: false };
+
 test('Thread-Create', async ({ page }) => {
 	await login(page);
-
-	const group = { name: 'Test Group Thread', public: false };
 
 	await createGroup(page, group);
 
 	await gotoGroup(page, group);
 
 	await createThread(page, group);
+});
+
+test('Thread-Comments', async ({ page }) => {
+	await login(page);
+
+	await createGroup(page, group);
+
+	await gotoGroup(page, group);
+
+	await createThread(page, group);
+
+	// GOTO THREAD
+
+	await page.getByPlaceholder('Write a comment...').click();
+	await page.getByPlaceholder('Write a comment...').fill('Test Comment');
+	await page.locator('.submit-button').nth(0).click();
+	await page.getByRole('button', { name: 'Reply' }).click();
+	await page.getByPlaceholder('Write a comment...').nth(1).click();
+	await page.getByPlaceholder('Write a comment...').nth(1).fill('Test Reply with file');
+	await page.locator('.submit-button').nth(1).click();
 });
 
 test('Thread-Create-Report-Delete', async ({ page }) => {
