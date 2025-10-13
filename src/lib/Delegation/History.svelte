@@ -206,10 +206,12 @@
 										</div>
 									{/if}
 
+									{$_('Historical IMAC:')}
+									{voteHistory.poll_interval_mean_absolute_correctness ?? 'Wasn\'t calculated at the time'}
 									{#each voteHistory.vote as vote}
 										<div>{vote.proposal_title}</div>
 										<div>{vote.proposal_description}</div>
-										<div>{$_('Delegate voted')}: {vote.raw_score}</div>
+										<div>{$_('Delegate voted:')} {vote.raw_score}</div>
 									{/each}
 								</div>
 							</li>

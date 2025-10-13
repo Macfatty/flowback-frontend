@@ -749,5 +749,6 @@
     "Could not create account": "Kunde inte skapa konto",
     "You are allowed to vote": "Du har tillåtelse att rösta",
     "You are not allowed to vote": "Du har inte tillåtelse att rösta",
-    "Delegate voted":"Delegat röstade"
+    "Delegate voted:":"Delegat röstade:",
+    "Wasn't calculated at the time": "Var ej uträknat då"
 }
