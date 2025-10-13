@@ -45,7 +45,7 @@ export async function loginEnter(page: any, {
 // Only works if PUBLIC_EMAIL_REGISTRATION=FALSE in .env
 // Email functionality appears to only be manually testable afaik 
 export async function register(page: any) {
-    const randomUSername = Math.random().toString(36).slice(2, 10);
+    const randomUSername = randomString();
     const randomEmail = `${randomUSername}@flowback.test`;
 
     await page.goto('/login');
@@ -53,18 +53,18 @@ export async function register(page: any) {
     await page.waitForTimeout(500);
 
     await page.getByRole('button', { name: 'Register' }).click();
-    await page.getByLabel('Email * 0/').click();
-    await page.getByLabel('Email * 0/').fill('a@a.se');
+    await page.getByLabel('Email').click();
+    await page.getByLabel('Email').fill('a@a.se');
     await page.getByRole('button', { name: 'Send' }).click();
     await expect(page.getByText('You must accept terms of')).toBeVisible();
     await page.getByLabel('Yes').check();
     await page.getByRole('button', { name: 'Send' }).click();
     await expect(page.getByText('Email already exists.')).toBeVisible();
 
-    await page.getByLabel('Email * 6/').fill(randomEmail);
+    await page.getByLabel('Email').fill(randomEmail);
 
     let registrationCode = '';
-    page.on('response', async (response: any) => {
+    await page.on('response', async (response: any) => {
         if (response.url().includes('register') && !response.url().includes('verify')) {
             registrationCode = await response.text()
         }
@@ -74,17 +74,17 @@ export async function register(page: any) {
     await expect(page.getByText('Email Sent')).toBeVisible();
     await expect(page.getByText('Mail Sent')).toBeVisible();
 
-    await page.getByLabel('Verification Code * 0/').click();
-    await page.getByLabel('Verification Code * 0/').fill('geageageadgea');
-    await page.getByLabel('Username * 0/').click();
-    await page.getByLabel('Username * 0/').fill(randomUSername);
-    await page.getByLabel('Choose a Password * 0/').click();
-    await page.getByLabel('Choose a Password * 0/').fill('SecretPassword123123!');
+    await page.getByLabel('Verification Code').click();
+    await page.getByLabel('Verification Code').fill('geageageadgea');
+    await page.getByLabel('Username').click();
+    await page.getByLabel('Username').fill(randomUSername);
+    await page.getByLabel('Choose a Password').click();
+    await page.getByLabel('Choose a Password').fill('SecretPassword123123!');
     await page.getByRole('button', { name: 'Send' }).click();
     await expect(page.getByText('Wrong verification code')).toBeVisible();
-    await page.getByLabel('Verification Code * 13/').click();
-    await page.getByLabel('Verification Code * 13/').press('Control+a');
-    await page.getByLabel('Verification Code * 13/').fill(registrationCode.replace("\"", "").replace("\"", ""));
+    await page.getByLabel('Verification Code').click();
+    await page.getByLabel('Verification Code').press('Control+a');
+    await page.getByLabel('Verification Code').fill(registrationCode.replace("\"", "").replace("\"", ""));
 
     await page.getByRole('button', { name: 'Send' }).click();
 

@@ -112,6 +112,7 @@
 		}
 
 		ErrorHandlerStore.set({ message: 'Successfully created role', success: true });
+
 	};
 
 	const permissionUpdate = async () => {
@@ -151,7 +152,6 @@
 
 		ErrorHandlerStore.set({ message: 'Successfully updated role', success: true });
 		selectedRole = undefined;
-		selectedPage = 'list';
 	};
 
 	const transformIntoRolePermType = (permissions: Permissions) => {

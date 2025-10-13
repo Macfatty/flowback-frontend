@@ -2,6 +2,7 @@
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 	import Button from './Button.svelte';
 	import Fa from 'svelte-fa';
+	import { onMount } from 'svelte';
 
 	const directedGraph = {
 		Delegation: ['Group', 'Dack'],
@@ -15,12 +16,29 @@
 	};
 
 
+	const preventChatBug = async () => {
 
-	
+		const a = new PopStateEvent('popstate', { state: {} });
+		
+		console.log(a, location.href);
+		
+		
+	}
+
+	const handleClick = async () => {
+		history.back();
+		await preventChatBug();
+	}
+
+	onMount(() => {
+		preventChatBug();
+	})
+
+
 </script>
 
 <Button
-	onClick={() => history.back()}
+	onClick={handleClick}
 	Class="z-[60] fixed p-3 m-4 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90"
 	id="back-button"
 >
