@@ -11,6 +11,7 @@
 	import Select from '$lib/Generic/Select.svelte';
 	import { userStore } from '$lib/User/interfaces';
 	import Structure from '$lib/Poll/NewDesign/Structure.svelte';
+	import Tag from '$lib/Group/Tag.svelte';
 
 	export let history: null | number,
 		groupId = 0;
@@ -206,8 +207,16 @@
 										</div>
 									{/if}
 
-									{$_('Historical IMAC:')}
-									{voteHistory.poll_interval_mean_absolute_correctness ?? 'Wasn\'t calculated at the time'}
+									<div>
+										{$_('Area:')}
+										{voteHistory.tag_name ?? ''}
+									</div>
+
+									<div>
+										{$_('Historical IMAC:')}
+										{voteHistory.poll_interval_mean_absolute_correctness ??
+											"Wasn't calculated at the time"}
+									</div>
 									{#each voteHistory.vote as vote}
 										<div>{vote.proposal_title}</div>
 										<div>{vote.proposal_description}</div>
