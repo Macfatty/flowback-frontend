@@ -19,7 +19,7 @@ export async function login(page: any, {
     await page.fill('input[name="password"]', password);
     await page.click('button[type="submit"]');
 
-    await expect(page).toHaveURL('/home?chatOpen=false');
+    await expect(page).toHaveURL('/home');
 
     if (await page.getByRole('button', { name: 'Ok' }).isVisible()) {
         await page.getByRole('button', { name: 'Ok' }).click();
@@ -38,7 +38,7 @@ export async function loginEnter(page: any, {
     await page.fill('input[name="password"]', password);
     await page.getByLabel('Password * 1/').press('Enter');
 
-    await expect(page).toHaveURL('/home?chatOpen=false');
+    await expect(page).toHaveURL('/home');
 }
 
 // Tests registring a user
@@ -89,7 +89,7 @@ export async function register(page: any) {
     await page.getByRole('button', { name: 'Send' }).click();
 
     await expect(page.getByText('Success')).toBeVisible();
-    await expect(page).toHaveURL('/home?chatOpen=false');
+    await expect(page).toHaveURL('/home');
 
     if (await page.getByRole('button', { name: 'Ok' }).isVisible()) {
         await page.getByRole('button', { name: 'Ok' }).click();

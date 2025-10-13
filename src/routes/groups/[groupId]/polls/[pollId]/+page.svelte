@@ -20,7 +20,6 @@
 	import Layout from '$lib/Generic/Layout.svelte';
 	import PredictionStatements from '$lib/Poll/PredictionStatements.svelte';
 	import { env } from '$env/dynamic/public';
-	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { formatDate } from '$lib/Generic/DateFormatter';
 	import { predictionStatementsStore } from '$lib/Poll/PredictionMarket/interfaces';
@@ -34,7 +33,6 @@
 		proposals: proposal[],
 		selectedProposal: proposal | null,
 		proposalsToPredictionMarket: proposal[] = [],
-		height = '400',
 		displayForm: boolean,
 		comments: Comment[] = [],
 		loading = true;
@@ -338,11 +336,11 @@
 			{:else if phase === 'result' || phase === 'prediction_vote'}
 				<Structure bind:phase bind:poll>
 					<div slot="left" class="h-[460px] overflow-y-auto">
-						{#if proposals}
+						{#if proposals} 
+						{proposals[0]?.score}
 							<PredictionStatements
 								bind:phase
 								bind:poll
-								selectedProposal={proposals.sort((_proposal) => _proposal.score)[0]}
 							/>
 						{/if}
 					</div>

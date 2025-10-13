@@ -47,7 +47,7 @@
 	$: if (selectedProposal) getPredictionStatements(selectedProposal);
 
 	onMount(async () => {
-		getPredictionStatements(selectedProposal);
+		await getPredictionStatements(selectedProposal);
 
 		if (poll.status === 1) {
 			await getProposals();
