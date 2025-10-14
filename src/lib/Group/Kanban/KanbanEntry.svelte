@@ -56,6 +56,7 @@
 			work_group: kanban.work_group || null,
 			images: kanban.attachments || []
 		},
+		images:File[],
 		endDate: TimeAgo;
 
 	// Helper function to format date for datetime-local input
@@ -86,7 +87,7 @@
 		};
 	};
 
-	const updateKanbanContent = async () => {
+	const updateKanbanEntry = async () => {
 		const formData = new FormData();
 
 		formData.append('title', kanbanEdited.title);
@@ -111,6 +112,12 @@
 			formData.append('end_date', '');
 		}
 
+		if (images) {
+			images.forEach((image) => {
+				formData.append('attachments', image);
+			});
+		}
+
 		const { res, json } = await fetchRequest(
 			'POST',
 			filter.type === 'group'
@@ -130,6 +137,25 @@
 			return;
 		}
 
+		getNewKanbanEntry();
+	};
+
+	// Calls for the new kanban entry from the backend
+	const getNewKanbanEntry = async () => {
+		const { json, res } = await fetchRequest(
+			'GET',
+			filter.type === 'group'
+				? `group/${
+						env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : filter.group
+					}/kanban/entry/list?id=${kanban.id}`
+				: `user/kanban/entry/list?id=${kanban.id}`
+		);
+
+		// If all goes well, don't manually change kanban locally
+		if (res.ok) return;
+
+		// Else, manually update locally
+		kanban = json.results[0];
 		kanban.title = kanbanEdited.title;
 		kanban.description = kanbanEdited.description;
 		kanban.priority = kanbanEdited.priority;
@@ -149,6 +175,7 @@
 		await getKanbanEntries();
 	};
 
+	// Is called when the kanban entry has its arrows clicked on (TODO: Also when click and dragged around)
 	const updateKanbanLane = async (lane: number) => {
 		const { res, json } = await fetchRequest(
 			'POST',
@@ -170,7 +197,7 @@
 		await getKanbanEntries();
 	};
 
-	const changeAssignee = (e: any) => {
+	const editAssignee = (e: any) => {
 		kanbanEdited.assignee_id = Number(e.target.value);
 	};
 
@@ -345,7 +372,7 @@
 		Class=" min-w-[400px] max-w-[500px] z-50 "
 		buttons={isEditing
 			? [
-					{ label: 'Update', type: 'primary', onClick: updateKanbanContent },
+					{ label: 'Update', type: 'primary', onClick: updateKanbanEntry },
 					{ label: 'Cancel', type: 'default', onClick: cancelUpdateKanban },
 					{ label: 'Delete', type: 'warning', onClick: deleteKanbanEntry }
 				]
@@ -425,7 +452,7 @@
 							labels={users.map((user) => user.user.username)}
 							values={users.map((user) => user.user.id)}
 							value={kanban?.assignee?.id || ''}
-							onInput={changeAssignee}
+							onInput={editAssignee}
 							innerLabel={$_('No assignee')}
 							innerLabelOn={true}
 						/>
@@ -434,7 +461,7 @@
 						<div class="block text-md">
 							{$_('Attachments')}
 						</div>
-						<FileUploads bind:files={kanbanEdited.images} disableCropping />
+						<FileUploads bind:files={images} disableCropping />
 					</div>
 				</div>
 				<!-- If not editing, so normal display -->
