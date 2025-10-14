@@ -13,6 +13,7 @@
 	import { env } from '$env/dynamic/public';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import Modal from '$lib/Generic/Modal.svelte';
+	import { idfy } from '$lib/Generic/GenericFunctions2';
 
 	export let group: Group;
 
@@ -118,7 +119,7 @@
 						joinGroup(group.direct_join);
 					}
 				}}
-				id="group-join-button"
+				id={`join-${idfy(group.name)}`}
 			>
 				{$_(group.joined ? 'Leave' : group.direct_join ? 'Join' : 'Ask to join')}
 			</Button>
