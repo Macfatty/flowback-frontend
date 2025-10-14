@@ -29,7 +29,6 @@
 		searchInvitationQuery = '',
 		searchedInvitationUsers: User[] = [],
 		searchedUsers: GroupUser[] = [],
-		 
 		showInvite = false,
 		searched = false,
 		delegates: Delegate[] = [],
@@ -374,45 +373,29 @@
 	</div>
 </Loader>
 
-<Modal bind:open={showInvite}>
+<Modal bind:open={showInvite} Class="bg-white dark:bg-darkobject !cursor-default">
 	<div slot="body">
 		<!-- Inviting -->
-		<div class="w-full bg-white dark:bg-darkobject">
-			<TextInput
-				onInput={() => searchUser(searchInvitationQuery)}
-				bind:value={searchInvitationQuery}
-				label={$_('User to invite')}
-				placeholder="Username"
-			/>
-			<ul>
-				{#each searchedInvitationUsers as searchedUser}
-					<li
-						class="text-black flex justify-between bg-white p-2 w-full mt-6 dark:bg-darkobject dark:text-darkmodeText"
-					>
-						<div class="flex">
-							<ProfilePicture
-								displayName
-								username={searchedUser.username}
-								profilePicture={searchedUser.profile_image}
-							/>
-						</div>
+		<TextInput
+			onInput={() => searchUser(searchInvitationQuery)}
+			bind:value={searchInvitationQuery}
+			label={$_('User to invite')}
+			placeholder="Username"
+		/>
+		<ul>
+			{#each searchedInvitationUsers as searchedUser}
+				<li class="flex justify-between mt-6">
+					<ProfilePicture
+						displayName
+						username={searchedUser.username}
+						profilePicture={searchedUser.profile_image}
+					/>
 
-						<div class="flex">
-							<div
-								class="ml-2 cursor-pointer"
-								on:click={() => inviteUser(searchedUser.id)}
-								on:keydown
-								tabindex="0"
-								role="button"
-							>
-								<Fa size="2x" icon={faEnvelope} />
-							</div>
-						</div>
-					</li>
-				{/each}
-			</ul>
-		</div>
+					<button class="ml-2 cursor-pointer" on:click={() => inviteUser(searchedUser.id)}>
+						<Fa size="2x" icon={faEnvelope} />
+					</button>
+				</li>
+			{/each}
+		</ul>
 	</div>
 </Modal>
-
- 
