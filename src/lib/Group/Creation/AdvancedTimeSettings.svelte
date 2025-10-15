@@ -25,6 +25,8 @@
 	// This might look tautologous (exluded middle) but the code says that whenever "daysBetweenPhases" changes, the dates are updated.
 	$: (daysBetweenPhases || !daysBetweenPhases) && changeDaysBetweenPhases();
 
+	$: console.log(start_date, 'STARTO');
+
 	const handleSelectTemplate = (template: template) => {
 		const now = new Date().getTime();
 		start_date = new Date();
@@ -120,12 +122,22 @@
 			<div class="grid grid-cols-2 gap-6 justify-center">
 				<div>
 					<h2 class="mt-4">{$_('Poll start')}</h2>
+					<!-- <input
+						id="start_date"
+						type="datetime"
+						bind:value={start_date}
+						min={new Date().toString()}
+						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+						required
+					/> -->
+
 					<DateInput
 						format="yyyy-MM-dd HH:mm"
-						closeOnSelection
 						bind:value={start_date}
 						min={new Date()}
 						max={maxDatePickerYear}
+						isDisabledDate={(dateToCheck: Date) => dateToCheck < new Date()}
+						closeOnSelection={false}
 					/>
 				</div>
 				{#if selected_poll !== 'Date Poll'}

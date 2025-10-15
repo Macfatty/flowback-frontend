@@ -215,7 +215,7 @@
 									<div>
 										{$_('Historical IMAC:')}
 										{voteHistory.poll_interval_mean_absolute_correctness ??
-											"Wasn't calculated at the time"}
+											"Was not calculated at the time"}
 									</div>
 									{#each voteHistory.vote as vote}
 										<div>{vote.proposal_title}</div>
