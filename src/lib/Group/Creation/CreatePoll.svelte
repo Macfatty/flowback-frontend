@@ -122,6 +122,8 @@
 			return;
 		}
 
+		console.log("CODE REACHES HERE");
+		
 		ErrorHandlerStore.set({
 			message: 'Poll Created',
 			success: true
@@ -204,7 +206,7 @@
 	};
 
 	onDestroy(() => {
-		// document.removeEventListener('keydown', handleKeyDown);
+		document.removeEventListener('keydown', handleKeyDown);
 	});
 
 	onMount(async () => {

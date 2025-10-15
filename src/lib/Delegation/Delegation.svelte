@@ -156,6 +156,17 @@
 
 		<div class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow w-[50%]">
 			{#if env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE'}
+				{$_('Search for groups')}
+				<div class="w-full flex items-end">
+					<TextInput
+						Class="w-4/5"
+						onInput={() => getGroups()}
+						label=""
+						placeholder={$_('Search groups')}
+						bind:value={search}
+					/>
+				</div>
+
 				You are {userPermissions?.allow_vote || groupUser?.is_admin ? '' : 'not'} allowed to vote in
 				this group:
 				<Select
@@ -167,17 +178,6 @@
 					disableFirstChoice
 					id="delegate-group-select"
 				/>
-
-				Search For Groups
-				<div class="w-full flex items-end">
-					<TextInput
-						Class="w-4/5"
-						onInput={() => getGroups()}
-						label=""
-						placeholder={$_('Search groups')}
-						bind:value={search}
-					/>
-				</div>
 			{/if}
 
 			<div class="flex flex-col gap-4 my-4">

@@ -202,7 +202,7 @@
 	});
 
 	onDestroy(() => {
-		// document.removeEventListener('keydown', handleKeyDown);
+		document.removeEventListener('keydown', handleKeyDown);
 	});
 </script>
 

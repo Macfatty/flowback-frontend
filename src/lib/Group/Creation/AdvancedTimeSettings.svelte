@@ -17,8 +17,7 @@
 		delegate_vote_end_date = new Date(),
 		vote_end_date = new Date(),
 		end_date = new Date(),
-		daysBetweenPhases = 1,
-		start_date_string: string;
+		daysBetweenPhases = 1;
 
 	let calendarView = '0';
 	let templateCounter = 0; // Add counter
@@ -26,14 +25,10 @@
 	// This might look tautologous (exluded middle) but the code says that whenever "daysBetweenPhases" changes, the dates are updated.
 	$: (daysBetweenPhases || !daysBetweenPhases) && changeDaysBetweenPhases();
 
-	$: console.log(start_date, 'STARTO');
-
 	const handleSelectTemplate = (template: template) => {
 		const now = new Date().getTime();
 		start_date = new Date();
 		start_date.setHours(0, 0, 0, 0);
-		start_date_string = start_date.toLocaleDateString();
-
 		area_vote_end_date = new Date(now + template.area_vote_time_delta);
 		proposal_end_date = new Date(area_vote_end_date.getTime() + template.proposal_time_delta);
 		prediction_statement_end_date = new Date(
@@ -132,14 +127,11 @@
 						bind:value={start_date}
 						min={new Date()}
 						max={maxDatePickerYear}
-						isDisabledDate={(dateToCheck: Date) => dateToCheck < new Date()}
-						closeOnSelection={false}
-						on:select={(e) => {
-							console.log(e);
-						}}
-						browseWithoutSelecting={false}
-					/>
-				</div>
+						/>
+					</div>
+					<!-- isDisabledDate={(dateToCheck: Date) => dateToCheck < new Date()} -->
+					<!-- closeOnSelection={false}
+					browseWithoutSelecting={false} -->
 				{#if selected_poll !== 'Date Poll'}
 					<div>
 						<h2 class="mt-4">{$_('Area voting end')}</h2>
