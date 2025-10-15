@@ -17,7 +17,8 @@
 		delegate_vote_end_date = new Date(),
 		vote_end_date = new Date(),
 		end_date = new Date(),
-		daysBetweenPhases = 1;
+		daysBetweenPhases = 1,
+		start_date_string: string;
 
 	let calendarView = '0';
 	let templateCounter = 0; // Add counter
@@ -31,6 +32,7 @@
 		const now = new Date().getTime();
 		start_date = new Date();
 		start_date.setHours(0, 0, 0, 0);
+		start_date_string = start_date.toLocaleDateString();
 
 		area_vote_end_date = new Date(now + template.area_vote_time_delta);
 		proposal_end_date = new Date(area_vote_end_date.getTime() + template.proposal_time_delta);
@@ -122,14 +124,8 @@
 			<div class="grid grid-cols-2 gap-6 justify-center">
 				<div>
 					<h2 class="mt-4">{$_('Poll start')}</h2>
-					<!-- <input
-						id="start_date"
-						type="datetime"
-						bind:value={start_date}
-						min={new Date().toString()}
-						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-						required
-					/> -->
+
+					Selected Date: {start_date}
 
 					<DateInput
 						format="yyyy-MM-dd HH:mm"
@@ -138,6 +134,10 @@
 						max={maxDatePickerYear}
 						isDisabledDate={(dateToCheck: Date) => dateToCheck < new Date()}
 						closeOnSelection={false}
+						on:select={(e) => {
+							console.log(e);
+						}}
+						browseWithoutSelecting={false}
 					/>
 				</div>
 				{#if selected_poll !== 'Date Poll'}

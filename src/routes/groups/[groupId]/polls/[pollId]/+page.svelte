@@ -117,11 +117,11 @@
 		{#if pollType === 4}
 			<!-- PHASE 0: PRE-START -->
 			{#if phase === 'pre_start'}
-				<div class="bg-white shadow rounded mt-6 p-6">
+				<div class="bg-white shadow rounded mt-6 p-6 dark:bg-darkobject dark:text-darkmodeText">
 					{$_('This poll will start at')}
 					{formatDate(poll.start_date)}
 				</div>
-				<div class="bg-white p-6 mt-6">
+				<div class="dark:bg-darkobject bg-white p-6 mt-6">
 					<Comments bind:proposals api={'poll'} />
 				</div>
 
