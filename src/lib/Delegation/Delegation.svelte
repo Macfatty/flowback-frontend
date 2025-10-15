@@ -18,6 +18,7 @@
 	import type { Permissions } from '$lib/Group/Permissions/interface';
 	import { getPermissionsFast } from '$lib/Generic/GenericFunctions';
 	import BackArrow from '$lib/Generic/BackArrow.svelte';
+	import TextInput from '$lib/Generic/TextInput.svelte';
 
 	let group: Group,
 		groups: Group[],
@@ -26,10 +27,14 @@
 		loading = false,
 		delegates: Delegate[] = [],
 		selectedPage: 'become-delegate' | 'delegate' | 'none' = 'none',
-		userPermissions: Permissions;
+		userPermissions: Permissions,
+		search = '';
 
 	const getGroups = async () => {
-		const { res, json } = await fetchRequest('GET', `group/list?limit=1000&joined=true`);
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/list?limit=1000&joined=true&name__icontains=${search}`
+		);
 
 		if (!res.ok) {
 			ErrorHandlerStore.set({ message: 'Could not get groups', success: false });
@@ -162,6 +167,17 @@
 					disableFirstChoice
 					id="delegate-group-select"
 				/>
+
+				Search For Groups
+				<div class="w-full flex items-end">
+					<TextInput
+						Class="w-4/5"
+						onInput={() => getGroups()}
+						label=""
+						placeholder={$_('Search groups')}
+						bind:value={search}
+					/>
+				</div>
 			{/if}
 
 			<div class="flex flex-col gap-4 my-4">
