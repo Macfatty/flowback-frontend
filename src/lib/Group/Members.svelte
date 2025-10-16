@@ -21,6 +21,7 @@
 	import type { Delegate } from '$lib/Delegation/interfaces';
 	import Select from '$lib/Generic/Select.svelte';
 	import { getUserChannelId } from '$lib/Chat/functions';
+	import UserSearch from '$lib/Generic/UserSearch.svelte';
 
 	let users: GroupUser[] = [],
 		usersAskingForInvite: any[] = [],
@@ -282,14 +283,16 @@
 		{/if}
 
 		{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
-			<div
-				class="p-4 shadow w-full bg-white dark:bg-darkobject flex items-center hover:bg-gray-100 dark:hover:bg-darkmodeObject transition-colors"
-			>
-				<button on:click={() => (showInvite = true)} class="flex items-center gap-4 w-full">
-					<ProfilePicture />
-					<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700">+ Invite user</div>
+			<UserSearch>
+				<button
+					slot="action"
+					let:item
+					class="ml-2 cursor-pointer"
+					on:click={() => inviteUser(item.id)}
+				>
+					<Fa size="2x" icon={faEnvelope} />
 				</button>
-			</div>
+			</UserSearch>
 		{/if}
 
 		<!-- Members List -->
@@ -372,30 +375,3 @@
 		{/if}
 	</div>
 </Loader>
-
-<Modal bind:open={showInvite} Class="bg-white dark:bg-darkobject !cursor-default">
-	<div slot="body">
-		<!-- Inviting -->
-		<TextInput
-			onInput={() => searchUser(searchInvitationQuery)}
-			bind:value={searchInvitationQuery}
-			label={$_('User to invite')}
-			placeholder="Username"
-		/>
-		<ul>
-			{#each searchedInvitationUsers as searchedUser}
-				<li class="flex justify-between mt-6">
-					<ProfilePicture
-						displayName
-						username={searchedUser.username}
-						profilePicture={searchedUser.profile_image}
-					/>
-
-					<button class="ml-2 cursor-pointer" on:click={() => inviteUser(searchedUser.id)}>
-						<Fa size="2x" icon={faEnvelope} />
-					</button>
-				</li>
-			{/each}
-		</ul>
-	</div>
-</Modal>

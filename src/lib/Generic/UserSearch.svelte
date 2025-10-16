@@ -20,6 +20,15 @@
 	};
 </script>
 
+<div
+	class="p-4 shadow w-full bg-white dark:bg-darkobject flex items-center hover:bg-gray-100 dark:hover:bg-darkmodeObject transition-colors"
+>
+	<button on:click={() => (showUsers = true)} class="flex items-center gap-4 w-full">
+		<ProfilePicture />
+		<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700">+ Invite user</div>
+	</button>
+</div>
+
 <Modal bind:open={showUsers} Class="bg-white dark:bg-darkobject !cursor-default">
 	<div slot="body">
 		<TextInput
@@ -29,15 +38,15 @@
 			placeholder="Username"
 		/>
 		<ul>
-			{#each searchedUsers as searchedUser}
+			{#each searchedUsers as user}
 				<li class="flex justify-between mt-6">
 					<ProfilePicture
 						displayName
-						username={searchedUser.username}
-						profilePicture={searchedUser.profile_image}
+						username={user.username}
+						profilePicture={user.profile_image}
 					/>
 
-					<slot name="action" />
+					<slot name="action" item={user}/>
 				</li>
 			{/each}
 		</ul>
