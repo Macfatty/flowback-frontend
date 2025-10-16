@@ -127,20 +127,15 @@
 
 		<UserSearch bind:showUsers={openUserSearch}>
 			<div slot="action" let:item>
-				{#await getUserChannelId(item.id) then channelId}
-					{#if channelId}
-						<button
-							on:click={() => {
-								chatOpenStore.set(true);
-								chatPartnerStore.set(channelId);
-								openUserSearch = false;
-							}}
-							Class="text-primary"
-						>
-							<Fa icon={faPaperPlane} rotate="60" />
-						</button>
-					{/if}
-				{/await}
+				<button
+					on:click={async () => {
+						chatOpenStore.set(true);
+						chatPartnerStore.set(await getUserChannelId(item.id));
+						openUserSearch = false;
+					}}
+				>
+					<Fa icon={faPaperPlane} rotate="60" />
+				</button>
 			</div>
 		</UserSearch>
 		<!-- <Button onClick={newDM}>New DM</Button> -->
@@ -178,7 +173,7 @@
 		{/each}
 	{/if}
 	{#each previewDirect as chatter}
-		{#if chatter.channel_title?.includes(chatSearch) || (chatter.channel_origin_name === 'user' && creatingGroup)}
+		{#if chatter.channel_title?.includes(chatSearch)  && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)}
 			<button
 				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
 				class:bg-gray-200={selectedChat === chatter.channel_id}
@@ -207,10 +202,12 @@
 							if (groupMembers.some((member) => member.id === chatter.id)) {
 								return;
 							}
+							console.log(chatter, "CHATTER");
+							
 							const newMember = {
 								id: chatter.id,
-								username: chatter.target_username || 'Unknown',
-								profile_image: chatter.profile_image || null
+								username: chatter.user.username || 'Unknown',
+								profile_image: chatter.user.profile_image || null
 							};
 							//@ts-ignore
 							groupMembers = [...groupMembers, newMember];

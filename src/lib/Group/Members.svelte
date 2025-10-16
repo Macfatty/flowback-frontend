@@ -30,7 +30,6 @@
 		searchInvitationQuery = '',
 		searchedInvitationUsers: User[] = [],
 		searchedUsers: GroupUser[] = [],
-		showInvite = false,
 		searched = false,
 		delegates: Delegate[] = [],
 		removeUserModalShow = false,
@@ -56,18 +55,6 @@
 		);
 		users = json?.results;
 		loading = false;
-	};
-
-	const searchUser = async (username: string) => {
-		//TODO: Search users
-		//This code can be used to not show every user unless the user has typed in something
-		if (username === '') {
-			searchedInvitationUsers = [];
-			return;
-		}
-
-		const { json } = await fetchRequest('GET', `users?username=${username}`);
-		searchedInvitationUsers = json?.results;
 	};
 
 	const searchUsers = async (username: string) => {
