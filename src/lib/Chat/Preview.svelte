@@ -83,11 +83,6 @@
 		// }
 	};
 
-	const startDm = async (channelId: number) => {
-		chatOpenStore.set(true);
-		chatPartnerStore.set(channelId);
-	};
-
 	onMount(async () => {
 		await UserChatInviteList();
 
@@ -202,12 +197,11 @@
 							if (groupMembers.some((member) => member.id === chatter.id)) {
 								return;
 							}
-							console.log(chatter, "CHATTER");
 							
 							const newMember = {
-								id: chatter.id,
-								username: chatter.user.username || 'Unknown',
-								profile_image: chatter.user.profile_image || null
+								id: chatter.user.id,
+								username: chatter.user.username ?? 'Unknown',
+								profile_image: chatter.user.profile_image ?? null
 							};
 							//@ts-ignore
 							groupMembers = [...groupMembers, newMember];

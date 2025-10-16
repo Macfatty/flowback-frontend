@@ -9,12 +9,11 @@
 	import { browser } from '$app/environment';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import Fa from 'svelte-fa';
-	import { faPaperPlane, faSmile, faUsers } from '@fortawesome/free-solid-svg-icons';
+	import { faPaperPlane, faUsers } from '@fortawesome/free-solid-svg-icons';
 	import { messageStore } from './Socket';
 	import { onMount, onDestroy } from 'svelte';
 	import Socket from './Socket';
 	import { chatWindow as chatWindowLimit } from '../Generic/APILimits.json';
-	import { env } from '$env/dynamic/public';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 
