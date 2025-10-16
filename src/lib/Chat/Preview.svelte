@@ -9,6 +9,9 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 	import { idfy } from '$lib/Generic/GenericFunctions2';
+	import UserSearch from '$lib/Generic/UserSearch.svelte';
+	import Fa from 'svelte-fa';
+	import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
 	let chatSearch = '';
 
@@ -79,7 +82,7 @@
 		// }
 	};
 
-	const newDM = async (channelId: number) => {
+	const startDm = async (channelId: number) => {
 		chatOpenStore.set(true);
 		chatPartnerStore.set(channelId);
 	};
@@ -120,6 +123,12 @@
 		>
 			{$_('+ New Group')}
 		</Button>
+
+		<UserSearch>
+			<button slot="action" let:item class="ml-2 cursor-pointer" on:click={() => startDm(item.id)}>
+				<Fa size="2x" icon={faEnvelope} />
+			</button>
+		</UserSearch>
 		<!-- <Button onClick={newDM}>New DM</Button> -->
 	</div>
 
