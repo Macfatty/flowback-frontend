@@ -5,13 +5,13 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { onMount } from 'svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import { chatOpenStore, chatPartnerStore } from './functions';
+	import { chatOpenStore, chatPartnerStore, getUserChannelId } from './functions';
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 	import { idfy } from '$lib/Generic/GenericFunctions2';
 	import UserSearch from '$lib/Generic/UserSearch.svelte';
 	import Fa from 'svelte-fa';
-	import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+	import { faEnvelope, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 	let chatSearch = '';
 
@@ -125,9 +125,21 @@
 		</Button>
 
 		<UserSearch>
-			<button slot="action" let:item class="ml-2 cursor-pointer" on:click={() => startDm(item.id)}>
-				<Fa size="2x" icon={faEnvelope} />
-			</button>
+			<div slot="action" let:item>
+			{#await getUserChannelId(item.id) then channelId}
+				{#if channelId}
+					<button
+						on:click={() => {
+							chatOpenStore.set(true);
+							chatPartnerStore.set(channelId);
+						}}
+						Class="text-primary"
+					>
+						<Fa icon={faPaperPlane} rotate="60" />
+					</button>
+				{/if}
+			{/await}
+			</div>
 		</UserSearch>
 		<!-- <Button onClick={newDM}>New DM</Button> -->
 	</div>
