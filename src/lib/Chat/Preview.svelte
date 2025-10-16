@@ -13,7 +13,8 @@
 	import Fa from 'svelte-fa';
 	import { faEnvelope, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
-	let chatSearch = '';
+	let chatSearch = '',
+		openUserSearch = false;
 
 	export let selectedChat: number | null,
 		selectedChatChannelId: number | null,
@@ -124,21 +125,22 @@
 			{$_('+ New Group')}
 		</Button>
 
-		<UserSearch>
+		<UserSearch bind:showUsers={openUserSearch}>
 			<div slot="action" let:item>
-			{#await getUserChannelId(item.id) then channelId}
-				{#if channelId}
-					<button
-						on:click={() => {
-							chatOpenStore.set(true);
-							chatPartnerStore.set(channelId);
-						}}
-						Class="text-primary"
-					>
-						<Fa icon={faPaperPlane} rotate="60" />
-					</button>
-				{/if}
-			{/await}
+				{#await getUserChannelId(item.id) then channelId}
+					{#if channelId}
+						<button
+							on:click={() => {
+								chatOpenStore.set(true);
+								chatPartnerStore.set(channelId);
+								openUserSearch = false;
+							}}
+							Class="text-primary"
+						>
+							<Fa icon={faPaperPlane} rotate="60" />
+						</button>
+					{/if}
+				{/await}
 			</div>
 		</UserSearch>
 		<!-- <Button onClick={newDM}>New DM</Button> -->

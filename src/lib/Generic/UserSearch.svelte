@@ -5,8 +5,10 @@
 	import Modal from './Modal.svelte';
 	import ProfilePicture from './ProfilePicture.svelte';
 	import TextInput from './TextInput.svelte';
-	let showUsers = false,
-		searchedUsers: User[] = [],
+
+	export let showUsers = false;
+
+    let searchedUsers: User[] = [],
 		search = '';
 
 	const searchUser = async (username: string) => {
