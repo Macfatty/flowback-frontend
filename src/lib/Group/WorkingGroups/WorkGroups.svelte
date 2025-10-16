@@ -52,7 +52,7 @@
 		workGroups = json?.results;
 	};
 
-	const createWorkingGroup = async () => {
+	const createWorkGroup = async () => {
 		workGroupEdit.chat = 1;
 		const { res, json } = await fetchRequest(
 			'POST',
@@ -64,7 +64,7 @@
 			ErrorHandlerStore.set({ message: 'Failed to create work group', success: false });
 			return;
 		}
-
+		
 		await getWorkingGroupList();
 
 		workGroupEdit = {
@@ -208,12 +208,12 @@
 	bind:open
 	Class="max-w-[500px]"
 	buttons={[
-		{ label: 'Create', type: 'primary', onClick: createWorkingGroup },
+		{ label: 'Create', type: 'primary', onClick: createWorkGroup },
 		{ label: 'Cancel', type: 'default', onClick: () => (open = false) }
 	]}
 >
 	<div slot="header" class="w-full"><span>{$_('Create work group')}</span></div>
-	<form slot="body" class="w-full" on:submit|preventDefault={createWorkingGroup}>
+	<form slot="body" class="w-full" on:submit|preventDefault={createWorkGroup}>
 		<TextInput label="Name" required bind:value={workGroupEdit.name} />
 
 		<RadioButtons2

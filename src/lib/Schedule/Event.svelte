@@ -184,7 +184,7 @@
 		bind:showCreateScheduleEvent
 		bind:selectedReminders
 		on:submit={handleSubmit}
-		{type}
+		bind:type
 		{workGroups}
 		{members}
 		{reminderOptions}

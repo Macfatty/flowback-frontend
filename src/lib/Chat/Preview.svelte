@@ -5,9 +5,10 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { onMount } from 'svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import { chatPartnerStore } from './functions';
+	import { chatOpenStore, chatPartnerStore } from './functions';
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
+	import { idfy } from '$lib/Generic/GenericFunctions2';
 
 	let chatSearch = '';
 
@@ -78,6 +79,11 @@
 		// }
 	};
 
+	const newDM = async (channelId: number) => {
+		chatOpenStore.set(true);
+		chatPartnerStore.set(channelId);
+	};
+
 	onMount(async () => {
 		await UserChatInviteList();
 
@@ -91,7 +97,6 @@
 	});
 
 	$: if (selectedChatChannelId) updateChatTitle();
-
 </script>
 
 <div class="max-h-[100%] pb-2">
@@ -115,6 +120,7 @@
 		>
 			{$_('+ New Group')}
 		</Button>
+		<!-- <Button onClick={newDM}>New DM</Button> -->
 	</div>
 
 	{#if inviteList}
@@ -172,7 +178,7 @@
 				</div>
 			</button>
 			{#if creatingGroup}
-				<div>
+				<div id={`chat-${idfy(chatter.channel_title ?? '')}`}>
 					<Button
 						onClick={() => {
 							if (groupMembers.some((member) => member.id === chatter.id)) {
