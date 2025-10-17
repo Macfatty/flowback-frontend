@@ -50,14 +50,7 @@
 	onDestroy(() => {
 		if (!browser) return;
 		window.removeEventListener('click', handleOutsideClick);
-		restoreBackgroundScroll();
 	});
-
-	$: if (showEvent || showCreateScheduleEvent || showEditScheduleEvent) {
-		preventBackgroundScroll();
-	} else {
-		restoreBackgroundScroll();
-	}
 
 	const firstDayInMonthWeekday = () => {
 		return new Date(year, month, 0).getDay();
@@ -121,16 +114,6 @@
 		if (choicesOpenReminders && remindersRegion && !remindersRegion.contains(e.target as Node)) {
 			choicesOpenReminders = false;
 		}
-	};
-
-	const preventBackgroundScroll = () => {
-		if (!browser) return;
-		document.body.style.overflow = 'hidden';
-	};
-
-	const restoreBackgroundScroll = () => {
-		if (!browser) return;
-		document.body.style.overflow = '';
 	};
 
 	// Initialize values when opening modals
