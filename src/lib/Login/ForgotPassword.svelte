@@ -7,8 +7,7 @@
 
 	import TextInput from '../Generic/TextInput.svelte';
 
-	export let selectedPage: string;
-	export let email: string;
+	export let selectedPage: string = "", email: string = "";
 
 	let loading = false;
 
