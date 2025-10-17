@@ -18,6 +18,7 @@
 	import type { Permissions } from '$lib/Group/Permissions/interface';
 	import { getPermissionsFast } from '$lib/Generic/GenericFunctions';
 	import BackArrow from '$lib/Generic/BackArrow.svelte';
+	import TextInput from '$lib/Generic/TextInput.svelte';
 
 	let group: Group,
 		groups: Group[],
@@ -26,10 +27,14 @@
 		loading = false,
 		delegates: Delegate[] = [],
 		selectedPage: 'become-delegate' | 'delegate' | 'none' = 'none',
-		userPermissions: Permissions;
+		userPermissions: Permissions,
+		search = '';
 
 	const getGroups = async () => {
-		const { res, json } = await fetchRequest('GET', `group/list?limit=1000&joined=true`);
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/list?limit=1000&joined=true&name__icontains=${search}`
+		);
 
 		if (!res.ok) {
 			ErrorHandlerStore.set({ message: 'Could not get groups', success: false });
@@ -151,6 +156,17 @@
 
 		<div class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow w-[50%]">
 			{#if env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE'}
+				{$_('Search for groups')}
+				<div class="w-full flex items-end">
+					<TextInput
+						Class="w-4/5"
+						onInput={() => getGroups()}
+						label=""
+						placeholder={$_('Search groups')}
+						bind:value={search}
+					/>
+				</div>
+
 				You are {userPermissions?.allow_vote || groupUser?.is_admin ? '' : 'not'} allowed to vote in
 				this group:
 				<Select

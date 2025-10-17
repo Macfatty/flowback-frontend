@@ -21,6 +21,7 @@
 	import type { Delegate } from '$lib/Delegation/interfaces';
 	import Select from '$lib/Generic/Select.svelte';
 	import { getUserChannelId } from '$lib/Chat/functions';
+	import UserSearch from '$lib/Generic/UserSearch.svelte';
 
 	let users: GroupUser[] = [],
 		usersAskingForInvite: any[] = [],
@@ -29,8 +30,6 @@
 		searchInvitationQuery = '',
 		searchedInvitationUsers: User[] = [],
 		searchedUsers: GroupUser[] = [],
-		 
-		showInvite = false,
 		searched = false,
 		delegates: Delegate[] = [],
 		removeUserModalShow = false,
@@ -56,18 +55,6 @@
 		);
 		users = json?.results;
 		loading = false;
-	};
-
-	const searchUser = async (username: string) => {
-		//TODO: Search users
-		//This code can be used to not show every user unless the user has typed in something
-		if (username === '') {
-			searchedInvitationUsers = [];
-			return;
-		}
-
-		const { json } = await fetchRequest('GET', `users?username=${username}`);
-		searchedInvitationUsers = json?.results;
 	};
 
 	const searchUsers = async (username: string) => {
@@ -283,14 +270,16 @@
 		{/if}
 
 		{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
-			<div
-				class="p-4 shadow w-full bg-white dark:bg-darkobject flex items-center hover:bg-gray-100 dark:hover:bg-darkmodeObject transition-colors"
-			>
-				<button on:click={() => (showInvite = true)} class="flex items-center gap-4 w-full">
-					<ProfilePicture />
-					<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700">+ Invite user</div>
+			<UserSearch>
+				<button
+					slot="action"
+					let:item
+					class="ml-2 cursor-pointer"
+					on:click={() => inviteUser(item.id)}
+				>
+					<Fa size="2x" icon={faEnvelope} />
 				</button>
-			</div>
+			</UserSearch>
 		{/if}
 
 		<!-- Members List -->
@@ -373,46 +362,3 @@
 		{/if}
 	</div>
 </Loader>
-
-<Modal bind:open={showInvite}>
-	<div slot="body">
-		<!-- Inviting -->
-		<div class="w-full bg-white dark:bg-darkobject">
-			<TextInput
-				onInput={() => searchUser(searchInvitationQuery)}
-				bind:value={searchInvitationQuery}
-				label={$_('User to invite')}
-				placeholder="Username"
-			/>
-			<ul>
-				{#each searchedInvitationUsers as searchedUser}
-					<li
-						class="text-black flex justify-between bg-white p-2 w-full mt-6 dark:bg-darkobject dark:text-darkmodeText"
-					>
-						<div class="flex">
-							<ProfilePicture
-								displayName
-								username={searchedUser.username}
-								profilePicture={searchedUser.profile_image}
-							/>
-						</div>
-
-						<div class="flex">
-							<div
-								class="ml-2 cursor-pointer"
-								on:click={() => inviteUser(searchedUser.id)}
-								on:keydown
-								tabindex="0"
-								role="button"
-							>
-								<Fa size="2x" icon={faEnvelope} />
-							</div>
-						</div>
-					</li>
-				{/each}
-			</ul>
-		</div>
-	</div>
-</Modal>
-
- 

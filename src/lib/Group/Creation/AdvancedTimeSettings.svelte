@@ -29,7 +29,6 @@
 		const now = new Date().getTime();
 		start_date = new Date();
 		start_date.setHours(0, 0, 0, 0);
-
 		area_vote_end_date = new Date(now + template.area_vote_time_delta);
 		proposal_end_date = new Date(area_vote_end_date.getTime() + template.proposal_time_delta);
 		prediction_statement_end_date = new Date(
@@ -120,14 +119,19 @@
 			<div class="grid grid-cols-2 gap-6 justify-center">
 				<div>
 					<h2 class="mt-4">{$_('Poll start')}</h2>
+
+					Selected Date: {start_date}
+
 					<DateInput
 						format="yyyy-MM-dd HH:mm"
-						closeOnSelection
 						bind:value={start_date}
 						min={new Date()}
 						max={maxDatePickerYear}
-					/>
-				</div>
+						/>
+					</div>
+					<!-- isDisabledDate={(dateToCheck: Date) => dateToCheck < new Date()} -->
+					<!-- closeOnSelection={false}
+					browseWithoutSelecting={false} -->
 				{#if selected_poll !== 'Date Poll'}
 					<div>
 						<h2 class="mt-4">{$_('Area voting end')}</h2>

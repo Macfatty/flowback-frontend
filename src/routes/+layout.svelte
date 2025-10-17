@@ -106,7 +106,7 @@
 
 		if (!res.ok || json?.results.length === 0) {
 			groupUserStore.set(null);
-			history.back();
+			goto('/groups')
 			return;
 		}
 

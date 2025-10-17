@@ -5,11 +5,16 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { onMount } from 'svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import { chatPartnerStore } from './functions';
+	import { chatOpenStore, chatPartnerStore, getUserChannelId } from './functions';
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
+	import { idfy } from '$lib/Generic/GenericFunctions2';
+	import UserSearch from '$lib/Generic/UserSearch.svelte';
+	import Fa from 'svelte-fa';
+	import { faEnvelope, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
-	let chatSearch = '';
+	let chatSearch = '',
+		openUserSearch = false;
 
 	export let selectedChat: number | null,
 		selectedChatChannelId: number | null,
@@ -91,7 +96,6 @@
 	});
 
 	$: if (selectedChatChannelId) updateChatTitle();
-
 </script>
 
 <div class="max-h-[100%] pb-2">
@@ -115,6 +119,21 @@
 		>
 			{$_('+ New Group')}
 		</Button>
+
+		<UserSearch bind:showUsers={openUserSearch}>
+			<div slot="action" let:item>
+				<button
+					on:click={async () => {
+						chatOpenStore.set(true);
+						chatPartnerStore.set(await getUserChannelId(item.id));
+						openUserSearch = false;
+					}}
+				>
+					<Fa icon={faPaperPlane} rotate="60" />
+				</button>
+			</div>
+		</UserSearch>
+		<!-- <Button onClick={newDM}>New DM</Button> -->
 	</div>
 
 	{#if inviteList}
@@ -149,7 +168,7 @@
 		{/each}
 	{/if}
 	{#each previewDirect as chatter}
-		{#if chatter.channel_title?.includes(chatSearch) || (chatter.channel_origin_name === 'user' && creatingGroup)}
+		{#if chatter.channel_title?.includes(chatSearch)  && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)}
 			<button
 				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
 				class:bg-gray-200={selectedChat === chatter.channel_id}
@@ -172,16 +191,17 @@
 				</div>
 			</button>
 			{#if creatingGroup}
-				<div>
+				<div id={`chat-${idfy(chatter.channel_title ?? '')}`}>
 					<Button
 						onClick={() => {
 							if (groupMembers.some((member) => member.id === chatter.id)) {
 								return;
 							}
+							
 							const newMember = {
-								id: chatter.id,
-								username: chatter.target_username || 'Unknown',
-								profile_image: chatter.profile_image || null
+								id: chatter.user.id,
+								username: chatter.user.username ?? 'Unknown',
+								profile_image: chatter.user.profile_image ?? null
 							};
 							//@ts-ignore
 							groupMembers = [...groupMembers, newMember];

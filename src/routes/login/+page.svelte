@@ -42,8 +42,8 @@
 	<div class="mt-16">
 		<img
 			src={env.PUBLIC_LOGO === 'REFORUM' ? Reforum : Logo}
+			alt={env.PUBLIC_LOGO === 'REFORUM' ? "Reforum Logo" : "Flowback Logo"}
 			class="w-[300px]"
-			alt="flowback logo"
 		/>
 	</div>
 	<div

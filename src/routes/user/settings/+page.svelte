@@ -52,7 +52,7 @@
 		},
 		reports: report[] = [],
 		serverConfig: any = {},
-		version = '35',
+		version = '36',
 		open = false,
 		selectedRepport: report = {
 			description: '',
@@ -275,7 +275,6 @@
 					</ul>
 				{:else if selectedPage === 'info'}
 					<div>{$_('Frontend version')}: {version}</div>
-					Test
 					<div>{$_('Backend version')}: {serverConfig.VERSION}</div>
 				{:else if selectedPage === 'reports'}
 					{#if reports?.length > 0}

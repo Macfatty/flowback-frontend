@@ -296,18 +296,22 @@
 			document.getElementById(selectedDatePosition)?.classList.remove('selected');
 		};
 
-		const groupId = $page.url.searchParams.get('groupId') ?? null;
+		const groupId = filter.group
 		if (groupId) {
 			filter.group = groupId;
 			filter.type = 'group';
+			type = 'group'
 		} else {
 			filter.type = 'home';
+			type = 'user'
 		}
 
 		setUpScheduledPolls();
 		getGroups();
 		getWorkGroupList();
 	});
+
+	$: filter.type === 'group' ? filter.type = 'group' : filter.type = 'home'
 
 	$: month && year && deleteSelection();
 	$: month && updateMonth();

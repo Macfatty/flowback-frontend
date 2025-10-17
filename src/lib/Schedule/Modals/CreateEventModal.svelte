@@ -124,6 +124,7 @@
 						{/each}
 					</select>
 				</div>
+				type: {type}
 				{#if type === 'group'}
 					<div class="mb-4">
 						<label for="work_group" class="block mb-1 text-gray-700 dark:text-gray-300"
