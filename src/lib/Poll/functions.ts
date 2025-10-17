@@ -119,7 +119,10 @@ export const nextPhase = async (poll: poll, phase: Phase) => {
 		if (phase === 'area_vote') _phase = 'proposal';
 		else if (phase === 'proposal') _phase = 'prediction_statement';
 		else if (phase === 'prediction_statement') _phase = 'prediction_bet';
-		else if (phase === 'prediction_bet') _phase = 'delegate_vote';
+		else if (phase === 'prediction_bet'){
+			_phase = 'delegate_vote';
+			poll.status_prediction = 1;
+		} 
 		else if (phase === 'delegate_vote') _phase = 'vote';
 		else if (phase === 'vote') {
 			_phase = 'prediction_vote';

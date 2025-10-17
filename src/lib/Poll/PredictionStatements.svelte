@@ -14,13 +14,16 @@
 	export let selectedProposal: proposal | null = null,
 		phase: Phase,
 		poll: poll,
-		proposals: proposal[] = [];
+		proposals: proposal[] = [],
+		getPollData = () => {};
 
 	let predictions: PredictionStatement[] = [],
 		loading = false;
 
 	const getPredictionStatements = async (selectedProposal: proposal | null) => {
 		loading = true;
+
+		if (poll.status_prediction === 0) getPollData();
 
 		const { res, json } = await fetchRequest(
 			'GET',
@@ -43,6 +46,7 @@
 
 		proposals = json?.results;
 	};
+
 
 	$: if (selectedProposal) getPredictionStatements(selectedProposal);
 

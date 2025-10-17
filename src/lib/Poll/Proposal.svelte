@@ -144,6 +144,7 @@
 		<button
 			on:click={() => {
 				selectedProposal = proposal;
+				
 			}}
 			class="hover:underline cursor-pointer flex gap-2 items-baseline text-sm text-gray-700 dark:text-darkmodeText"
 		>
