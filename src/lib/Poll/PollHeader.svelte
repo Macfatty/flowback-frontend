@@ -94,7 +94,7 @@
 				...($groupUserStore?.is_admin
 					? [
 							async () =>
-								(phase = await nextPhase(poll?.poll_type, $page.params.pollId ?? '', phase))
+								(phase = await nextPhase(poll, phase))
 						]
 					: [])
 			]}

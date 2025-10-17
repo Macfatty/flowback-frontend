@@ -65,7 +65,7 @@
 		getProposals();
 		let k = 0;
 
-		if (poll?.status === 2 || poll?.status === 0) {
+		if (poll?.status === 2) {
 			let time = setInterval(() => {
 				if (poll.status === -1 || poll.status === 1 || k === 15) clearInterval(time);
 				getProposals();
@@ -82,8 +82,10 @@
 	>
 
 	{#if pollType === 4}
-		{#if poll?.status === 2 || poll?.status === 0}
+		{#if poll?.status === 2}
 			{$_('Calculating results...')}
+		{:else if poll?.status === 0}
+			{$_('No proposals got any votes')}
 		{:else if poll?.status === -1}
 			{$_('Vote calculation failed')}
 		{:else if poll?.status === 1}
@@ -95,7 +97,9 @@
 				<div class="border-gray-300 border-b-2 mt-3 pb-1">
 					<span
 						class="text-primary dark:text-secondary font-semibold flex items-center gap-1 break-words"
-						>{#if i === 0} <Fa icon={faStar} color="orange" /> {/if}
+						>{#if i === 0}
+							<Fa icon={faStar} color="orange" />
+						{/if}
 						{proposal.title}</span
 					>
 					<NewDescription description={proposal.description} limit={2} lengthLimit={100} />
