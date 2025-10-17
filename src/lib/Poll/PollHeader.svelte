@@ -83,7 +83,8 @@
 
 		<MultipleChoices
 			bind:choicesOpen
-			labels={!(phase === 'result' || phase === 'prediction_vote') &&
+			labels={phase !== 'result' &&
+			phase !== 'prediction_vote' &&
 			poll?.allow_fast_forward &&
 			($groupUserPermissionStore?.poll_fast_forward || $groupUserStore?.is_admin)
 				? [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]
@@ -91,12 +92,7 @@
 			functions={[
 				() => ((deletePollModalShow = true), (choicesOpen = false)),
 				() => ((reportPollModalShow = true), (choicesOpen = false)),
-				...($groupUserStore?.is_admin
-					? [
-							async () =>
-								(phase = await nextPhase(poll?.poll_type, $page.params.pollId ?? '', phase))
-						]
-					: [])
+				...($groupUserStore?.is_admin ? [async () => (phase = await nextPhase(poll, phase))] : [])
 			]}
 			Class="justify-self-center mt-2"
 			id="poll-header-multiple-choices"

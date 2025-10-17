@@ -9,6 +9,7 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import CheckboxButtons from '$lib/Generic/CheckboxButtons.svelte';
 	import { userStore } from '$lib/User/interfaces';
+	import { env } from '$env/dynamic/public';
 
 	let username: string,
 		password: string,
@@ -72,8 +73,9 @@
 				<button
 					type="button"
 					class="cursor-pointer hover:underline text-gray-400"
-					on:click={() => (selectedPage = 'ForgotPassword')}
-				>
+					on:click={() => (env.PUBLIC_EMAIL_REGISTRATION === "TRUE" ? selectedPage = 'GotMail' : selectedPage = 'ForgotPassword')}
+
+			>
 					{$_('Forgot password?')}
 				</button>
 			</div>

@@ -199,7 +199,7 @@
 						functions={[
 							() => ((deletePollModalShow = true), (choicesOpen = false)),
 							() => ((reportPollModalShow = true), (choicesOpen = false)),
-							async () => (phase = await nextPhase(poll?.poll_type, poll?.id, phase))
+							async () => (phase = await nextPhase(poll, phase))
 						]}
 						Class="text-black justify-self-center mt-2"
 					/>
@@ -272,7 +272,7 @@
 						functions={[
 							() => ((deletePollModalShow = true), (choicesOpen = false)),
 							() => ((reportPollModalShow = true), (choicesOpen = false)),
-							async () => (phase = await nextPhase(poll?.poll_type, poll?.id, phase))
+							async () => (phase = await nextPhase(poll, phase))
 						]}
 						Class="text-black justify-self-center mt-2"
 					/>

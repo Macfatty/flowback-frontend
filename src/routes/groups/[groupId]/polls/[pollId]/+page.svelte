@@ -59,7 +59,6 @@
 		loading = false;
 
 		if (!res.ok) return;
-		
 
 		poll = json?.results[0];
 		pollType = json?.results[0]?.poll_type;
@@ -242,7 +241,7 @@
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-[460px] overflow-y-auto">
-							<ProposalScoreVoting bind:comments bind:phase bind:proposals bind:selectedProposal />
+							<ProposalScoreVoting {getPollData} bind:comments bind:phase bind:proposals bind:selectedProposal />
 						</div>
 					</div>
 					<div slot="right">
@@ -256,7 +255,7 @@
 									limit={2}
 									lengthLimit={130}
 								/>
-								<PredictionStatements bind:selectedProposal bind:phase bind:poll />
+								<PredictionStatements {getPollData} bind:selectedProposal bind:phase bind:poll />
 							</div>
 						{/if}
 					</div>
@@ -336,12 +335,9 @@
 			{:else if phase === 'result' || phase === 'prediction_vote'}
 				<Structure bind:phase bind:poll>
 					<div slot="left" class="h-[460px] overflow-y-auto">
-						{#if proposals} 
-						{proposals[0]?.score}
-							<PredictionStatements
-								bind:phase
-								bind:poll
-							/>
+						{#if proposals}
+							{proposals[0]?.score}
+							<PredictionStatements bind:phase bind:poll />
 						{/if}
 					</div>
 					<div slot="right"><Results bind:poll {getPollData} {pollType} /></div>
