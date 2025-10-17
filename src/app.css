@@ -30,14 +30,17 @@ body {
 	margin: 0;
 	/* background: var(--darkmode-background-color); */
 
+  /* Disables pull-to-refresh and overscroll glow effect.
+     Still keeps swipe navigations. */
+	overflow-x: hidden;
+	overflow-y: scroll;
+	overscroll-behavior-y: none;
 }
 
 
 html {
-	overflow-x: hidden;
-	overflow-y: scroll
-}
 
+}
 body::before {
 	content: '';
 	width: 80vw;
