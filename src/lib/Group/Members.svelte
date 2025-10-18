@@ -22,6 +22,8 @@
 	import Select from '$lib/Generic/Select.svelte';
 	import { getUserChannelId } from '$lib/Chat/functions';
 	import UserSearch from '$lib/Generic/UserSearch.svelte';
+	import type { Permissions } from './Permissions/interface';
+	import EveryProperty from '$lib/Generic/EveryProperty.svelte';
 
 	let users: GroupUser[] = [],
 		usersAskingForInvite: any[] = [],
@@ -33,7 +35,9 @@
 		searched = false,
 		delegates: Delegate[] = [],
 		removeUserModalShow = false,
-		adminFilter: 'All' | 'Admin' | 'Member' = 'All';
+		adminFilter: 'All' | 'Admin' | 'Member' = 'All',
+		permissions: Permissions[] = [],
+		roleFilter: number | null = null;
 
 	let sortOrder: 'a-z' | 'z-a' = 'a-z'; // Default to a-z sort
 
@@ -42,7 +46,7 @@
 		getInvitesList();
 		searchUsers('');
 		getDelegatePools();
-
+		getPermissions();
 		//Does this one even do anything?
 		fetchRequest('GET', `group/${$page.params.groupId}/invites`);
 	});
@@ -184,6 +188,15 @@
 		sortOrder = 'a-z'; // Reset to default a-z sort instead of null
 		searchUsers(searchUserQuery);
 	};
+
+	const getPermissions = async () => {
+		const { json, res } = await fetchRequest(
+			'GET',
+			`group/${$page.params.groupId}/permissions?limit=1000`
+		);
+		if (!res.ok) return;
+		permissions = json.results;
+	};
 </script>
 
 <Loader bind:loading>
@@ -226,17 +239,17 @@
 							onInput={() => searchUsers(searchUserQuery)}
 							disableFirstChoice
 						/>
-						<!-- <span class="pl-4">{$_('Role')}: </span>
+
+						<span class="pl-4">{$_('Role')}: </span>
 						<Select
 							classInner="p-1 font-semibold"
-							labels={permissions}
-							values={[$_('Admin'), $_('Member')]}
-							bind:value={adminFilter}
+							labels={["All", ...permissions.map((permission) => permission.role_name)]}
+							values={[null, ...permissions.map((permission) => permission.id)]}
+							bind:value={roleFilter}
 							onInput={() => searchUsers(searchUserQuery)}
-							innerLabel="All"
-							innerLabelOn={true}
+							disableFirstChoice
 						/>
- -->
+
 						<div class="rounded-md p-1">
 							<Button
 								Class="!p-1 border-none text-red-600 cursor-pointer hover:underline"
@@ -302,7 +315,9 @@
 					>{$_('All members')}</span
 				>
 				{#each searchedUsers as user}
-					{#if (user.is_admin && adminFilter === 'Admin') || (!user.is_admin && adminFilter === 'Member') || adminFilter === 'All'}
+					{#if ((user.is_admin && adminFilter === 'Admin') || (!user.is_admin && adminFilter === 'Member') || adminFilter === 'All') 
+					&& (user.permission_id === roleFilter || roleFilter === null)}
+					
 						{@const delegationId = delegates.find(
 							(delegate) => delegate.user.id === user.user.id
 						)?.pool_id}
