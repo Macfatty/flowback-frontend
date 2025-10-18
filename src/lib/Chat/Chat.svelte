@@ -108,7 +108,7 @@
 <div
 	bind:this={chatDiv}
 	class:invisible={!chatOpen}
-	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-[60] w-full h-[100vh] flex flex-col items-center"
+	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-[50] w-full h-[100vh] flex flex-col items-center"
 >
 	<div class="w-full flex justify-between mr-6">
 		<Button
