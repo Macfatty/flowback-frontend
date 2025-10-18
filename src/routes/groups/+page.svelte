@@ -8,14 +8,14 @@
 	import type { Group, GroupFilter } from '$lib/Group/interface';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
-	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
+	import { groups as groupsLimit } from '$lib/Generic/APILimits.json';
 	import { env } from '$env/dynamic/public';
 	import { goto } from '$app/navigation';
 
 	let groupList: Group[] = [],
-  
 		filter: GroupFilter = { joined: 'all', search: '' },
-		loading = false;
+		loading = false,
+		next = '';
 
 	onMount(() => {
 		if (env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' && location.href.includes('/groups'))
@@ -24,37 +24,59 @@
 	});
 
 	const getGroups = async () => {
-		loading = true;
-		let urlFilter =
-			filter.joined === 'member'
-				? '&joined=true'
-				: filter.joined === 'not-member'
-				? '&joined=false'
-				: '';
+		if (next !== '' && next !== null) {
+			loading = true;
+			const { res, json } = await fetchRequest('GET', next);
 
-		urlFilter = `${urlFilter}&name__icontains=${filter.search}`;
+			loading = false;
+			if (!res.ok) return;
 
-		const { res, json } = await fetchRequest(
-			'GET',
-			`group/list?limit=${groupMembersLimit}` + urlFilter
-		);
+			next = json.next;
+			console.log(groupList, json.results);
+			
+			groupList = [...groupList, ...json.results];
+		} else if (next === null) return;
+		else {
+			console.log('HERERE DOWN');
 
-		if (!res.ok) return;
+			let urlFilter = '';
 
-		groupList = json?.results
-			.reverse()
-			.sort((group1: any, group2: any) => +group2.joined - +group1.joined);
+			if (filter.joined === 'member') urlFilter += '&joined=true';
+			else if (filter.joined === 'not-member') urlFilter += '&joined=false';
 
-		loading = false;
+			urlFilter = `${urlFilter}&name__icontains=${filter.search}`;
+
+			loading = true;
+			const { res, json } = await fetchRequest(
+				'GET',
+				`group/list?limit=${groupsLimit}` + urlFilter
+			);
+			loading = false;
+
+			if (!res.ok) return;
+
+			next = json.next;
+			groupList = json?.results
+				.reverse()
+				.sort((group1: any, group2: any) => +group2.joined - +group1.joined);
+		}
+	};
+
+	const lazyLoading = async () => {
+		let scrolledToBottom =
+			document.body.scrollHeight - document.body.clientHeight <= document.body.scrollTop + 1;
+
+		if (scrolledToBottom) getGroups();
 	};
 </script>
+
+<svelte:body onscroll={() => lazyLoading()} />
 
 <svelte:head>
 	<title>Groups</title>
 </svelte:head>
 
 <Layout centered>
-	<!-- TODO: design of statusmessage is off -->
 	<Loader bind:loading Class="w-full flex flex-col items-center">
 		<div id="groups-list" class="max-w-[1000px] flex flex-col items-center mt-6 gap-6 mb-6 w-full">
 			{#if !(env.PUBLIC_DISABLE_GROUP_CREATION === 'TRUE')}
@@ -65,11 +87,9 @@
 
 			<GroupFiltering bind:filter {getGroups} />
 
-			{#if groupList}
-				{#each groupList as group}
-					<GroupThumbnail {group} />
-				{/each}
-			{/if}
+			{#each groupList as group}
+				<GroupThumbnail {group} />
+			{/each}
 		</div>
 	</Loader>
 </Layout>

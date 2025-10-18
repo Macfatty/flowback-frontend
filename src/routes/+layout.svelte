@@ -130,8 +130,7 @@
 		showUI = shouldShowUI();
 
 		setTimeout(() => {
-			const html = document.getElementById(`poll-thumbnail-${scrolledY}`);
-			html?.scrollIntoView();
+			document.body.scrollIntoView();
 		}, 200);
 
 		checkSessionExpiration();
@@ -153,8 +152,7 @@
 		redirect();
 
 		setTimeout(() => {
-			const html = document.getElementById(`poll-thumbnail-${scrolledY}`);
-			html?.scrollIntoView();
+			document.body.scrollIntoView();
 		}, 200);
 
 		checkSessionExpiration();
