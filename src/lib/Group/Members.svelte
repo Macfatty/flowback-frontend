@@ -22,6 +22,8 @@
 	import Select from '$lib/Generic/Select.svelte';
 	import { getUserChannelId } from '$lib/Chat/functions';
 	import UserSearch from '$lib/Generic/UserSearch.svelte';
+	import type { Permissions } from './Permissions/interface';
+	import EveryProperty from '$lib/Generic/EveryProperty.svelte';
 
 	let users: GroupUser[] = [],
 		usersAskingForInvite: any[] = [],
@@ -33,7 +35,9 @@
 		searched = false,
 		delegates: Delegate[] = [],
 		removeUserModalShow = false,
-		adminFilter: 'All' | 'Admin' | 'Member' = 'All';
+		adminFilter: 'All' | 'Admin' | 'Member' = 'All',
+		permissions: Permissions[] = [],
+		roleFilter: number | null = null;
 
 	let sortOrder: 'a-z' | 'z-a' = 'a-z'; // Default to a-z sort
 
@@ -42,7 +46,7 @@
 		getInvitesList();
 		searchUsers('');
 		getDelegatePools();
-
+		getPermissions();
 		//Does this one even do anything?
 		fetchRequest('GET', `group/${$page.params.groupId}/invites`);
 	});
@@ -58,6 +62,11 @@
 	};
 
 	const searchUsers = async (username: string) => {
+		let query = `?limit=${groupMembersLimit}&username__icontains=${username}`;
+
+		if (adminFilter === 'Admin') query += '&is_admin=true';
+		else if (adminFilter === 'Member') query += '&is_admin=false';
+
 		const { json } = await fetchRequest(
 			'GET',
 			`group/${$page.params.groupId}/users?limit=${groupMembersLimit}&username__icontains=${username}`
@@ -179,6 +188,15 @@
 		sortOrder = 'a-z'; // Reset to default a-z sort instead of null
 		searchUsers(searchUserQuery);
 	};
+
+	const getPermissions = async () => {
+		const { json, res } = await fetchRequest(
+			'GET',
+			`group/${$page.params.groupId}/permissions?limit=1000`
+		);
+		if (!res.ok) return;
+		permissions = json.results;
+	};
 </script>
 
 <Loader bind:loading>
@@ -212,16 +230,24 @@
 							onInput={() => searchUsers(searchUserQuery)}
 						/>
 
-						<!-- TODO: Fix functionality for filtering -->
 						<span class="pl-4">{$_('Role')}: </span>
 						<Select
 							classInner="p-1 font-semibold"
-							labels={[$_('Admin'), $_('Member')]}
-							values={[$_('Admin'), $_('Member')]}
-							value={''}
+							labels={[$_('All'), $_('Admin'), $_('Member')]}
+							values={['All', 'Admin', 'Member']}
+							bind:value={adminFilter}
 							onInput={() => searchUsers(searchUserQuery)}
-							innerLabel="All"
-							innerLabelOn={true}
+							disableFirstChoice
+						/>
+
+						<span class="pl-4">{$_('Role')}: </span>
+						<Select
+							classInner="p-1 font-semibold"
+							labels={["All", ...permissions.map((permission) => permission.role_name)]}
+							values={[null, ...permissions.map((permission) => permission.id)]}
+							bind:value={roleFilter}
+							onInput={() => searchUsers(searchUserQuery)}
+							disableFirstChoice
 						/>
 
 						<div class="rounded-md p-1">
@@ -289,74 +315,78 @@
 					>{$_('All members')}</span
 				>
 				{#each searchedUsers as user}
-					{@const delegationId = delegates.find(
-						(delegate) => delegate.user.id === user.user.id
-					)?.pool_id}
-					<div class="flex items-center">
-						<button
-							on:click={() =>
-								goto(
-									`/user?id=${user.user.id}&delegate_id=${delegationId || ''}&group_id=${
-										$page.params.groupId
-									}&is_admin=${adminFilter}`
-								)}
-							Class="w-[30%]"
-						>
-							<ProfilePicture
-								Class=""
-								username={user.user.username}
-								profilePicture={user.user.profile_image}
-								displayName
-							/>
-						</button>
+					{#if ((user.is_admin && adminFilter === 'Admin') || (!user.is_admin && adminFilter === 'Member') || adminFilter === 'All') 
+					&& (user.permission_id === roleFilter || roleFilter === null)}
+					
+						{@const delegationId = delegates.find(
+							(delegate) => delegate.user.id === user.user.id
+						)?.pool_id}
+						<div class="flex items-center">
+							<button
+								on:click={() =>
+									goto(
+										`/user?id=${user.user.id}&delegate_id=${delegationId || ''}&group_id=${
+											$page.params.groupId
+										}&is_admin=${adminFilter}`
+									)}
+								Class="w-[30%]"
+							>
+								<ProfilePicture
+									Class=""
+									username={user.user.username}
+									profilePicture={user.user.profile_image}
+									displayName
+								/>
+							</button>
 
-						{#if user.delegate_pool_id !== null}
-							<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700 mr-2">
-								{$_('Delegate')}
-							</div>
-						{/if}
-						{#if user?.is_admin}
-							<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700 mr-2">
-								{$_('Admin')}
-							</div>
-						{/if}
-						<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700">
-							{user.permission_name}
-						</div>
-						<div class="flex gap-2 right-6 absolute">
-							{#await getUserChannelId(user.user.id) then channelId}
-								{#if channelId}
-									<button
-										on:click={() => {
-											chatOpenStore.set(true);
-											chatPartnerStore.set(channelId);
-										}}
-										Class="text-primary"
-									>
-										<Fa icon={faPaperPlane} rotate="60" />
-									</button>
-								{/if}
-							{/await}
-							{#if $groupUserStore?.is_admin && user.user.id !== ($userStore?.id || -1)}
-								<Button
-									Class="w-10 h-10 flex items-center justify-center pl-6 bg-transparent"
-									onClick={() => (removeUserModalShow = true)}
-								>
-									<Fa size="lg" class="text-red-500" icon={faRunning} />
-								</Button>
-								<Modal
-									bind:open={removeUserModalShow}
-									Class="w-80 max-w-[400px]"
-									buttons={[
-										{ label: 'Yes', type: 'warning', onClick: () => userRemove(user.user.id) },
-										{ label: 'No', type: 'default', onClick: () => (removeUserModalShow = false) }
-									]}
-								>
-									<div slot="header">{$_('Kick ') + user.user.username + '?'}</div>
-								</Modal>
+							{#if user.delegate_pool_id !== null}
+								<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700 mr-2">
+									{$_('Delegate')}
+								</div>
 							{/if}
+							{#if user?.is_admin}
+								<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700 mr-2">
+									{$_('Admin')}
+								</div>
+							{/if}
+							<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700">
+								{user.permission_name}
+							</div>
+							<div class="flex gap-2 right-6 absolute">
+								{#await getUserChannelId(user.user.id) then channelId}
+									{#if channelId}
+										<button
+											on:click={() => {
+												chatOpenStore.set(true);
+												chatPartnerStore.set(channelId);
+											}}
+											Class="text-primary"
+										>
+											<Fa icon={faPaperPlane} rotate="60" />
+										</button>
+									{/if}
+								{/await}
+								{#if $groupUserStore?.is_admin && user.user.id !== ($userStore?.id || -1)}
+									<Button
+										Class="w-10 h-10 flex items-center justify-center pl-6 bg-transparent"
+										onClick={() => (removeUserModalShow = true)}
+									>
+										<Fa size="lg" class="text-red-500" icon={faRunning} />
+									</Button>
+									<Modal
+										bind:open={removeUserModalShow}
+										Class="w-80 max-w-[400px]"
+										buttons={[
+											{ label: 'Yes', type: 'warning', onClick: () => userRemove(user.user.id) },
+											{ label: 'No', type: 'default', onClick: () => (removeUserModalShow = false) }
+										]}
+									>
+										<div slot="header">{$_('Kick ') + user.user.username + '?'}</div>
+									</Modal>
+								{/if}
+							</div>
 						</div>
-					</div>
+					{/if}
 				{/each}
 			</div>
 		{/if}

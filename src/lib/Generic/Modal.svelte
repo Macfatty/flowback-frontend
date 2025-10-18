@@ -25,10 +25,7 @@
 	};
 
 	const hideScrollbar = (hide: boolean) => {
-		const html = document.querySelector('html');
-		if (!html) return;
-
-		html.style.overflowY = hide ? 'hidden' : 'scroll';
+		document.body.style.overflowY = hide ? 'hidden' : 'scroll';
 	};
 
 	const onOpenModal = () => {

@@ -122,8 +122,8 @@
 			return;
 		}
 
-		console.log("CODE REACHES HERE");
-		
+		console.log('CODE REACHES HERE');
+
 		ErrorHandlerStore.set({
 			message: 'Poll Created',
 			success: true
@@ -223,7 +223,7 @@
 	class="relative md:w-2/3 max-w-[800px] dark:text-darkmodeText my-6"
 >
 	<button
-		class="absolute -left-12 bg-white dark:bg-darkobject p-3 rounded shadow z-50 hover:bg-gray-100 active:bg-gray-200 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+		class="absolute -left-12 bg-white dark:bg-darkobject p-3 rounded shadow z-40 hover:bg-gray-100 active:bg-gray-200 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
 		on:click={goBack}
 		type="button"
 		aria-label="Go back"
@@ -317,17 +317,16 @@
 				<!-- <Button action={() => createPollBlockchain(Number($page.url.searchParams.get('id')), "title")}>Push to Blockchain?</Button> -->
 			{/if}
 
-			{#if (selectedPage === 'thread' || selectedPoll === 'Date Poll') && !isPublic}
-				<Select
-					classInner="border border-gray-300"
-					label={$_('Work Group')}
-					labels={workGroups.map((workGroup) => workGroup.name)}
-					values={workGroups.map((workGroup) => workGroup.id)}
-					bind:value={workGroup}
-					innerLabelOn={true}
-					innerLabel={$_('No workgroup assigned')}
-				/>
-			{/if}
+			<Select
+				disabled={(selectedPage !== 'thread' && selectedPoll !== 'Date Poll') || isPublic}
+				classInner="border border-gray-300"
+				label={$_('Work Group')}
+				labels={workGroups.map((workGroup) => workGroup.name)}
+				values={workGroups.map((workGroup) => workGroup.id)}
+				bind:value={workGroup}
+				innerLabelOn={true}
+				innerLabel={$_('No workgroup assigned')}
+			/>
 
 			<Button type="submit" disabled={loading} Class={'bg-primary p-3 mt-3'}>{$_('Post')}</Button>
 		</div>

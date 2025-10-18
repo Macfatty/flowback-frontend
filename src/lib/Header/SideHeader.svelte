@@ -5,7 +5,6 @@
 	import TermsOfService from '$lib/Login/TermsOfService.svelte';
 	import { goto } from '$app/navigation';
 	import { env } from '$env/dynamic/public';
-	import { UsersApi } from '$lib/api/users';
 	import { chatOpenStore } from '$lib/Chat/functions';
 
 	export let sideHeaderOpen = false;
@@ -74,7 +73,7 @@
 
 <div
 	class:hidden={!sideHeaderOpen}
-	class="absolute top-[4.5rem] right-0 bg-white z-50 select-none shadow slide-animation dark:bg-darkobject dark:text-darkmodeText flex flex-col"
+	class="z-[80] absolute top-[4.5rem] right-0 bg-white z-50 select-none shadow slide-animation dark:bg-darkobject dark:text-darkmodeText flex flex-col"
 	id="side-header"
 	on:click={() => (sideHeaderOpen = !sideHeaderOpen)}
 >
@@ -134,7 +133,7 @@
 <style>
 	@keyframes slide-animation {
 		from {
-			right: -100px;
+			right: -1000px;
 		}
 		to {
 			right: 0;

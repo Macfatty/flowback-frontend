@@ -17,7 +17,8 @@
 		innerLabelOn: boolean = false,
 		charlimit = 30,
 		disableFirstChoice = false,
-		id: string = '';
+		id: string = '',
+		disabled = false;
 
 	// onMount(() => {
 	// 	value = defaultValue;
@@ -30,6 +31,9 @@
 	{/if}
 	<select
 		bind:value
+		{disabled}
+		class:dark:text-gray-500={disabled}
+		class:text-gray-400={disabled}
 		on:input={(e) => {
 			onInput(e);
 		}}
