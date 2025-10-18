@@ -122,8 +122,8 @@
 			return;
 		}
 
-		console.log("CODE REACHES HERE");
-		
+		console.log('CODE REACHES HERE');
+
 		ErrorHandlerStore.set({
 			message: 'Poll Created',
 			success: true
@@ -317,17 +317,16 @@
 				<!-- <Button action={() => createPollBlockchain(Number($page.url.searchParams.get('id')), "title")}>Push to Blockchain?</Button> -->
 			{/if}
 
-			{#if (selectedPage === 'thread' || selectedPoll === 'Date Poll') && !isPublic}
-				<Select
-					classInner="border border-gray-300"
-					label={$_('Work Group')}
-					labels={workGroups.map((workGroup) => workGroup.name)}
-					values={workGroups.map((workGroup) => workGroup.id)}
-					bind:value={workGroup}
-					innerLabelOn={true}
-					innerLabel={$_('No workgroup assigned')}
-				/>
-			{/if}
+			<Select
+				disabled={(selectedPage !== 'thread' && selectedPoll !== 'Date Poll') || isPublic}
+				classInner="border border-gray-300"
+				label={$_('Work Group')}
+				labels={workGroups.map((workGroup) => workGroup.name)}
+				values={workGroups.map((workGroup) => workGroup.id)}
+				bind:value={workGroup}
+				innerLabelOn={true}
+				innerLabel={$_('No workgroup assigned')}
+			/>
 
 			<Button type="submit" disabled={loading} Class={'bg-primary p-3 mt-3'}>{$_('Post')}</Button>
 		</div>
