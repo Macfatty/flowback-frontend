@@ -15,7 +15,7 @@
 	let groupList: Group[] = [],
 		filter: GroupFilter = { joined: 'all', search: '' },
 		loading = false,
-		next = '';
+		next: string | undefined | null;
 
 	onMount(() => {
 		if (env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' && location.href.includes('/groups'))
@@ -23,22 +23,14 @@
 		getGroups();
 	});
 
+	$: if (filter) {
+		next = undefined;
+		getGroups();
+	}
+
 	const getGroups = async () => {
-		if (next !== '' && next !== null) {
-			loading = true;
-			const { res, json } = await fetchRequest('GET', next);
-
-			loading = false;
-			if (!res.ok) return;
-
-			next = json.next;
-			console.log(groupList, json.results);
-			
-			groupList = [...groupList, ...json.results];
-		} else if (next === null) return;
-		else {
-			console.log('HERERE DOWN');
-
+		// Initially entering group or when searching
+		if (next === undefined) {
 			let urlFilter = '';
 
 			if (filter.joined === 'member') urlFilter += '&joined=true';
@@ -56,9 +48,21 @@
 			if (!res.ok) return;
 
 			next = json.next;
-			groupList = json?.results
-				.reverse()
-				.sort((group1: any, group2: any) => +group2.joined - +group1.joined);
+			groupList = json?.results;
+		}
+		// The backend returns next as null when it has reached the end of what can be queried
+		// In that case, do nothing
+		else if (next === null) return;
+		// Lastly, when scrolling, do lazy loading
+		else {
+			loading = true;
+			const { res, json } = await fetchRequest('GET', next);
+
+			loading = false;
+			if (!res.ok) return;
+
+			next = json.next;
+			groupList = [...groupList, ...json.results];
 		}
 	};
 
@@ -85,7 +89,7 @@
 				>
 			{/if}
 
-			<GroupFiltering bind:filter {getGroups} />
+			<GroupFiltering bind:filter />
 
 			{#each groupList as group}
 				<GroupThumbnail {group} />
