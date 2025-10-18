@@ -133,7 +133,7 @@
 <style>
 	@keyframes slide-animation {
 		from {
-			right: -100px;
+			right: -1000px;
 		}
 		to {
 			right: 0;

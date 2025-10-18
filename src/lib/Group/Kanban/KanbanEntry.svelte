@@ -56,7 +56,7 @@
 			work_group: kanban.work_group || null,
 			images: kanban.attachments || []
 		},
-		images:File[],
+		images: File[],
 		endDate: TimeAgo;
 
 	// Helper function to format date for datetime-local input
@@ -299,7 +299,7 @@
 		</div>
 	{/if}
 	<div
-		class="mt-2 gap-2 items-center text-sm cursor-pointer hover:underline"
+		class="mt-2 gap-2 items-center text-sm hover:underline"
 		on:click={() => {
 			if ($page.params.groupId) goto(`/user?id=${kanban?.assignee?.id}`);
 			else if (kanban.origin_type === 'group') goto(`/groups/${kanban.origin_id}?page=kanban`);
@@ -369,7 +369,7 @@
 	<Modal
 		bind:open={openModal}
 		id="kanban-entry-modal"
-		Class=" min-w-[400px] max-w-[500px] z-50 "
+		Class="cursor-default min-w-[400px] max-w-[500px] z-50"
 		buttons={isEditing
 			? [
 					{ label: 'Update', type: 'primary', onClick: updateKanbanEntry },
@@ -468,15 +468,13 @@
 			{:else}
 				<div class="text-center">
 					<h2 class="pb-1 font-semibold text-xl w-full">{kanban.title}</h2>
-					{#if filter.type === 'group'}
-						<p class="w-full">{kanban?.work_group?.name || $_('No workgroup assigned')}</p>
-						<button on:click={() => goto(`/groups/${kanban?.origin_id}`)} class="w-full"
-							>{kanban?.group_name}</button
-						>
-					{/if}
 				</div>
 				<div class="flex mt-4 w-full">
 					<div class="flex flex-col mr-4 text-left gap-1 w-full">
+						{#if filter.type === 'group'}
+							<p class="font-bold">{$_('Group')}</p>
+							<p class="font-bold">{$_('Work Group')}</p>
+						{/if}
 						<p class="font-bold">{$_('End Date')}</p>
 						<p class="font-bold">{$_('Priority')}</p>
 						<p class="font-bold">{$_('Assignee')}</p>
@@ -484,6 +482,13 @@
 					</div>
 
 					<div class="flex flex-col text-right gap-1 w-full">
+						{#if filter.type === 'group'}
+							<button class="text-right" on:click={() => goto(`/groups/${kanban?.origin_id}`)}
+								>{kanban?.group_name}</button
+							>
+							<p>{kanban?.work_group?.name}</p>
+						{/if}
+
 						<p>
 							{#if kanban?.end_date}
 								{new Intl.DateTimeFormat(navigator?.language, {
