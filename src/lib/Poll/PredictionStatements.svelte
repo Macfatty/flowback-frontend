@@ -48,7 +48,10 @@
 	};
 
 
-	$: if (selectedProposal) getPredictionStatements(selectedProposal);
+	$: if (selectedProposal){
+		getPredictionStatements(selectedProposal);
+		
+	}
 
 	onMount(async () => {
 		await getPredictionStatements(selectedProposal);

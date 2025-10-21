@@ -68,7 +68,7 @@
 </Structure>
 
 <Modal bind:open onSubmit={handleProposalSubmit}>
-	<div slot="body" class="min-w-[400px] min-h-[300px]">
+	<div slot="body" class="">
 		<DateInput bind:value={date} />
 	</div>
 	<div slot="footer">
