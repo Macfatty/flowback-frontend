@@ -17,6 +17,7 @@
 	import type { report } from '$lib/Generic/interfaces';
 	import { linkToPost } from '$lib/Generic/GenericFunctions';
 	import Modal from '$lib/Generic/Modal.svelte';
+	import { goto } from '$app/navigation';
 
 	let selectedPage: 'profile' | 'notifications' | 'poll-process' | 'info' | 'reports' = 'profile',
 		optionsDesign =
@@ -122,7 +123,7 @@
 			<div class="flex items-center mb-4 gap-4">
 				<button
 					class="text-gray-600 hover:text-primary dark:text-secondary transition-colors"
-					on:click={() => history.back()}
+					on:click={() => goto('/home')}
 				>
 					<Fa icon={faArrowLeft} />
 				</button>

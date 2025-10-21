@@ -162,13 +162,13 @@
 
 	<div class="relative w-full">
 		<div
-			class="grid w-full text-sm text-center h-[500px] overflow-y-auto overflow-x-hidden"
+			class="grid w-full text-sm text-center"
 			style={`grid-template-columns: repeat(${x + 1}, 1fr); grid-template-rows: repeat(${
 				y + 1
 			}, 1fr);`}
 			id="weekView"
 		>
-			<div />
+			<br />
 			{#each weekDates as date, i}
 				<div class="flex flex-col items-center">
 					<div class="font-semibold pt-2">{date.getDate()}</div>
@@ -182,7 +182,7 @@
 				{#each row as date, i}
 					<button class="border h-12 w-24" on:click={() => toggleDate(date)}>
 						{#if selectedDates.find((_date) => _date?.getTime() === date?.getTime())}
-							<div class="bg-green-600 h-full w-full flex items-center justify-center">
+							<div class="bg-green-600  w-full flex items-center justify-center">
 								<Fa icon={faCheck} color="white" size="2x" />
 							</div>
 						{:else}
@@ -197,12 +197,12 @@
 			<Button
 				disabled={noChanges || selectedDates.length === 0}
 				onClick={saveSelection}
-				buttonStyle="primary-light"
+				buttonStyle="primary"
 				Class="flex-1">{$_('Submit')}</Button
 			>
 			<Button 
 				onClick={clearSelection} 
-				buttonStyle="warning-light" 
+				buttonStyle="warning" 
 				disabled={selectedDates.length === 0}
 				Class="flex-1 disabled:!text-gray-300">{$_('Clear')}</Button
 			>
