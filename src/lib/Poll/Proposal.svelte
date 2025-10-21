@@ -48,13 +48,8 @@
 
 	onMount(() => {
 		checkForLinks(proposal.description, `proposal-${proposal.id}-description`);
-		// getPredictionCount();
-
 		allComments = filteredComments;
 	});
-
-	$: if (filteredComments) {
-	}
 </script>
 
 <div
@@ -71,6 +66,7 @@
 			{@const proposalInList = proposalsToPredictionMarket.findIndex(
 				(prop) => prop.id === proposal.id
 			)}
+			<!-- Javascript returns -1 if index not found -->
 			{#if proposalInList !== -1}
 				<button
 					id={`${idfy(proposal.title)}-selected`}
@@ -144,7 +140,6 @@
 		<button
 			on:click={() => {
 				selectedProposal = proposal;
-				
 			}}
 			class="hover:underline cursor-pointer flex gap-2 items-baseline text-sm text-gray-700 dark:text-darkmodeText"
 		>

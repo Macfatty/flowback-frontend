@@ -1,16 +1,20 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import type { Phase, poll } from '../interface';
 	import Timeline from './Timeline.svelte';
 
 	export let poll: poll | null = null,
 		Class = '',
-		phase: Phase = 'area_vote';
+		phase: Phase = 'area_vote',
+		resetScroll = false;
 
 	let genericStyle =
-		'bg-white h-[490px] max-h-[490px] dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md';
+			'bg-white h-[490px] max-h-[490px] dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
+		test: HTMLDivElement | null = null;
 
-	onMount(() => {});
+	$: if (resetScroll) {
+		test?.scrollTo(0, 0);
+		resetScroll = false;
+	}
 </script>
 
 <div
@@ -35,7 +39,7 @@
 	{/if}
 
 	{#if $$slots.right}
-		<div class={`${genericStyle}  overflow-auto`}>
+		<div bind:this={test} class={`${genericStyle} overflow-auto `}>
 			<slot name="right" />
 		</div>
 	{/if}

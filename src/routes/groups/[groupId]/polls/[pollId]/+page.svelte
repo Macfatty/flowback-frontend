@@ -35,7 +35,8 @@
 		proposalsToPredictionMarket: proposal[] = [],
 		displayForm: boolean,
 		comments: Comment[] = [],
-		loading = true;
+		loading = true,
+		resetScroll = false;
 
 	onMount(async () => {
 		await getPollData();
@@ -102,6 +103,8 @@
 			clearTimeout(a);
 		}, 2000);
 	}
+
+	$: if (selectedProposal) resetScroll = true;
 </script>
 
 <Layout centered>
@@ -235,13 +238,19 @@
 
 				<!-- PHASE 4: PREDICTION BETTING -->
 			{:else if phase === 'prediction_bet'}
-				<Structure bind:phase bind:poll>
+				<Structure bind:phase bind:poll bind:resetScroll>
 					<div slot="left" class="h-[460px]">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-[460px] overflow-y-auto">
-							<ProposalScoreVoting {getPollData} bind:comments bind:phase bind:proposals bind:selectedProposal />
+							<ProposalScoreVoting
+								{getPollData}
+								bind:comments
+								bind:phase
+								bind:proposals
+								bind:selectedProposal
+							/>
 						</div>
 					</div>
 					<div slot="right">
