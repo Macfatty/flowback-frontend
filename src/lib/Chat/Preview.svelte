@@ -30,6 +30,7 @@
 			message.timestamp = new Date().toString();
 			message.notified = false;
 		}
+		previews = previews
 
 		selectedChat = chatterId;
 		chatPartnerStore.set(chatterId);
@@ -100,9 +101,8 @@
 				new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
 		);
 
-		previews = [ ...previewsNotified, ...previewsNotNotified];
+		previews = [...previewsNotified, ...previewsNotNotified];
 		previews = previews;
-
 	}
 </script>
 
@@ -177,7 +177,6 @@
 		{/each}
 	{/if}
 	{#each previews as chatter}
-		{chatter.timestamp}
 		{#if chatter.channel_title?.includes(chatSearch) && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)}
 			<button
 				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
@@ -186,7 +185,7 @@
 				on:click={() => clickedChatter(chatter.channel_id)}
 			>
 				{#if chatter?.notified}
-					<div class="p-1 rounded-full bg-purple-300" />
+					<div class="p-1 rounded-full bg-purple-300"></div>
 				{/if}
 
 				<ProfilePicture profilePicture={chatter?.profile_image} />

@@ -15,7 +15,7 @@
 		proposals: any[] = [],
 		poll: poll,
 		getPollData = () => {},
-		selectedProposal:proposal | null;
+		selectedProposal: proposal | null = null;
 
 	let votes: number[] = [],
 		labels: string[] = [];
@@ -39,7 +39,7 @@
 
 		votes = proposals.map((proposal) => proposal.score) ?? [];
 		labels = proposals.map((proposal) => proposal.title) ?? [];
-		selectedProposal = proposals[0]
+		selectedProposal = proposals[0];
 	};
 
 	const formatDateTime = (dateString: string) => {
