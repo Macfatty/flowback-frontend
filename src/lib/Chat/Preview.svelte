@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { type GroupMembers, type invite, type PreviewMessage } from './interfaces';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import type { Group } from '$lib/Group/interface';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { onMount } from 'svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
