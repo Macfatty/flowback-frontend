@@ -8,14 +8,20 @@
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { userStore } from '$lib/User/interfaces';
 
-	export let email: string = '';
-
 	let password: string,
 		password2: string,
 		verification_code: string,
 		loading = false;
 
 	async function verifyAccount() {
+		if (env.PUBLIC_EMAIL_REGISTRATION === 'TRUE')
+			verification_code = $page.url.searchParams.get('verification_code') ?? '';
+
+		if (password !== password2) {
+			ErrorHandlerStore.set({ message: 'Passwords do not match', success: false });
+			return;
+		}
+
 		loading = true;
 		const { res, json } = await fetchRequest(
 			'POST',
