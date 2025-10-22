@@ -79,7 +79,6 @@
 			})
 		};
 
-		console.log(next, 'NEXY');
 		if (next === undefined) {
 			loading = true;
 			const response = await PollsApi.getPosts(infoToGet, params, delegate.pool_id);
