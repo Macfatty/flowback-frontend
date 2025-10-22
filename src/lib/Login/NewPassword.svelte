@@ -25,7 +25,7 @@
 		loading = true;
 		const { res, json } = await fetchRequest(
 			'POST',
-			'register/verify',
+			'forgot_password/verify',
 			{ verification_code, password },
 			false
 		);
