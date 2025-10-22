@@ -11,6 +11,7 @@
 	import { groups as groupsLimit } from '$lib/Generic/APILimits.json';
 	import { env } from '$env/dynamic/public';
 	import { goto } from '$app/navigation';
+	import { lazyLoading } from '$lib/Generic/GenericFunctions';
 
 	let groupList: Group[] = [],
 		filter: GroupFilter = { joined: 'all', search: '' },
@@ -65,16 +66,9 @@
 			groupList = [...groupList, ...json.results];
 		}
 	};
-
-	const lazyLoading = async () => {
-		let scrolledToBottom =
-			document.body.scrollHeight - document.body.clientHeight <= document.body.scrollTop + 1;
-
-		if (scrolledToBottom) getGroups();
-	};
 </script>
 
-<svelte:body onscroll={() => lazyLoading()} />
+<svelte:body onscroll={() => lazyLoading(getGroups)} />
 
 <svelte:head>
 	<title>Groups</title>

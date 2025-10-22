@@ -120,3 +120,10 @@ export const linkToPost = (postId: number, groupId: number, postType: 'poll' | '
 
 	return `/groups/${groupId}/${_postType}/${postId}`;
 }
+
+export const lazyLoading = (getFunction = () => {}) => {
+	let scrolledToBottom =
+		document.body.scrollHeight - document.body.clientHeight <= document.body.scrollTop + 1;
+
+	if (scrolledToBottom) getFunction();
+};
