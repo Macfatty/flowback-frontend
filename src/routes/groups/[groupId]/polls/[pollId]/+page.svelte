@@ -352,10 +352,10 @@
 					<div slot="left" class="h-full overflow-y-auto">
 						{#if proposals}
 							{proposals[0]?.score}
-							<PredictionStatements bind:phase bind:poll />
+							<PredictionStatements bind:selectedProposal bind:phase bind:poll />
 						{/if}
 					</div>
-					<div slot="right"><Results bind:poll {getPollData} {pollType} /></div>
+					<div slot="right"><Results bind:selectedProposal bind:poll {getPollData} {pollType} /></div>
 					<div slot="bottom">
 						<Comments bind:proposals api={'poll'} />
 					</div>

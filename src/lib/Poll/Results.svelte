@@ -8,16 +8,17 @@
 	import Fa from 'svelte-fa';
 	import { faStar } from '@fortawesome/free-solid-svg-icons';
 	import NewDescription from './NewDescription.svelte';
-	import type { poll } from './interface';
-
-	let votes: number[] = [],
-		labels: string[] = [];
+	import type { poll, proposal } from './interface';
 
 	//4 for score voting, 3 for date
 	export let pollType = 1,
 		proposals: any[] = [],
 		poll: poll,
-		getPollData = () => {};
+		getPollData = () => {},
+		selectedProposal:proposal | null;
+
+	let votes: number[] = [],
+		labels: string[] = [];
 
 	const getProposals = async () => {
 		const { res, json } = await fetchRequest(
@@ -38,6 +39,7 @@
 
 		votes = proposals.map((proposal) => proposal.score) ?? [];
 		labels = proposals.map((proposal) => proposal.title) ?? [];
+		selectedProposal = proposals[0]
 	};
 
 	const formatDateTime = (dateString: string) => {

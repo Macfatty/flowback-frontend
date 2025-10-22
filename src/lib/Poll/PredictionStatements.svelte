@@ -61,6 +61,8 @@
 			selectedProposal = proposals.sort((proposal) => proposal.score)[0];
 		}
 	});
+
+	
 </script>
 
 <Loader bind:loading>
