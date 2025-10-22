@@ -54,7 +54,8 @@
 <style>
 	@media (min-width: 768px) {
 		.poll-grid {
-			grid-template-columns: 0.1fr 1fr 1fr;
+			grid-template-columns: 0.1fr repeat(2, minmax(0, 1fr));
+
 			display: grid;
 		}
 

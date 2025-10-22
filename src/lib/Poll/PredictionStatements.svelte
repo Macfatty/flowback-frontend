@@ -47,10 +47,8 @@
 		proposals = json?.results;
 	};
 
-
-	$: if (selectedProposal){
+	$: if (selectedProposal) {
 		getPredictionStatements(selectedProposal);
-		
 	}
 
 	onMount(async () => {
@@ -76,7 +74,7 @@
 		{#if predictions?.length > 0}
 			{#each predictions as prediction}
 				<div
-					class="border-b-2 flex flex-col break-words py-2 gap-1"
+					class="elipsis border-b-2 flex flex-col break-words py-2 gap-1"
 					class:select-none={phase === 'prediction_bet'}
 				>
 					<span class="text-primary dark:text-secondary font-semibold">{prediction.title}</span>
