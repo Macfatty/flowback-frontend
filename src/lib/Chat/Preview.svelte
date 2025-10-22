@@ -11,7 +11,7 @@
 	import { idfy } from '$lib/Generic/GenericFunctions2';
 	import UserSearch from '$lib/Generic/UserSearch.svelte';
 	import Fa from 'svelte-fa';
-	import { faEnvelope, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 	let chatSearch = '',
 		openUserSearch = false;
@@ -19,17 +19,17 @@
 	export let selectedChat: number | null,
 		selectedChatChannelId: number | null,
 		creatingGroup: boolean,
-		previewDirect: PreviewMessage[] = [],
+		previews: PreviewMessage[] = [],
 		inviteList: invite[] = [],
 		groupMembers: GroupMembers[] = [];
 
 	// Handle chat selection and clear notifications
 	const clickedChatter = async (chatterId: any) => {
-		let message = previewDirect.find((message) => message.channel_id === chatterId);
+		let message = previews.find((message) => message.channel_id === chatterId);
 		if (message) {
 			message.timestamp = new Date().toString();
 			message.notified = false;
-			previewDirect = previewDirect;
+			previews = previews;
 		}
 
 		selectedChat = chatterId;
@@ -83,6 +83,12 @@
 		// }
 	};
 
+	const getPreview = async () => {
+		const { res, json } = await fetchRequest('GET', `chat/message/channel/preview/list`);
+		if (!res.ok) return [];
+
+		previews = json?.results;
+	};
 	onMount(async () => {
 		await UserChatInviteList();
 
@@ -127,6 +133,7 @@
 						chatOpenStore.set(true);
 						chatPartnerStore.set(await getUserChannelId(item.id));
 						openUserSearch = false;
+						getPreview();
 					}}
 				>
 					<Fa icon={faPaperPlane} rotate="60" />
@@ -167,8 +174,8 @@
 			{/if}
 		{/each}
 	{/if}
-	{#each previewDirect as chatter}
-		{#if chatter.channel_title?.includes(chatSearch)  && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)}
+	{#each previews as chatter}
+		{#if chatter.channel_title?.includes(chatSearch) && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)}
 			<button
 				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
 				class:bg-gray-200={selectedChat === chatter.channel_id}
@@ -197,7 +204,7 @@
 							if (groupMembers.some((member) => member.id === chatter.id)) {
 								return;
 							}
-							
+
 							const newMember = {
 								id: chatter.user.id,
 								username: chatter.user.username ?? 'Unknown',

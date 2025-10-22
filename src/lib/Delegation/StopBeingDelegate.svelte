@@ -55,3 +55,4 @@
 
 <Button Class={`bg-red-500 ${Class}`} onClick={deleteDelegation}>{$_('Stop being delegate')}</Button
 >
+<Button>{("Self-Delegate")}</Button>
