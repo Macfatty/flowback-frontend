@@ -49,7 +49,7 @@
 <form class="gap-6 p-6 flex flex-col items-center" on:submit|preventDefault={changePassword}>
 	<TextInput label={'New Password'} bind:value={password} type="password" required />
 	<TextInput label={'Confirm Password'} bind:value={password2} type="password" required />
-	{#if !(env.PUBLIC_EMAIL_REGISTRATION === 'FALSE')}
+	{#if !(env.PUBLIC_EMAIL_REGISTRATION === 'TRUE')}
 		<TextInput label={'Verification Code'} bind:value={verification_code} required />
 	{/if}
 

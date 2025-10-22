@@ -95,10 +95,9 @@
 			>{proposal.title}</span
 		>
 	</div>
-
 	<!-- Proposal Description -->
 	<p
-		class="elipsis text-sm text-left my-1 break-words whitespace-pre-wrap"
+		class="elipsis max-w-[300px] text-sm text-left my-1 break-words whitespace-pre-wrap"
 		id={`proposal-${proposal.id}-description`}
 	>
 		{proposal.description}
