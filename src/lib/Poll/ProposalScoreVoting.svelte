@@ -17,8 +17,7 @@
 		phase: Phase,
 		proposalsToPredictionMarket: proposal[] = [],
 		Class = '',
-		comments: Comment[],
-		getPollData = () => {};
+		comments: Comment[];
 
 	let voting: { score: number; proposal: number }[] = [],
 		needsReload = 0,
