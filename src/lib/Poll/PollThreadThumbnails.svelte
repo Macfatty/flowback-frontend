@@ -65,43 +65,41 @@
 	}
 
 	async function fetchPolls() {
-		try {
+		const params = {
+			order_by: filter.order_by ? `pinned,${filter.order_by}` : 'pinned',
+			limit: pollThumbnailsLimit,
+			title__icontains: filter.search || undefined,
+			tag_id: filter.tag || undefined,
+			group_ids: infoToGet === 'group' ? $page.params.groupId : undefined,
+			work_group_ids: filter.workgroup,
+			public: infoToGet === 'public' ? true : undefined,
+			...(filter.finishedSelection !== 'all' && {
+				[`end_date${filter.finishedSelection === 'finished' ? '__lt' : '__gt'}`]:
+					new Date().toISOString()
+			})
+		};
+
+		console.log(next, 'NEXY');
+		if (next === undefined) {
 			loading = true;
-			// $posts = [];
+			const response = await PollsApi.getPosts(infoToGet, params, delegate.pool_id);
 
-			const params = {
-				order_by: filter.order_by ? `pinned,${filter.order_by}` : 'pinned',
-				limit: pollThumbnailsLimit,
-				title__icontains: filter.search || undefined,
-				tag_id: filter.tag || undefined,
-				group_ids: infoToGet === 'group' ? $page.params.groupId : undefined,
-				work_group_ids: filter.workgroup,
-				public: infoToGet === 'public' ? true : undefined,
-				...(filter.finishedSelection !== 'all' && {
-					[`end_date${filter.finishedSelection === 'finished' ? '__lt' : '__gt'}`]:
-						new Date().toISOString()
-				})
-			};
-
-			if (next === undefined) {
-				const response = await PollsApi.getPosts(infoToGet, params, delegate.pool_id);
-				$posts = response.results;
-				next = response.next ?? '';
-				prev = response.previous ?? '';
-			} else if (next === null) return;
-			else {
-				const { res, json } = await fetchRequest('GET', next);
-				if (!res.ok) {
-					$ErrorHandlerStore = { message: 'Could not fetch posts', success: false };
-				}
-				$posts = [...$posts, ...json.results];
-				next = json.next ?? '';
+			// ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
+			$posts = response.results;
+			next = response.next ?? '';
+			prev = response.previous ?? '';
+		} else if (next === null) return;
+		else {
+			loading = true;
+			const { res, json } = await fetchRequest('GET', next);
+			if (!res.ok) {
+				ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
 			}
-		} catch (error) {
-			ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
-		} finally {
-			loading = false;
+			$posts = [...$posts, ...json.results];
+			next = json.next;
 		}
+
+		loading = false;
 	}
 
 	async function fetchRelatedContent() {
