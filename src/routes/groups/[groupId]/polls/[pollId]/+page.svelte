@@ -138,7 +138,7 @@
 
 				<!-- PHASE 2: PROPOSAL CREATION -->
 			{:else if phase === 'proposal'}
-				<Structure bind:phase bind:poll>
+				<Structure bind:phase bind:poll bind:resetScroll>
 					<div slot="left" class="h-[460px] relative">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
@@ -186,11 +186,9 @@
 
 				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
 			{:else if phase === 'prediction_statement'}
-				<Structure bind:phase bind:poll>
+				<Structure bind:phase bind:poll bind:resetScroll>
 					<div slot="left" class="h-[460px] relative">
-						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
-							>{$_('Proposals')} ({proposals?.length})</span
-						>
+						<span>{$_('Proposals')} ({proposals?.length})</span>
 						<div class="max-h-[80%] overflow-y-auto">
 							<ProposalScoreVoting
 								bind:comments
@@ -213,7 +211,9 @@
 					<div slot="right" class="relative h-[460px]">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
-								<div class="font-semibold text-primary dark:text-secondary text-lg">
+								<div
+									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
+								>
 									{selectedProposal.title}
 								</div>
 								<NewDescription
@@ -256,7 +256,9 @@
 					<div slot="right">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
-								<div class="font-semibold text-primary dark:text-secondary text-lg">
+								<div
+									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
+								>
 									{selectedProposal.title}
 								</div>
 								<NewDescription
@@ -275,7 +277,7 @@
 
 				<!-- PHASE 5: DELEGATE VOTING -->
 			{:else if phase === 'delegate_vote'}
-				<Structure bind:phase bind:poll>
+				<Structure bind:phase bind:poll bind:resetScroll>
 					<div slot="left" class="h-[460px]">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
@@ -287,7 +289,9 @@
 					<div slot="right">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
-								<div class="font-semibold text-primary dark:text-secondary text-lg">
+								<div
+									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
+								>
 									{selectedProposal.title}
 								</div>
 								<NewDescription
@@ -305,7 +309,7 @@
 				</Structure>
 				<!-- PHASE 6: NON-DELEGATE VOTING -->
 			{:else if phase === 'vote'}
-				<Structure bind:phase bind:poll>
+				<Structure bind:phase bind:poll bind:resetScroll>
 					<div slot="left" class="h-[460px]" id="proposals-section">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
@@ -324,7 +328,9 @@
 					<div slot="right">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
-								<div class="font-semibold text-primary dark:text-secondary text-lg">
+								<div
+									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
+								>
 									{selectedProposal.title}
 								</div>
 								<NewDescription
@@ -342,7 +348,7 @@
 				</Structure>
 				<!-- PHASE 7: RESULTS AND EVALUATION -->
 			{:else if phase === 'result' || phase === 'prediction_vote'}
-				<Structure bind:phase bind:poll>
+				<Structure bind:phase bind:poll bind:resetScroll>
 					<div slot="left" class="h-[460px] overflow-y-auto">
 						{#if proposals}
 							{proposals[0]?.score}

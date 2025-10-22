@@ -91,7 +91,7 @@
 		{/if}
 		<!-- Proposal Title -->
 		<span
-			class="text-md text-primary dark:text-secondary font-semibold align-text-top text-left break-words"
+			class="text-md max-w-[300px] elipsis text-primary dark:text-secondary font-semibold align-text-top text-left break-words"
 			>{proposal.title}</span
 		>
 	</div>
