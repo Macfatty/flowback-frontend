@@ -102,6 +102,11 @@
 	});
 
 	$: if (selectedChatChannelId) updateChatTitle();
+
+	$: if (previews) {
+		previews = previews.sort((preview) => (preview.notified ? -1 : 1));
+		previews = previews;
+	}
 </script>
 
 <div class="max-h-[100%] pb-2">

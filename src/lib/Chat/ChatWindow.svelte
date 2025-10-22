@@ -16,9 +16,9 @@
 	import { chatWindow as chatWindowLimit } from '../Generic/APILimits.json';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
+	import { chatOpenStore, chatPartnerStore } from './functions';
 
 	export let selectedChat: number | null,
-		selectedChatChannelId: number | null,
 		selectedPage: 'direct' | 'group',
 		previewDirect: PreviewMessage[] = [],
 		isLookingAtOlderMessages: boolean;
@@ -36,10 +36,10 @@
 
 	// Fetch recent messages for the selected chat
 	const getRecentMessages = async () => {
-		if (!selectedChatChannelId) return;
+		if (!$chatPartnerStore) return;
 		const { res, json } = await fetchRequest(
 			'GET',
-			`chat/message/channel/${selectedChatChannelId}/list?order_by=created_at_desc&limit=${chatWindowLimit}`
+			`chat/message/channel/${$chatPartnerStore}/list?order_by=created_at_desc&limit=${chatWindowLimit}`
 		);
 		if (!res.ok) {
 			selectedChat = null;
@@ -53,7 +53,7 @@
 	};
 
 	const postMessage = async () => {
-		if (!selectedChat || !selectedChatChannelId || message.length === 0 || message.match(/^\s+$/))
+		if (!selectedChat || !$chatPartnerStore || message.length === 0 || message.match(/^\s+$/))
 			return;
 
 		if (newerMessages) await getRecentMessages();
@@ -82,18 +82,18 @@
 					profile_image: $userStore?.profile_image || '',
 					banner_image: ''
 				},
-				channel_id: selectedChatChannelId,
+				channel_id: $chatPartnerStore,
 				...(selectedPage === 'direct' ? { target_id: selectedChat } : { group_id: selectedChat })
 			};
 		}
 
-		const didSend = await Socket.sendMessage(socket, selectedChatChannelId, message, 1);
+		const didSend = await Socket.sendMessage(socket, $chatPartnerStore, message, 1);
 		if (!didSend) {
 			ErrorHandlerStore.set({ message: 'Could not send message', success: false });
 			return;
 		}
 
-		const preview = previewDirect.find((p) => p.channel_id === selectedChatChannelId);
+		const preview = previewDirect.find((p) => p.channel_id === $chatPartnerStore);
 		if (preview) {
 			preview.message = message;
 		}
@@ -109,7 +109,7 @@
 			},
 			created_at: new Date().toString(),
 			active: true,
-			channel_id: selectedChatChannelId,
+			channel_id: $chatPartnerStore,
 			channel_origin_name: 'group',
 			type: 'message',
 			updated_at: new Date().toString(),
@@ -144,7 +144,7 @@
 
 	// Handle incoming messages and set notifications
 	const handleReceiveMessage = (preview: PreviewMessage[], message: Message1) => {
-		if (message.channel_id === selectedChatChannelId) {
+		if (message.channel_id === $chatPartnerStore) {
 			if (messages.some((m) => m.id === message.id)) return;
 
 			messages.push({
@@ -167,7 +167,7 @@
 				topic_id: message.topic_id
 			});
 			messages = messages;
-			// updateUserData(selectedChatChannelId, new Date());
+			// updateUserData($chatPartnerStore, new Date());
 		} else {
 			let previewMessage = preview.find((p) => p.channel_id === message.channel_id);
 			if (!previewMessage) {
@@ -194,7 +194,7 @@
 			preview = [...preview];
 		}
 
-		const _preview = previewDirect.find((p) => p.channel_id === selectedChatChannelId);
+		const _preview = previewDirect.find((p) => p.channel_id === $chatPartnerStore);
 		if (_preview) {
 			_preview.message = message.message;
 		}
@@ -220,10 +220,10 @@
 
 	// Fetch channel participants
 	const getChannelParticipants = async () => {
-		if (!selectedChatChannelId) return;
+		if (!$chatPartnerStore) return;
 		const { res, json } = await fetchRequest(
 			'GET',
-			`chat/message/channel/${selectedChatChannelId}/participant/list`
+			`chat/message/channel/${$chatPartnerStore}/participant/list`
 		);
 		if (!res.ok) {
 			console.error('Failed to fetch channel participants:', json);
@@ -246,8 +246,8 @@
 	});
 
 	// Reactive updates
-	$: (selectedPage || selectedChatChannelId) && getRecentMessages();
-	$: (selectedPage || selectedChatChannelId) && getChannelParticipants();
+	$: (selectedPage || $chatPartnerStore) && getRecentMessages();
+	$: (selectedPage || $chatPartnerStore) && getChannelParticipants();
 	$: isLookingAtOlderMessages = !!newerMessages;
 	$: if ($userStore) socket = Socket.createSocket($userStore?.id);
 	$: messages &&
@@ -259,10 +259,10 @@
 		}, 100);
 </script>
 
-{#if selectedChatChannelId !== null}
+{#if $chatPartnerStore !== 0}
 	<div class="flex flex-col h-full">
 		<ul class="grow overflow-y-auto px-2 break-word" id="chat-window" bind:this={chatWindow}>
-			{#if messages.length === 0 && selectedChatChannelId}
+			{#if messages.length === 0 && $chatPartnerStore}
 				<span class="self-center">{$_('Chat is currently empty, maybe say hello?')}</span>
 			{/if}
 			{#if olderMessages}
