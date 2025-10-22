@@ -20,7 +20,7 @@
 <div
 	class={`${Class} ${
 		poll ? 'poll-grid' : 'poll-grid-no-timeline'
-	} p-12 max-w-[1200px] w-full gap-4 lg:gap-6`}
+	} p-3 md:p-6 lg:p-12 max-w-[1200px] w-full gap-4 lg:gap-6`}
 	id="poll-structure"
 >
 	{#if poll}
@@ -55,7 +55,7 @@
 	@media (min-width: 768px) {
 		.poll-grid {
 			grid-template-columns: 0.1fr repeat(2, minmax(0, 1fr));
-			grid-template-rows: repeat(3, minmax(0, 60vh));
+			grid-template-rows: repeat(3, minmax(0, 55vh));
 			display: grid;
 			max-height: 2000px;
 		}
