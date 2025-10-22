@@ -34,7 +34,7 @@
 		threads: Thread[] = [],
 		workGroups: WorkGroup[] = [],
 		loading = false,
-		next:null|undefined|string,
+		next: null | undefined | string,
 		prev = '',
 		filter: Filter = {
 			search: '',
@@ -91,7 +91,10 @@
 			} else if (next === null) return;
 			else {
 				const { res, json } = await fetchRequest('GET', next);
-				$posts = [...$posts, ...json.results]
+				if (!res.ok) {
+					$ErrorHandlerStore = { message: 'Could not fetch posts', success: false };
+				}
+				$posts = [...$posts, ...json.results];
 				next = json.next ?? '';
 			}
 		} catch (error) {
@@ -196,11 +199,11 @@
 				</div>
 			{/if}
 		</div>
-		<Pagination
+		<!-- <Pagination
 			bind:next
 			bind:prev
 			bind:iterable={$posts}
 			Class={'flex gap-2 justify-around w-full mt-6'}
-		/>
+		/> -->
 	</Loader>
 </div>
