@@ -29,28 +29,11 @@
 		if (message) {
 			message.timestamp = new Date().toString();
 			message.notified = false;
-			previews = previews;
 		}
 
 		selectedChat = chatterId;
 		chatPartnerStore.set(chatterId);
 		selectedChatChannelId = chatterId;
-	};
-
-	// Sort chats by notification status
-	const sort = (chatter: Group[] | any[], preview: PreviewMessage[]) => {
-		return chatter.sort((a, b) => {
-			let notifiedMsgA = preview.find(
-				(notified) => notified.channel_id === (a.chat_id || a.channel_id)
-			);
-			let notifiedMsgB = preview.find(
-				(notified) => notified.channel_id === (b.chat_id || b.channel_id)
-			);
-			let notifiedA = notifiedMsgA?.notified || false;
-			let notifiedB = notifiedMsgB?.notified || false;
-			if (notifiedA === notifiedB) return 0;
-			return notifiedA ? -1 : 1;
-		});
 	};
 
 	// Fetch chat invites
@@ -104,8 +87,22 @@
 	$: if (selectedChatChannelId) updateChatTitle();
 
 	$: if (previews) {
-		previews = previews.sort((preview) => (preview.notified ? -1 : 1));
+		let previewsNotified = previews.filter((preview) => preview.notified);
+		let previewsNotNotified = previews.filter((preview) => !preview.notified);
+
+		previewsNotNotified = previewsNotNotified.sort(
+			(preview1, preview2) =>
+				new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
+		);
+
+		previewsNotified = previewsNotified.sort(
+			(preview1, preview2) =>
+				new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
+		);
+
+		previews = [ ...previewsNotified, ...previewsNotNotified];
 		previews = previews;
+
 	}
 </script>
 
@@ -180,6 +177,7 @@
 		{/each}
 	{/if}
 	{#each previews as chatter}
+		{chatter.timestamp}
 		{#if chatter.channel_title?.includes(chatSearch) && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)}
 			<button
 				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"

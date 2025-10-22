@@ -48,7 +48,7 @@
 		if (message) {
 			message.timestamp = new Date().toString();
 			message.notified = false;
-			previews = [...previews];
+			// previews = [...previews];
 		}
 	};
 
