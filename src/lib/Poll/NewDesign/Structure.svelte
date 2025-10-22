@@ -8,7 +8,7 @@
 		resetScroll = false;
 
 	// 'bg-white h-[490px] max-h-[490px] dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
-	let genericStyle = 'bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
+	let genericStyle = 'h-full bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
 		test: HTMLDivElement | null = null;
 
 	$: if (resetScroll) {
@@ -34,7 +34,7 @@
 
 	{#if $$slots.left}
 		<div class={`${genericStyle}  `}>
-			<slot name="left" />
+			<slot name="left" class="h-full" />
 		</div>
 	{/if}
 

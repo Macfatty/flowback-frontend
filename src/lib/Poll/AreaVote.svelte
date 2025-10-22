@@ -70,7 +70,7 @@
 </script>
 
 <!-- <div class="flex flex-col h-[40vh] md:h-[50vh] lg:h-[60vh] xl:h-[70vh] max-h-[350px]"> -->
-<div class="flex flex-col h-[460px]">
+<div class="flex flex-col h-full">
 	<h2 class="text-xl font-semibold mb-4 text-primary dark:text-secondary">
 		{$_('Areas')} ({tags.length})
 	</h2>
