@@ -40,6 +40,7 @@
 			urlFilter = `${urlFilter}&name__icontains=${filter.search}`;
 
 			loading = true;
+			
 			const { res, json } = await fetchRequest(
 				'GET',
 				`group/list?limit=${groupsLimit}` + urlFilter

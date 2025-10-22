@@ -17,6 +17,7 @@
 	import { posts } from './stores';
 	import ThreadThumbnail from '$lib/Thread/ThreadThumbnail.svelte';
 	import { lazyLoading } from '$lib/Generic/GenericFunctions';
+	import { fetchRequest } from '$lib/FetchRequest';
 
 	// Props
 	export let Class = '',
@@ -33,7 +34,7 @@
 		threads: Thread[] = [],
 		workGroups: WorkGroup[] = [],
 		loading = false,
-		next = '',
+		next:null|undefined|string,
 		prev = '',
 		filter: Filter = {
 			search: '',
@@ -66,7 +67,7 @@
 	async function fetchPolls() {
 		try {
 			loading = true;
-			$posts = [];
+			// $posts = [];
 
 			const params = {
 				order_by: filter.order_by ? `pinned,${filter.order_by}` : 'pinned',
@@ -82,10 +83,17 @@
 				})
 			};
 
-			const response = await PollsApi.getPosts(infoToGet, params, delegate.pool_id);
-			$posts = response.results;
-			next = response.next ?? '';
-			prev = response.previous ?? '';
+			if (next === undefined) {
+				const response = await PollsApi.getPosts(infoToGet, params, delegate.pool_id);
+				$posts = response.results;
+				next = response.next ?? '';
+				prev = response.previous ?? '';
+			} else if (next === null) return;
+			else {
+				const { res, json } = await fetchRequest('GET', next);
+				$posts = [...$posts, ...json.results]
+				next = json.next ?? '';
+			}
 		} catch (error) {
 			ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
 		} finally {
@@ -152,7 +160,7 @@
 	});
 </script>
 
-<!-- <svelte:body onscroll={() => lazyLoading(fetchPolls)} /> -->
+<svelte:body onscroll={() => lazyLoading(fetchPolls)} />
 
 <div class={`${Class} dark:text-darkmodeText`}>
 	<Loader bind:loading>
