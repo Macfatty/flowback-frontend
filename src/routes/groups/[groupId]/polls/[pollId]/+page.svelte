@@ -130,7 +130,7 @@
 				<!-- PHASE 1: AREA VOTE -->
 			{:else if phase === 'area_vote'}
 				<Structure bind:phase bind:poll>
-					<div slot="left"><AreaVote /></div>
+					<div slot="left" class="h-full"><AreaVote /></div>
 					<div slot="right" class="!p-0">
 						<Comments bind:proposals api={'poll'} />
 					</div>

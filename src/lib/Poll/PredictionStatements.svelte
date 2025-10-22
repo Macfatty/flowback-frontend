@@ -21,6 +21,8 @@
 		loading = false;
 
 	const getPredictionStatements = async (selectedProposal: proposal | null) => {
+		if (!selectedProposal) return;
+
 		loading = true;
 
 		if (poll.status_prediction === 0) getPollData();
