@@ -7,8 +7,8 @@
 		phase: Phase = 'area_vote',
 		resetScroll = false;
 
-	let genericStyle =
-			'bg-white h-[490px] max-h-[490px] dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
+	// 'bg-white h-[490px] max-h-[490px] dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
+	let genericStyle = 'bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
 		test: HTMLDivElement | null = null;
 
 	$: if (resetScroll) {
@@ -45,7 +45,7 @@
 	{/if}
 
 	{#if $$slots.bottom}
-		<div class={`${genericStyle} overflow-auto bottom-grid`}>
+		<div class={`${genericStyle} overflow-auto bottom-grid h-fit`}>
 			<slot name="bottom" />
 		</div>
 	{/if}
@@ -55,8 +55,9 @@
 	@media (min-width: 768px) {
 		.poll-grid {
 			grid-template-columns: 0.1fr repeat(2, minmax(0, 1fr));
-
+			grid-template-rows: repeat(3, minmax(0, 60vh));
 			display: grid;
+			max-height: 2000px;
 		}
 
 		.poll-grid-no-timeline {
