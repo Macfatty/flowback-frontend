@@ -203,25 +203,24 @@
 							bind:proposalsToPredictionMarket
 							bind:commentFilterProposalId
 							bind:selectedProposal
-							bind:filteredComments={comments}
 							bind:phase
+							bind:filteredComments={comments}
 							{proposal}
 						>
 							{#if phase === 'delegate_vote' || phase === 'vote'}
 								{@const score = getScore(proposal)}
+								{@const disabled =
+									(phase === 'delegate_vote' && $groupUserStore?.delegate_pool_id === null) ||
+									(phase === 'vote' && !$groupUserPermissionStore?.allow_vote)}}
+
 								{#key voting || delegateVoting}
 									<VotingSlider
 										bind:phase
 										onSelection={(pos) => handleSliderClick(pos, proposal)}
-										disabled={(phase === 'delegate_vote' &&
-											$groupUserStore?.delegate_pool_id === null) ||
-											(phase === 'vote' && !$groupUserPermissionStore?.allow_vote)}
-										{score}
-										style={(() => {
-											if (phase === 'vote' && voting === delegateVoting) return 'gray';
-											else return 'purple';
-										})()}
+										style={disabled ? 'gray' : 'purple'}
 										id={`${idfy(proposal.title)}`}
+										{score}
+										{disabled}
 									/>
 								{/key}
 							{/if}

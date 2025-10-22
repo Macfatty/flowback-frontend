@@ -16,38 +16,36 @@
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { posts } from './stores';
 	import ThreadThumbnail from '$lib/Thread/ThreadThumbnail.svelte';
+	import { lazyLoading } from '$lib/Generic/GenericFunctions';
+	import { fetchRequest } from '$lib/FetchRequest';
 
 	// Props
-	export let Class = '';
-	export let infoToGet: 'group' | 'home' | 'public' | 'delegate' | 'user';
-	export let delegate: DelegateMinimal = {
-		id: 0,
-		pool_id: 0,
-		profile_image: '',
-		tags: [],
-		username: ''
-	};
+	export let Class = '',
+		infoToGet: 'group' | 'home' | 'public' | 'delegate' | 'user',
+		delegate: DelegateMinimal = {
+			id: 0,
+			pool_id: 0,
+			profile_image: '',
+			tags: [],
+			username: ''
+		};
 
-	// State
-	let polls: poll[] = [];
-	let threads: Thread[] = [];
-	let workGroups: WorkGroup[] = [];
-	let loading = false;
-	let next = '';
-	let prev = '';
-	let errorHandler: any;
-
-	let filter: Filter = {
-		search: '',
-		finishedSelection: 'all',
-		public: false,
-		order_by: 'start_date_desc',
-		tag: null,
-		workgroup: null
-	};
-
-	let showThreads = true;
-	let showPolls = true;
+	let polls: poll[] = [],
+		threads: Thread[] = [],
+		workGroups: WorkGroup[] = [],
+		loading = false,
+		next: null | undefined | string,
+		prev = '',
+		filter: Filter = {
+			search: '',
+			finishedSelection: 'all',
+			public: false,
+			order_by: 'start_date_desc',
+			tag: null,
+			workgroup: null
+		},
+		showThreads = true,
+		showPolls = true;
 
 	// Local sorting as fallback since server sorting isn't working correctly
 	$: {
@@ -67,33 +65,40 @@
 	}
 
 	async function fetchPolls() {
-		try {
+		const params = {
+			order_by: filter.order_by ? `pinned,${filter.order_by}` : 'pinned',
+			limit: pollThumbnailsLimit,
+			title__icontains: filter.search || undefined,
+			tag_id: filter.tag || undefined,
+			group_ids: infoToGet === 'group' ? $page.params.groupId : undefined,
+			work_group_ids: filter.workgroup,
+			public: infoToGet === 'public' ? true : undefined,
+			...(filter.finishedSelection !== 'all' && {
+				[`end_date${filter.finishedSelection === 'finished' ? '__lt' : '__gt'}`]:
+					new Date().toISOString()
+			})
+		};
+
+		if (next === undefined) {
 			loading = true;
-			$posts = [];
-
-			const params = {
-				order_by: filter.order_by ? `pinned,${filter.order_by}` : 'pinned',
-				limit: pollThumbnailsLimit,
-				title__icontains: filter.search || undefined,
-				tag_id: filter.tag || undefined,
-				group_ids: infoToGet === 'group' ? $page.params.groupId : undefined,
-				work_group_ids: filter.workgroup,
-				public: infoToGet === 'public' ? true : undefined,
-				...(filter.finishedSelection !== 'all' && {
-					[`end_date${filter.finishedSelection === 'finished' ? '__lt' : '__gt'}`]:
-						new Date().toISOString()
-				})
-			};
-
 			const response = await PollsApi.getPosts(infoToGet, params, delegate.pool_id);
+
+			// ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
 			$posts = response.results;
 			next = response.next ?? '';
 			prev = response.previous ?? '';
-		} catch (error) {
-			ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
-		} finally {
-			loading = false;
+		} else if (next === null) return;
+		else {
+			loading = true;
+			const { res, json } = await fetchRequest('GET', next);
+			if (!res.ok) {
+				ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
+			}
+			$posts = [...$posts, ...json.results];
+			next = json.next;
 		}
+
+		loading = false;
 	}
 
 	async function fetchRelatedContent() {
@@ -155,6 +160,8 @@
 	});
 </script>
 
+<svelte:body onscroll={() => lazyLoading(fetchPolls)} />
+
 <div class={`${Class} dark:text-darkmodeText`}>
 	<Loader bind:loading>
 		<div class={`flex flex-col gap-6 w-full`} id="thumbnails">
@@ -189,13 +196,11 @@
 				</div>
 			{/if}
 		</div>
-		<Pagination
+		<!-- <Pagination
 			bind:next
 			bind:prev
 			bind:iterable={$posts}
 			Class={'flex gap-2 justify-around w-full mt-6'}
-		/>
+		/> -->
 	</Loader>
 </div>
-
- 

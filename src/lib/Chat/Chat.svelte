@@ -18,7 +18,7 @@
 	let chatOpen = false,
 		selectedPage: 'direct' | 'group' = 'direct',
 		selectedChat: number | null,
-		previewDirect: PreviewMessage[] = [],
+		previews: PreviewMessage[] = [],
 		isLookingAtOlderMessages = false,
 		chatDiv: HTMLDivElement,
 		selectedChatChannelId: number | null,
@@ -30,7 +30,7 @@
 		const { res, json } = await fetchRequest('GET', `chat/message/channel/preview/list`);
 		if (!res.ok) return [];
 
-		previewDirect = json?.results;
+		previews = json?.results;
 	};
 
 	// Adjust chat window margin dynamically
@@ -44,11 +44,11 @@
 		if (!chatterId) return;
 
 		// Clear notification for messages
-		let message = previewDirect.find((message) => message.channel_id === chatterId);
+		let message = previews.find((message) => message.channel_id === chatterId);
 		if (message) {
 			message.timestamp = new Date().toString();
 			message.notified = false;
-			previewDirect = [...previewDirect];
+			// previews = [...previews];
 		}
 	};
 
@@ -67,7 +67,7 @@
 	});
 
 	// Reactive variables to track unread messages
-	$: displayNotification = previewDirect.some((p) => p.notified);
+	$: displayNotification = previews.some((p) => p.notified);
 
 	//Handles the chatOpen=true in the URL for correct "going back in history" behaviour
 	$: (() => {
@@ -82,9 +82,9 @@
 		chatOpen &&
 		selectedChat === null &&
 		selectedChatChannelId === null &&
-		previewDirect.length > 0
+		previews.length > 0
 	) {
-		const firstDirectChat = previewDirect[0];
+		const firstDirectChat = previews[0];
 		selectedChat = firstDirectChat.channel_id || null;
 		// selectedChatChannelId = firstDirectChat.channel_id || null;
 		chatPartnerStore.set(firstDirectChat.channel_id || -1);
@@ -137,7 +137,7 @@
 			{#key creatingGroup}
 				<Preview
 					bind:selectedChat
-					bind:previewDirect
+					bind:previews
 					bind:selectedChatChannelId
 					bind:creatingGroup
 					bind:groupMembers
@@ -152,7 +152,7 @@
 					bind:selectedChat
 					bind:selectedChatChannelId
 					bind:selectedPage
-					bind:previewDirect
+					bind:previewDirect={previews}
 					bind:isLookingAtOlderMessages
 				/>
 			{/if}

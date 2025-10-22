@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { type GroupMembers, type invite, type PreviewMessage } from './interfaces';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import type { Group } from '$lib/Group/interface';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { onMount } from 'svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
@@ -11,7 +10,7 @@
 	import { idfy } from '$lib/Generic/GenericFunctions2';
 	import UserSearch from '$lib/Generic/UserSearch.svelte';
 	import Fa from 'svelte-fa';
-	import { faEnvelope, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 	let chatSearch = '',
 		openUserSearch = false;
@@ -19,38 +18,22 @@
 	export let selectedChat: number | null,
 		selectedChatChannelId: number | null,
 		creatingGroup: boolean,
-		previewDirect: PreviewMessage[] = [],
+		previews: PreviewMessage[] = [],
 		inviteList: invite[] = [],
 		groupMembers: GroupMembers[] = [];
 
 	// Handle chat selection and clear notifications
 	const clickedChatter = async (chatterId: any) => {
-		let message = previewDirect.find((message) => message.channel_id === chatterId);
+		let message = previews.find((message) => message.channel_id === chatterId);
 		if (message) {
 			message.timestamp = new Date().toString();
 			message.notified = false;
-			previewDirect = previewDirect;
 		}
+		previews = previews
 
 		selectedChat = chatterId;
 		chatPartnerStore.set(chatterId);
 		selectedChatChannelId = chatterId;
-	};
-
-	// Sort chats by notification status
-	const sort = (chatter: Group[] | any[], preview: PreviewMessage[]) => {
-		return chatter.sort((a, b) => {
-			let notifiedMsgA = preview.find(
-				(notified) => notified.channel_id === (a.chat_id || a.channel_id)
-			);
-			let notifiedMsgB = preview.find(
-				(notified) => notified.channel_id === (b.chat_id || b.channel_id)
-			);
-			let notifiedA = notifiedMsgA?.notified || false;
-			let notifiedB = notifiedMsgB?.notified || false;
-			if (notifiedA === notifiedB) return 0;
-			return notifiedA ? -1 : 1;
-		});
 	};
 
 	// Fetch chat invites
@@ -83,6 +66,12 @@
 		// }
 	};
 
+	const getPreview = async () => {
+		const { res, json } = await fetchRequest('GET', `chat/message/channel/preview/list`);
+		if (!res.ok) return [];
+
+		previews = json?.results;
+	};
 	onMount(async () => {
 		await UserChatInviteList();
 
@@ -96,6 +85,24 @@
 	});
 
 	$: if (selectedChatChannelId) updateChatTitle();
+
+	$: if (previews) {
+		let previewsNotified = previews.filter((preview) => preview.notified);
+		let previewsNotNotified = previews.filter((preview) => !preview.notified);
+
+		previewsNotNotified = previewsNotNotified.sort(
+			(preview1, preview2) =>
+				new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
+		);
+
+		previewsNotified = previewsNotified.sort(
+			(preview1, preview2) =>
+				new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
+		);
+
+		previews = [...previewsNotified, ...previewsNotNotified];
+		previews = previews;
+	}
 </script>
 
 <div class="max-h-[100%] pb-2">
@@ -127,6 +134,7 @@
 						chatOpenStore.set(true);
 						chatPartnerStore.set(await getUserChannelId(item.id));
 						openUserSearch = false;
+						getPreview();
 					}}
 				>
 					<Fa icon={faPaperPlane} rotate="60" />
@@ -167,8 +175,8 @@
 			{/if}
 		{/each}
 	{/if}
-	{#each previewDirect as chatter}
-		{#if chatter.channel_title?.includes(chatSearch)  && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)}
+	{#each previews as chatter}
+		{#if chatter.channel_title?.includes(chatSearch) && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)}
 			<button
 				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
 				class:bg-gray-200={selectedChat === chatter.channel_id}
@@ -176,7 +184,7 @@
 				on:click={() => clickedChatter(chatter.channel_id)}
 			>
 				{#if chatter?.notified}
-					<div class="p-1 rounded-full bg-purple-300" />
+					<div class="p-1 rounded-full bg-purple-300"></div>
 				{/if}
 
 				<ProfilePicture profilePicture={chatter?.profile_image} />
@@ -197,7 +205,7 @@
 							if (groupMembers.some((member) => member.id === chatter.id)) {
 								return;
 							}
-							
+
 							const newMember = {
 								id: chatter.user.id,
 								username: chatter.user.username ?? 'Unknown',

@@ -21,6 +21,7 @@ export const getUserChannelId = async (userId: number) => {
     return json.id;
 };
 
+// Store that holds whether the chat is open or closed
 export const chatOpenStore = writable(false);
 
 // Store to hold the chat_id or message_id of the chatter being talked to.

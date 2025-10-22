@@ -4,13 +4,13 @@
 	import Layout from '$lib/Generic/Layout.svelte';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
-	import { homePolls as homePollsLimit } from '$lib/Generic/APILimits.json';
 	import { becomeMemberOfGroup } from '$lib/Blockchain_v1_Ethereum/javascript/rightToVote';
 	import { env } from '$env/dynamic/public';
 	import { goto } from '$app/navigation';
 	import PollThreadThumbnails from '$lib/Poll/PollThreadThumbnails.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { idfy } from '$lib/Generic/GenericFunctions2';
+	import { lazyLoading } from '$lib/Generic/GenericFunctions';
 
 	interface Invitation {
 		external: boolean;
@@ -27,8 +27,6 @@
 		if (env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') goto('groups/1');
 
 		getInvitations();
-		getPolls();
-		getHome();
 	});
 
 	const getInvitations = async () => {
@@ -62,13 +60,6 @@
 	
 	};
 
-	const getPolls = async () => {
-		const { res, json } = await fetchRequest('GET', `home/polls?limit=${homePollsLimit}`);
-	};
-
-	const getHome = async () => {
-		const { res, json } = await fetchRequest('GET', `user/home`);
-	};
 </script>
 
 <!-- Displays all the invites a user has (which for now is on the home page) -->
