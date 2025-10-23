@@ -182,6 +182,9 @@
 		await saveDelegation();
 		await getDelegateRelations();
 	};
+
+	$: console.log(delegationTagsStructure, delegateRelations);
+	
 </script>
 
 <div>
