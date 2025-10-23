@@ -16,7 +16,6 @@
 	let tags: Tag[] = [],
 		expandedSection: any = null,
 		delegateRelations: DelegateRelation[] = [];
-	// delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
 
 	onMount(async () => {
 		groupDelegationSetup();
@@ -76,12 +75,9 @@
 	};
 
 	const saveDelegation = async (delegate: number, tag: number) => {
-		console.log(delegate, tag, delegateRelations, delegates);
-
 		const relation: DelegateRelation | undefined = delegateRelations.find(
 			(relation) => relation.delegate_pool_id === delegate
 		);
-		console.log(relation, 'RELATION');
 
 		if (relation === undefined) return;
 
@@ -99,11 +95,7 @@
 		ErrorHandlerStore.set({ message: 'Successfully saved delegation', success: true });
 	};
 
-	const clearChoice = async (tag: Tag) => {
-		
-	};
-
-	// $: console.log(delegationTagsStructure, delegateRelations, delegates);
+	const clearChoice = async (tag: Tag) => {};
 </script>
 
 <div>
@@ -134,8 +126,7 @@
 									profilePicture={delegate.user.profile_image}
 									href={`/user?id=${delegate.user.id}&delegate_id=${delegate.id}&group_id=${group.id}&is_admin=${delegate.is_admin}`}
 								/>
-								<!-- {delegate.user.username}
-								{delegate.delegates[0]} -->
+
 								<span>
 									<input
 										disabled={delegate.user.id === ($userStore?.id || -1)}
