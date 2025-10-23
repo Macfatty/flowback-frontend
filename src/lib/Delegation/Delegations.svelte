@@ -40,8 +40,8 @@
 			relation.tags.find((_tag) => _tag.id === tag.id)
 		)?.delegate_pool_id;
 
-		if (oldRelation) await saveDelegation(oldRelation, tag.id, 'remove');
-		await saveDelegation(delegate.pool_id, tag.id, 'add', false);
+		if (oldRelation) await saveDelegation(oldRelation, tag.id, 'remove', false);
+		await saveDelegation(delegate.pool_id, tag.id);
 
 		// Refresh relations to ensure consistency with backend
 		await getDelegateRelations();
@@ -114,8 +114,6 @@
 		if (successMessage)
 			ErrorHandlerStore.set({ message: 'Successfully saved delegation', success: true });
 	};
-
-	
 </script>
 
 <div>
