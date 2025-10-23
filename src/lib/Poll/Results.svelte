@@ -84,13 +84,17 @@
 	>
 
 	{#if pollType === 4}
+
+	<!-- Conditional is split up to let poll status 0 both display text and list of proposals -->
 		{#if poll?.status === 2}
 			{$_('Calculating results...')}
 		{:else if poll?.status === 0}
 			{$_('No proposals got any votes')}
 		{:else if poll?.status === -1}
 			{$_('Vote calculation failed')}
-		{:else if poll?.status === 1}
+		{/if}
+
+		{#if poll?.status === 1 || poll?.status === 0}
 			<!-- If the winner has atleast one point, display statistics (otherwise it looks empty) -->
 			{#if proposals[0]?.score > 0}
 				<Statistics bind:votes bind:labels />

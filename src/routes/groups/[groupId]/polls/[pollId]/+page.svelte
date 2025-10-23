@@ -350,12 +350,11 @@
 			{:else if phase === 'result' || phase === 'prediction_vote'}
 				<Structure bind:phase bind:poll bind:resetScroll>
 					<div slot="left" class="h-full overflow-y-auto">
-						{#if proposals}
-							{proposals[0]?.score}
-							<PredictionStatements bind:selectedProposal bind:phase bind:poll />
-						{/if}
+						<PredictionStatements bind:selectedProposal bind:phase bind:poll />
 					</div>
-					<div slot="right"><Results bind:selectedProposal bind:poll {getPollData} {pollType} /></div>
+					<div slot="right">
+						<Results bind:selectedProposal bind:poll {getPollData} {pollType} />
+					</div>
 					<div slot="bottom">
 						<Comments bind:proposals api={'poll'} />
 					</div>

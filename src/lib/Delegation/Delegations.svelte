@@ -6,7 +6,6 @@
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import Fa from 'svelte-fa';
-	import { tick } from 'svelte';
 	import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 	import { _ } from 'svelte-i18n';
 	import { userStore } from '$lib/User/interfaces';
@@ -16,7 +15,6 @@
 
 	let tags: Tag[] = [],
 		expandedSection: any = null,
-		previousExpandedSection: any = null,
 		delegateRelations: DelegateRelation[] = [],
 		delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
 
@@ -28,29 +26,24 @@
 		initialSetup();
 	}
 
-	$: if (expandedSection !== previousExpandedSection) {
-		reinitializeRadioState();
-		previousExpandedSection = expandedSection;
-	}
-
-	const setupDelegationTagStructure = () => {
-		delegationTagsStructure = delegateRelations.map(({ tags, delegate_pool_id }) => ({
-			delegate_pool_id,
-			tags: tags.map(({ id }) => id)
-		}));
+	const initialSetup = async () => {
+		await getGroupTags();
+		await getDelegatePools();
+		await getDelegateRelations();
+		setupDelegationTagStructure();
 	};
 
 	const getGroupTags = async () => {
+		// TODO: What happends when limit has been reached?
+		// Potential fix here and at other places: Max number of tags per group?
 		const { res, json } = await fetchRequest('GET', `group/${group.id}/tags?limit=1000`);
-
-		tags = json?.results;
-
 		if (!res.ok) return;
+		tags = json?.results;
 	};
 
 	/*
 		Temporary fix to make each delegate pool be associated with one user.
-		TODO: Implement delegate pool feature in the front end (Figma design first)
+		TODO: Remove pools in the backend
 	*/
 	const getDelegatePools = async () => {
 		const { json, res } = await fetchRequest('GET', `group/${group.id}/delegate/pools?limit=1000`);
@@ -61,29 +54,24 @@
 		});
 	};
 
-	const toggleSection = (index: any) => {
-		expandedSection = expandedSection === index ? null : index;
-	};
-
-	const reinitializeRadioState = async () => {
-		await tick(); // Ensure DOM is updated
-		delegates = [...delegates]; // Trigger reactivity
-	};
-
 	const getDelegateRelations = async () => {
 		const { json, res } = await fetchRequest('GET', `group/${group.id}/delegates?limit=1000`);
 
-		// Determines whether to show the "remove as delegate" or "add as delegate" buttons, depending on if user already has delegated or not earlier.
-		json?.results.forEach((relation: any) => {
-			delegates.map((delegate) => {
-				if (delegate.pool_id === relation.delegate_pool_id) delegate.isInRelation = true;
-				return delegate;
-			});
-		});
+		if (!res.ok) return;
+
 		delegateRelations = json?.results;
-		if (res.ok) {
-			setupDelegationTagStructure();
-		}
+		setupDelegationTagStructure();
+	};
+
+	const setupDelegationTagStructure = () => {
+		delegationTagsStructure = delegateRelations.map(({ tags, delegate_pool_id }) => ({
+			delegate_pool_id,
+			tags: tags.map(({ id }) => id)
+		}));
+	};
+
+	const toggleSection = (index: any) => {
+		expandedSection = expandedSection === index ? null : index;
 	};
 
 	const changeDelegation = async (delegate: Delegate, tag: Tag) => {
@@ -137,10 +125,7 @@
 			delegate_pool_id
 		});
 
-		if (!res.ok) {
-			// ErrorHandlerStore.set({ message: 'Failed to create delegation', success: false });
-			return;
-		}
+		if (!res.ok) return;
 
 		delegates[delegates.findIndex((d) => d.pool_id === delegate_pool_id)].isInRelation = true;
 
@@ -152,12 +137,7 @@
 			];
 			setupDelegationTagStructure();
 		}
-
-		// Trigger UI update
-		reinitializeRadioState();
 	};
-
-	const updateDelegationTagsStructure = () => setupDelegationTagStructure();
 
 	const saveDelegation = async () => {
 		const toSendDelegates = delegateRelations.map(({ tags, delegate_pool_id }) => ({
@@ -198,13 +178,6 @@
 		delegateRelations = [...delegateRelations];
 		await saveDelegation();
 	};
-
-	const initialSetup = async () => {
-		await getGroupTags();
-		await getDelegatePools();
-		await getDelegateRelations();
-		setupDelegationTagStructure();
-	};
 </script>
 
 <div>
@@ -243,8 +216,7 @@
 										on:input={() => {
 											changeDelegation(delegate, tag);
 											setTimeout(() => {
-												updateDelegationTagsStructure();
-												reinitializeRadioState();
+												setupDelegationTagStructure();
 											}, 1000);
 										}}
 										type="radio"
