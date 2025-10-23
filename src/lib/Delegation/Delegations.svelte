@@ -16,7 +16,7 @@
 	let tags: Tag[] = [],
 		expandedSection: any = null,
 		delegateRelations: DelegateRelation[] = [];
-		// delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
+	// delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
 
 	onMount(async () => {
 		groupDelegationSetup();
@@ -83,19 +83,26 @@
 		// delegates[delegates.findIndex((d) => d.pool_id === delegate_pool_id)].isInRelation = true;
 	};
 
-	const saveDelegation = async (delegate:number, tag:number) => {
+	const saveDelegation = async (delegate: number, tag: number) => {
 		// const toSendDelegates = delegateRelations.map(({ tags, delegate_pool_id }) => ({
 		// 	delegate_pool_id,
 		// 	tags: tags.map(({ id }) => id)
 		// }))[0];
 		console.log(delegate, tag, delegateRelations, delegates);
-		
 
-		const { res } = await fetchRequest(
-			'POST',
-			`group/${group.id}/delegate/update`,
-			delegateRelations.find(relation => relation.delegate_pool_id === delegate)
+		const relation: DelegateRelation | undefined = delegateRelations.find(
+			(relation) => relation.delegate_pool_id === delegate
 		);
+		console.log(relation, "RELATION");
+		
+		if (relation === undefined) return;
+
+		const payload = {
+			delegate_pool_id: relation.delegate_pool_id,
+			tags: [...relation.tags.map((tag) => tag.id), tag]
+		};
+
+		const { res } = await fetchRequest('POST', `group/${group.id}/delegate/update`, payload);
 
 		if (!res.ok) {
 			ErrorHandlerStore.set({ message: 'Failed to save new delegation', success: false });
