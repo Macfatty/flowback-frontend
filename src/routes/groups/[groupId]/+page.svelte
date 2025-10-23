@@ -107,7 +107,7 @@
 						/>
 					{:else if selectedPage === 'members'}
 						<Members />
-					{:else if selectedPage === 'documents'}
+					<!-- {:else if selectedPage === 'documents'} -->
 						<!-- <Documents /> -->
 					{:else if selectedPage === 'statistics'}
 						<Statistics {memberCount} />
