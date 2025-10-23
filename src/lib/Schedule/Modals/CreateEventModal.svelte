@@ -16,7 +16,7 @@
 
 	// Members list and selections
 	let selectedMembers: number[] = [],
-	startDateDiv;
+		startDateDiv: HTMLDivElement;
 
 	const dispatch = createEventDispatcher();
 
@@ -69,7 +69,6 @@
 						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 						value={selectedEvent.start_date}
 						required
-						bind:this={startDateDiv}
 						on:input={(e) => {
 							//@ts-ignore
 							let date: string = e.target.value;
@@ -77,8 +76,8 @@
 							// Start date needs to be before end date to be valid
 							if (new Date(date) < new Date(selectedEvent.end_date))
 								selectedEvent.start_date = date;
-							else 
-								startDateDiv.value = selectedEvent.start_date
+							//@ts-ignore
+							else e.target.value = selectedEvent.start_date;
 						}}
 					/>
 				</div>
@@ -89,9 +88,19 @@
 					<input
 						id="end_date"
 						type="datetime-local"
-						bind:value={selectedEvent.end_date}
+						value={selectedEvent.end_date}
 						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 						required
+						on:input={(e) => {
+							//@ts-ignore
+							let date: string = e.target.value;
+
+							// End date needs to be after start date to be valid
+							if (new Date(date) >= new Date(selectedEvent.start_date))
+								selectedEvent.end_date = date;
+							//@ts-ignore
+							else e.target.value = selectedEvent.end_date;
+						}}
 					/>
 				</div>
 				<div class="mb-4">
