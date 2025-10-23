@@ -41,7 +41,7 @@
 		)?.delegate_pool_id;
 
 		if (oldRelation) await saveDelegation(oldRelation, tag.id, 'remove');
-		await saveDelegation(delegate.pool_id, tag.id);
+		await saveDelegation(delegate.pool_id, tag.id, 'add', false);
 
 		// Refresh relations to ensure consistency with backend
 		await getDelegateRelations();
@@ -84,7 +84,8 @@
 	const saveDelegation = async (
 		delegate: number,
 		tag: number,
-		action: 'add' | 'remove' = 'add'
+		action: 'add' | 'remove' = 'add',
+		successMessage = true
 	) => {
 		let relation: DelegateRelation | undefined = delegateRelations.find(
 			(relation) => relation.delegate_pool_id === delegate
@@ -108,14 +109,10 @@
 			return;
 		}
 
-		if (action === 'remove') {
-			const relationToRemoveTagAt = relation.tags.find((_tag) => _tag.id === tag);
-			if (relationToRemoveTagAt) relation.tags = relation.tags.filter((_tag) => _tag.id === tag);
-			relation = relation;
-			delegateRelations = delegateRelations;
-		}
-
-		ErrorHandlerStore.set({ message: 'Successfully saved delegation', success: true });
+		// Because of scuffness in the code, saveDelegation is called twice, once to remove an earlier delegation and once more to add the new one.
+		// As such, two messages appear if we don't do this.
+		if (successMessage)
+			ErrorHandlerStore.set({ message: 'Successfully saved delegation', success: true });
 	};
 </script>
 
@@ -152,6 +149,7 @@
 									<input
 										disabled={delegate.user.id === ($userStore?.id || -1)}
 										on:input={() => {
+											createDelegateRelation(delegate.pool_id);
 											updateDelgation(delegate, tag);
 										}}
 										type="radio"
@@ -171,8 +169,10 @@
 								relation.tags.find((_tag) => _tag.id === tag.id)
 							);
 
-							if (delegateRelationToRemove)
+							if (delegateRelationToRemove) {
 								saveDelegation(delegateRelationToRemove.delegate_pool_id, tag.id, 'remove');
+								groupDelegationSetup();
+							}
 						}}>{$_('Clear Choice')}</button
 					>
 				{:else}
