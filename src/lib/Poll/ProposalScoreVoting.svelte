@@ -211,7 +211,7 @@
 								{@const score = getScore(proposal)}
 								{@const disabled =
 									(phase === 'delegate_vote' && $groupUserStore?.delegate_pool_id === null) ||
-									(phase === 'vote' && !$groupUserPermissionStore?.allow_vote)}}
+									(phase === 'vote' && !$groupUserPermissionStore?.allow_vote)}
 
 								{#key voting || delegateVoting}
 									<VotingSlider
