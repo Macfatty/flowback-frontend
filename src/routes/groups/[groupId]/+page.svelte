@@ -4,7 +4,6 @@
 	import { type GroupDetails, type SelectablePage } from '$lib/Group/interface';
 	import GroupSidebar from '$lib/Group/GroupSidebar.svelte';
 	import Layout from '$lib/Generic/Layout.svelte';
-	import Documents from '$lib/Group/Documents/Documents.svelte';
 	import About from '$lib/Group/About.svelte';
 	import SendEmail from '$lib/Group/SendEmail.svelte';
 	import Statistics from '$lib/Group/Statistics.svelte';
@@ -109,7 +108,7 @@
 					{:else if selectedPage === 'members'}
 						<Members />
 					{:else if selectedPage === 'documents'}
-						<Documents />
+						<!-- <Documents /> -->
 					{:else if selectedPage === 'statistics'}
 						<Statistics {memberCount} />
 					{:else if selectedPage === 'email'}
