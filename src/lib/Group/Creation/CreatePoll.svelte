@@ -204,7 +204,6 @@
 			selectedPage === 'poll' ? createPoll() : createThread();
 		}
 	};
-
 	onDestroy(() => {
 		//	TODO: Fix issue where reloading leads to 404 page
 		// 	document.removeEventListener('keydown', handleKeyDown);

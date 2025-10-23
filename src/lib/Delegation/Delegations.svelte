@@ -9,6 +9,7 @@
 	import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 	import { _ } from 'svelte-i18n';
 	import { userStore } from '$lib/User/interfaces';
+	import { delegate } from '$lib/Blockchain_v1_Ethereum/javascript/delegationsBlockchain';
 
 	export let group: Group,
 		delegates: Delegate[] = [];
@@ -35,6 +36,12 @@
 		// await changeDelegation(delegate, tag);
 
 		await createDelegateRelation(delegate.pool_id);
+		// The old relation one might want to be changing who one is delegating to within a tag
+		const oldRelation = delegateRelations.find((relation) =>
+			relation.tags.find((_tag) => _tag.id === tag.id)
+		)?.delegate_pool_id;
+
+		if (oldRelation) await saveDelegation(oldRelation, tag.id, 'remove');
 		await saveDelegation(delegate.pool_id, tag.id);
 
 		// Refresh relations to ensure consistency with backend
@@ -74,7 +81,11 @@
 		});
 	};
 
-	const saveDelegation = async (delegate: number, tag: number) => {
+	const saveDelegation = async (
+		delegate: number,
+		tag: number,
+		action: 'add' | 'remove' = 'add'
+	) => {
 		const relation: DelegateRelation | undefined = delegateRelations.find(
 			(relation) => relation.delegate_pool_id === delegate
 		);
@@ -83,7 +94,11 @@
 
 		const payload = {
 			delegate_pool_id: relation.delegate_pool_id,
-			tags: [...relation.tags.map((tag) => tag.id), tag]
+			tags:
+				action === 'add'
+					? [...relation.tags.map((tag) => tag.id), tag]
+					: // If remove, filter it away
+						[...relation.tags.filter((_tag) => _tag.id !== tag).map((_tag) => _tag.id)]
 		};
 
 		const { res } = await fetchRequest('POST', `group/${group.id}/delegate/update`, payload);
@@ -143,8 +158,16 @@
 							</div>
 						{/each}
 					</div>
-					<button class="text-red-700 hover:underline" on:click={() => clearChoice(tag)}
-						>{$_('Clear Choice')}</button
+					<button
+						class="text-red-700 hover:underline"
+						on:click={() => {
+							const delegateRelationToRemove = delegateRelations.find((relation) =>
+								relation.tags.find((_tag) => _tag.id === tag.id)
+							);
+
+							if (delegateRelationToRemove)
+								saveDelegation(delegateRelationToRemove.delegate_pool_id, tag.id, 'remove');
+						}}>{$_('Clear Choice')}</button
 					>
 				{:else}
 					<!-- <div class="voter-list">Inga rekommenderade väljare.</div> -->
