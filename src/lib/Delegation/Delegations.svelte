@@ -10,7 +10,6 @@
 	import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 	import { _ } from 'svelte-i18n';
 	import { userStore } from '$lib/User/interfaces';
-	import { delegate } from '$lib/Blockchain_v1_Ethereum/javascript/delegationsBlockchain';
 
 	export let group: Group,
 		delegates: Delegate[] = [];
