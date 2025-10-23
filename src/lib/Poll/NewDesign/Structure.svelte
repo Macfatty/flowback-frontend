@@ -9,10 +9,10 @@
 
 	// 'bg-white h-[490px] max-h-[490px] dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
 	let genericStyle = 'h-full bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
-		test: HTMLDivElement | null = null;
+		right: HTMLDivElement | null = null;
 
 	$: if (resetScroll) {
-		test?.scrollTo(0, 0);
+		right?.scrollTo(0, 0);
 		resetScroll = false;
 	}
 </script>
@@ -39,8 +39,8 @@
 	{/if}
 
 	{#if $$slots.right}
-		<div bind:this={test} class={`${genericStyle} overflow-auto `}>
-			<slot name="right" />
+		<div bind:this={right} class={`${genericStyle}  `}>
+			<slot name="right" class="h-full"/>
 		</div>
 	{/if}
 

@@ -156,9 +156,9 @@
 							}}>{$_('Add Proposal')}</Button
 						>
 					</div>
-					<div slot="right" class="relative h-full">
+					<div slot="right" class="relative h-full max-h-full overflow-y-auto">
 						{#if selectedProposal}
-							<div class="flex flex-col space-y-2 p-2">
+							<div class="flex flex-col p-2 ">
 								<span
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
 								>
@@ -169,14 +169,19 @@
 								</span>
 							</div>
 							{#if selectedProposal.attachments}
-								<div>
+								<div class="">
 									{#each selectedProposal.attachments as file}
 										<img alt="attachment" src={`${env.PUBLIC_API_URL}/media/${file.file}`} />
 									{/each}
 								</div>
 							{/if}
 						{:else if displayForm}
-							<ProposalSubmition {poll} bind:proposals bind:displayForm />
+							<ProposalSubmition
+								Class="max-h-full overflow-y-auto"
+								{poll}
+								bind:proposals
+								bind:displayForm
+							/>
 						{/if}
 					</div>
 					<div slot="bottom">
