@@ -19,16 +19,16 @@
 		delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
 
 	onMount(async () => {
-		initialSetup();
+		groupDelegationSetup();
 	});
 
 	$: if (group) {
-		initialSetup();
+		groupDelegationSetup();
 	}
 
-	const initialSetup = async () => {
+	const groupDelegationSetup = async () => {
 		await getGroupTags();
-		await getDelegatePools();
+		await getDelegates();
 		await getDelegateRelations();
 		setupDelegationTagStructure();
 	};
@@ -51,14 +51,13 @@
 		tags = json?.results;
 	};
 
-	/*
-		Temporary fix to make each delegate pool be associated with one user.
-		TODO: Remove pools in the backend
-	*/
-	const getDelegatePools = async () => {
+	
+	const getDelegates = async () => {
 		const { json, res } = await fetchRequest('GET', `group/${group.id}/delegate/pools?limit=1000`);
 		if (!res.ok) return;
 
+		// Temporary fix to make each delegate pool be associated with one user.
+		// TODO: Remove pools in the backend
 		delegates = json?.results.map((delegatePool: any) => {
 			return { ...delegatePool.delegates[0].group_user, pool_id: delegatePool.id };
 		});
@@ -85,16 +84,16 @@
 
 	const changeDelegation = async (delegate: Delegate, tag: Tag) => {
 		// Check if a relation exists for this delegate; if not, create one
-		let relation = delegateRelations.find((r) => r.delegate_pool_id === delegate.pool_id);
-		if (!relation) {
-			relation = {
-				delegate_pool_id: delegate.pool_id,
-				tags: [],
-				id: delegate.pool_id,
-				delegates: []
-			};
-			delegateRelations = [...delegateRelations, relation];
-		}
+		// let relation = delegateRelations.find((r) => r.delegate_pool_id === delegate.pool_id);
+		// if (!relation) {
+		// 	relation = {
+		// 		delegate_pool_id: delegate.pool_id,
+		// 		tags: [],
+		// 		id: delegate.pool_id,
+		// 		delegates: []
+		// 	};
+		// 	delegateRelations = [...delegateRelations, relation];
+		// }
 
 		// Update delegationTagsStructure
 		let tagStructure = delegationTagsStructure.find((r) => r.delegate_pool_id === delegate.pool_id);
@@ -108,22 +107,23 @@
 			const tagIndex = r.tags.findIndex((_tag) => _tag === tag.id);
 			if (tagIndex !== -1) r.tags.splice(tagIndex, 1);
 		});
-		delegateRelations.forEach((r) => {
-			const tagIndex = r.tags.findIndex((_tag) => _tag.id === tag.id);
-			if (tagIndex !== -1) r.tags.splice(tagIndex, 1);
-		});
+
+		// delegateRelations.forEach((r) => {
+		// 	const tagIndex = r.tags.findIndex((_tag) => _tag.id === tag.id);
+		// 	if (tagIndex !== -1) r.tags.splice(tagIndex, 1);
+		// });
 
 		// Add tag to the selected delegate's relation
 		if (!tagStructure.tags.includes(tag.id)) {
 			tagStructure.tags.push(tag.id);
 		}
-		if (!relation.tags.some((t) => t.id === tag.id)) {
-			relation.tags.push({ ...tag, active: true, name: tag.name });
-		}
+		// if (!relation.tags.some((t) => t.id === tag.id)) {
+		// 	relation.tags.push({ ...tag, active: true, name: tag.name });
+		// }
 
 		// Update state
 		delegationTagsStructure = [...delegationTagsStructure];
-		delegateRelations = [...delegateRelations];
+		// delegateRelations = [...delegateRelations];
 	};
 
 	const createDelegateRelation = async (delegate_pool_id: number) => {
@@ -131,18 +131,18 @@
 			delegate_pool_id
 		});
 
-		if (!res.ok) return;
+		// if (!res.ok) return;
 
 		delegates[delegates.findIndex((d) => d.pool_id === delegate_pool_id)].isInRelation = true;
 
 		// Ensure a relation exists in delegateRelations
-		if (!delegateRelations.some((r) => r.delegate_pool_id === delegate_pool_id)) {
-			delegateRelations = [
-				...delegateRelations,
-				{ delegate_pool_id, tags: [], id: delegate_pool_id, delegates: [] }
-			];
+		// if (!delegateRelations.some((r) => r.delegate_pool_id === delegate_pool_id)) {
+		// 	delegateRelations = [
+		// 		...delegateRelations,
+		// 		{ delegate_pool_id, tags: [], id: delegate_pool_id, delegates: [] }
+		// 	];
 			setupDelegationTagStructure();
-		}
+		// }
 	};
 
 	const saveDelegation = async () => {
@@ -171,14 +171,14 @@
 			});
 		});
 
-		delegateRelations.forEach((delegate) => {
-			delegate.tags = delegate.tags?.filter((_tag) => {
-				return _tag.id !== tag.id;
-			});
-		});
+		// delegateRelations.forEach((delegate) => {
+		// 	delegate.tags = delegate.tags?.filter((_tag) => {
+		// 		return _tag.id !== tag.id;
+		// 	});
+		// });
 
 		delegationTagsStructure = [...delegationTagsStructure];
-		delegateRelations = [...delegateRelations];
+		// delegateRelations = [...delegateRelations];
 		await saveDelegation();
 		await getDelegateRelations();
 	};
