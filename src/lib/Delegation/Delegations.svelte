@@ -115,7 +115,6 @@
 			ErrorHandlerStore.set({ message: 'Successfully saved delegation', success: true });
 	};
 
-	$: console.log(delegationTagsStructure, delegateRelations);
 	
 </script>
 
