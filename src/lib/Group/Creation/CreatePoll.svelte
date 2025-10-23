@@ -206,7 +206,8 @@
 	};
 
 	onDestroy(() => {
-		document.removeEventListener('keydown', handleKeyDown);
+		//	TODO: Fix issue where reloading leads to 404 page
+		// 	document.removeEventListener('keydown', handleKeyDown);
 	});
 
 	onMount(async () => {
@@ -214,8 +215,6 @@
 		getGroupTags();
 		getWorkGroupList();
 	});
-
-	// $: if (selectedPage) ErrorHandlerStore.set(undefined;
 </script>
 
 <form
@@ -251,7 +250,6 @@
 			<TextArea label="Description" bind:value={description} inputClass="whitespace-pre-wrap" />
 			<FileUploads bind:files={images} disableCropping />
 
-			<!-- Time setup -->
 			{#if selectedPage === 'poll'}
 				<div class="rounded border border-gray-200 dark:border-gray-500 p-2">
 					<div class="flex justify-between">
@@ -264,12 +262,6 @@
 							max="1000"
 						/>
 					</div>
-
-					<!-- <Button
-						Class={`!bg-blue-600 mt-4 !block`}
-						action={() => (advancedTimeSettings = !advancedTimeSettings)}
-						buttonStyle="secondary">{$_('Advanced time settings')}</Button
-					> -->
 
 					<button
 						class="w-full flex justify-center items-center border-t-2"
@@ -314,7 +306,6 @@
 
 			{#if env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE'}
 				<RadioButtons bind:Yes={pushToBlockchain} label="Push to Blockchain?" />
-				<!-- <Button action={() => createPollBlockchain(Number($page.url.searchParams.get('id')), "title")}>Push to Blockchain?</Button> -->
 			{/if}
 
 			<Select

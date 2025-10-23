@@ -92,6 +92,9 @@
 			}
 		}
 	};
+
+	$: console.log(start_date);
+	
 </script>
 
 {#if advancedTimeSettings}
@@ -120,17 +123,38 @@
 				<div>
 					<h2 class="mt-4">{$_('Poll start')}</h2>
 
-					<!-- Selected Date: {start_date} -->
+					<input
+						id="start_date"
+						type="datetime-local"
+						min={new Date().toString()}
+						max={maxDatePickerYear.toString()}
+						value={start_date}
+						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+						required
+						on:input={(e) => {
+							//@ts-ignore
+							let date = new Date(e.target.value);
 
-					<DateInput
+							console.log(new Date(), start_date, date, new Date() <= date);
+							
+							// End date needs to be after start date to be valid
+							if (new Date() <= date) start_date = date;
+							//@ts-ignore
+							else e.target.value = start_date.toString();
+
+							console.log(start_date, date);
+							
+						}}
+					/>
+					<!-- <DateInput
 						format="yyyy-MM-dd HH:mm"
 						bind:value={start_date}
 						min={new Date()}
 						max={maxDatePickerYear}
-						/>
-					</div>
-					<!-- isDisabledDate={(dateToCheck: Date) => dateToCheck < new Date()} -->
-					<!-- closeOnSelection={false}
+					/> -->
+				</div>
+				<!-- isDisabledDate={(dateToCheck: Date) => dateToCheck < new Date()} -->
+				<!-- closeOnSelection={false}
 					browseWithoutSelecting={false} -->
 				{#if selected_poll !== 'Date Poll'}
 					<div>
