@@ -114,6 +114,8 @@
 		if (successMessage)
 			ErrorHandlerStore.set({ message: 'Successfully saved delegation', success: true });
 	};
+
+	
 </script>
 
 <div>
