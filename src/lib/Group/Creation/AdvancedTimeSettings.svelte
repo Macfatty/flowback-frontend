@@ -120,7 +120,7 @@
 				<div>
 					<h2 class="mt-4">{$_('Poll start')}</h2>
 
-					Selected Date: {start_date}
+					<!-- Selected Date: {start_date} -->
 
 					<DateInput
 						format="yyyy-MM-dd HH:mm"
