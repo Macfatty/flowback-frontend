@@ -67,34 +67,22 @@
 		if (!res.ok) return;
 
 		delegateRelations = json?.results;
-		// delegationTagsStructure = delegateRelations.map(({ tags, delegate_pool_id }) => ({
-		// 	delegate_pool_id,
-		// 	tags: tags.map(({ id }) => id)
-		// }));
 	};
 
 	const createDelegateRelation = async (delegate_pool_id: number) => {
 		const { json, res } = await fetchRequest('POST', `group/${group.id}/delegate/create`, {
 			delegate_pool_id
 		});
-
-		// if (!res.ok) return;
-
-		// delegates[delegates.findIndex((d) => d.pool_id === delegate_pool_id)].isInRelation = true;
 	};
 
 	const saveDelegation = async (delegate: number, tag: number) => {
-		// const toSendDelegates = delegateRelations.map(({ tags, delegate_pool_id }) => ({
-		// 	delegate_pool_id,
-		// 	tags: tags.map(({ id }) => id)
-		// }))[0];
 		console.log(delegate, tag, delegateRelations, delegates);
 
 		const relation: DelegateRelation | undefined = delegateRelations.find(
 			(relation) => relation.delegate_pool_id === delegate
 		);
-		console.log(relation, "RELATION");
-		
+		console.log(relation, 'RELATION');
+
 		if (relation === undefined) return;
 
 		const payload = {
@@ -112,22 +100,7 @@
 	};
 
 	const clearChoice = async (tag: Tag) => {
-		// delegationTagsStructure.forEach((delegate) => {
-		// 	delegate.tags = delegate.tags?.filter((_tag) => {
-		// 		return _tag !== tag.id;
-		// 	});
-		// });
-
-		// delegateRelations.forEach((delegate) => {
-		// 	delegate.tags = delegate.tags?.filter((_tag) => {
-		// 		return _tag.id !== tag.id;
-		// 	});
-		// });
-
-		// delegationTagsStructure = [...delegationTagsStructure];
-		// delegateRelations = [...delegateRelations];
-		// await saveDelegation(delegate.id);
-		await getDelegateRelations();
+		
 	};
 
 	// $: console.log(delegationTagsStructure, delegateRelations, delegates);
