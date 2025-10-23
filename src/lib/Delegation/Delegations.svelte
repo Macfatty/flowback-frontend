@@ -73,10 +73,6 @@
 		}));
 	};
 
-	const toggleSection = (index: any) => {
-		expandedSection = expandedSection === index ? null : index;
-	};
-
 	const createDelegateRelation = async (delegate_pool_id: number) => {
 		const { json, res } = await fetchRequest('POST', `group/${group.id}/delegate/create`, {
 			delegate_pool_id
@@ -126,7 +122,6 @@
 	};
 
 	$: console.log(delegationTagsStructure, delegateRelations);
-	
 </script>
 
 <div>
@@ -136,7 +131,7 @@
 				<button
 					type="button"
 					class="transition-all flex text-primary dark:text-secondary justify-between w-full section-title"
-					on:click={() => toggleSection(index)}
+					on:click={() => (expandedSection = expandedSection === index ? null : index)}
 				>
 					<span class="break-word text-left">{tag.name}</span>
 
