@@ -104,25 +104,27 @@
 	class={`h-full dark:border-gray-500 rounded p-2 ${Class}`}
 >
 	<Loader bind:loading>
-		<div class="flex flex-col space-y-2">
-			<span class="block text-left text-md text-primary dark:text-secondary font-semibold"
-				>{$_('Create a Proposal')}</span
-			>
-			<TextInput required label="Title" bind:value={title} />
-			<TextArea
-				Class="mt-4"
-				inputClass="whitespace-pre-wrap"
-				areaClass="max-h-[12rem] resize-y"
-				label="Description"
-				bind:value={description}
-			/>
+		<div class="max-h-[80%] overflow-y-auto">
+			<div class="flex flex-col space-y-2">
+				<span class="block text-left text-md text-primary dark:text-secondary font-semibold"
+					>{$_('Create a Proposal')}</span
+				>
+				<TextInput required label="Title" bind:value={title} />
+				<TextArea
+					Class="mt-4"
+					inputClass="whitespace-pre-wrap"
+					areaClass="max-h-[12rem] resize-y"
+					label="Description"
+					bind:value={description}
+				/>
+			</div>
+
+			{#if env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE'}
+				<RadioButtons bind:Yes={blockchain} label="Push to Blockchain" />
+			{/if}
+
+			<FileUploads Class="mt-4" bind:files={images} />
 		</div>
-
-		{#if env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE'}
-			<RadioButtons bind:Yes={blockchain} label="Push to Blockchain" />
-		{/if}
-
-		<FileUploads Class="mt-4" bind:files={images} />
 
 		<Button
 			buttonStyle="primary-light"
