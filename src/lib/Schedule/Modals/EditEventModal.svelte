@@ -15,7 +15,6 @@
 		showEvent = false,
 		events: scheduledEvent[] = [],
 		frequencyOptions: options[] = [],
-		 
 		reminderOptions: options[] = [];
 
 	// Members list and selections
@@ -111,9 +110,19 @@
 						<input
 							id="start_date"
 							type="datetime-local"
-							bind:value={editedEvent.start_date}
+							value={editedEvent.start_date}
 							class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 							required
+							on:input={(e) => {
+								//@ts-ignore
+								let date: string = e.target.value;
+
+								// End date needs to be after start date to be valid
+								if (new Date(date) < new Date(selectedEvent.end_date))
+									selectedEvent.start_date = date;
+								//@ts-ignore
+								else e.target.value = selectedEvent.start_date;
+							}}
 						/>
 					</div>
 					<div class="mb-4">
@@ -123,9 +132,19 @@
 						<input
 							id="end_date"
 							type="datetime-local"
-							bind:value={editedEvent.end_date}
+							value={editedEvent.end_date}
 							class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 							required
+							on:input={(e) => {
+								//@ts-ignore
+								let date: string = e.target.value;
+
+								// End date needs to be after start date to be valid
+								if (new Date(date) >= new Date(selectedEvent.start_date))
+									selectedEvent.end_date = date;
+								//@ts-ignore
+								else e.target.value = selectedEvent.end_date;
+							}}
 						/>
 					</div>
 					<div class="mb-4">
@@ -259,4 +278,3 @@
 		</Modal>
 	</form>
 {/if}
- 
