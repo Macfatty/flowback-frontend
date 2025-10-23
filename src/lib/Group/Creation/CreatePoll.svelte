@@ -204,7 +204,6 @@
 			selectedPage === 'poll' ? createPoll() : createThread();
 		}
 	};
-
 	onDestroy(() => {
 		document.removeEventListener('keydown', handleKeyDown);
 	});

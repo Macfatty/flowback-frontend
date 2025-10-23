@@ -65,7 +65,7 @@
 			{:else if selectedPage === 'ForgotPassword'}
 				<ForgotPassword bind:selectedPage bind:email />
 			{:else if selectedPage === 'NewPassword'}
-				<NewPassword bind:email />
+				<NewPassword  />
 			{/if}
 		</div>
 	</div>
