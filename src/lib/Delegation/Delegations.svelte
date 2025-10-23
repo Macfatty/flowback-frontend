@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { onMount } from 'svelte';
-	import type { Group, Tag } from '$lib/Group/interface';
+	import type { DelegateMinimal, Group, Tag } from '$lib/Group/interface';
 	import type { Delegate, DelegateRelation } from './interfaces';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
@@ -15,8 +15,8 @@
 
 	let tags: Tag[] = [],
 		expandedSection: any = null,
-		delegateRelations: DelegateRelation[] = [],
-		delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
+		delegateRelations: DelegateRelation[] = [];
+		// delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
 
 	onMount(async () => {
 		groupDelegationSetup();
@@ -36,7 +36,7 @@
 		// await changeDelegation(delegate, tag);
 
 		await createDelegateRelation(delegate.pool_id);
-		await saveDelegation();
+		await saveDelegation(delegate.pool_id, tag.id);
 
 		// Refresh relations to ensure consistency with backend
 		await getDelegateRelations();
@@ -67,10 +67,10 @@
 		if (!res.ok) return;
 
 		delegateRelations = json?.results;
-		delegationTagsStructure = delegateRelations.map(({ tags, delegate_pool_id }) => ({
-			delegate_pool_id,
-			tags: tags.map(({ id }) => id)
-		}));
+		// delegationTagsStructure = delegateRelations.map(({ tags, delegate_pool_id }) => ({
+		// 	delegate_pool_id,
+		// 	tags: tags.map(({ id }) => id)
+		// }));
 	};
 
 	const createDelegateRelation = async (delegate_pool_id: number) => {
@@ -80,19 +80,21 @@
 
 		// if (!res.ok) return;
 
-		delegates[delegates.findIndex((d) => d.pool_id === delegate_pool_id)].isInRelation = true;
+		// delegates[delegates.findIndex((d) => d.pool_id === delegate_pool_id)].isInRelation = true;
 	};
 
-	const saveDelegation = async () => {
-		const toSendDelegates = delegateRelations.map(({ tags, delegate_pool_id }) => ({
-			delegate_pool_id,
-			tags: tags.map(({ id }) => id)
-		}))[0];
+	const saveDelegation = async (delegate:number, tag:number) => {
+		// const toSendDelegates = delegateRelations.map(({ tags, delegate_pool_id }) => ({
+		// 	delegate_pool_id,
+		// 	tags: tags.map(({ id }) => id)
+		// }))[0];
+		console.log(delegate, tag, delegateRelations, delegates);
+		
 
 		const { res } = await fetchRequest(
 			'POST',
 			`group/${group.id}/delegate/update`,
-			toSendDelegates
+			delegateRelations.find(relation => relation.delegate_pool_id === delegate)
 		);
 
 		if (!res.ok) {
@@ -103,11 +105,11 @@
 	};
 
 	const clearChoice = async (tag: Tag) => {
-		delegationTagsStructure.forEach((delegate) => {
-			delegate.tags = delegate.tags?.filter((_tag) => {
-				return _tag !== tag.id;
-			});
-		});
+		// delegationTagsStructure.forEach((delegate) => {
+		// 	delegate.tags = delegate.tags?.filter((_tag) => {
+		// 		return _tag !== tag.id;
+		// 	});
+		// });
 
 		// delegateRelations.forEach((delegate) => {
 		// 	delegate.tags = delegate.tags?.filter((_tag) => {
@@ -115,13 +117,13 @@
 		// 	});
 		// });
 
-		delegationTagsStructure = [...delegationTagsStructure];
+		// delegationTagsStructure = [...delegationTagsStructure];
 		// delegateRelations = [...delegateRelations];
-		await saveDelegation();
+		// await saveDelegation(delegate.id);
 		await getDelegateRelations();
 	};
 
-	$: console.log(delegationTagsStructure, delegateRelations);
+	// $: console.log(delegationTagsStructure, delegateRelations, delegates);
 </script>
 
 <div>
@@ -162,9 +164,9 @@
 										}}
 										type="radio"
 										name={tag.name}
-										checked={delegationTagsStructure
+										checked={delegateRelations
 											.find((relation) => relation.delegate_pool_id === delegate.pool_id)
-											?.tags.find((_tag) => _tag === tag.id) !== undefined}
+											?.tags.find((_tag) => _tag.id === tag.id) !== undefined}
 									/>
 								</span>
 							</div>
