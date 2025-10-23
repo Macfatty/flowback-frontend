@@ -9,7 +9,6 @@
 	import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 	import { _ } from 'svelte-i18n';
 	import { userStore } from '$lib/User/interfaces';
-	import { delegate } from '$lib/Blockchain_v1_Ethereum/javascript/delegationsBlockchain';
 
 	export let group: Group,
 		delegates: Delegate[] = [];
@@ -81,12 +80,13 @@
 		});
 	};
 
+	// When a user clicks on a tag they want to delegate to, delegate to that tag
 	const saveDelegation = async (
 		delegate: number,
 		tag: number,
 		action: 'add' | 'remove' = 'add'
 	) => {
-		const relation: DelegateRelation | undefined = delegateRelations.find(
+		let relation: DelegateRelation | undefined = delegateRelations.find(
 			(relation) => relation.delegate_pool_id === delegate
 		);
 
@@ -107,10 +107,16 @@
 			ErrorHandlerStore.set({ message: 'Failed to save new delegation', success: false });
 			return;
 		}
+
+		if (action === 'remove') {
+			const relationToRemoveTagAt = relation.tags.find((_tag) => _tag.id === tag);
+			if (relationToRemoveTagAt) relation.tags = relation.tags.filter((_tag) => _tag.id === tag);
+			relation = relation;
+			delegateRelations = delegateRelations;
+		}
+
 		ErrorHandlerStore.set({ message: 'Successfully saved delegation', success: true });
 	};
-
-	const clearChoice = async (tag: Tag) => {};
 </script>
 
 <div>
