@@ -17,6 +17,7 @@
 	let tags: Tag[] = [],
 		expandedSection: any = null,
 		delegateRelations: DelegateRelation[] = [];
+		// delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
 
 	onMount(async () => {
 		groupDelegationSetup();
