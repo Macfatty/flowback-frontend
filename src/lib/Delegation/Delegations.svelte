@@ -33,6 +33,16 @@
 		setupDelegationTagStructure();
 	};
 
+	const updateDelgation = async (delegate: Delegate, tag: Tag) => {
+		await changeDelegation(delegate, tag);
+		await createDelegateRelation(delegate.pool_id);
+		await saveDelegation();
+
+		// Refresh relations to ensure consistency with backend
+		await getDelegateRelations();
+		setupDelegationTagStructure();
+	};
+
 	const getGroupTags = async () => {
 		// TODO: What happends when limit has been reached?
 		// Potential fix here and at other places: Max number of tags per group?
@@ -60,7 +70,6 @@
 		if (!res.ok) return;
 
 		delegateRelations = json?.results;
-		setupDelegationTagStructure();
 	};
 
 	const setupDelegationTagStructure = () => {
@@ -115,9 +124,6 @@
 		// Update state
 		delegationTagsStructure = [...delegationTagsStructure];
 		delegateRelations = [...delegateRelations];
-
-		await createDelegateRelation(delegate.pool_id);
-		await saveDelegation();
 	};
 
 	const createDelegateRelation = async (delegate_pool_id: number) => {
@@ -156,9 +162,6 @@
 			return;
 		}
 		ErrorHandlerStore.set({ message: 'Successfully saved delegation', success: true });
-
-		// Refresh relations to ensure consistency with backend
-		await getDelegateRelations();
 	};
 
 	const clearChoice = async (tag: Tag) => {
@@ -177,6 +180,7 @@
 		delegationTagsStructure = [...delegationTagsStructure];
 		delegateRelations = [...delegateRelations];
 		await saveDelegation();
+		await getDelegateRelations();
 	};
 </script>
 
@@ -214,7 +218,7 @@
 									<input
 										disabled={delegate.user.id === ($userStore?.id || -1)}
 										on:input={() => {
-											changeDelegation(delegate, tag);
+											updateDelgation(delegate, tag);
 											setTimeout(() => {
 												setupDelegationTagStructure();
 											}, 1000);
