@@ -19,43 +19,36 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { goto } from '$app/navigation';
 
-	type PageType = 'profile' | 'notifications' | 'poll-process' | 'info' | 'reports';
-
-	interface SettingsPage {
-		page: PageType;
-		icon: any;
-		text: string;
-	}
-
-	const sidebarItems: SettingsPage[] = [
+	// config array
+	const sidebarItems = [
 		{ 
-			page: 'profile', 
+			page: 'profile' as const, 
 			icon: faUser, 
 			text: 'User Profile' 
 		},
 		{ 
-			page: 'notifications', 
+			page: 'notifications' as const, 
 			icon: faBell, 
 			text: 'Notifications' 
 		},
 		{ 
-			page: 'poll-process', 
+			page: 'poll-process' as const, 
 			icon: faPieChart, 
 			text: 'Poll Process' 
 		},
 		{ 
-			page: 'info', 
+			page: 'info' as const, 
 			icon: faInfo, 
 			text: 'Information' 
 		},
 		{ 
-			page: 'reports', 
+			page: 'reports' as const, 
 			icon: faWarning, 
 			text: 'Reports' 
 		}
 	];
 
-	let selectedPage: PageType = 'profile',
+	let selectedPage: 'profile' | 'notifications' | 'poll-process' | 'info' | 'reports' = 'profile',
 		optionsDesign =
 			'flex items-center gap-3 w-full cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-2 transition-all',
 		userConfig = {
@@ -172,7 +165,7 @@
 				{#each sidebarItems as item}
 					<button
 						on:click={() => (selectedPage = item.page)}
-						class={optionsDesign}
+						class={`${optionsDesign}`}
 						class:bg-gray-100={selectedPage === item.page}
 						class:dark:bg-gray-800={selectedPage === item.page}
 						class:border-l-2={selectedPage === item.page}
