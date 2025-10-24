@@ -27,7 +27,7 @@
 
 	// Fetch preview messages and set notified based on localStorage timestamps
 	const getPreview = async () => {
-		const { res, json } = await fetchRequest('GET', `chat/message/channel/preview/list`);
+		const { res, json } = await fetchRequest('GET', `chat/message/channel/preview/list?title=`);
 		if (!res.ok) return [];
 
 		previews = json?.results;

@@ -67,11 +67,12 @@
 	};
 
 	const getPreview = async () => {
-		const { res, json } = await fetchRequest('GET', `chat/message/channel/preview/list`);
+		const { res, json } = await fetchRequest('GET', `chat/message/channel/preview/list?title=${chatSearch}`);
 		if (!res.ok) return [];
 
 		previews = json?.results;
 	};
+
 	onMount(async () => {
 		await UserChatInviteList();
 
@@ -83,6 +84,7 @@
 			clickedChatter(partner);
 		});
 	});
+	$: if (chatSearch !== undefined) getPreview();
 
 	$: if (selectedChatChannelId) updateChatTitle();
 
@@ -176,7 +178,7 @@
 		{/each}
 	{/if}
 	{#each previews as chatter}
-		{#if chatter.channel_title?.includes(chatSearch) && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)}
+		<!-- {#if chatter.channel_title?.includes(chatSearch) && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)} -->
 			<button
 				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
 				class:bg-gray-200={selectedChat === chatter.channel_id}
@@ -219,6 +221,5 @@
 					</Button>
 				</div>
 			{/if}
-		{/if}
 	{/each}
 </div>

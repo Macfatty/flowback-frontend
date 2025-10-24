@@ -158,7 +158,7 @@
 					</div>
 					<div slot="right" class="relative h-full max-h-full overflow-y-auto">
 						{#if selectedProposal}
-							<div class="flex flex-col p-2 ">
+							<div class="flex flex-col p-2">
 								<span
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
 								>
@@ -191,10 +191,10 @@
 
 				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
 			{:else if phase === 'prediction_statement'}
-				<Structure bind:phase bind:poll bind:resetScroll>
-					<div slot="left" class="h-full relative">
+				<Structure bind:phase bind:poll bind:resetScroll overrideGenericStyle={''}>
+					<div slot="left" class="mr-3 relative">
 						<span>{$_('Proposals')} ({proposals?.length})</span>
-						<div class="max-h-[80%] overflow-y-auto">
+						<div class="h-full overflow-auto max-h-[80%]">
 							<ProposalScoreVoting
 								bind:comments
 								bind:proposals
@@ -213,7 +213,7 @@
 							}}>{$_('Create Consequence')}</Button
 						>
 					</div>
-					<div slot="right" class="relative h-full ">
+					<div slot="right" class="relative h-full">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
 								<div
