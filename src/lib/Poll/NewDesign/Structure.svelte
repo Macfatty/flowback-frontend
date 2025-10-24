@@ -9,7 +9,8 @@
 		resetScroll = false;
 
 	// 'bg-white h-[490px] max-h-[490px] dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
-	let genericStyle = 'h-full bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
+	let genericStyle =
+			'h-full overflow-y-auto bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
 		right: HTMLDivElement | null = null;
 
 	$: if (resetScroll) {
