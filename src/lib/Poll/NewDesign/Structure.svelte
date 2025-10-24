@@ -4,11 +4,13 @@
 
 	export let poll: poll | null = null,
 		Class = '',
+		overrideGenericStyle = '',
 		phase: Phase = 'area_vote',
 		resetScroll = false;
 
 	// 'bg-white h-[490px] max-h-[490px] dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
-	let genericStyle = 'h-full bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
+	let genericStyle =
+			'h-full overflow-y-auto bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
 		right: HTMLDivElement | null = null;
 
 	$: if (resetScroll) {
@@ -33,14 +35,14 @@
 	{/if}
 
 	{#if $$slots.left}
-		<div class={`${genericStyle}  `}>
+		<div class={`${genericStyle} `}>
 			<slot name="left" class="h-full" />
 		</div>
 	{/if}
 
 	{#if $$slots.right}
-		<div bind:this={right} class={`${genericStyle}  `}>
-			<slot name="right" class="h-full"/>
+		<div bind:this={right} class={`${genericStyle}  ${overrideGenericStyle}`}>
+			<slot name="right" class="h-full" />
 		</div>
 	{/if}
 
