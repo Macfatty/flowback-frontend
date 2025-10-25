@@ -1,14 +1,12 @@
 
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
-	import ForgotPassword from '$lib/Login/ForgotPassword.svelte';
 	import NewPassword from '$lib/Login/NewPassword.svelte';
-	import Verify from '$lib/Login/Verify.svelte';
 	import Logo from '$lib/assets/Logo.png';
 	import Reforum from '$lib/assets/ReforumTransparent.png';
 </script>
 
-<div class="dark:bg-darkbackground bg-purple-50 h-[100vh] flex flex-col items-center">
+<div class="dark:!bg-darkbackground bg-purple-50 h-[100vh] flex flex-col items-center">
 	<div class="mt-16">
 		<img
 			src={env.PUBLIC_LOGO === 'REFORUM' ? Reforum : Logo}
