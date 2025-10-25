@@ -236,11 +236,7 @@
 					>
 				{/if}
 			{:else if selectedPage === 'delegate' && group?.id}
-				{#if groupUser?.delegate_pool_id}
-					{$_('You cannot delegate as a delegate')}
-				{:else}
-					<Delegations bind:group bind:delegates />
-				{/if}
+				<Delegations bind:group bind:delegates />
 			{/if}
 		</div>
 	</div>

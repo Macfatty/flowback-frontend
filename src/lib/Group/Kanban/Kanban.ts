@@ -16,7 +16,7 @@ export interface kanban {
 	group_name: string;
 	priority?: number | null;
 	end_date?: string | null;
-	attachments: { file: string | null; file_name: string | null }[] | null;
+	attachments: { file: string ; file_name: string }[];
 }
 
 export interface kanbanEdited {

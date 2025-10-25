@@ -1,4 +1,5 @@
 <script lang="ts">
+import { groupUserStore, type GroupUser } from '$lib/Group/interface';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { onMount } from 'svelte';
 	import type { DelegateMinimal, Group, Tag } from '$lib/Group/interface';
@@ -147,7 +148,7 @@
 
 								<span>
 									<input
-										disabled={delegate.user.id === ($userStore?.id || -1)}
+										disabled={(delegate.user.id !== ($userStore?.id || -1))}
 										on:input={() => {
 											createDelegateRelation(delegate.pool_id);
 											updateDelgation(delegate, tag);
