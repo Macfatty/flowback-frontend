@@ -94,9 +94,7 @@
 	};
 
 	$: console.log(start_date);
-	
 </script>
-
 {#if advancedTimeSettings}
 	<div>
 		<RadioButtons2
@@ -106,52 +104,42 @@
 			labels={['List', 'Calendar']}
 		/>
 		{#if calendarView === '1'}
-			{#key [daysBetweenPhases, templateCounter]}
-				<MonthView
-					bind:start_date
-					bind:area_vote_end_date
-					bind:proposal_end_date
-					bind:prediction_statement_end_date
-					bind:prediction_bet_end_date
-					bind:delegate_vote_end_date
-					bind:vote_end_date
-					bind:end_date
-				/>
-			{/key}
+			<MonthView
+				bind:start_date
+				bind:area_vote_end_date
+				bind:proposal_end_date
+				bind:prediction_statement_end_date
+				bind:prediction_bet_end_date
+				bind:delegate_vote_end_date
+				bind:vote_end_date
+				bind:end_date
+			/>
 		{:else if calendarView === '0'}
 			<div class="grid grid-cols-2 gap-6 justify-center">
 				<div>
 					<h2 class="mt-4">{$_('Poll start')}</h2>
-
+	
+					{start_date}
+					<input
+						type='datetime-local'
+						value={new Date()}
+					/>
 					<input
 						id="start_date"
 						type="datetime-local"
 						min={new Date().toString()}
+						bind:value={start_date}
 						max={maxDatePickerYear.toString()}
-						value={start_date}
 						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 						required
 						on:input={(e) => {
 							//@ts-ignore
-							let date = new Date(e.target.value);
-
-							console.log(new Date(), start_date, date, new Date() <= date);
-							
-							// End date needs to be after start date to be valid
-							if (new Date() <= date) start_date = date;
+							let date: string = e.target.value;
+							if (new Date() <= new Date(date)) start_date = new Date(date);
 							//@ts-ignore
-							else e.target.value = start_date.toString();
-
-							console.log(start_date, date);
-							
+							else date = new Date().toString();
 						}}
 					/>
-					<!-- <DateInput
-						format="yyyy-MM-dd HH:mm"
-						bind:value={start_date}
-						min={new Date()}
-						max={maxDatePickerYear}
-					/> -->
 				</div>
 				<!-- isDisabledDate={(dateToCheck: Date) => dateToCheck < new Date()} -->
 				<!-- closeOnSelection={false}
@@ -162,9 +150,14 @@
 						<DateInput
 							format="yyyy-MM-dd HH:mm"
 							closeOnSelection
-							bind:value={area_vote_end_date}
+							value={area_vote_end_date}
 							min={start_date}
 							max={maxDatePickerYear}
+							on:input={(e) => {
+								//@ts-ignore
+								let date: string = e.target.value;
+								if (new Date(date) >= new Date()) start_date = new Date(date);
+							}}
 						/>
 					</div>
 

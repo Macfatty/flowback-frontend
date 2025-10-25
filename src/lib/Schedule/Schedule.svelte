@@ -296,14 +296,14 @@
 			document.getElementById(selectedDatePosition)?.classList.remove('selected');
 		};
 
-		const groupId = filter.group
+		const groupId = filter.group;
 		if (groupId) {
 			filter.group = groupId;
 			filter.type = 'group';
-			type = 'group'
+			type = 'group';
 		} else {
 			filter.type = 'home';
-			type = 'user'
+			type = 'user';
 		}
 
 		setUpScheduledPolls();
@@ -311,7 +311,7 @@
 		getWorkGroupList();
 	});
 
-	$: filter.type === 'group' ? filter.type = 'group' : filter.type = 'home'
+	$: filter.type === 'group' ? (filter.type = 'group') : (filter.type = 'home');
 
 	$: month && year && deleteSelection();
 	$: month && updateMonth();
@@ -346,7 +346,7 @@
 		<div class="pt-3 pb-3">
 			<button
 				on:click={() => {
-					const dateStr = selectedDate.toISOString().slice(0, 16);
+					const dateStr = formatDateToLocalTime(selectedDate).slice(0, 16);
 					selectedEvent = {
 						start_date: dateStr,
 						end_date: dateStr,
@@ -359,8 +359,6 @@
 						work_group: undefined
 					};
 					showCreateScheduleEvent = true;
-					selectedEvent.start_date = formatDateToLocalTime(selectedDate).slice(0, 16);
-					selectedEvent.end_date = formatDateToLocalTime(selectedDate).slice(0, 16);
 				}}
 			>
 				<Fa

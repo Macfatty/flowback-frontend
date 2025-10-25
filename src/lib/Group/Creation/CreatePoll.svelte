@@ -55,8 +55,6 @@
 
 	const groupId = $page.url.searchParams.get('id');
 
-	$: (daysBetweenPhases || !daysBetweenPhases) && changeDaysBetweenPhases();
-
 	const goBack = () => {
 		const groupId = $page.url.searchParams.get('id');
 		goto(`/groups/${groupId}`);
@@ -161,33 +159,6 @@
 		}
 
 		goto(`groups/${$page.url.searchParams.get('id')}/thread/${json}`);
-	};
-
-	//TODO: Refactor so arbitrary number of phases can be done
-	const changeDaysBetweenPhases = () => {
-		const now = new Date();
-		start_date = new Date();
-		start_date.setHours(0, 0, 0, 0);
-
-		//For debug purposes this puts one minute delay between each phase.
-		if (daysBetweenPhases === 0) {
-			area_vote_end_date = new Date(now.setMinutes(now.getMinutes()));
-			proposal_end_date = new Date(now.setMinutes(now.getMinutes()));
-			prediction_statement_end_date = new Date(now.setMinutes(now.getMinutes()));
-			prediction_bet_end_date = new Date(now.setMinutes(now.getMinutes()));
-			delegate_vote_end_date = new Date(now.setMinutes(now.getMinutes()));
-			vote_end_date = new Date(now.setMinutes(now.getMinutes()));
-			end_date = new Date(now.setMinutes(now.getMinutes()));
-			//For users to select over multiple days
-		} else {
-			area_vote_end_date = new Date(now.setDate(now.getDate() + daysBetweenPhases));
-			proposal_end_date = new Date(now.setDate(now.getDate() + daysBetweenPhases));
-			prediction_statement_end_date = new Date(now.setDate(now.getDate() + daysBetweenPhases));
-			prediction_bet_end_date = new Date(now.setDate(now.getDate() + daysBetweenPhases));
-			delegate_vote_end_date = new Date(now.setDate(now.getDate() + daysBetweenPhases));
-			vote_end_date = new Date(now.setDate(now.getDate() + daysBetweenPhases));
-			end_date = new Date(now.setDate(now.getDate() + daysBetweenPhases));
-		}
 	};
 
 	const getWorkGroupList = async () => {
