@@ -11,6 +11,7 @@
 	import UserSearch from '$lib/Generic/UserSearch.svelte';
 	import Fa from 'svelte-fa';
 	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+	import { userStore } from '$lib/User/interfaces';
 
 	let chatSearch = '',
 		openUserSearch = false;
@@ -29,7 +30,7 @@
 			message.timestamp = new Date().toString();
 			message.notified = false;
 		}
-		previews = previews
+		previews = previews;
 
 		selectedChat = chatterId;
 		chatPartnerStore.set(chatterId);
@@ -67,10 +68,24 @@
 	};
 
 	const getPreview = async () => {
-		const { res, json } = await fetchRequest('GET', `chat/message/channel/preview/list?title=${chatSearch}`);
+		const { res, json } = await fetchRequest(
+			'GET',
+			`chat/message/channel/preview/list?title=${chatSearch}`
+		);
 		if (!res.ok) return [];
 
 		previews = json?.results;
+		fixDirectMessageChannelName();
+	};
+
+	const fixDirectMessageChannelName = () => {
+		previews.map((preview) => {
+			if (preview.channel_origin_name === 'user')
+				preview.channel_title = preview.participants.find(
+					(participant) => participant.id !== $userStore?.id
+				)?.username;
+		});
+		previews = previews;
 	};
 
 	onMount(async () => {
@@ -179,47 +194,47 @@
 	{/if}
 	{#each previews as chatter}
 		<!-- {#if chatter.channel_title?.includes(chatSearch) && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)} -->
-			<button
-				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
-				class:bg-gray-200={selectedChat === chatter.channel_id}
-				class:dark:bg-gray-700={selectedChat === chatter.channel_id}
-				on:click={() => clickedChatter(chatter.channel_id)}
-			>
-				{#if chatter?.notified}
-					<div class="p-1 rounded-full bg-purple-300"></div>
-				{/if}
-
-				<ProfilePicture profilePicture={chatter?.profile_image} />
-				<div class="flex flex-col max-w-[40%]">
-					<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
-						<!-- {chatter?.user.username} -->
-						{chatter.channel_title || 'Name not found'}
-					</span>
-					<span class="text-gray-400 text-sm h-[20px]">
-						{chatter?.message || ''}
-					</span>
-				</div>
-			</button>
-			{#if creatingGroup}
-				<div id={`chat-${idfy(chatter.channel_title ?? '')}`}>
-					<Button
-						onClick={() => {
-							if (groupMembers.some((member) => member.id === chatter.id)) {
-								return;
-							}
-
-							const newMember = {
-								id: chatter.user.id,
-								username: chatter.user.username ?? 'Unknown',
-								profile_image: chatter.user.profile_image ?? null
-							};
-							//@ts-ignore
-							groupMembers = [...groupMembers, newMember];
-						}}
-					>
-						{$_('Add User')}
-					</Button>
-				</div>
+		<button
+			class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
+			class:bg-gray-200={selectedChat === chatter.channel_id}
+			class:dark:bg-gray-700={selectedChat === chatter.channel_id}
+			on:click={() => clickedChatter(chatter.channel_id)}
+		>
+			{#if chatter?.notified}
+				<div class="p-1 rounded-full bg-purple-300"></div>
 			{/if}
+
+			<ProfilePicture profilePicture={chatter?.profile_image} />
+			<div class="flex flex-col max-w-[40%]">
+				<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
+					<!-- {chatter?.user.username} -->
+					{chatter.channel_title || 'Name not found'}
+				</span>
+				<span class="text-gray-400 text-sm h-[20px]">
+					{chatter?.message || ''}
+				</span>
+			</div>
+		</button>
+		{#if creatingGroup}
+			<div id={`chat-${idfy(chatter.channel_title ?? '')}`}>
+				<Button
+					onClick={() => {
+						if (groupMembers.some((member) => member.id === chatter.id)) {
+							return;
+						}
+
+						const newMember = {
+							id: chatter.user.id,
+							username: chatter.user.username ?? 'Unknown',
+							profile_image: chatter.user.profile_image ?? null
+						};
+						//@ts-ignore
+						groupMembers = [...groupMembers, newMember];
+					}}
+				>
+					{$_('Add User')}
+				</Button>
+			</div>
+		{/if}
 	{/each}
 </div>
