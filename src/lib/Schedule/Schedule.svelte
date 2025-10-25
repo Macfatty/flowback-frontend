@@ -15,7 +15,7 @@
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import Button from '$lib/Generic/Button.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import { elipsis } from '$lib/Generic/GenericFunctions';
+	import { elipsis, formatDateToLocalTime } from '$lib/Generic/GenericFunctions';
 	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
 	import Event from './Event.svelte';
 	import Select from '$lib/Generic/Select.svelte';
@@ -279,16 +279,6 @@
 		const { res, json } = await fetchRequest('GET', `group/${filter.group}/list`);
 		if (!res.ok) return;
 		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
-	};
-
-	const formatDateToLocalTime = (date: Date): string => {
-		try {
-			const offset = date.setTime(date.getTime() - date.getTimezoneOffset() * 60000);
-			return new Date(offset).toISOString();
-		} catch (error) {
-			console.error('Error converting date to string:', error);
-			return date.toString();
-		}
 	};
 
 	onMount(async () => {
