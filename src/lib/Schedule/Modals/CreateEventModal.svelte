@@ -15,8 +15,7 @@
 		selectedReminders: number[] = [];
 
 	// Members list and selections
-	let selectedMembers: number[] = [],
-		startDateDiv: HTMLDivElement;
+	let selectedMembers: number[] = [];
 
 	const dispatch = createEventDispatcher();
 

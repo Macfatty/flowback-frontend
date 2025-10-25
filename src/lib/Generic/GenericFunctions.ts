@@ -121,9 +121,20 @@ export const linkToPost = (postId: number, groupId: number, postType: 'poll' | '
 	return `/groups/${groupId}/${_postType}/${postId}`;
 }
 
-export const lazyLoading = (getFunction = () => {}) => {
+export const lazyLoading = (getFunction = () => { }) => {
 	let scrolledToBottom =
 		document.body.scrollHeight - document.body.clientHeight <= document.body.scrollTop + 1;
 
 	if (scrolledToBottom) getFunction();
 };
+
+export const formatDateToLocalTime = (date: Date): string => {
+	try {
+		const offset = date.setTime(date.getTime() - date.getTimezoneOffset() * 60000);
+		return new Date(offset).toISOString();
+	} catch (error) {
+		console.error('Error converting date to string:', error);
+		return date.toString();
+	}
+};
+

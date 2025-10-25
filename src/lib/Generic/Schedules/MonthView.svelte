@@ -55,10 +55,10 @@
 
 			switch (e.originalSource.id) {
 				case '0':
-					start_date = newDate;
+					// start_date = newDate;
 					break;
 				case '1':
-					area_vote_end_date = newDate;
+					// area_vote_end_date = newDate;
 					break;
 				case '2':
 					proposal_end_date = newDate;
