@@ -192,7 +192,7 @@
 				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
 			{:else if phase === 'prediction_statement'}
 				<Structure bind:phase bind:poll bind:resetScroll overrideGenericStyle={''}>
-					<div slot="left" class="mr-3 relative">
+					<div slot="left" class="relative h-full">
 						<span>{$_('Proposals')} ({proposals?.length})</span>
 						<div class="h-full overflow-auto max-h-[80%]">
 							<ProposalScoreVoting

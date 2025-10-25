@@ -14,6 +14,7 @@
 		right: HTMLDivElement | null = null;
 
 	$: if (resetScroll) {
+		right?.children[0].scrollTo(0, 0);
 		right?.scrollTo(0, 0);
 		resetScroll = false;
 	}

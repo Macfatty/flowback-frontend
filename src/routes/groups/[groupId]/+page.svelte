@@ -123,8 +123,6 @@
 						<Permissions />
 					{:else if selectedPage === 'schedule'}
 						<Schedule type="group" />
-					{:else if selectedPage === 'threads'}
-						<Threads />
 					{:else if selectedPage === 'working-groups'}
 						<WorkGroups />
 					{/if}
