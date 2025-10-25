@@ -4,12 +4,7 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { onMount } from 'svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import {
-		chatOpenStore,
-		chatPartnerStore,
-		fixDirectMessageChannelName,
-		getUserChannelId
-	} from './functions';
+	import { chatOpenStore, chatPartnerStore, getUserChannelId } from './functions';
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 	import { idfy } from '$lib/Generic/GenericFunctions2';
@@ -79,7 +74,17 @@
 		);
 		if (!res.ok) return [];
 
-		previews = fixDirectMessageChannelName(json?.results, $userStore?.id);
+		previews = json?.results;
+		fixDirectMessageChannelName();
+	};
+
+	const fixDirectMessageChannelName = () => {
+		previews.map((preview) => {
+			if (preview.channel_origin_name === 'user')
+				preview.channel_title = preview.participants.find(
+					(participant) => participant.id !== $userStore?.id
+				)?.username;
+		});
 		previews = previews;
 	};
 
@@ -139,7 +144,7 @@
 			{$_('+ New Group')}
 		</Button>
 
-		<UserSearch bind:showUsers={openUserSearch} showSelf>
+		<UserSearch bind:showUsers={openUserSearch}>
 			<div slot="action" let:item>
 				<button
 					on:click={async () => {
