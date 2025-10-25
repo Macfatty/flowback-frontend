@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { elipsis } from './GenericFunctions';
 	import { faTimes, faPaperclip } from '@fortawesome/free-solid-svg-icons';
 	import FileUpload from './FileUpload.svelte';
 	import { _ } from 'svelte-i18n';
@@ -23,7 +24,7 @@
 			<div
 				class="flex justify-between items-center p-2 border dark:border-gray-500 border-gray-300"
 			>
-				{file.name}
+				{elipsis(file.name)}
 				<button
 					class="ml-2 text-red-500 hover:text-red-700"
 					on:click={() => removeFile(i)}

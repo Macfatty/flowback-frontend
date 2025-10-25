@@ -12,7 +12,6 @@
 	import PollThumbnail from './PollThumbnail.svelte';
 	import PollFiltering from './PollFiltering.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
-	import Pagination from '$lib/Generic/Pagination.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { posts } from './stores';
 	import ThreadThumbnail from '$lib/Thread/ThreadThumbnail.svelte';
@@ -85,8 +84,8 @@
 
 			// ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
 			$posts = response.results;
-			next = response.next ?? '';
-			prev = response.previous ?? '';
+			next = response.next ?? null;
+			// prev = response.previous;
 		} else if (next === null) return;
 		else {
 			loading = true;

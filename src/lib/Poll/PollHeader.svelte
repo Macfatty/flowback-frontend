@@ -126,6 +126,7 @@
 					displayName
 					profilePicture={poll?.group_image}
 					username={poll?.group_name}
+					type="group"
 				/>
 			</a>
 

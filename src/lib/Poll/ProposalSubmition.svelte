@@ -18,13 +18,12 @@
 
 	export let proposals: proposal[] = [],
 		poll: poll,
-		displayForm: boolean;
+		displayForm: boolean,
+		Class = '';
 
 	let title: string,
 		description: string,
 		loading = false,
-  
-		 
 		blockchain = true,
 		images: File[];
 
@@ -58,11 +57,11 @@
 		const id = json;
 		statusMessageFormatter(res, id);
 
-		if (!res.ok)  {			
+		if (!res.ok) {
 			ErrorHandlerStore.set({ message: 'Failed to add proposal', success: false });
 			return;
 		}
-				
+
 		ErrorHandlerStore.set({ message: 'Successfully added proposal', success: true });
 
 		let created_by = await getUserInfo();
@@ -75,7 +74,7 @@
 			created_by,
 			poll: Number($page.params.pollId),
 			attachments: [],
-			score:0
+			score: 0
 		});
 		proposals = proposals;
 
@@ -100,28 +99,32 @@
 	};
 </script>
 
-<form on:submit|preventDefault={proposalCreate} class="h-full dark:border-gray-500 rounded p-2">
+<form
+	on:submit|preventDefault={proposalCreate}
+	class={`h-full dark:border-gray-500 rounded p-2 ${Class}`}
+>
 	<Loader bind:loading>
-		<div class="flex flex-col space-y-2">
-			<span class="block text-left text-md text-primary dark:text-secondary font-semibold"
-				>{$_('Create a Proposal')}</span
-			>
-			<TextInput required label="Title" bind:value={title} />
-			<TextArea
-				Class="mt-4"
-				inputClass="whitespace-pre-wrap"
-				areaClass="max-h-[12rem] resize-y"
-				label="Description"
-				bind:value={description}
-			/>
-		</div>
-		
-		{#if env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE'}
-			<RadioButtons bind:Yes={blockchain} label="Push to Blockchain" />
-		{/if}
+		<div class="max-h-[80%] overflow-y-auto">
+			<div class="flex flex-col space-y-2">
+				<span class="block text-left text-md text-primary dark:text-secondary font-semibold"
+					>{$_('Create a Proposal')}</span
+				>
+				<TextInput required label="Title" bind:value={title} />
+				<TextArea
+					Class="mt-4"
+					inputClass="whitespace-pre-wrap"
+					areaClass="max-h-[12rem] resize-y"
+					label="Description"
+					bind:value={description}
+				/>
+			</div>
 
-		<FileUploads Class="mt-4" bind:files={images} />
-		 
+			{#if env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE'}
+				<RadioButtons bind:Yes={blockchain} label="Push to Blockchain" />
+			{/if}
+
+			<FileUploads Class="mt-4" bind:files={images} />
+		</div>
 
 		<Button
 			buttonStyle="primary-light"
@@ -149,5 +152,3 @@
 		{/if}
 	</Loader>
 </form>
-
- 

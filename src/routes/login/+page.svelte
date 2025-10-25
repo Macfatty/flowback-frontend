@@ -37,7 +37,7 @@
 
 <div
 	id="login-page"
-	class="dark:bg-darkbackground bg-purple-50 min-h-[110vh] flex flex-col items-center"
+	class="dark:!bg-darkbackground bg-purple-50 min-h-[110vh] flex flex-col items-center"
 >
 	<div class="mt-16">
 		<img
@@ -65,7 +65,7 @@
 			{:else if selectedPage === 'ForgotPassword'}
 				<ForgotPassword bind:selectedPage bind:email />
 			{:else if selectedPage === 'NewPassword'}
-				<NewPassword bind:email />
+				<NewPassword  />
 			{/if}
 		</div>
 	</div>

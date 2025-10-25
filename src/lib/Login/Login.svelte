@@ -73,7 +73,7 @@
 				<button
 					type="button"
 					class="cursor-pointer hover:underline text-gray-400"
-					on:click={() => (env.PUBLIC_EMAIL_REGISTRATION === "TRUE" ? selectedPage = 'GotMail' : selectedPage = 'ForgotPassword')}
+					on:click={() =>  selectedPage = 'ForgotPassword'}
 
 			>
 					{$_('Forgot password?')}

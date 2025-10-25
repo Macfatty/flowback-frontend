@@ -59,6 +59,15 @@ export interface PreviewMessage {
 	target_id?: number;
 	target_username?: string;
 	channel_origin_name?: 'user' | 'group' | 'workgroup' | 'user_group';
+	participants: {
+
+		id: number
+		username: string
+		profile_image: string | null
+		banner_image: string | null
+		public_status: "private"
+		chat_status: "private"
+	}[]
 }
 
 export interface Direct {

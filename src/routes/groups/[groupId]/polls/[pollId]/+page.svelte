@@ -143,7 +143,7 @@
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
-						<div class="max-h-[80%] overflow-y-auto">
+						<div class="max-h-[75%] overflow-y-auto">
 							<ProposalScoreVoting bind:selectedProposal bind:proposals bind:comments bind:phase />
 						</div>
 						<Button
@@ -156,9 +156,9 @@
 							}}>{$_('Add Proposal')}</Button
 						>
 					</div>
-					<div slot="right" class="relative h-full">
+					<div slot="right" class="relative h-full max-h-full overflow-y-auto">
 						{#if selectedProposal}
-							<div class="flex flex-col space-y-2 p-2">
+							<div class="flex flex-col p-2">
 								<span
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
 								>
@@ -169,14 +169,19 @@
 								</span>
 							</div>
 							{#if selectedProposal.attachments}
-								<div>
+								<div class="">
 									{#each selectedProposal.attachments as file}
 										<img alt="attachment" src={`${env.PUBLIC_API_URL}/media/${file.file}`} />
 									{/each}
 								</div>
 							{/if}
 						{:else if displayForm}
-							<ProposalSubmition {poll} bind:proposals bind:displayForm />
+							<ProposalSubmition
+								Class="max-h-full overflow-y-auto"
+								{poll}
+								bind:proposals
+								bind:displayForm
+							/>
 						{/if}
 					</div>
 					<div slot="bottom">
@@ -186,10 +191,10 @@
 
 				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
 			{:else if phase === 'prediction_statement'}
-				<Structure bind:phase bind:poll bind:resetScroll>
-					<div slot="left" class="h-full relative">
+				<Structure bind:phase bind:poll bind:resetScroll overrideGenericStyle={''}>
+					<div slot="left" class="relative h-full">
 						<span>{$_('Proposals')} ({proposals?.length})</span>
-						<div class="max-h-[80%] overflow-y-auto">
+						<div class="h-full overflow-auto max-h-[80%]">
 							<ProposalScoreVoting
 								bind:comments
 								bind:proposals
@@ -350,12 +355,11 @@
 			{:else if phase === 'result' || phase === 'prediction_vote'}
 				<Structure bind:phase bind:poll bind:resetScroll>
 					<div slot="left" class="h-full overflow-y-auto">
-						{#if proposals}
-							{proposals[0]?.score}
-							<PredictionStatements bind:selectedProposal bind:phase bind:poll />
-						{/if}
+						<PredictionStatements bind:selectedProposal bind:phase bind:poll />
 					</div>
-					<div slot="right"><Results bind:selectedProposal bind:poll {getPollData} {pollType} /></div>
+					<div slot="right">
+						<Results bind:selectedProposal bind:poll {getPollData} {pollType} />
+					</div>
 					<div slot="bottom">
 						<Comments bind:proposals api={'poll'} />
 					</div>
