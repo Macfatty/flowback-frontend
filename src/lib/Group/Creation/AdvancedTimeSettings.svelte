@@ -95,7 +95,6 @@
 	};
 
 	$: console.log(start_date);
-	
 </script>
 
 {#if advancedTimeSettings}
@@ -122,8 +121,8 @@
 		{:else if calendarView === '0'}
 			<div class="grid grid-cols-2 gap-6 justify-center">
 				<div>
-				<h2 class="mt-4">{$_('Poll start')}</h2>
-	
+					<h2 class="mt-4">{$_('Poll start')}</h2>
+
 					<input
 						id="start_date"
 						type="datetime-local"
@@ -136,99 +135,173 @@
 							//@ts-ignore
 							let date = new Date(e.target.value);
 
-							console.log(new Date(), start_date, date, new Date() <= date);
-							
 							// End date needs to be after start date to be valid
 							if (new Date() <= date) start_date = date;
 							//@ts-ignore
-							else e.target.value = start_date.toString();
-
-							console.log(start_date, date);
-							
+							else e.target.value = formatDateToLocalTime(start_date).slice(0, 16);
 						}}
 					/>
-					<!-- <DateInput
-						format="yyyy-MM-dd HH:mm"
-						bind:value={start_date}
-						min={new Date()}
-						max={maxDatePickerYear}
-					/> -->
 				</div>
-				<!-- isDisabledDate={(dateToCheck: Date) => dateToCheck < new Date()} -->
-				<!-- closeOnSelection={false}
-					browseWithoutSelecting={false} -->
+
 				{#if selected_poll !== 'Date Poll'}
 					<div>
 						<h2 class="mt-4">{$_('Area voting end')}</h2>
-						<DateInput
-							format="yyyy-MM-dd HH:mm"
-							closeOnSelection
-							bind:value={area_vote_end_date}
-							min={start_date}
-							max={maxDatePickerYear}
+						<input
+							id="area-vote-end-date"
+							type="datetime-local"
+							min={new Date().toString()}
+							max={maxDatePickerYear.toString()}
+							value={formatDateToLocalTime(area_vote_end_date).slice(0, 16)}
+							class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+							required
+							on:input={(e) => {
+								//@ts-ignore
+								let date = new Date(e.target.value);
+
+								// End date needs to be after start date to be valid
+								if (new Date() <= date) area_vote_end_date = date;
+								//@ts-ignore
+								else e.target.value = formatDateToLocalTime(area_vote_end_date).slice(0, 16);
+							}}
 						/>
 					</div>
 
 					<div>
 						<h2 class="mt-4">{$_('Proposal end')}</h2>
-						<DateInput
-							format="yyyy-MM-dd HH:mm"
-							closeOnSelection
-							bind:value={proposal_end_date}
-							min={area_vote_end_date}
-							max={maxDatePickerYear}
+
+						<input
+							id="proposal_end"
+							type="datetime-local"
+							min={new Date().toString()}
+							max={maxDatePickerYear.toString()}
+							value={formatDateToLocalTime(proposal_end_date).slice(0, 16)}
+							class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+							required
+							on:input={(e) => {
+								//@ts-ignore
+								let date = new Date(e.target.value);
+
+								// End date needs to be after start date to be valid
+								if (new Date() <= date) proposal_end_date = date;
+								//@ts-ignore
+								else e.target.value = formatDateToLocalTime(proposal_end_date).slice(0, 16);
+							}}
 						/>
 					</div>
 
 					<div>
 						<h2 class="mt-4">{$_('Consequences creation end')}</h2>
-						<DateInput
-							format="yyyy-MM-dd HH:mm"
-							closeOnSelection
-							bind:value={prediction_statement_end_date}
-							min={proposal_end_date}
-							max={maxDatePickerYear}
+
+						<input
+							id="consequence-creation"
+							type="datetime-local"
+							min={new Date().toString()}
+							max={maxDatePickerYear.toString()}
+							value={formatDateToLocalTime(prediction_statement_end_date).slice(0, 16)}
+							class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+							required
+							on:input={(e) => {
+								//@ts-ignore
+								let date = new Date(e.target.value);
+
+								// End date needs to be after start date to be valid
+								if (new Date() <= date) prediction_statement_end_date = date;
+								//@ts-ignore
+								else
+									e.target.value = formatDateToLocalTime(prediction_statement_end_date).slice(
+										0,
+										16
+									);
+							}}
 						/>
 					</div>
 					<div>
 						<h2 class="mt-4">{$_('Consequence bet end')}</h2>
-						<DateInput
-							format="yyyy-MM-dd HH:mm"
-							closeOnSelection
-							bind:value={prediction_bet_end_date}
-							min={prediction_statement_end_date}
-							max={maxDatePickerYear}
+
+						<input
+							id="consequence-creation"
+							type="datetime-local"
+							min={new Date().toString()}
+							max={maxDatePickerYear.toString()}
+							value={formatDateToLocalTime(prediction_bet_end_date).slice(0, 16)}
+							class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+							required
+							on:input={(e) => {
+								//@ts-ignore
+								let date = new Date(e.target.value);
+
+								// End date needs to be after start date to be valid
+								if (new Date() <= date) prediction_bet_end_date = date;
+								//@ts-ignore
+								else e.target.value = formatDateToLocalTime(prediction_bet_end_date).slice(0, 16);
+							}}
 						/>
 					</div>
 					<div>
 						<h2 class="mt-4">{$_('Delegate Voting end date')}</h2>
-						<DateInput
-							format="yyyy-MM-dd HH:mm"
-							closeOnSelection
-							bind:value={delegate_vote_end_date}
-							min={prediction_bet_end_date}
-							max={maxDatePickerYear}
+
+						<input
+							id="consequence-creation"
+							type="datetime-local"
+							min={new Date().toString()}
+							max={maxDatePickerYear.toString()}
+							value={formatDateToLocalTime(delegate_vote_end_date).slice(0, 16)}
+							class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+							required
+							on:input={(e) => {
+								//@ts-ignore
+								let date = new Date(e.target.value);
+
+								// End date needs to be after start date to be valid
+								if (new Date() <= date) delegate_vote_end_date = date;
+								//@ts-ignore
+								else e.target.value = formatDateToLocalTime(delegate_vote_end_date).slice(0, 16);
+							}}
 						/>
 					</div>
 					<div>
 						<h2 class="mt-4">{$_('Voting end date')}</h2>
-						<DateInput
-							format="yyyy-MM-dd HH:mm"
-							closeOnSelection
-							bind:value={vote_end_date}
-							min={delegate_vote_end_date}
-							max={maxDatePickerYear}
+
+						<input
+							id="consequence-creation"
+							type="datetime-local"
+							min={new Date().toString()}
+							max={maxDatePickerYear.toString()}
+							value={formatDateToLocalTime(vote_end_date).slice(0, 16)}
+							class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+							required
+							on:input={(e) => {
+								//@ts-ignore
+								let date = new Date(e.target.value);
+
+								// End date needs to be after start date to be valid
+								if (new Date() <= date) vote_end_date = date;
+								//@ts-ignore
+								else e.target.value = formatDateToLocalTime(vote_end_date).slice(0, 16);
+							}}
 						/>
 					</div>
 				{/if}
 				<div>
 					<h2 class="mt-4">{$_('End date')}</h2>
-					<DateInput
-						format="yyyy-MM-dd HH:mm"
-						closeOnSelection
-						bind:value={end_date}
-						min={vote_end_date}
-						max={maxDatePickerYear}
+
+					<input
+						id="consequence-creation"
+						type="datetime-local"
+						min={new Date().toString()}
+						max={maxDatePickerYear.toString()}
+						value={formatDateToLocalTime(end_date).slice(0, 16)}
+						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+						required
+						on:input={(e) => {
+							//@ts-ignore
+							let date = new Date(e.target.value);
+
+							// End date needs to be after start date to be valid
+							if (new Date() <= date) end_date = date;
+							//@ts-ignore
+							else e.target.value = formatDateToLocalTime(end_date).slice(0, 16);
+						}}
 					/>
 				</div>
 			</div>
