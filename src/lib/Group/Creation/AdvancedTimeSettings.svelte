@@ -121,7 +121,7 @@
 		{:else if calendarView === '0'}
 			<div class="grid grid-cols-2 gap-6 justify-center">
 				<div>
-					<h2 class="mt-4">{$_('Poll start')}</h2>
+					<span class="mt-4">{$_('Poll start')}</span>
 
 					<input
 						id="start_date"
@@ -145,7 +145,7 @@
 
 				{#if selected_poll !== 'Date Poll'}
 					<div>
-						<h2 class="mt-4">{$_('Area voting end')}</h2>
+						<span class="mt-4">{$_('Area voting end')}</span>
 						<input
 							id="area-vote-end-date"
 							type="datetime-local"
@@ -167,7 +167,7 @@
 					</div>
 
 					<div>
-						<h2 class="mt-4">{$_('Proposal end')}</h2>
+						<span class="mt-4">{$_('Proposal end')}</span>
 
 						<input
 							id="proposal_end"
@@ -190,7 +190,7 @@
 					</div>
 
 					<div>
-						<h2 class="mt-4">{$_('Consequences creation end')}</h2>
+						<span class="mt-4">{$_('Consequences creation end')}</span>
 
 						<input
 							id="consequence-creation"
@@ -206,8 +206,8 @@
 
 								// End date needs to be after start date to be valid
 								if (new Date() <= date) prediction_statement_end_date = date;
-								//@ts-ignore
 								else
+								//@ts-ignore
 									e.target.value = formatDateToLocalTime(prediction_statement_end_date).slice(
 										0,
 										16
@@ -216,7 +216,7 @@
 						/>
 					</div>
 					<div>
-						<h2 class="mt-4">{$_('Consequence bet end')}</h2>
+						<span class="mt-4">{$_('Consequence bet end')}</span>
 
 						<input
 							id="consequence-creation"
@@ -238,7 +238,7 @@
 						/>
 					</div>
 					<div>
-						<h2 class="mt-4">{$_('Delegate Voting end date')}</h2>
+						<span class="mt-4">{$_('Delegate Voting end date')}</span>
 
 						<input
 							id="consequence-creation"
@@ -260,7 +260,7 @@
 						/>
 					</div>
 					<div>
-						<h2 class="mt-4">{$_('Voting end date')}</h2>
+						<span class="mt-4">{$_('Voting end date')}</span>
 
 						<input
 							id="consequence-creation"
@@ -283,7 +283,7 @@
 					</div>
 				{/if}
 				<div>
-					<h2 class="mt-4">{$_('End date')}</h2>
+					<span class="mt-4">{$_('End date')}</span>
 
 					<input
 						id="consequence-creation"
