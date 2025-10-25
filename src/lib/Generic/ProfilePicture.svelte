@@ -1,5 +1,6 @@
 <script lang="ts">
-	import DefaultPFP from '$lib/assets/abstract-user-flat-4.svg';
+	import DefaultPFPUser from '$lib/assets/abstract-user-flat-4.svg';
+	import DefaultPFPGroup from '$lib/assets/default_banner_group.png';
 	import { env } from '$env/dynamic/public';
 
 	export let username = '',
@@ -10,8 +11,10 @@
 		//TODO: Fix so one can use size
 		size: number = 2, // Change this to pixel size once we upgrade to tailwind 4
 		userId: null | string | number = null,
-		href = `/user?id=${userId}`;
+		href = `/user?id=${userId}`,
+		type: 'user' | 'group' = 'user';
 
+	const DefaultPFP = type === 'user' ? DefaultPFPUser : DefaultPFPGroup
 	// Change this to pixel size once we upgrade to tailwind 4
 	const sizeClass =
 		size === 1
@@ -23,6 +26,7 @@
 			: size === 4
 			? 'w-20 h-20' // 80px
 			: 'w-10 h-10'; // fallback to default 40px
+
 
 	// TODO: Fix this bad hardcoded solution and general solution for decreasing reliance on hardcoded solutions to API in urls
 	$: if (profilePicture?.includes('api/api')) {
