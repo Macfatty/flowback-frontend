@@ -32,7 +32,7 @@
 
 <div class={`image-upload ${Class}`}>
 	{#if label}
-		<h1 class="text-left text-sm w-full">{$_(label)}</h1>
+		<span class="text-left text-sm w-full">{$_(label)}</span>
 	{/if}
 	{#if imageString && !disableImagePreview}
 		<img
