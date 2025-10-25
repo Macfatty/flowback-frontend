@@ -21,8 +21,8 @@ export async function login(page: any, {
 
     await expect(page).toHaveURL('/home');
 
-    if (await page.getByRole('button', { name: 'Ok', exact: true }).isVisible()) {
-        await page.getByRole('button', { name: 'Ok', exact: true }).click();
+    if (await page.getByRole('button', { name: 'Ok' }).isVisible()) {
+        await page.getByRole('button', { name: 'Ok' }).click();
     }
 }
 
