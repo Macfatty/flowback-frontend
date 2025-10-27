@@ -18,7 +18,6 @@
 	import WorkGroups from '$lib/Group/WorkingGroups/WorkGroups.svelte';
 	import { env } from '$env/dynamic/public';
 	import PollThreadThumbnails from '$lib/Poll/PollThreadThumbnails.svelte';
-	import Threads from '$lib/Thread/Threads.svelte';
 
 	let selectedPage: SelectablePage = 'flow';
 	let group: GroupDetails = {
