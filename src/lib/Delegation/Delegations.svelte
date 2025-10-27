@@ -148,9 +148,9 @@
 										disabled={delegate.user.id !== ($userStore?.id || -1)}
 										on:input={async () => {
 											await createDelegateRelation(delegate.pool_id);
-											updateDelgation(delegate, tag);
+											await updateDelgation(delegate, tag);
 											// Refresh relations to ensure consistency with backend
-											await getDelegateRelations();
+											getDelegateRelations();
 										}}
 										type="radio"
 										name={tag.name}
