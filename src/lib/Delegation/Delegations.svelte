@@ -1,5 +1,5 @@
 <script lang="ts">
-import { groupUserStore, type GroupUser } from '$lib/Group/interface';
+	import { groupUserStore, type GroupUser } from '$lib/Group/interface';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { onMount } from 'svelte';
 	import type { DelegateMinimal, Group, Tag } from '$lib/Group/interface';
@@ -35,7 +35,7 @@ import { groupUserStore, type GroupUser } from '$lib/Group/interface';
 	const updateDelgation = async (delegate: Delegate, tag: Tag) => {
 		// await changeDelegation(delegate, tag);
 
-		await createDelegateRelation(delegate.pool_id);
+		// await createDelegateRelation(delegate.pool_id);
 		// The old relation one might want to be changing who one is delegating to within a tag
 		const oldRelation = delegateRelations.find((relation) =>
 			relation.tags.find((_tag) => _tag.id === tag.id)
@@ -148,9 +148,9 @@ import { groupUserStore, type GroupUser } from '$lib/Group/interface';
 
 								<span>
 									<input
-										disabled={(delegate.user.id !== ($userStore?.id || -1))}
-										on:input={() => {
-											createDelegateRelation(delegate.pool_id);
+										disabled={delegate.user.id !== ($userStore?.id || -1)}
+										on:input={async () => {
+											await createDelegateRelation(delegate.pool_id);
 											updateDelgation(delegate, tag);
 										}}
 										type="radio"
