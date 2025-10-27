@@ -43,9 +43,6 @@
 
 		if (oldRelation) await saveDelegation(oldRelation, tag.id, 'remove', false);
 		await saveDelegation(delegate.pool_id, tag.id);
-
-		// Refresh relations to ensure consistency with backend
-		await getDelegateRelations();
 	};
 
 	const getGroupTags = async () => {
@@ -152,6 +149,8 @@
 										on:input={async () => {
 											await createDelegateRelation(delegate.pool_id);
 											updateDelgation(delegate, tag);
+											// Refresh relations to ensure consistency with backend
+											await getDelegateRelations();
 										}}
 										type="radio"
 										name={tag.name}
