@@ -55,10 +55,10 @@
 
 			switch (e.originalSource.id) {
 				case '0':
-					// start_date = newDate;
+					start_date = newDate;
 					break;
 				case '1':
-					// area_vote_end_date = newDate;
+					area_vote_end_date = newDate;
 					break;
 				case '2':
 					proposal_end_date = newDate;
@@ -211,7 +211,9 @@
 								<!-- Top circle anchor point -->
 								<circle cx="25" cy="20" r="12" fill="#0D47A1" />
 
-								<text x="25" y="25" font-size="14" fill="white" text-anchor="middle">{index + 1}</text>
+								<text x="25" y="25" font-size="14" fill="white" text-anchor="middle"
+									>{index + 1}</text
+								>
 							</svg>
 						{/if}
 					</swappable>
