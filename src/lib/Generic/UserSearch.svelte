@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import type { User } from '$lib/User/interfaces';
+	import { userStore, type User } from '$lib/User/interfaces';
 	import Modal from './Modal.svelte';
 	import ProfilePicture from './ProfilePicture.svelte';
 	import TextInput from './TextInput.svelte';
 
-	export let showUsers = false;
+	export let showUsers = false,
+		showSelf = false;
 
-    let searchedUsers: User[] = [],
+	let searchedUsers: User[] = [],
 		search = '';
 
 	const searchUser = async (username: string) => {
@@ -31,6 +32,7 @@
 	</button>
 </div>
 
+<!-- TODO: Don't force UserSearch prop to be a Modal. Make it optional -->
 <Modal bind:open={showUsers} Class="bg-white dark:bg-darkobject !cursor-default">
 	<div slot="body">
 		<TextInput
@@ -41,15 +43,17 @@
 		/>
 		<ul>
 			{#each searchedUsers as user}
-				<li class="flex justify-between mt-6">
-					<ProfilePicture
-						displayName
-						username={user.username}
-						profilePicture={user.profile_image}
-					/>
+				{#if !(showSelf && $userStore?.id === user.id)}
+					<li class="flex justify-between mt-6">
+						<ProfilePicture
+							displayName
+							username={user.username}
+							profilePicture={user.profile_image}
+						/>
 
-					<slot name="action" item={user}/>
-				</li>
+						<slot name="action" item={user} />
+					</li>
+				{/if}
 			{/each}
 		</ul>
 	</div>

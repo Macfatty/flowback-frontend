@@ -139,7 +139,7 @@
 			{$_('+ New Group')}
 		</Button>
 
-		<UserSearch bind:showUsers={openUserSearch}>
+		<UserSearch bind:showUsers={openUserSearch} showSelf>
 			<div slot="action" let:item>
 				<button
 					on:click={async () => {
