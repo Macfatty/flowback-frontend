@@ -17,7 +17,7 @@
 	let tags: Tag[] = [],
 		expandedSection: any = null,
 		delegateRelations: DelegateRelation[] = [];
-		// delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
+	// delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
 
 	onMount(async () => {
 		groupDelegationSetup();
@@ -146,7 +146,8 @@
 
 								<span>
 									<input
-										disabled={delegate.user.id !== ($userStore?.id || -1)}
+										disabled={delegates.find((delegate) => delegate.user.id === $userStore?.id) &&
+											delegate.user.id !== $userStore?.id}
 										on:input={async () => {
 											await createDelegateRelation(delegate.pool_id);
 											await updateDelgation(delegate, tag);
