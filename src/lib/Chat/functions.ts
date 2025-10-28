@@ -1,5 +1,6 @@
 import { fetchRequest } from "$lib/FetchRequest";
 import { writable } from 'svelte/store';
+import type { PreviewMessage } from "./interfaces";
 
 export const updateUserData = async (selectedChat: number, timestamp?: Date | null, closed?: Date | null) => {
     let data: any = {
@@ -20,6 +21,19 @@ export const getUserChannelId = async (userId: number) => {
     }
     return json.id;
 };
+
+export const fixDirectMessageChannelName = (previews: PreviewMessage[], userId: undefined | number) => {
+    if (userId === undefined) previews;
+
+    previews.map((preview) => {
+        if (preview.channel_origin_name === 'user')
+            preview.channel_title = preview.participants.find(
+                (participant) => participant.id !== userId
+            )?.username;
+    });
+    return previews;
+};
+
 
 // Store that holds whether the chat is open or closed
 export const chatOpenStore = writable(false);
