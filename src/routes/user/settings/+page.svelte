@@ -19,7 +19,43 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { goto } from '$app/navigation';
 
-	let selectedPage: 'profile' | 'notifications' | 'poll-process' | 'info' | 'reports' = 'profile',
+	type PageType = 'profile' | 'notifications' | 'poll-process' | 'info' | 'reports';
+
+	interface SettingsPage {
+		page: PageType;
+		icon: any;
+		text: string;
+	}
+
+	const sidebarItems: SettingsPage[] = [
+		{ 
+			page: 'profile', 
+			icon: faUser, 
+			text: 'User Profile' 
+		},
+		{ 
+			page: 'notifications', 
+			icon: faBell, 
+			text: 'Notifications' 
+		},
+		{ 
+			page: 'poll-process', 
+			icon: faPieChart, 
+			text: 'Poll Process' 
+		},
+		{ 
+			page: 'info', 
+			icon: faInfo, 
+			text: 'Information' 
+		},
+		{ 
+			page: 'reports', 
+			icon: faWarning, 
+			text: 'Reports' 
+		}
+	];
+
+	let selectedPage: PageType = 'profile',
 		optionsDesign =
 			'flex items-center gap-3 w-full cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-2 transition-all',
 		userConfig = {
@@ -131,59 +167,20 @@
 					{$_('Settings')}
 				</h1>
 			</div>
-
-			<!-- TODO: Put an #each here for iterating over the buttons for cleanup and easier maintainability -->
+			
 			<div class="mt-4">
-				<button
-					on:click={() => (selectedPage = 'profile')}
-					class={`${optionsDesign}`}
-					class:bg-gray-100={selectedPage === 'profile'}
-					class:dark:bg-gray-800={selectedPage === 'profile'}
-					class:border-l-2={selectedPage === 'profile'}
-					class:border-primary={selectedPage === 'profile'}
-				>
-					<Fa icon={faUser} class="w-5 h-5" />{$_('User Profile')}
-				</button>
-				<button
-					on:click={() => (selectedPage = 'notifications')}
-					class={`${optionsDesign}`}
-					class:bg-gray-100={selectedPage === 'notifications'}
-					class:dark:bg-gray-800={selectedPage === 'notifications'}
-					class:border-l-2={selectedPage === 'notifications'}
-					class:border-primary={selectedPage === 'notifications'}
-				>
-					<Fa icon={faBell} class="w-5 h-5" />{$_('Notifications')}
-				</button>
-				<button
-					on:click={() => (selectedPage = 'poll-process')}
-					class={`${optionsDesign}`}
-					class:bg-gray-100={selectedPage === 'poll-process'}
-					class:dark:bg-gray-800={selectedPage === 'poll-process'}
-					class:border-l-2={selectedPage === 'poll-process'}
-					class:border-primary={selectedPage === 'poll-process'}
-				>
-					<Fa icon={faPieChart} class="w-5 h-5" />{$_('Poll Process')}
-				</button>
-				<button
-					on:click={() => (selectedPage = 'info')}
-					class={`${optionsDesign}`}
-					class:bg-gray-100={selectedPage === 'info'}
-					class:dark:bg-gray-800={selectedPage === 'info'}
-					class:border-l-2={selectedPage === 'info'}
-					class:border-primary={selectedPage === 'info'}
-				>
-					<Fa icon={faInfo} class="w-5 h-5" />{$_('Information')}
-				</button>
-				<button
-					on:click={() => (selectedPage = 'reports')}
-					class={`${optionsDesign}`}
-					class:bg-gray-100={selectedPage === 'reports'}
-					class:dark:bg-gray-800={selectedPage === 'reports'}
-					class:border-l-2={selectedPage === 'reports'}
-					class:border-primary={selectedPage === 'reports'}
-				>
-					<Fa icon={faWarning} class="w-5 h-5" />{$_('Reports')}
-				</button>
+				{#each sidebarItems as item}
+					<button
+						on:click={() => (selectedPage = item.page)}
+						class={optionsDesign}
+						class:bg-gray-100={selectedPage === item.page}
+						class:dark:bg-gray-800={selectedPage === item.page}
+						class:border-l-2={selectedPage === item.page}
+						class:border-primary={selectedPage === item.page}
+					>
+						<Fa icon={item.icon} class="w-5 h-5" />{$_(item.text)}
+					</button>
+				{/each}
 			</div>
 		</div>
 		<div

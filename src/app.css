@@ -39,6 +39,10 @@ body {
 	overflow: scroll;
 }
 
+html.dark {
+  color-scheme: dark;
+}
+
 html {
 	overflow:hidden
 }

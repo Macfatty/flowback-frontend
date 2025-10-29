@@ -17,7 +17,6 @@
 	import { userStore } from '$lib/User/interfaces';
 	import type { Permissions } from '$lib/Group/Permissions/interface';
 	import { getPermissionsFast } from '$lib/Generic/GenericFunctions';
-	import BackArrow from '$lib/Generic/BackArrow.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 
 	let group: Group,
@@ -166,9 +165,11 @@
 						bind:value={search}
 					/>
 				</div>
+				
+				{$_('You are')}
+				{$_(userPermissions?.allow_vote || groupUser?.is_admin ? '' : 'not')}
+				{$_("allowed to vote in this group:")}
 
-				You are {userPermissions?.allow_vote || groupUser?.is_admin ? '' : 'not'} allowed to vote in
-				this group:
 				<Select
 					classInner="w-full bg-white dark:bg-darkobject dark:text-darkmodeText p-2 border-gray-300 rounded border"
 					labels={groups?.map((group) => group.name)}
@@ -236,11 +237,7 @@
 					>
 				{/if}
 			{:else if selectedPage === 'delegate' && group?.id}
-				{#if groupUser?.delegate_pool_id}
-					{$_('You cannot delegate as a delegate')}
-				{:else}
-					<Delegations bind:group bind:delegates />
-				{/if}
+				<Delegations bind:group bind:delegates />
 			{/if}
 		</div>
 	</div>

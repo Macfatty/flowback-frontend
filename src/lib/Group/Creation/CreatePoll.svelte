@@ -40,7 +40,7 @@
 		end_date = new Date(),
 		isPublic = false,
 		loading = false,
-		advancedTimeSettings = false,
+		showAdvancedTimeSettings = false,
 		daysBetweenPhases = 1,
 		images: File[],
 		isFF = false,
@@ -67,8 +67,6 @@
 	};
 
 	const createPoll = async () => {
-		console.log(start_date.toISOString(), 'STRING');
-
 		loading = true;
 		const formData = new FormData();
 		let blockchain_id;
@@ -236,33 +234,30 @@
 					<button
 						class="w-full flex justify-center items-center border-t-2"
 						type="button"
-						on:click={() => (advancedTimeSettings = !advancedTimeSettings)}
+						on:click={() => (showAdvancedTimeSettings = !showAdvancedTimeSettings)}
 					>
-						<Fa icon={faChevronDown} rotate={advancedTimeSettings ? 180 : 0} />
-						{#if !advancedTimeSettings}
+						<Fa icon={faChevronDown} rotate={showAdvancedTimeSettings ? 180 : 0} />
+						{#if !showAdvancedTimeSettings}
 							<p>{$_('Display advanced time settings')}</p>
 						{:else}
 							<p>{$_('Hide advanced time settings')}</p>
 						{/if}
 					</button>
 
-					{#if advancedTimeSettings}
-						{#key selectedPoll}
-							<AdvancedTimeSettings
-								bind:selected_poll={selectedPoll}
-								bind:advancedTimeSettings
-								bind:start_date
-								bind:area_vote_end_date
-								bind:proposal_end_date
-								bind:prediction_statement_end_date
-								bind:prediction_bet_end_date
-								bind:delegate_vote_end_date
-								bind:vote_end_date
-								bind:end_date
-								bind:daysBetweenPhases
-							/>
-						{/key}
-					{/if}
+					<div class:hidden={!showAdvancedTimeSettings}>
+						<AdvancedTimeSettings
+							bind:selected_poll={selectedPoll}
+							bind:start_date
+							bind:area_vote_end_date
+							bind:proposal_end_date
+							bind:prediction_statement_end_date
+							bind:prediction_bet_end_date
+							bind:delegate_vote_end_date
+							bind:vote_end_date
+							bind:end_date
+							bind:daysBetweenPhases
+						/>
+					</div>
 				</div>
 			{/if}
 

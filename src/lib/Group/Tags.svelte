@@ -29,7 +29,7 @@
 	const getTagsLocal = async () => {
 		loading = true;
 		tags = await getTags($page.params.groupId);
-		if (!tags) ErrorHandlerStore.set({ message: 'Could not get poppups', success: false });
+		if (!tags) ErrorHandlerStore.set({ message: 'Could not get tags', success: false });
 		loading = false;
 	};
 

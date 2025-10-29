@@ -119,10 +119,10 @@ export const nextPhase = async (poll: poll, phase: Phase) => {
 		if (phase === 'area_vote') _phase = 'proposal';
 		else if (phase === 'proposal') _phase = 'prediction_statement';
 		else if (phase === 'prediction_statement') _phase = 'prediction_bet';
-		else if (phase === 'prediction_bet'){
+		else if (phase === 'prediction_bet') {
 			_phase = 'delegate_vote';
 			poll.status_prediction = 1;
-		} 
+		}
 		else if (phase === 'delegate_vote') _phase = 'vote';
 		else if (phase === 'vote') {
 			_phase = 'prediction_vote';
@@ -142,21 +142,6 @@ export const nextPhase = async (poll: poll, phase: Phase) => {
 
 	return _phase
 };
-
-export const reportThread = async (threadId: number, description: string) => {
-	const { res, json } = await fetchRequest('POST', `report/create`, {
-		title: threadId,
-		description
-	}, true);
-
-	if (!res.ok) {
-		return { message: 'Failed to report thread', success: false };
-		return;
-	}
-
-	return { message: 'Thread has been reported', success: true };
-};
-
 
 export const imacFormatting = (imac: number | string) => {
 	imac = Number(imac)

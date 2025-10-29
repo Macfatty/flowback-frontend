@@ -18,7 +18,8 @@
 		selectedProposal: proposal | null = null;
 
 	let votes: number[] = [],
-		labels: string[] = [];
+		labels: string[] = [],
+		noVotes = false;
 
 	const getProposals = async () => {
 		const { res, json } = await fetchRequest(
@@ -63,8 +64,9 @@
 		};
 	};
 
-	onMount(() => {
-		getProposals();
+	onMount(async () => {
+		await getProposals();
+		noVotes = checkIfNoVotes();
 		let k = 0;
 
 		if (poll?.status === 2) {
@@ -76,6 +78,16 @@
 			}, 1000);
 		}
 	});
+
+	//Checks the edge-case where no one with voting rights voted or delegated
+	const checkIfNoVotes = () => {
+		let totalVotes = 0;
+		proposals.forEach((proposal) => {
+			totalVotes += proposal.score;
+		});
+
+		return totalVotes === 0;
+	};
 </script>
 
 <div class="w-full">
@@ -84,11 +96,10 @@
 	>
 
 	{#if pollType === 4}
-
-	<!-- Conditional is split up to let poll status 0 both display text and list of proposals -->
+		<!-- Conditional is split up to let poll status 0 both display text and list of proposals -->
 		{#if poll?.status === 2}
 			{$_('Calculating results...')}
-		{:else if poll?.status === 0}
+		{:else if noVotes}
 			{$_('No proposals got any votes')}
 		{:else if poll?.status === -1}
 			{$_('Vote calculation failed')}
@@ -103,7 +114,7 @@
 				<div class="border-gray-300 border-b-2 mt-3 pb-1 overflow-auto max-w-full">
 					<span
 						class="text-primary dark:text-secondary font-semibold flex items-center gap-1 break-words"
-						>{#if i === 0}
+						>{#if i === 0 && !noVotes}
 							<Fa icon={faStar} color="orange" />
 						{/if}
 						{proposal.title}</span

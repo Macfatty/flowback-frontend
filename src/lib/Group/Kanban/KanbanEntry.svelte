@@ -259,6 +259,11 @@
 	$: if (openModal && kanban.id === selectedEntry) {
 		initializeKanbanEdited();
 	}
+
+	$: if (isEditing) {
+		images = kanban.attachments
+	}
+
 </script>
 
 <svelte:window bind:innerWidth bind:outerWidth />

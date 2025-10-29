@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { groupUserStore, type GroupUser } from '$lib/Group/interface';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { onMount } from 'svelte';
 	import type { DelegateMinimal, Group, Tag } from '$lib/Group/interface';
@@ -16,6 +17,7 @@
 	let tags: Tag[] = [],
 		expandedSection: any = null,
 		delegateRelations: DelegateRelation[] = [];
+	// delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
 
 	onMount(async () => {
 		groupDelegationSetup();
@@ -32,19 +34,15 @@
 	};
 
 	const updateDelgation = async (delegate: Delegate, tag: Tag) => {
-		// await changeDelegation(delegate, tag);
-
-		await createDelegateRelation(delegate.pool_id);
 		// The old relation one might want to be changing who one is delegating to within a tag
 		const oldRelation = delegateRelations.find((relation) =>
 			relation.tags.find((_tag) => _tag.id === tag.id)
 		)?.delegate_pool_id;
 
+		console.log(oldRelation, 'OLD');
+		// If we find such an old delegation, remove it and add the new one
 		if (oldRelation) await saveDelegation(oldRelation, tag.id, 'remove', false);
 		await saveDelegation(delegate.pool_id, tag.id);
-
-		// Refresh relations to ensure consistency with backend
-		await getDelegateRelations();
 	};
 
 	const getGroupTags = async () => {
@@ -91,13 +89,15 @@
 			(relation) => relation.delegate_pool_id === delegate
 		);
 
+		console.log(relation, 'REL');
+
 		if (relation === undefined) return;
 
 		const payload = {
 			delegate_pool_id: relation.delegate_pool_id,
 			tags:
 				action === 'add'
-					? [...relation.tags.map((tag) => tag.id), tag]
+					? [...relation.tags.map((_tag) => _tag.id), tag]
 					: // If remove, filter it away
 						[...relation.tags.filter((_tag) => _tag.id !== tag).map((_tag) => _tag.id)]
 		};
@@ -147,10 +147,13 @@
 
 								<span>
 									<input
-										disabled={delegate.user.id === ($userStore?.id || -1)}
-										on:input={() => {
-											createDelegateRelation(delegate.pool_id);
-											updateDelgation(delegate, tag);
+										disabled={delegates.find((delegate) => delegate.user.id === $userStore?.id) &&
+											delegate.user.id !== $userStore?.id}
+										on:input={async () => {
+											await createDelegateRelation(delegate.pool_id);
+											await updateDelgation(delegate, tag);
+											// Refresh relations to ensure consistency with backend
+											getDelegateRelations();
 										}}
 										type="radio"
 										name={tag.name}
@@ -164,13 +167,13 @@
 					</div>
 					<button
 						class="text-red-700 hover:underline"
-						on:click={() => {
+						on:click={async () => {
 							const delegateRelationToRemove = delegateRelations.find((relation) =>
 								relation.tags.find((_tag) => _tag.id === tag.id)
 							);
 
 							if (delegateRelationToRemove) {
-								saveDelegation(delegateRelationToRemove.delegate_pool_id, tag.id, 'remove');
+								await saveDelegation(delegateRelationToRemove.delegate_pool_id, tag.id, 'remove');
 								groupDelegationSetup();
 							}
 						}}>{$_('Clear Choice')}</button

@@ -241,6 +241,7 @@
 	</div>
 	<div class="flex">
 		<div class="flex flex-grow">
+			<!-- TODO: Fix so there's dynamic sizing of the number of rows instead of fixed at 6 or 3 -->
 			<TextArea
 				label=""
 				bind:value={message}
@@ -250,6 +251,7 @@
 				placeholder={$_('Write a comment...')}
 				displayMax={false}
 				id="textarea-comment"
+				rows={beingEdited && message.length > 50 ? 6 : 3}
 			/>
 		</div>
 		<div class="flex ml-2 items-start">

@@ -48,6 +48,14 @@ function createCommentStore() {
                 filterMode: mode,
                 filteredComments: applyFilters(store.allComments, proposals, mode)
             })),
+        filterByProposalsIncludingParents: (proposals: proposal[] | null, mode: 'and' | 'or' = 'or') =>
+            update(store => ({
+                ...store,
+                filterProposals: proposals,
+                filterMode: mode,
+                filteredComments: applyFilters(store.allComments, proposals, mode)
+            })),
+
         getAll: () => {
             let allComments: Comment[] = [];
             update(store => {
@@ -100,6 +108,7 @@ function applyFilters(
 ): Comment[] {
     if (!proposals || proposals.length === 0) return comments;
 
+    // Whenever a comment contains a proposal tag (such as #proposal-name), then only pick those
     const tags = proposals.map(p => `#${p.title.replaceAll(' ', '-')}`);
 
     return comments.filter(comment => {
@@ -110,6 +119,11 @@ function applyFilters(
             return tags.every(tag => msg.includes(tag));
         }
     });
+}
+
+const findIfParentHasTag = () => {
+
+    // const parent = comments.find(parentComment => comment.parent_id === parentComment.id)
 }
 
 export const commentsStore = createCommentStore();
