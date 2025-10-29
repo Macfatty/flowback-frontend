@@ -1,4 +1,5 @@
 <script lang="ts">
+	import DefaultBanner from '$lib/assets/default_banner_group.png';
 	import type { Phase, poll } from './interface';
 	import { page } from '$app/stores';
 	import Tag from '$lib/Group/Tag.svelte';
@@ -14,7 +15,7 @@
 		imacFormatting,
 		nextPhase
 	} from './functions';
-	import { getPermissionsFast } from '$lib/Generic/GenericFunctions';
+	import { getPermissionsFast, onThumbnailError } from '$lib/Generic/GenericFunctions';
 	import Select from '$lib/Generic/Select.svelte';
 	import { getTags } from '$lib/Group/functions';
 	import type { Tag as TagType } from '$lib/Group/interface';
@@ -158,12 +159,12 @@
 					class:hover:underline={poll?.group_joined}
 					class="text-black dark:text-darkmodeText flex items-center"
 				>
-					<!-- <img
+					<img
 						class="h-6 w-6 mr-1 rounded-full break-word"
 						src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
 						alt={'Poll Thumbnail'}
 						on:error={(e) => onThumbnailError(e, DefaultBanner)}
-					/> -->
+					/>
 					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
 						>{poll?.group_name}</span
 					>
