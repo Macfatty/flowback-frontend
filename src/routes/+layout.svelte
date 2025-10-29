@@ -15,7 +15,7 @@
 	import { userStore } from '$lib/User/interfaces';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import {setUserGroupPermissionInfo} from '$lib/Group/functions';
+	import { setUserGroupPermissionInfo } from '$lib/Group/functions';
 
 	let showUI = false,
 		scrolledY = '',
@@ -106,7 +106,7 @@
 
 		if (!res.ok || json?.results.length === 0) {
 			groupUserStore.set(null);
-			goto('/groups')
+			goto('/groups');
 			return;
 		}
 
@@ -166,6 +166,8 @@
 				success: _errorhandler.success
 			});
 		});
+
+		document.body.classList.remove('invisible');
 	});
 </script>
 
