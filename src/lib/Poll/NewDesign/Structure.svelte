@@ -27,12 +27,23 @@
 	id="poll-structure"
 >
 	{#if poll}
+	<!-- Desktop Timeline -->
 		<Timeline
 			bind:phase
 			bind:poll
 			enableDetails={false}
-			Class={'!absolute md:!relative left-4 md:left-0 h-[490px]'}
+			Class={'hidden md:block !absolute md:!relative left-4 md:left-0 h-[490px]'}
 		/>
+		<!-- Mobile Timeline -->
+		<div class="md:hidden w-full">
+			<Timeline
+				bind:phase
+				bind:poll
+				enableDetails={false}
+				horizontal={true}
+				Class={'w-full'}
+			/>
+		</div>
 	{/if}
 
 	{#if $$slots.left}
