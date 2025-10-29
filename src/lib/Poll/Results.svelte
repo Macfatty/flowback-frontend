@@ -100,7 +100,7 @@
 		{#if poll?.status === 2}
 			{$_('Calculating results...')}
 		{:else if noVotes}
-			{$_('No proposals got any votes')}
+			{$_('There is no winning proposal because every proposal got zero votes')}
 		{:else if poll?.status === -1}
 			{$_('Vote calculation failed')}
 		{/if}

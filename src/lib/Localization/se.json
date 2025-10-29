@@ -754,6 +754,7 @@
 	"Search for groups": "Sök på grupper",
 	"Polls": "Omröstningar",
 	"No proposals got any votes": "Inget förlag fick några röster",
+	"There is no winning proposal because every proposal got zero votes.": "Det var ingen vinnare då alla förslag fick noll röster.",
 	"Start Date": "Startdatum",
 	"allowed to vote in this group:": "tillåten att rösta i denna grupp",
 	"You are": "Du är",
