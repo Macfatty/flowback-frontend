@@ -8,7 +8,6 @@
 	import { getCommentDepth, getComments } from './functions';
 	import { pollComments as pollCommentsLimit } from '../Generic/APILimits.json';
 	import CommentFilter from './CommentFilter.svelte';
-	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { commentsStore } from './commentStore';
 	import type { Comment as comment } from '$lib/Poll/interface';
 
@@ -20,8 +19,7 @@
 	let offset = 0,
 		showReadMore = true,
 		sortBy: null | string = null,
-		searchString: string = '',
-		errorHandler: any;
+		searchString: string = '';
 
 	const setUpComments = async () => {
 		const { comments, next } = await getComments(getId(), api, offset, sortBy, searchString);
