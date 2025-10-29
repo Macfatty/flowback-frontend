@@ -5,7 +5,6 @@
 	import { onMount } from 'svelte';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
-	import { page } from '$app/stores';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import { ErrorHandlerStore } from './ErrorHandlerStore';
 
@@ -32,9 +31,6 @@
 		channel_id: number;
 		channel_name: string;
 	}
-
-	const groupId = $page.params.groupId;
-	const pollId = $page.params.pollId;
 
 	const closeWindowWhenClickingOutside = () => {
 		window.addEventListener('click', function (e) {
@@ -64,13 +60,6 @@
 		);
 	};
 
-	const getNotificationList = async () => {
-		const { res, json } = await fetchRequest('GET', 'notification/list');
-		// notifications = json?.results.filter(
-		// 	(notificationObject: any) => notificationObject.channel_sender_id === id
-		// );
-	};
-
 	const notificationSubscription = async (category: string) => {
 		notificationsList = [...notificationsList, category];
 		const { res, json } = await fetchRequest('POST', `${api}/notification/subscribe`, {
@@ -92,33 +81,13 @@
 		notifications = notifications;
 	};
 
-	const notificationUnsubscription = async (category: string) => {
-		const { res, json } = await fetchRequest('POST', `notification/unsubscribe`, {
-			channel_sender_id: id,
-			channel_category: category,
-			channel_sender_type: type
-		});
-		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to unsubscribe', success: false });
-			return;
-		}
-
-		notifications = notifications.filter((object) => object.channel_category !== category);
-		ErrorHandlerStore.set({ message: 'Subscribed', success: true });
-	};
-
-	const groupSubcribe = async () => {
-		const { res, json } = await fetchRequest('POST', `group/${groupId}/notification/subscribe`, {
-			tags: ['group', 'group_user', 'kanban', 'poll', 'schedule_event', 'thread']
-		});
-	};
-
 	onMount(() => {
 		closeWindowWhenClickingOutside();
+		getNotifications();
 	});
 
 	$: if (notificationOpen) {
-		// getNotifications();
+		getNotifications();
 		// getNotificationList();
 	}
 </script>
@@ -159,9 +128,8 @@
 						(notificationObject) => notificationObject.channel_category === category
 					)}
 					on:click={() => {
-						if (notifications.find((object) => object.channel_category === category))
-							notificationUnsubscription(category);
-						else notificationSubscription(category);
+						if (!notifications.find((object) => object.channel_category === category))
+							notificationSubscription(category);
 					}}
 				>
 					{$_(labels[i])}
