@@ -19,12 +19,18 @@
 		ClassOpen = '',
 		hoverEffect = true;
 
-	let notifications: NotificationObject[] = [];
+	let notifications: NotificationObject[] = [],
+		notificationsList: string[];
 
 	interface NotificationObject {
 		channel_category: string;
 		channel_sender_id: number;
 		channel_sender_type: string;
+	}
+
+	interface NotificationListObject {
+		channel_id: number;
+		channel_name: string;
 	}
 
 	const groupId = $page.params.groupId;
@@ -47,8 +53,14 @@
 
 	const getNotifications = async () => {
 		const { res, json } = await fetchRequest('GET', 'notification/subscription');
-		notifications = json?.results.filter(
-			(notificationObject: any) => notificationObject.channel_sender_id === id
+		// notifications = json?.results.filter(
+		// 	(notificationObject: any) => notificationObject.channel_sender_id === id
+		// );
+
+		if (!res.ok) return;
+
+		notificationsList = json.results.map(
+			(notification: NotificationListObject) => notification.channel_name
 		);
 	};
 
@@ -60,8 +72,9 @@
 	};
 
 	const notificationSubscription = async (category: string) => {
+		notificationsList = [...notificationsList, category];
 		const { res, json } = await fetchRequest('POST', `${api}/notification/subscribe`, {
-			tags: [category]
+			tags: notificationsList
 		});
 		if (!res.ok) {
 			ErrorHandlerStore.set({ message: 'Failed to subscribe', success: false });
@@ -101,13 +114,12 @@
 	};
 
 	onMount(() => {
-		// closeWindowWhenClickingOutside();
-		// groupSubcribe();
+		closeWindowWhenClickingOutside();
 	});
 
 	$: if (notificationOpen) {
-		// getNotificationList();
 		// getNotifications();
+		// getNotificationList();
 	}
 </script>
 
