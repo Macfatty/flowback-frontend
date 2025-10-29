@@ -9,13 +9,14 @@
 	import Fa from 'svelte-fa';
 	import { faArrowLeft, faCog, faTags, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
-	import { groupUserStore, type GroupUser } from '$lib/Group/interface';
+	import { groupUserStore } from '$lib/Group/interface';
 
 	let selectedPage: 'group' | 'areas' | 'perms' | 'blockchain' = 'group',
 		optionsDesign =
 			'flex items-center gap-3 w-full cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-2 transition-all';
 
 	onMount(() => {
+		// Fixes bug where users who are not admin may navigate and see the admin page
 		if (!$groupUserStore?.is_admin) goto(`/groups/${$page.params.groupId}`);
 	});
 </script>
