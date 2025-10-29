@@ -12,6 +12,7 @@
 	import { permissions as permissionsLimit } from '../../Generic/APILimits.json';
 	import Button from '$lib/Generic/Button.svelte';
 	import { idfy } from '$lib/Generic/GenericFunctions2';
+	import { goto } from '$app/navigation';
 
 	let roles: GroupUser[] = [],
 		users: GroupUser[] = [];
@@ -81,13 +82,13 @@
 	{#each users as user}
 		<li class=" p-3 w-full border-b-2 border-gray-200">
 			<div class="flex items-center">
-				<div class="flex">
+				<button class="flex" on:click={() => goto(`/user?id=${user.user.id}`)}>
 					<ProfilePicture
 						username={user.user.username}
 						profilePicture={user.user.profile_image}
 						displayName
 					/>
-				</div>
+				</button>
 				<div class="ml-6 flex gap-2 flex-wrap mt-4">
 					<Tag tag={{ active: true, id: 1, name: user.permission_name }} displayImac={false} />
 					{#if user?.is_admin}

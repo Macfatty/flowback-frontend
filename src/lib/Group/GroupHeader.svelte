@@ -18,12 +18,11 @@
 	//https://docs.flowback.org/#notification-categories
 	const groupNotificationCategories = [
 		'group',
-		'members',
-		'delegate',
-		//invite,
-		'poll',
+		'group_user',
 		'kanban',
-		'schedule'
+		'poll',
+		'schedule_event',
+		'thread'
 	];
 </script>
 
