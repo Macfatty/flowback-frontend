@@ -191,9 +191,7 @@
 
 				<div id={`${i}-${j}-draggable`} class="border p-4">
 					{date.getDate()}
-					<swappable id={index} class="py-5 px-5"
-						><span id={index?.toString()} />
-
+					<swappable id={index} class="p-5">
 						{#if isSelected}
 							<svg width="50" height="100" viewBox="0 0 50 100" xmlns="http://www.w3.org/2000/svg">
 								<!-- Vertical line -->
