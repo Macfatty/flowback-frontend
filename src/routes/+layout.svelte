@@ -168,6 +168,7 @@
 		});
 
 		document.body.classList.remove('invisible');
+		document.body.style.visibility = 'visible';
 	});
 </script>
 

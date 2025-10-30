@@ -26,7 +26,8 @@
 		%sveltekit.head%
 	</head>
 
-	<body class="invisible">
+	<!-- Resolves "Flash Of Unstyled Content" issue. At root, the file +layout.svelte at onMount removes the invisibility once all the CSS has loaded -->
+	<body style="visibility: hidden">
 		<div>%sveltekit.body%</div>
 	</body>
 </html>
