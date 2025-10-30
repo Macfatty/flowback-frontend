@@ -41,7 +41,7 @@
 		isPublic = false,
 		loading = false,
 		showAdvancedTimeSettings = false,
-		daysBetweenPhases = 1,
+		daysBetweenPhases = 2,
 		images: File[],
 		isFF = false,
 		pushToBlockchain = true,
