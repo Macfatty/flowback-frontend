@@ -180,26 +180,7 @@
 
 	<slot />
 </main>
-<div id="mobile-support">
-	{$_('No support for mobile devices yet, try Flowback on a non-mobile device')}
-</div>
 
 <LogBackInModal bind:open={openLoginModal} />
 
 <ErrorHandler bind:this={errorhandler} />
-
-<style>
-	#mobile-support {
-		display: none;
-	}
-
-	@media (max-width: 716px) {
-		main {
-			display: none !important;
-		}
-
-		#mobile-support {
-			display: block !important;
-		}
-	}
-</style>
