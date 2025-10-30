@@ -23,7 +23,7 @@
 <div
 	class={`${Class} ${
 		poll ? 'poll-grid' : 'poll-grid-no-timeline'
-	} p-3 md:p-6 lg:p-12 max-w-[1200px] w-full gap-4 lg:gap-6`}
+	} p-3 md:p-6 lg:p-12 max-w-[1200px] w-full gap-4 lg:gap-6 flex flex-col md:grid`}
 	id="poll-structure"
 >
 	{#if poll}
