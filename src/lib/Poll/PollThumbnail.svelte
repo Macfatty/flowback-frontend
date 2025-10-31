@@ -363,7 +363,7 @@
 			bind:poll
 			enableDetails
 			displayTimelinePhase={false}
-			Class={'!absolute md:!relative left-4 md:left-0'}
+			Class={'w-full md:!relative'}
 			horizontal
 		/>
 
