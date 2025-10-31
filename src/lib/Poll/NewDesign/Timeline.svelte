@@ -126,17 +126,17 @@
 		</div>
 	{/if}
 	{#if enableDetails && displayDetails}
+		<button
+			class="hover:underline flex items-center gap-1 cursor-pointer text-xs"
+			on:click={() => (displayDetails = false)}
+		>
+			<Fa icon={faDownLong} flip />
+			{$_('Time details')}
+		</button>
 		<ul class="p-2">
-			<button
-				class="hover:underline flex items-center gap-2 cursor-pointer"
-				on:click={() => (displayDetails = false)}
-			>
-				<Fa icon={faDownLong} flip />
-				{$_('Time details')}
-			</button>
 			{#each dateLabels as label, i}
 				{#if i !== 0}
-					<li class="flex justify-between flex-col md:flex-row text-center">
+					<li class="border-b md:border-b-0 flex justify-between flex-col md:flex-row text-center">
 						<div class="mb-4 md:mb-0">{$_(label)}:</div>
 						<div class="mb-4 md:mb-0">{datesArray[i - 1]} CET</div>
 					</li>
