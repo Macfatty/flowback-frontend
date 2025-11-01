@@ -189,18 +189,9 @@
 							dates.find((_date) => _date.getTime() === date.getTime())?.getDate()
 						)?.getTime()}
 
-				<div id={`${i}-${j}-draggable`} class="border p-4" on:keydown role="button" tabindex="0">
-					<!-- {date}
-						{new Date(dates[0]?.getFullYear(), dates[0]?.getMonth(), dates[0]?.getDate())}
-						{date.getTime() ===
-							new Date(
-								start_date.getFullYear(),
-								start_date.getMonth(),
-								start_date.getDate()
-							).getTime()} -->
-
+				<div id={`${i}-${j}-draggable`} class="border p-4">
 					{date.getDate()}
-					<swappable id={index} class="py-5 px-5"
+					<swappable id={index} class="p-5"
 						><span id={index?.toString()} />
 
 						{#if isSelected}
@@ -217,16 +208,8 @@
 							</svg>
 						{/if}
 					</swappable>
-					<!--
-						{#if selectedDates.find((_date) => _date?.getTime() === date?.getTime())}
-							<div class="bg-green-600 p-6"><Fa icon={faCheck} color="white" /></div>
-						{:else}
-							<slot {i} {j} />
-						{/if}
-					-->
 				</div>
 			{/each}
 		{/each}
 	</div>
 {/if}
-<!-- {/key} -->

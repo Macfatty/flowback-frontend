@@ -4,13 +4,14 @@
 
 	export let poll: poll | null = null,
 		Class = '',
-		overrideGenericStyle = '',
+		innerClassLeft = '',
+		innerClassRight = '',
 		phase: Phase = 'area_vote',
 		resetScroll = false;
 
 	// 'bg-white h-[490px] max-h-[490px] dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
 	let genericStyle =
-			'h-full overflow-y-auto bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
+			'h-full bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
 		right: HTMLDivElement | null = null;
 
 	$: if (resetScroll) {
@@ -23,7 +24,7 @@
 <div
 	class={`${Class} ${
 		poll ? 'poll-grid' : 'poll-grid-no-timeline'
-	} p-3 md:p-6 lg:p-12 max-w-[1200px] w-full gap-4 lg:gap-6`}
+	} p-3 md:p-6 lg:p-12 max-w-[1200px] w-full gap-4 lg:gap-6 flex flex-col md:grid`}
 	id="poll-structure"
 >
 	{#if poll}
@@ -31,18 +32,27 @@
 			bind:phase
 			bind:poll
 			enableDetails={false}
-			Class={'!absolute md:!relative left-4 md:left-0 h-[490px]'}
+			Class={'hidden md:block !absolute md:!relative left-4 md:left-0 h-[490px] desktop-timeline'}
 		/>
+		<div class="md:hidden w-full">
+			<Timeline
+				bind:phase
+				bind:poll
+				enableDetails={false}
+				horizontal={true}
+				Class={'w-full mobile-timeline'}
+			/>
+		</div>
 	{/if}
 
 	{#if $$slots.left}
-		<div class={`${genericStyle} `}>
+		<div class={`${genericStyle} ${innerClassLeft}`}>
 			<slot name="left" class="h-full" />
 		</div>
 	{/if}
 
 	{#if $$slots.right}
-		<div bind:this={right} class={`${genericStyle}  ${overrideGenericStyle}`}>
+		<div bind:this={right} class={`${genericStyle} ${innerClassRight}`}>
 			<slot name="right" class="h-full" />
 		</div>
 	{/if}

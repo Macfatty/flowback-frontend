@@ -72,11 +72,8 @@
 							//@ts-ignore
 							let date: string = e.target.value;
 
-							// Start date needs to be before end date to be valid
-							if (new Date(date) < new Date(selectedEvent.end_date))
-								selectedEvent.start_date = date;
-							//@ts-ignore
-							else e.target.value = selectedEvent.start_date;
+							selectedEvent.start_date = date;
+							if (new Date(date) > new Date(selectedEvent.end_date)) selectedEvent.end_date = date;
 						}}
 					/>
 				</div>

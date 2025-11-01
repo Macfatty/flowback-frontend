@@ -19,7 +19,7 @@
 		hoverEffect = true;
 
 	let notifications: NotificationObject[] = [],
-		notificationsList: string[];
+		notificationsList: string[] = [];
 
 	interface NotificationObject {
 		channel_category: string;
@@ -55,14 +55,14 @@
 
 		if (!res.ok) return;
 
-		notificationsList = json.results.map(
-			(notification: NotificationListObject) => notification.channel_name
-		);
+		// notificationsList = json.results.map(
+		// 	(notification: NotificationListObject) => notification.channel_name
+		// );
 	};
 
 	const notificationSubscription = async (category: string) => {
 		notificationsList = [...notificationsList, category];
-		const { res, json } = await fetchRequest('POST', `${api}/notification/subscribe`, {
+		const { res, json } = await fetchRequest('POST', `${api}`, {
 			tags: notificationsList
 		});
 		if (!res.ok) {
