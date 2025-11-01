@@ -139,20 +139,20 @@
 				<!-- PHASE 2: PROPOSAL CREATION -->
 			{:else if phase === 'proposal'}
 				<Structure bind:phase bind:poll bind:resetScroll>
-					<div slot="left" class="h-full relative">
+					<div slot="left" class="h-full relative flex flex-col">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
-						<div class="max-h-[75%] overflow-y-auto">
+						<div class="flex-grow overflow-y-auto mb-4">
 							<ProposalScoreVoting bind:selectedProposal bind:proposals bind:comments bind:phase />
 						</div>
 						<Button
-							Class="w-full absolute bottom-0 mb-2"
+							Class="w-full bottom-0 mt-auto"
 							buttonStyle="primary-light"
 							disabled={displayForm && !selectedProposal}
 							onClick={() => {
-								selectedProposal = null;
-								displayForm = true;
+									selectedProposal = null;
+									displayForm = true;
 							}}>{$_('Add Proposal')}</Button
 						>
 					</div>
