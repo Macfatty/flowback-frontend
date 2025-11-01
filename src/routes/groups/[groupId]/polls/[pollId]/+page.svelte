@@ -191,8 +191,8 @@
 
 				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
 			{:else if phase === 'prediction_statement'}
-				<Structure bind:phase bind:poll bind:resetScroll overrideGenericStyle={''}>
-					<div slot="left" class="relative h-full">
+				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={''}>
+					<div slot="left" class="!overflow-hidden relative h-full">
 						<span>{$_('Proposals')} ({proposals?.length})</span>
 						<div class="h-full overflow-auto max-h-[80%]">
 							<ProposalScoreVoting
@@ -243,7 +243,7 @@
 
 				<!-- PHASE 4: PREDICTION BETTING -->
 			{:else if phase === 'prediction_bet'}
-				<Structure bind:phase bind:poll bind:resetScroll>
+				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={'overflow-y-auto'}>
 					<div slot="left" class="h-full">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
@@ -282,7 +282,7 @@
 
 				<!-- PHASE 5: DELEGATE VOTING -->
 			{:else if phase === 'delegate_vote'}
-				<Structure bind:phase bind:poll bind:resetScroll>
+				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={'overflow-y-auto'}>
 					<div slot="left" class="h-full">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
@@ -314,7 +314,7 @@
 				</Structure>
 				<!-- PHASE 6: NON-DELEGATE VOTING -->
 			{:else if phase === 'vote'}
-				<Structure bind:phase bind:poll bind:resetScroll>
+				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={'overflow-y-auto'}>
 					<div slot="left" class="h-full" id="proposals-section">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
@@ -353,7 +353,7 @@
 				</Structure>
 				<!-- PHASE 7: RESULTS AND EVALUATION -->
 			{:else if phase === 'result' || phase === 'prediction_vote'}
-				<Structure bind:phase bind:poll bind:resetScroll>
+				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={'overflow-y-auto'}>
 					<div slot="left" class="h-full overflow-y-auto">
 						<PredictionStatements bind:selectedProposal bind:phase bind:poll />
 					</div>
