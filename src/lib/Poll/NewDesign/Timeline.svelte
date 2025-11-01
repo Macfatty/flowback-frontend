@@ -116,7 +116,7 @@
 						: faCircle}
 
 				<HeaderIcon
-					Class="cursor-default"
+					Class="!cursor-default"
 					size="1x"
 					text={`${i + 1}. ${$_(dateLabels[i + 1])}: ${datesArray[i]}`}
 					{icon}
@@ -127,7 +127,7 @@
 	{/if}
 	{#if enableDetails && displayDetails}
 		<button
-			class="hover:underline flex items-center gap-1 cursor-pointer text-xs"
+			class="hover:underline flex items-center gap-1 text-xs"
 			on:click={() => (displayDetails = false)}
 		>
 			<Fa icon={faDownLong} flip />
@@ -145,7 +145,7 @@
 		</ul>
 	{:else if enableDetails}
 		<button
-			class="hover:underline flex items-center gap-1 cursor-pointer text-xs"
+			class="hover:underline flex items-center gap-1 text-xs"
 			on:click={() => (displayDetails = true)}
 		>
 			<Fa icon={faDownLong} />

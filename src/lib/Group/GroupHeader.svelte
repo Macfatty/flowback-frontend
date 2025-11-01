@@ -53,7 +53,7 @@
 				<NotificationOptions
 					hoverEffect={false}
 					type="group"
-					api={`group/${$page.params.groupId}`}
+					api={`group/${$page.params.groupId}/notification/subscribe`}
 					id={Number($page.params.groupId)}
 					categories={groupNotificationCategories}
 					labels={groupNotificationCategories}

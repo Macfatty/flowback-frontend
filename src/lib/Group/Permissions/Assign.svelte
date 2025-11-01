@@ -90,7 +90,11 @@
 					/>
 				</button>
 				<div class="ml-6 flex gap-2 flex-wrap mt-4">
-					<Tag tag={{ active: true, id: 1, name: user.permission_name }} displayImac={false} />
+					<Tag
+						Class="!cursor-default"
+						tag={{ active: true, id: 1, name: user.permission_name }}
+						displayImac={false}
+					/>
 					{#if user?.is_admin}
 						<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700 mr-2">
 							{$_('Admin')}
@@ -125,7 +129,7 @@
 							>
 								<Tag
 									tag={{ active: true, id: 1, name: role.role_name ?? '' }}
-									Class={`cursor-pointer ${user.user.id === role.id ? 'bg-blue-300' : 'bg-blue-600'}`}
+									Class={`${user.user.id === role.id ? 'bg-blue-300' : 'bg-blue-600'}`}
 									displayImac={false}
 									id={`permission-${idfy(role.role_name ?? '')}-${idfy(user.user.username)}`}
 								/>
