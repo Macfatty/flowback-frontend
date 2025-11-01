@@ -24,6 +24,15 @@
 		'schedule_event',
 		'thread'
 	];
+
+	const groupNotificationCategoriesReadable = [
+		'Group',
+		'Group User',
+		'Kanban',
+		'Polls',
+		'Events',
+		'Threads'
+	]
 </script>
 
 <div id="group-header" class="bg-white dark:bg-darkobject w-full max-w-[120rem]">
@@ -56,7 +65,7 @@
 					api={`group/${$page.params.groupId}/notification/subscribe`}
 					id={Number($page.params.groupId)}
 					categories={groupNotificationCategories}
-					labels={groupNotificationCategories}
+					labels={groupNotificationCategoriesReadable}
 					Class="text-gray-800 dark:text-gray-200"
 					ClassOpen="-left-[90px]"
 				/>
