@@ -32,7 +32,7 @@ export const checkForLinks = (text: string | null, id: string) => {
 	});
 
 	const descriptionHtmlElement = document.getElementById(id);
-	// ENORMOUS SECURITY RISK: HTML INJECTION. TODO: Fix this without the security flaw
+	// SECURITY RISK: HTML INJECTION. TODO: Fix this without the security flaw
 	// if (descriptionHtmlElement !== null) descriptionHtmlElement.innerHTML = linkified;
 };
 
