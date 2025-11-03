@@ -73,6 +73,8 @@
 				return;
 			}
 		}
+
+		ErrorHandlerStore.set({ message: 'Successfully self-delegated', success: true });
 		loading = false;
 	};
 

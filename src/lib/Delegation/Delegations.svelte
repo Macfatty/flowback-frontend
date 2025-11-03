@@ -146,6 +146,7 @@
 											delegate.user.id !== $userStore?.id}
 										on:input={async () => {
 											await createDelegateRelation(delegate.pool_id);
+											await getDelegateRelations();
 											await updateDelgation(delegate, tag);
 											// Refresh relations to ensure consistency with backend
 											getDelegateRelations();
