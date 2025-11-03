@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { groupUserStore, type GroupUser } from '$lib/Group/interface';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { onMount } from 'svelte';
-	import type { DelegateMinimal, Group, Tag } from '$lib/Group/interface';
+	import type { Group, Tag } from '$lib/Group/interface';
 	import type { Delegate, DelegateRelation } from './interfaces';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
@@ -17,7 +16,6 @@
 	let tags: Tag[] = [],
 		expandedSection: any = null,
 		delegateRelations: DelegateRelation[] = [];
-	// delegationTagsStructure: { delegate_pool_id: number; tags: number[] }[] = [];
 
 	onMount(async () => {
 		groupDelegationSetup();
@@ -39,7 +37,6 @@
 			relation.tags.find((_tag) => _tag.id === tag.id)
 		)?.delegate_pool_id;
 
-		console.log(oldRelation, 'OLD');
 		// If we find such an old delegation, remove it and add the new one
 		if (oldRelation) await saveDelegation(oldRelation, tag.id, 'remove', false);
 		await saveDelegation(delegate.pool_id, tag.id);
@@ -88,8 +85,6 @@
 		let relation: DelegateRelation | undefined = delegateRelations.find(
 			(relation) => relation.delegate_pool_id === delegate
 		);
-
-		console.log(relation, 'REL');
 
 		if (relation === undefined) return;
 

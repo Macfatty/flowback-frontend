@@ -10,7 +10,8 @@
 		loading: boolean,
 		groupId: number,
 		delegates: Delegate[],
-		Class = '';
+		Class = '',
+		tags: number[] = [];
 
 	const deleteDelegation = async () => {
 		await deleteDelegationPool();
@@ -30,6 +31,49 @@
 
 		groupUser.delegate_pool_id = null;
 		// userIsDelegateStore.update((value) => (value = false));
+	};
+
+	const selfDelegate = async () => {
+		loading = true;
+
+		// Create delegation relation to oneself
+		{
+			const { json, res } = await fetchRequest('POST', `group/${groupId}/delegate/create`, {
+				delegate_pool_id: groupUser.delegate_pool_id
+			});
+
+			if (!res.ok) loading = false;
+		}
+
+		// Get Group Tags
+		{
+			// TODO: What happends when limit has been reached?
+			// Potential fix here and at other places: Max number of tags per group?
+			const { res, json } = await fetchRequest('GET', `group/${groupId}/tags?limit=1000`);
+
+			if (!res.ok) {
+				ErrorHandlerStore.set({ message: "Couldn't create self-delegation", success: false });
+				loading = false;
+				return;
+			}
+
+			tags = json?.results.map((tag: any) => tag.id);
+		}
+
+		// Update delegation to self with all tags
+		{
+			const { res } = await fetchRequest('POST', `group/${groupId}/delegate/update`, {
+				tags,
+				delegate_pool_id: groupUser.delegate_pool_id
+			});
+
+			if (!res.ok) {
+				ErrorHandlerStore.set({ message: "Couldn't create self-delegation", success: false });
+				loading = false;
+				return;
+			}
+		}
+		loading = false;
 	};
 
 	/*
@@ -55,4 +99,4 @@
 
 <Button Class={`bg-red-500 ${Class}`} onClick={deleteDelegation}>{$_('Stop being delegate')}</Button
 >
-<Button>{("Self-Delegate")}</Button>
+<Button onClick={selfDelegate}>{'Self-Delegate'}</Button>
