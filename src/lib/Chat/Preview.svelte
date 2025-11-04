@@ -205,7 +205,7 @@
 			<div class="flex flex-col max-w-[40%]">
 				<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
 					<!-- {chatter?.user.username} -->
-					{chatter.recent_message?.channel_title || 'Name not found'}
+					{chatter.channel_title || 'Name not found'}
 				</span>
 				<span class="text-gray-400 text-sm h-[20px]">
 					{chatter?.recent_message?.message || ''}
@@ -213,7 +213,7 @@
 			</div>
 		</button>
 		{#if creatingGroup}
-			<div id={`chat-${idfy(chatter.recent_message?.channel_title ?? '')}`}>
+			<div id={`chat-${idfy(chatter.channel_title ?? '')}`}>
 				<Button
 					onClick={() => {
 						if (groupMembers.some((member) => member.id === chatter.id)) {

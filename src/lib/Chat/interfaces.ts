@@ -47,7 +47,6 @@ export interface PreviewMessage {
 		notified: boolean;
 		//For group/preview
 		group_id?: number;
-		channel_title?: string;
 		//For direct/preview
 		user: {
 			id: number;
@@ -59,6 +58,7 @@ export interface PreviewMessage {
 		target_username?: string;
 		channel_origin_name?: 'user' | 'group' | 'workgroup' | 'user_group';
 	} | null;
+	channel_title?: string;
 	channel_id?: number;
 	id: number;
 	timestamp: string;

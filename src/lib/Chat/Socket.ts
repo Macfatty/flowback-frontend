@@ -24,28 +24,28 @@ const createSocket = (userId: number) => {
 
 		console.log(parsedMessage, '<- New message received');
 
-		// previewStore.update((previews) => {
-		// 	return previews
-		// 	if (!previews) return previews;
+		previewStore.update((previews) => {
+			if (!previews.find((p) => p.channel_id === parsedMessage.id)) {
 
-		// 	if (!previews.find((p) => p.recent_message?.channel_id === parsedMessage.channel_id)) {
+				return [...previews, {
+					channel_id: parsedMessage.channel_id,
+					channel_title: parsedMessage.channel_origin_name === "user" ? parsedMessage.user.username : parsedMessage.channel_title,
+					id: parsedMessage.channel_id,
+					timestamp: parsedMessage.timestamp,
+					recent_message: {
+						channel_id: parsedMessage.channel_id,
+						channel_origin_name: parsedMessage.channel_origin_name,
+						channel_title: parsedMessage.channel_title,
+						message: parsedMessage.message,
+						timestamp: parsedMessage.timestamp,
+						notified: true
+					},
+					participants: parsedMessage.participants
+				}];
 
-		// 		return [...previews, {
-		// 			recent_message: {
-		// 				channel_id: parsedMessage.channel_id,
-		// 				channel_origin_name: parsedMessage.channel_origin_name,
-		// 				channel_title: parsedMessage.channel_title,
-		// 				message: parsedMessage.message,
-		// 				timestamp: parsedMessage.timestamp,
-		// 				notified: true
-		// 			},
-		// 			participants: parsedMessage.participants
-		// 		}];
-
-		// 	}
-		// 	else return previews
-		// }
-		// )
+			}
+		}
+		)
 
 	};
 
@@ -73,7 +73,7 @@ const sendMessage = async (
 	parent_id: number | null = null
 ) => {
 	console.log('at the place');
-	
+
 	if (socket.readyState !== WebSocket.OPEN || !message.trim()) return false;
 
 	try {
