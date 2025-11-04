@@ -30,10 +30,10 @@
 
 	// Handle chat selection and clear notifications
 	const clickedChatter = async (chatterId: any) => {
-		let message = previews.find((message) => message.channel_id === chatterId);
+		let message = previews.find((message) => message.recent_message.channel_id === chatterId);
 		if (message) {
 			message.timestamp = new Date().toString();
-			message.notified = false;
+			message.recent_message.notified = false;
 		}
 		previews = previews;
 
@@ -99,8 +99,8 @@
 	$: if (selectedChatChannelId) updateChatTitle();
 
 	$: if (previews) {
-		let previewsNotified = previews.filter((preview) => preview.notified);
-		let previewsNotNotified = previews.filter((preview) => !preview.notified);
+		let previewsNotified = previews.filter((preview) => preview.recent_message.notified);
+		let previewsNotNotified = previews.filter((preview) => !preview.recent_message.notified);
 
 		previewsNotNotified = previewsNotNotified.sort(
 			(preview1, preview2) =>
@@ -181,7 +181,6 @@
 						<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
 							{groupChat.message_channel_name}
 						</span>
-						<span class="text-gray-400 text-sm truncate h-[20px] overflow-x-hidden max-w-[10%]" />
 					</div>
 				</button>
 			{/if}
@@ -191,27 +190,27 @@
 		<!-- {#if chatter.channel_title?.includes(chatSearch) && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)} -->
 		<button
 			class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
-			class:bg-gray-200={selectedChat === chatter.channel_id}
-			class:dark:bg-gray-700={selectedChat === chatter.channel_id}
-			on:click={() => clickedChatter(chatter.channel_id)}
+			class:bg-gray-200={selectedChat === chatter.recent_message.channel_id}
+			class:dark:bg-gray-700={selectedChat === chatter.recent_message.channel_id}
+			on:click={() => clickedChatter(chatter.recent_message.channel_id)}
 		>
-			{#if chatter?.notified}
+			{#if chatter?.recent_message.notified}
 				<div class="p-1 rounded-full bg-purple-300"></div>
 			{/if}
 
-			<ProfilePicture profilePicture={chatter?.profile_image} />
+			<ProfilePicture profilePicture={chatter?.recent_message.profile_image} />
 			<div class="flex flex-col max-w-[40%]">
 				<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
 					<!-- {chatter?.user.username} -->
-					{chatter.channel_title || 'Name not found'}
+					{chatter.recent_message.channel_title || 'Name not found'}
 				</span>
 				<span class="text-gray-400 text-sm h-[20px]">
-					{chatter?.message || ''}
+					{chatter?.recent_message.message || ''}
 				</span>
 			</div>
 		</button>
 		{#if creatingGroup}
-			<div id={`chat-${idfy(chatter.channel_title ?? '')}`}>
+			<div id={`chat-${idfy(chatter.recent_message.channel_title ?? '')}`}>
 				<Button
 					onClick={() => {
 						if (groupMembers.some((member) => member.id === chatter.id)) {
