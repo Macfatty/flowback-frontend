@@ -20,6 +20,8 @@ const createSocket = (userId: number) => {
 		if (parsedMessage?.user.id !== userId) {
 			messageStore.set(parsedMessage);
 		}
+
+		
 	};
 
 	socket.onclose = (event) => {

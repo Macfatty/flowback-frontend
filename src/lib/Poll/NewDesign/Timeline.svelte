@@ -138,7 +138,7 @@
 				{#if i !== 0}
 					<li class="border-b md:border-b-0 flex justify-between flex-col md:flex-row text-center">
 						<div class="mb-4 md:mb-0">{$_(label)}:</div>
-						<div class="mb-4 md:mb-0">{datesArray[i - 1]} CET</div>
+						<div class="mb-4 md:mb-0">{datesArray[i - 1]}</div>
 					</li>
 				{/if}
 			{/each}

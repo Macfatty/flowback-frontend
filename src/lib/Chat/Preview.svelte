@@ -94,7 +94,9 @@
 			clickedChatter(partner);
 		});
 	});
-	$: if (chatSearch !== undefined) getPreview();
+
+	// Update previews based on search
+	$: if (chatSearch) getPreview();
 
 	$: if (selectedChatChannelId) updateChatTitle();
 
@@ -218,9 +220,9 @@
 						}
 
 						const newMember = {
-							id: chatter.user.id,
-							username: chatter.user.username ?? 'Unknown',
-							profile_image: chatter.user.profile_image ?? null
+							id: chatter.recent_message.user.id,
+							username: chatter.recent_message.user.username ?? 'Unknown',
+							profile_image: chatter.recent_message.user.profile_image ?? null
 						};
 						//@ts-ignore
 						groupMembers = [...groupMembers, newMember];

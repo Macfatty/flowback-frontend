@@ -59,31 +59,35 @@
 		if (newerMessages) await getRecentMessages();
 
 		let previewMessage = previewDirect.find(
-			(p) => p.id === selectedChat || p.group_id === selectedChat
+			(p) => p.id === selectedChat || p.recent_message.group_id === selectedChat
 		);
 
 		if (previewMessage) {
-			previewMessage.message = message;
-			previewMessage.created_at = new Date().toString();
-			previewMessage.notified = false;
+			previewMessage.recent_message.message = message;
+			previewMessage.recent_message.created_at = new Date().toString();
+			previewMessage.recent_message.notified = false;
 			previewMessage = previewMessage;
 		} else {
+			return;
 			previewMessage = {
 				id: Date.now(),
-				message,
-				created_at: new Date().toString(),
 				timestamp: new Date().toString(),
-				notified: false,
-				profile_image: $userStore?.profile_image || '',
-				user_id: $userStore?.id || -1,
-				user: {
-					id: $userStore?.id || -1,
-					username: $userStore?.username || '',
+				participants: previewMessage?.participants ?? [],
+				recent_message: {
+					message,
+					created_at: new Date().toString(),
+					notified: false,
 					profile_image: $userStore?.profile_image || '',
-					banner_image: ''
-				},
-				channel_id: $chatPartnerStore,
-				...(selectedPage === 'direct' ? { target_id: selectedChat } : { group_id: selectedChat })
+					user_id: $userStore?.id || -1,
+					user: {
+						id: $userStore?.id || -1,
+						username: $userStore?.username || '',
+						profile_image: $userStore?.profile_image || '',
+						banner_image: ''
+					},
+					channel_id: $chatPartnerStore,
+					...(selectedPage === 'direct' ? { target_id: selectedChat } : { group_id: selectedChat })
+				}
 			};
 		}
 
@@ -93,9 +97,9 @@
 			return;
 		}
 
-		const preview = previewDirect.find((p) => p.channel_id === $chatPartnerStore);
+		const preview = previewDirect.find((p) => p.recent_message.channel_id === $chatPartnerStore);
 		if (preview) {
-			preview.message = message;
+			preview.recent_message.message = message;
 		}
 		previewDirect = previewDirect;
 
@@ -169,7 +173,7 @@
 			messages = messages;
 			// updateUserData($chatPartnerStore, new Date());
 		} else {
-			let previewMessage = preview.find((p) => p.channel_id === message.channel_id);
+			let previewMessage = preview.find((p) => p.recent_message.channel_id === message.channel_id);
 			if (!previewMessage) {
 				previewMessage = {
 					id: message.id,
@@ -187,16 +191,16 @@
 				};
 				preview.push(previewMessage);
 			} else {
-				previewMessage.message = message.message;
-				previewMessage.created_at = message.created_at.toString();
-				previewMessage.notified = true;
+				previewMessage.recent_message.message = message.message;
+				previewMessage.recent_message.created_at = message.created_at.toString();
+				previewMessage.recent_message.notified = true;
 			}
 			preview = [...preview];
 		}
 
-		const _preview = previewDirect.find((p) => p.channel_id === $chatPartnerStore);
+		const _preview = previewDirect.find((p) => p.recent_message.channel_id === $chatPartnerStore);
 		if (_preview) {
-			_preview.message = message.message;
+			_preview.recent_message.message = message.message;
 		}
 		previewDirect = previewDirect;
 	};
