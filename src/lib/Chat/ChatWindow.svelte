@@ -60,15 +60,15 @@
 	if (newerMessages) await getRecentMessages();
 	
 	let previewMessage = $previewStore?.find(
-		(p) => p.id === selectedChat || p.recent_message.group_id === selectedChat
+		(p) => p.id === selectedChat || p.recent_message?.group_id === selectedChat
 	);
 	console.log('after');
 	
 		if (previewMessage) {
-			previewMessage.recent_message.message = message;
-			previewMessage.recent_message.created_at = new Date().toString();
-			previewMessage.recent_message.notified = false;
-			previewMessage = previewMessage;
+			// previewMessage.recent_message.message = message;
+			// previewMessage.recent_message.created_at = new Date().toString();
+			// previewMessage.recent_message.notified = false;
+			// previewMessage = previewMessage;
 		} else {
 			previewMessage = {
 				id: Date.now(),
@@ -98,9 +98,9 @@
 			return;
 		}
 
-		const preview = $previewStore?.find((p) => p.recent_message.channel_id === $chatPartnerStore);
+		const preview = $previewStore?.find((p) => p.channel_id === $chatPartnerStore);
 		if (preview) {
-			preview.recent_message.message = message;
+			// preview.recent_message.message = message;
 		}
 		messages.push({
 			id: Date.now(),
@@ -158,7 +158,7 @@
 					username: message.user?.username,
 					profile_image: message.user?.profile_image
 				},
-				created_at: message.created_at.toString(),
+				created_at: new Date().toString(),
 				active: true,
 				channel_id: message.channel_id,
 				channel_origin_name: message.channel_origin_name,
@@ -172,12 +172,12 @@
 			messages = messages;
 			// updateUserData($chatPartnerStore, new Date());
 		} else {
-			let previewMessage = preview.find((p) => p.recent_message.channel_id === message.channel_id);
+			let previewMessage = preview.find((p) => p.channel_id === message.channel_id);
 			if (!previewMessage) {
 				previewMessage = {
 					id: message.id,
 					message: message.message,
-					created_at: message.created_at.toString(),
+					// created_at: message.created_at.toString(),
 					timestamp: new Date().toString(),
 					notified: true,
 					profile_image: message.user?.profile_image,
@@ -190,16 +190,16 @@
 				};
 				preview.push(previewMessage);
 			} else {
-				previewMessage.recent_message.message = message.message;
-				previewMessage.recent_message.created_at = message.created_at.toString();
-				previewMessage.recent_message.notified = true;
+				// previewMessage.recent_message.message = message.message;
+				// previewMessage.recent_message.created_at = message.created_at.toString();
+				// previewMessage.recent_message.notified = true;
 			}
 			preview = [...preview];
-			$previewStore = preview;
+			// $previewStore = preview;
 		}
 
-		const _preview = $previewStore?.find((p) => p.recent_message.channel_id === $chatPartnerStore);
-		if (_preview) {
+		const _preview = $previewStore?.find((p) => p.channel_id === $chatPartnerStore);
+		if (_preview && _preview.recent_message) {
 			_preview.recent_message.message = message.message;
 		}
 	};
@@ -290,7 +290,7 @@
 							{message.message}
 						</p>
 						<span class="text-[14px] text-gray-400 ml-3">
-							{formatDate(message.created_at || new Date())}
+							<!-- {formatDate(message?.created_at || new Date())} -->
 						</span>
 					</li>
 				{/if}

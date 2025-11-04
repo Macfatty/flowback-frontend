@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import { type Message1 } from './interfaces';
 import { env } from '$env/dynamic/public';
-
+import { previewStore } from './functions';
 export const messageStore = writable<Message1 | null>(null);
 
 const createSocket = (userId: number) => {
@@ -18,10 +18,34 @@ const createSocket = (userId: number) => {
 
 	socket.onmessage = (event) => {
 		const parsedMessage = JSON.parse(event.data);
-		if (parsedMessage?.user.id !== userId) {
+		if (parsedMessage?.user?.id !== userId) {
 			messageStore.set(parsedMessage);
 		}
 
+		console.log(parsedMessage, '<- New message received');
+
+		// previewStore.update((previews) => {
+		// 	return previews
+		// 	if (!previews) return previews;
+
+		// 	if (!previews.find((p) => p.recent_message?.channel_id === parsedMessage.channel_id)) {
+
+		// 		return [...previews, {
+		// 			recent_message: {
+		// 				channel_id: parsedMessage.channel_id,
+		// 				channel_origin_name: parsedMessage.channel_origin_name,
+		// 				channel_title: parsedMessage.channel_title,
+		// 				message: parsedMessage.message,
+		// 				timestamp: parsedMessage.timestamp,
+		// 				notified: true
+		// 			},
+		// 			participants: parsedMessage.participants
+		// 		}];
+
+		// 	}
+		// 	else return previews
+		// }
+		// )
 
 	};
 

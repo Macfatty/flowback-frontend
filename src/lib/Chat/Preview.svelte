@@ -32,10 +32,10 @@
 
 	// Handle chat selection and clear notifications
 	const clickedChatter = async (chatterId: any) => {
-		let message = $previewStore?.find((message) => message.recent_message.channel_id === chatterId);
+		let message = $previewStore?.find((message) => message.channel_id === chatterId);
 		if (message) {
 			message.timestamp = new Date().toString();
-			message.recent_message.notified = false;
+			// message.recent_message.notified = false;
 		}
 
 		selectedChat = chatterId;
@@ -80,7 +80,7 @@
 		);
 		if (!res.ok) return [];
 
-		$previewStore = fixDirectMessageChannelName(json?.results, $userStore?.id);
+		// $previewStore = fixDirectMessageChannelName(json?.results, $userStore?.id);
 	};
 
 	onMount(async () => {
@@ -103,8 +103,8 @@
 
 	$: if ($previewStore) {
 		
-		let previewsNotified = $previewStore.filter((preview) => preview.recent_message.notified);
-		let previewsNotNotified = $previewStore.filter((preview) => !preview.recent_message.notified);
+		let previewsNotified = $previewStore.filter((preview) => preview.recent_message?.notified);
+		let previewsNotNotified = $previewStore.filter((preview) => !preview.recent_message?.notified);
 
 		// previewsNotNotified = previewsNotNotified.sort(
 		// 	(preview1, preview2) =>
@@ -193,27 +193,27 @@
 		<!-- {#if chatter.channel_title?.includes(chatSearch) && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)} -->
 		<button
 			class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
-			class:bg-gray-200={selectedChat === chatter.recent_message.channel_id}
-			class:dark:bg-gray-700={selectedChat === chatter.recent_message.channel_id}
-			on:click={() => clickedChatter(chatter.recent_message.channel_id)}
+			class:bg-gray-200={selectedChat === chatter.channel_id}
+			class:dark:bg-gray-700={selectedChat === chatter.channel_id}
+			on:click={() => clickedChatter(chatter.channel_id)}
 		>
-			{#if chatter?.recent_message.notified}
+			{#if chatter?.recent_message?.notified}
 				<div class="p-1 rounded-full bg-purple-300"></div>
 			{/if}
 
-			<ProfilePicture profilePicture={chatter?.recent_message.profile_image} />
+			<ProfilePicture profilePicture={chatter?.recent_message?.profile_image} />
 			<div class="flex flex-col max-w-[40%]">
 				<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
 					<!-- {chatter?.user.username} -->
-					{chatter.recent_message.channel_title || 'Name not found'}
+					{chatter.recent_message?.channel_title || 'Name not found'}
 				</span>
 				<span class="text-gray-400 text-sm h-[20px]">
-					{chatter?.recent_message.message || ''}
+					{chatter?.recent_message?.message || ''}
 				</span>
 			</div>
 		</button>
 		{#if creatingGroup}
-			<div id={`chat-${idfy(chatter.recent_message.channel_title ?? '')}`}>
+			<div id={`chat-${idfy(chatter.recent_message?.channel_title ?? '')}`}>
 				<Button
 					onClick={() => {
 						if (groupMembers.some((member) => member.id === chatter.id)) {
@@ -221,9 +221,9 @@
 						}
 
 						const newMember = {
-							id: chatter.recent_message.user.id,
-							username: chatter.recent_message.user.username ?? 'Unknown',
-							profile_image: chatter.recent_message.user.profile_image ?? null
+							id: chatter.recent_message?.user.id,
+							username: chatter.recent_message?.user.username ?? 'Unknown',
+							profile_image: chatter.recent_message?.user.profile_image ?? null
 						};
 						//@ts-ignore
 						groupMembers = [...groupMembers, newMember];

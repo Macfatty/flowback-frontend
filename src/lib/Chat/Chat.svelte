@@ -45,7 +45,7 @@
 		if (!chatterId) return;
 
 		// Clear notification for messages
-		let message = $previewStore?.find((message) => message.recent_message.channel_id === chatterId);
+		let message = $previewStore?.find((message) => message.channel_id === chatterId);
 		if (message) {
 			message.timestamp = new Date().toString();
 			// message.notified = false;
@@ -68,7 +68,7 @@
 	});
 
 	// Reactive variables to track unread messages
-	$: displayNotification = $previewStore?.some((p) => p.recent_message.notified);
+	$: displayNotification = $previewStore?.some((p) => p.recent_message?.notified);
 
 	//Handles the chatOpen=true in the URL for correct "going back in history" behaviour
 	$: (() => {
@@ -87,11 +87,11 @@
 		$previewStore?.length > 0
 	) {
 		const firstDirectChat = $previewStore[0];
-		selectedChat = firstDirectChat.recent_message.channel_id || null;
+		selectedChat = firstDirectChat.channel_id || null;
 		// selectedChatChannelId = firstDirectChat.channel_id || null;
-		chatPartnerStore.set(firstDirectChat.recent_message.channel_id || -1);
+		chatPartnerStore.set(firstDirectChat.channel_id || -1);
 		// Clear notification and update timestamp for the selected chat
-		clearChatNotification(firstDirectChat.recent_message.channel_id || -1);
+		clearChatNotification(firstDirectChat.channel_id || -1);
 	}
 
 	// Reset chat partner when chat is closed
@@ -150,8 +150,7 @@
 				<CreateChatGroup bind:creatingGroup bind:groupMembers />
 			{:else}
 				<ChatWindow
-					bind:selectedChat
-					bind:selectedChatChannelId
+					bind:selectedChat		
 					bind:selectedPage
 					bind:isLookingAtOlderMessages
 				/>

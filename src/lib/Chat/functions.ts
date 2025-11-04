@@ -26,14 +26,13 @@ export const fixDirectMessageChannelName = (previews: PreviewMessage[], userId: 
     if (userId === undefined) previews;
 
     previews.map((preview) => {
-        if (preview.recent_message.channel_origin_name === 'user')
+        if (preview.recent_message?.channel_origin_name === 'user')
             preview.recent_message.channel_title = preview.participants.find(
                 (participant) => participant.id !== userId
             )?.username;
     });
     return previews;
 };
-
 
 // Store that holds whether the chat is open or closed
 export const chatOpenStore = writable(false);
