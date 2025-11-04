@@ -6,7 +6,8 @@ export const messageStore = writable<Message1 | null>(null);
 
 const createSocket = (userId: number) => {
 	const token = localStorage.getItem('token');
-	// if (!token) return;
+	// If logged out, don't create socket
+	if (!token) return;
 
 	const link = `${env.PUBLIC_WEBSOCKET_API}/chat/ws?token=${token}`;
 	const socket = new WebSocket(link);
@@ -21,7 +22,7 @@ const createSocket = (userId: number) => {
 			messageStore.set(parsedMessage);
 		}
 
-		
+
 	};
 
 	socket.onclose = (event) => {
@@ -47,6 +48,8 @@ const sendMessage = async (
 	attachments_id: number | null = null,
 	parent_id: number | null = null
 ) => {
+	console.log('at the place');
+	
 	if (socket.readyState !== WebSocket.OPEN || !message.trim()) return false;
 
 	try {

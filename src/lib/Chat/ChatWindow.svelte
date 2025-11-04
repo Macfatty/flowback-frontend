@@ -16,11 +16,10 @@
 	import { chatWindow as chatWindowLimit } from '../Generic/APILimits.json';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
-	import { chatOpenStore, chatPartnerStore } from './functions';
+	import { chatOpenStore, chatPartnerStore, previewStore } from './functions';
 
 	export let selectedChat: number | null,
 		selectedPage: 'direct' | 'group',
-		previewDirect: PreviewMessage[] = [],
 		isLookingAtOlderMessages: boolean;
 
 	let message: string = '',
@@ -53,26 +52,28 @@
 	};
 
 	const postMessage = async () => {
+		
 		if (!selectedChat || !$chatPartnerStore || message.length === 0 || message.match(/^\s+$/))
-			return;
-
-		if (newerMessages) await getRecentMessages();
-
-		let previewMessage = previewDirect.find(
-			(p) => p.id === selectedChat || p.recent_message.group_id === selectedChat
-		);
-
+		return;
+	
+	console.log('before');
+	if (newerMessages) await getRecentMessages();
+	
+	let previewMessage = $previewStore?.find(
+		(p) => p.id === selectedChat || p.recent_message.group_id === selectedChat
+	);
+	console.log('after');
+	
 		if (previewMessage) {
 			previewMessage.recent_message.message = message;
 			previewMessage.recent_message.created_at = new Date().toString();
 			previewMessage.recent_message.notified = false;
 			previewMessage = previewMessage;
 		} else {
-			return;
 			previewMessage = {
 				id: Date.now(),
 				timestamp: new Date().toString(),
-				participants: previewMessage?.participants ?? [],
+				participants: [],
 				recent_message: {
 					message,
 					created_at: new Date().toString(),
@@ -97,12 +98,10 @@
 			return;
 		}
 
-		const preview = previewDirect.find((p) => p.recent_message.channel_id === $chatPartnerStore);
+		const preview = $previewStore?.find((p) => p.recent_message.channel_id === $chatPartnerStore);
 		if (preview) {
 			preview.recent_message.message = message;
 		}
-		previewDirect = previewDirect;
-
 		messages.push({
 			id: Date.now(),
 			message,
@@ -196,21 +195,20 @@
 				previewMessage.recent_message.notified = true;
 			}
 			preview = [...preview];
+			$previewStore = preview;
 		}
 
-		const _preview = previewDirect.find((p) => p.recent_message.channel_id === $chatPartnerStore);
+		const _preview = $previewStore?.find((p) => p.recent_message.channel_id === $chatPartnerStore);
 		if (_preview) {
 			_preview.recent_message.message = message.message;
 		}
-		previewDirect = previewDirect;
 	};
 
 	// Subscribe to incoming messages
 	const receiveMessage = () => {
 		const unsubscribe = messageStore.subscribe((message: Message1 | null) => {
 			if (!message || message.user?.id === $userStore?.id) return;
-			handleReceiveMessage(previewDirect, message);
-			previewDirect = previewDirect;
+			handleReceiveMessage($previewStore ?? [], message);
 		});
 		return unsubscribe;
 	};

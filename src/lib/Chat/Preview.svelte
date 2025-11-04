@@ -8,7 +8,10 @@
 		chatOpenStore,
 		chatPartnerStore,
 		fixDirectMessageChannelName,
-		getUserChannelId
+		getUserChannelId,
+
+		previewStore
+
 	} from './functions';
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
@@ -24,18 +27,16 @@
 	export let selectedChat: number | null,
 		selectedChatChannelId: number | null,
 		creatingGroup: boolean,
-		previews: PreviewMessage[] = [],
 		inviteList: invite[] = [],
 		groupMembers: GroupMembers[] = [];
 
 	// Handle chat selection and clear notifications
 	const clickedChatter = async (chatterId: any) => {
-		let message = previews.find((message) => message.recent_message.channel_id === chatterId);
+		let message = $previewStore?.find((message) => message.recent_message.channel_id === chatterId);
 		if (message) {
 			message.timestamp = new Date().toString();
 			message.recent_message.notified = false;
 		}
-		previews = previews;
 
 		selectedChat = chatterId;
 		chatPartnerStore.set(chatterId);
@@ -79,8 +80,7 @@
 		);
 		if (!res.ok) return [];
 
-		previews = fixDirectMessageChannelName(json?.results, $userStore?.id);
-		previews = previews;
+		$previewStore = fixDirectMessageChannelName(json?.results, $userStore?.id);
 	};
 
 	onMount(async () => {
@@ -93,6 +93,7 @@
 			selectedChatChannelId = partner;
 			clickedChatter(partner);
 		});
+
 	});
 
 	// Update previews based on search
@@ -100,22 +101,22 @@
 
 	$: if (selectedChatChannelId) updateChatTitle();
 
-	$: if (previews) {
-		let previewsNotified = previews.filter((preview) => preview.recent_message.notified);
-		let previewsNotNotified = previews.filter((preview) => !preview.recent_message.notified);
+	$: if ($previewStore) {
+		
+		let previewsNotified = $previewStore.filter((preview) => preview.recent_message.notified);
+		let previewsNotNotified = $previewStore.filter((preview) => !preview.recent_message.notified);
 
-		previewsNotNotified = previewsNotNotified.sort(
-			(preview1, preview2) =>
-				new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
-		);
+		// previewsNotNotified = previewsNotNotified.sort(
+		// 	(preview1, preview2) =>
+		// 		new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
+		// );
 
-		previewsNotified = previewsNotified.sort(
-			(preview1, preview2) =>
-				new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
-		);
+		// previewsNotified = previewsNotified.sort(
+		// 	(preview1, preview2) =>
+		// 		new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
+		// );
 
-		previews = [...previewsNotified, ...previewsNotNotified];
-		previews = previews;
+		// $previewStore = [...previewsNotified, ...previewsNotNotified];
 	}
 </script>
 
@@ -188,7 +189,7 @@
 			{/if}
 		{/each}
 	{/if}
-	{#each previews as chatter}
+	{#each $previewStore as chatter}
 		<!-- {#if chatter.channel_title?.includes(chatSearch) && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)} -->
 		<button
 			class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
