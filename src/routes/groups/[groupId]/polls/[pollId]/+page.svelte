@@ -129,16 +129,16 @@
 
 				<!-- PHASE 1: AREA VOTE -->
 			{:else if phase === 'area_vote'}
-				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-full"><AreaVote /></div>
-					<div slot="right" class="!p-0">
-						<Comments bind:proposals api={'poll'} />
-					</div>
-				</Structure>
+			<Structure bind:phase bind:poll>
+				<div slot="left" class="h-full"><AreaVote /></div>
+				<div slot="bottom" class="!p-0">
+					<Comments bind:proposals api={'poll'} />
+				</div>
+			</Structure>
 
-				<!-- PHASE 2: PROPOSAL CREATION -->
+			<!-- PHASE 2: PROPOSAL CREATION -->
 			{:else if phase === 'proposal'}
-				<Structure bind:phase bind:poll bind:resetScroll>
+				<Structure bind:phase bind:poll bind:resetScroll showRightOnMobile={!!selectedProposal}>
 					<div slot="left" class="h-full relative flex flex-col">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
@@ -158,6 +158,16 @@
 					</div>
 					<div slot="right" class="relative h-full max-h-full overflow-y-auto">
 						{#if selectedProposal}
+							<div class="md:hidden">
+								<Button onClick={() => {
+									selectedProposal = null;
+									resetScroll = true;
+								}}
+									buttonStyle="primary-light"
+								>
+									<Fa icon={faArrowLeft} />
+								</Button>
+							</div>
 							<div class="flex flex-col p-2">
 								<span
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
@@ -189,9 +199,9 @@
 					</div>
 				</Structure>
 
-				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
+			<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
 			{:else if phase === 'prediction_statement'}
-				<Structure bind:phase bind:poll bind:resetScroll overrideGenericStyle={''}>
+				<Structure bind:phase bind:poll bind:resetScroll overrideGenericStyle={''} showRightOnMobile={!!selectedProposal || displayForm}>
 					<div slot="left" class="relative h-full">
 						<span>{$_('Proposals')} ({proposals?.length})</span>
 						<div class="h-full overflow-auto max-h-[80%]">
@@ -203,10 +213,15 @@
 								bind:proposalsToPredictionMarket
 							/>
 						</div>
+						{#if proposalsToPredictionMarket.length === 0}
+							<span class="md:hidden text-center block text-primary dark:text-secondary font-semibold pt-4">
+								{$_('To make a consequence, please select at least one proposal')}
+							</span>
+						{/if}
 						<Button
 							Class="w-full absolute bottom-0 mt-2"
 							buttonStyle="primary-light"
-							disabled={displayForm && !selectedProposal}
+							disabled={proposalsToPredictionMarket.length === 0}
 							onClick={() => {
 								selectedProposal = null;
 								displayForm = true;
@@ -216,6 +231,17 @@
 					<div slot="right" class="relative h-full">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
+								<div class="md:hidden">
+									<Button onClick={() => {
+										displayForm = false;
+										selectedProposal = null;
+										resetScroll = true;
+									}}
+										buttonStyle="primary-light"
+									>
+										<Fa icon={faArrowLeft} />
+									</Button>
+								</div>
 								<div
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
 								>
@@ -229,6 +255,17 @@
 								<PredictionStatements bind:selectedProposal bind:phase bind:poll />
 							</div>
 						{:else if proposalsToPredictionMarket.length === 0}
+							<div class="md:hidden">
+								<Button onClick={() => {
+									displayForm = false;
+									selectedProposal = null;
+									resetScroll = true;
+								}}
+									buttonStyle="primary-light"
+								>
+									<Fa icon={faArrowLeft} />
+								</Button>
+							</div>
 							<span class="text-center block text-primary dark:text-secondary font-semibold pt-4">
 								{$_('To make a consequence, please select at least one proposal')}
 							</span>
