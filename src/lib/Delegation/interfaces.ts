@@ -1,5 +1,5 @@
 import type { GroupUser } from '$lib/User/interfaces';
-import type { DelegateMinimal} from '$lib/Group/interface';
+import type { DelegateMinimal } from '$lib/Group/interface';
 
 export interface Delegate {
 	tags: { id: number; tag_name: string; name: string; active: boolean }[];
@@ -23,8 +23,45 @@ export interface Delegate {
 }
 
 export interface VoteHistory {
-	poll_id: number;
-	poll_title: string;
+	poll: {
+
+		id: number;
+		created_by: {
+			id: number;
+			is_admin: boolean;
+			active: boolean;
+			// add other fields here if known
+			[key: string]: any;
+		};
+		group_id: number;
+		group_name: string;
+		group_image: string | null;
+		tag_id: number;
+		tag_name: string;
+		attachments: any[] | null;
+		hide_poll_users: boolean;
+		title: string;
+		description: string;
+		poll_type: number;
+		allow_fast_forward: boolean;
+		public: boolean;
+		start_date: string; // ISO 8601 date string
+		proposal_end_date: string;
+		prediction_statement_end_date: string;
+		area_vote_end_date: string;
+		prediction_bet_end_date: string;
+		delegate_vote_end_date: string;
+		vote_end_date: string;
+		end_date: string;
+		status: number;
+		result: boolean;
+		participants: number;
+		pinned: boolean;
+		dynamic: boolean;
+		interval_mean_absolute_correctness: number | null;
+		quorum: number | null;
+	}
+
 	vote: [
 		{
 			proposal_id: number;
@@ -36,12 +73,6 @@ export interface VoteHistory {
 			raw_score?: number;
 		}
 	];
-	poll_description?: string;
-	subject_area?: string;
-	tag_name?: string;
-	historical_data?: any;
-	created_at?: string;
-	poll_interval_mean_absolute_correctness?: number | null;
 }
 
 export interface DelegatePool {
