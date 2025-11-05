@@ -11,20 +11,21 @@
 	import type { timeProposal } from '$lib/Poll/interface';
 	import Button from '$lib/Generic/Button.svelte';
 	import { ProposalsApi } from '$lib/api/proposals';
+	import { ErrorHandlerStore } from '../ErrorHandlerStore';
 
 	export let x = 10,
 		y = 10,
 		votes: number[],
 		proposals: timeProposal[];
 
-	let weekOffset = 0;
-	let initialMonday: Date;
-	let loading = false;
-	let selectedDates: Date[] = [];
-	let weekDates: Date[] = [];
-	let currentMonth = '';
-	let currentYear = 0;
-	let noChanges = true;
+	let weekOffset = 0,
+		initialMonday: Date,
+		loading = false,
+		selectedDates: Date[] = [],
+		weekDates: Date[] = [],
+		currentMonth = '',
+		currentYear = 0,
+		noChanges = true;
 
 	const pollId = $page.params.pollId;
 
@@ -44,39 +45,43 @@
 		return monday;
 	};
 
-	// Data fetching and manipulation
 	async function saveSelection() {
 		loading = true;
-		try {
-			const validSelectedDates = selectedDates.filter((date): date is Date => date instanceof Date);
-			let voteIds: number[] = [];
+		let voteIds: number[] = [];
 
-			for (const date of validSelectedDates) {
-				const existingProposal = proposals.find(proposal => {
-					const proposalDate = new Date(proposal.start_date);
-					return proposalDate.getTime() === date.getTime();
+		for (const date of selectedDates) {
+			const existingProposal = proposals.find((proposal) => {
+				const proposalDate = new Date(proposal.start_date);
+				return proposalDate.getTime() === date.getTime();
+			});
+
+			if (existingProposal) {
+				voteIds.push(existingProposal.id);
+			} else {
+				const end_date = new Date(date.getTime() + 60 * 60 * 1000);
+				const newProposalId = await ProposalsApi.createProposal(pollId, {
+					start_date: date,
+					end_date
 				});
-
-				if (existingProposal) {
-					voteIds.push(existingProposal.id);
-				} else {
-					const end_date = new Date(date.getTime() + 60 * 60 * 1000);
-					const newProposalId = await ProposalsApi.createProposal(pollId, { start_date: date, end_date });
-					voteIds.push(newProposalId);
-				}
+				voteIds.push(newProposalId);
 			}
+		}
 
+		try {
 			await ProposalsApi.updateVotes(pollId, voteIds);
-			votes = voteIds;
 			const response = await ProposalsApi.getProposals(pollId);
 			proposals = response.results;
-			selectedDates = validSelectedDates;
-			noChanges = true;
 		} catch (error) {
-			console.error('Error saving selection:', error);
-		} finally {
+			ErrorHandlerStore.set({ message: "Couldn't save selections", success: false });
 			loading = false;
+			return;
 		}
+
+		votes = voteIds;
+		selectedDates = selectedDates;
+		noChanges = true;
+		loading = false;
+		ErrorHandlerStore.set({ message: 'Successfully saved selections', success: true });
 	}
 
 	// UI interaction handlers
@@ -86,15 +91,13 @@
 	};
 
 	const toggleDate = (date: Date) => {
-		if (!(date instanceof Date)) return;
-		
-		selectedDates = isSelected(date) 
-			? selectedDates.filter(d => d.getTime() !== date.getTime())
+		selectedDates = isSelected(date)
+			? selectedDates.filter((d) => d.getTime() !== date.getTime())
 			: [...selectedDates, date];
 		noChanges = false;
 	};
 
-	const isSelected = (date: Date) => 
+	const isSelected = (date: Date) =>
 		selectedDates.some((_date) => _date?.getTime() === date?.getTime());
 
 	// Navigation
@@ -104,8 +107,18 @@
 	// Constants
 	const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 	const months = [
-		'January', 'February', 'March', 'April', 'May', 'June',
-		'July', 'August', 'September', 'October', 'November', 'December'
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December'
 	];
 
 	// Reactive declarations
@@ -141,12 +154,12 @@
 	}
 
 	$: if (votes && proposals) {
-		const votedProposals = proposals.filter(proposal => 
-			proposal?.id && votes.includes(proposal.id)
+		const votedProposals = proposals.filter(
+			(proposal) => proposal?.id && votes.includes(proposal.id)
 		);
-		
+
 		selectedDates = votedProposals
-			.map(proposal => proposal?.start_date ? new Date(proposal.start_date) : null)
+			.map((proposal) => (proposal?.start_date ? new Date(proposal.start_date) : null))
 			.filter((date): date is Date => date instanceof Date);
 	}
 </script>
@@ -156,7 +169,6 @@
 		<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>
 		{currentMonth}
 		{currentYear}
-		(CET)
 		<button on:click={nextWeek}><Fa icon={faChevronRight} /></button>
 	</div>
 
@@ -176,13 +188,12 @@
 				</div>
 			{/each}
 
-			<!-- {@debug selectedDates} -->
 			{#each gridDates as row, j}
 				<div class="bg-primary text-white flex justify-center px-0.5">{j}:00</div>
 				{#each row as date, i}
 					<button class="border h-12 w-24" on:click={() => toggleDate(date)}>
 						{#if selectedDates.find((_date) => _date?.getTime() === date?.getTime())}
-							<div class="bg-green-600  w-full flex items-center justify-center">
+							<div class="bg-green-600 w-full flex items-center justify-center h-full">
 								<Fa icon={faCheck} color="white" size="2x" />
 							</div>
 						{:else}
@@ -197,29 +208,15 @@
 			<Button
 				disabled={noChanges || selectedDates.length === 0}
 				onClick={saveSelection}
-				buttonStyle="primary"
+				buttonStyle="primary-light"
 				Class="flex-1">{$_('Submit')}</Button
 			>
-			<Button 
-				onClick={clearSelection} 
-				buttonStyle="warning" 
+			<Button
+				onClick={clearSelection}
+				buttonStyle="warning-light"
 				disabled={selectedDates.length === 0}
 				Class="flex-1 disabled:!text-gray-300">{$_('Clear')}</Button
 			>
 		</div>
 	</div></Loader
 >
-
-<style>
-	.calendar {
-		display: grid;
-		grid-template-columns: repeat(7, 1fr);
-		grid-template-rows: repeat(6, 1fr);
-		/* 100vh to stretch the calendar to the bottom, then we subtract 2 rem from the padding
-    on the header, 40px from the height of each symbol/the logo on the header, and 
-    28 px for the controlls on the calendar. This scuffed solution might need to be improved 
-	
-	TODO: Don't do this*/
-		height: calc(100vh - 2rem - 40px - 28px);
-	}
-</style>
