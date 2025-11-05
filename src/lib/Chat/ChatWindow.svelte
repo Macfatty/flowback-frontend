@@ -52,18 +52,15 @@
 	};
 
 	const postMessage = async () => {
-		
 		if (!selectedChat || !$chatPartnerStore || message.length === 0 || message.match(/^\s+$/))
-		return;
-	
-	console.log('before');
-	if (newerMessages) await getRecentMessages();
-	
-	let previewMessage = $previewStore?.find(
-		(p) => p.id === selectedChat || p.recent_message?.group_id === selectedChat
-	);
-	console.log('after');
-	
+			return;
+
+		if (newerMessages) await getRecentMessages();
+
+		let previewMessage = $previewStore?.find(
+			(p) => p.id === selectedChat || p.recent_message?.group_id === selectedChat
+		);
+
 		if (previewMessage) {
 			// previewMessage.recent_message.message = message;
 			// previewMessage.recent_message.created_at = new Date().toString();

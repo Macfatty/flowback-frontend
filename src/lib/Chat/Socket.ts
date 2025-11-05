@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { type Message1 } from './interfaces';
+import { type Message1, type PreviewMessage } from './interfaces';
 import { env } from '$env/dynamic/public';
 import { previewStore } from './functions';
 export const messageStore = writable<Message1 | null>(null);
@@ -23,31 +23,37 @@ const createSocket = (userId: number) => {
 		}
 
 		previewStore.update((previews) => {
-			console.log(previews, parsedMessage, "STUFF");
 			
-			if (!previews.find((p) => p.channel_id === parsedMessage.channel_id)) {
-
-				return [...previews, {
-					channel_id: parsedMessage.channel_id,
-					channel_title: parsedMessage.channel_origin_name === "user" ? parsedMessage.user.username : parsedMessage.channel_title,
-					id: parsedMessage.channel_id,
-					timestamp: parsedMessage.timestamp,
-					recent_message: {
-						channel_id: parsedMessage.channel_id,
-						channel_origin_name: parsedMessage.channel_origin_name,
-						channel_title: parsedMessage.channel_title,
-						message: parsedMessage.message,
-						timestamp: parsedMessage.timestamp,
-						notified: true
-					},
-					participants: parsedMessage.participants
-				}];
-
-			}
-			else return previews
-		}
-		)
-
+			if (!previews) previews = [];
+			console.log('HERE AT ALL???', previews, parsedMessage, previews.find((p) => p.channel_id === parsedMessage.channel_id));
+			if (previews.find((p) => p.channel_id === parsedMessage.channel_id)) return previews
+			
+			// If user A messages B for the first time, make it show up in B's chat field.
+			const newPreview: PreviewMessage = {
+				channel_id: parsedMessage.channel_id,
+				channel_title: parsedMessage.channel_title,
+				id: parsedMessage.channel_id,
+				timestamp: parsedMessage.timestamp,
+				recent_message: {
+					created_at: parsedMessage.timestamp,
+					profile_image: parsedMessage.user.profile_image,
+					user_id: parsedMessage.user.id,
+					user: parsedMessage.user,
+					channel_title: parsedMessage.channel_title,
+					channel_origin_name: parsedMessage.channel_origin_name,
+					message: parsedMessage.message,
+					group_id: parsedMessage.channel_origin_name === 'group' ? parsedMessage.channel_id : undefined,
+					target_id: parsedMessage.channel_origin_name === 'user' ? parsedMessage.channel_id : undefined,
+					target_username: parsedMessage.channel_origin_name === 'user' ? parsedMessage.user.username : undefined,
+					updated_at: parsedMessage.timestamp,
+					notified: true
+				},
+				participants: parsedMessage.participants
+			};
+			// console.log(newPreview, parsedMessage, previews, "STUFF");
+			
+			return [...previews, newPreview];
+		})
 	};
 
 	socket.onclose = (event) => {

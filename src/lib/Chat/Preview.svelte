@@ -20,6 +20,7 @@
 	import Fa from 'svelte-fa';
 	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import { userStore } from '$lib/User/interfaces';
+	import EveryProperty from '$lib/Generic/EveryProperty.svelte';
 
 	let chatSearch = '',
 		openUserSearch = false;
@@ -103,8 +104,8 @@
 
 	$: if ($previewStore) {
 		
-		let previewsNotified = $previewStore.filter((preview) => preview.recent_message?.notified);
-		let previewsNotNotified = $previewStore.filter((preview) => !preview.recent_message?.notified);
+		// let previewsNotified = $previewStore.filter((preview) => preview.recent_message?.notified);
+		// let previewsNotNotified = $previewStore.filter((preview) => !preview.recent_message?.notified);
 
 		// previewsNotNotified = previewsNotNotified.sort(
 		// 	(preview1, preview2) =>
@@ -205,7 +206,7 @@
 			<div class="flex flex-col max-w-[40%]">
 				<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
 					<!-- {chatter?.user.username} -->
-					{chatter.channel_title || 'Name not found'}
+					{chatter.channel_title ?? chatter.recent_message?.channel_title ?? 'Name not found'}
 				</span>
 				<span class="text-gray-400 text-sm h-[20px]">
 					{chatter?.recent_message?.message || ''}

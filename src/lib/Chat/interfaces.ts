@@ -38,7 +38,7 @@ export interface Message1 {
 //Taken from the preview API
 export interface PreviewMessage {
 	recent_message: {
-
+		channel_title: string;
 		created_at: string;
 		message: string;
 		profile_image: string;
