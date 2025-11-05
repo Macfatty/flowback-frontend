@@ -12,6 +12,7 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import { ProposalsApi } from '$lib/api/proposals';
 	import { ErrorHandlerStore } from '../ErrorHandlerStore';
+	import { fetchRequest } from '$lib/FetchRequest';
 
 	export let x = 10,
 		y = 10,
@@ -46,6 +47,8 @@
 	};
 
 	async function saveSelection() {
+		if (!pollId) return;
+
 		loading = true;
 		let voteIds: number[] = [];
 
@@ -59,18 +62,26 @@
 				voteIds.push(existingProposal.id);
 			} else {
 				const end_date = new Date(date.getTime() + 60 * 60 * 1000);
-				const newProposalId = await ProposalsApi.createProposal(pollId, {
+
+				const { res, json } = await fetchRequest('POST', `group/poll/${pollId}/proposal/create`, {
 					start_date: date,
 					end_date
 				});
+
+				if (!res.ok) {
+					ErrorHandlerStore.set({ message: "Couldn't save some dates", success: false });
+					continue;
+				}
+
+				const newProposalId = json;
 				voteIds.push(newProposalId);
 			}
 		}
 
 		try {
 			await ProposalsApi.updateVotes(pollId, voteIds);
-			const response = await ProposalsApi.getProposals(pollId);
-			proposals = response.results;
+			const { results } = await ProposalsApi.getProposals(pollId);
+			proposals = results;
 		} catch (error) {
 			ErrorHandlerStore.set({ message: "Couldn't save selections", success: false });
 			loading = false;
@@ -84,7 +95,7 @@
 		ErrorHandlerStore.set({ message: 'Successfully saved selections', success: true });
 	}
 
-	// UI interaction handlers
+	// Triggers when user clicks "Clear" button
 	const clearSelection = () => {
 		selectedDates = [];
 		noChanges = false;
@@ -121,7 +132,6 @@
 		'December'
 	];
 
-	// Reactive declarations
 	$: {
 		const monday = getMondayForOffset(weekOffset);
 		weekDates = Array.from({ length: 7 }, (_, i) => {
@@ -162,6 +172,8 @@
 			.map((proposal) => (proposal?.start_date ? new Date(proposal.start_date) : null))
 			.filter((date): date is Date => date instanceof Date);
 	}
+
+	$: console.log(votes, proposals, selectedDates);
 </script>
 
 <Loader bind:loading>
