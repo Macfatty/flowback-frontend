@@ -8,7 +8,10 @@
 		chatOpenStore,
 		chatPartnerStore,
 		fixDirectMessageChannelName,
-		getUserChannelId
+		getUserChannelId,
+
+		previewStore
+
 	} from './functions';
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
@@ -17,6 +20,7 @@
 	import Fa from 'svelte-fa';
 	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import { userStore } from '$lib/User/interfaces';
+	import EveryProperty from '$lib/Generic/EveryProperty.svelte';
 
 	let chatSearch = '',
 		openUserSearch = false;
@@ -24,18 +28,16 @@
 	export let selectedChat: number | null,
 		selectedChatChannelId: number | null,
 		creatingGroup: boolean,
-		previews: PreviewMessage[] = [],
 		inviteList: invite[] = [],
 		groupMembers: GroupMembers[] = [];
 
 	// Handle chat selection and clear notifications
 	const clickedChatter = async (chatterId: any) => {
-		let message = previews.find((message) => message.channel_id === chatterId);
+		let message = $previewStore?.find((message) => message.channel_id === chatterId);
 		if (message) {
 			message.timestamp = new Date().toString();
-			message.notified = false;
+			// message.recent_message.notified = false;
 		}
-		previews = previews;
 
 		selectedChat = chatterId;
 		chatPartnerStore.set(chatterId);
@@ -79,8 +81,7 @@
 		);
 		if (!res.ok) return [];
 
-		previews = fixDirectMessageChannelName(json?.results, $userStore?.id);
-		previews = previews;
+		// $previewStore = fixDirectMessageChannelName(json?.results, $userStore?.id);
 	};
 
 	onMount(async () => {
@@ -93,27 +94,30 @@
 			selectedChatChannelId = partner;
 			clickedChatter(partner);
 		});
+
 	});
-	$: if (chatSearch !== undefined) getPreview();
+
+	// Update previews based on search
+	$: if (chatSearch) getPreview();
 
 	$: if (selectedChatChannelId) updateChatTitle();
 
-	$: if (previews) {
-		let previewsNotified = previews.filter((preview) => preview.notified);
-		let previewsNotNotified = previews.filter((preview) => !preview.notified);
+	$: if ($previewStore) {
+		
+		// let previewsNotified = $previewStore.filter((preview) => preview.recent_message?.notified);
+		// let previewsNotNotified = $previewStore.filter((preview) => !preview.recent_message?.notified);
 
-		previewsNotNotified = previewsNotNotified.sort(
-			(preview1, preview2) =>
-				new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
-		);
+		// previewsNotNotified = previewsNotNotified.sort(
+		// 	(preview1, preview2) =>
+		// 		new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
+		// );
 
-		previewsNotified = previewsNotified.sort(
-			(preview1, preview2) =>
-				new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
-		);
+		// previewsNotified = previewsNotified.sort(
+		// 	(preview1, preview2) =>
+		// 		new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
+		// );
 
-		previews = [...previewsNotified, ...previewsNotNotified];
-		previews = previews;
+		// $previewStore = [...previewsNotified, ...previewsNotNotified];
 	}
 </script>
 
@@ -181,13 +185,12 @@
 						<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
 							{groupChat.message_channel_name}
 						</span>
-						<span class="text-gray-400 text-sm truncate h-[20px] overflow-x-hidden max-w-[10%]" />
 					</div>
 				</button>
 			{/if}
 		{/each}
 	{/if}
-	{#each previews as chatter}
+	{#each $previewStore as chatter}
 		<!-- {#if chatter.channel_title?.includes(chatSearch) && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)} -->
 		<button
 			class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
@@ -195,18 +198,18 @@
 			class:dark:bg-gray-700={selectedChat === chatter.channel_id}
 			on:click={() => clickedChatter(chatter.channel_id)}
 		>
-			{#if chatter?.notified}
+			{#if chatter?.recent_message?.notified}
 				<div class="p-1 rounded-full bg-purple-300"></div>
 			{/if}
 
-			<ProfilePicture profilePicture={chatter?.profile_image} />
+			<ProfilePicture profilePicture={chatter?.recent_message?.profile_image} />
 			<div class="flex flex-col max-w-[40%]">
 				<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
 					<!-- {chatter?.user.username} -->
-					{chatter.channel_title || 'Name not found'}
+					{chatter.channel_title ?? chatter.recent_message?.channel_title ?? 'Name not found'}
 				</span>
 				<span class="text-gray-400 text-sm h-[20px]">
-					{chatter?.message || ''}
+					{chatter?.recent_message?.message || ''}
 				</span>
 			</div>
 		</button>
@@ -219,9 +222,9 @@
 						}
 
 						const newMember = {
-							id: chatter.user.id,
-							username: chatter.user.username ?? 'Unknown',
-							profile_image: chatter.user.profile_image ?? null
+							id: chatter.recent_message?.user.id,
+							username: chatter.recent_message?.user.username ?? 'Unknown',
+							profile_image: chatter.recent_message?.user.profile_image ?? null
 						};
 						//@ts-ignore
 						groupMembers = [...groupMembers, newMember];

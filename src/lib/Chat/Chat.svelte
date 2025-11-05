@@ -9,7 +9,7 @@
 	import { faCog } from '@fortawesome/free-solid-svg-icons';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import { darkModeStore, getIconFilter } from '$lib/Generic/DarkMode';
-	import { chatPartnerStore, chatOpenStore, fixDirectMessageChannelName } from './functions';
+	import { chatPartnerStore, chatOpenStore, fixDirectMessageChannelName, previewStore } from './functions';
 	import { goto } from '$app/navigation';
 	import CreateChatGroup from '$lib/Chat/CreateChatGroup.svelte';
 	import CrossButton from '$lib/Generic/CrossButton.svelte';
@@ -19,7 +19,6 @@
 	let chatOpen = false,
 		selectedPage: 'direct' | 'group' = 'direct',
 		selectedChat: number | null,
-		previews: PreviewMessage[] = [],
 		isLookingAtOlderMessages = false,
 		chatDiv: HTMLDivElement,
 		selectedChatChannelId: number | null,
@@ -28,10 +27,10 @@
 
 	// Fetch preview messages and set notified based on localStorage timestamps
 	const getPreview = async () => {
-		const { res, json } = await fetchRequest('GET', `chat/message/channel/preview/list?title=`);
+		const { res, json } = await fetchRequest('GET', `chat/message/channel/preview/list`);
 		if (!res.ok) return [];
 
-		previews = json?.results;
+		$previewStore = json?.results;
 		fixDirectMessageChannelName(json?.results, $userStore?.id);
 	};
 
@@ -46,10 +45,10 @@
 		if (!chatterId) return;
 
 		// Clear notification for messages
-		let message = previews.find((message) => message.channel_id === chatterId);
+		let message = $previewStore?.find((message) => message.channel_id === chatterId);
 		if (message) {
 			message.timestamp = new Date().toString();
-			message.notified = false;
+			// message.notified = false;
 			// previews = [...previews];
 		}
 	};
@@ -69,7 +68,7 @@
 	});
 
 	// Reactive variables to track unread messages
-	$: displayNotification = previews.some((p) => p.notified);
+	$: displayNotification = $previewStore?.some((p) => p.recent_message?.notified);
 
 	//Handles the chatOpen=true in the URL for correct "going back in history" behaviour
 	$: (() => {
@@ -84,9 +83,10 @@
 		chatOpen &&
 		selectedChat === null &&
 		selectedChatChannelId === null &&
-		previews.length > 0
+		$previewStore &&
+		$previewStore?.length > 0
 	) {
-		const firstDirectChat = previews[0];
+		const firstDirectChat = $previewStore[0];
 		selectedChat = firstDirectChat.channel_id || null;
 		// selectedChatChannelId = firstDirectChat.channel_id || null;
 		chatPartnerStore.set(firstDirectChat.channel_id || -1);
@@ -139,7 +139,6 @@
 			{#key creatingGroup}
 				<Preview
 					bind:selectedChat
-					bind:previews
 					bind:selectedChatChannelId
 					bind:creatingGroup
 					bind:groupMembers
@@ -151,10 +150,8 @@
 				<CreateChatGroup bind:creatingGroup bind:groupMembers />
 			{:else}
 				<ChatWindow
-					bind:selectedChat
-					bind:selectedChatChannelId
+					bind:selectedChat		
 					bind:selectedPage
-					bind:previewDirect={previews}
 					bind:isLookingAtOlderMessages
 				/>
 			{/if}

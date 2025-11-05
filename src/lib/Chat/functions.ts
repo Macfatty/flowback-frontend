@@ -26,17 +26,18 @@ export const fixDirectMessageChannelName = (previews: PreviewMessage[], userId: 
     if (userId === undefined) previews;
 
     previews.map((preview) => {
-        if (preview.channel_origin_name === 'user')
-            preview.channel_title = preview.participants.find(
+        if (preview.recent_message?.channel_origin_name === 'user')
+            preview.recent_message.channel_title = preview.participants.find(
                 (participant) => participant.id !== userId
             )?.username;
     });
     return previews;
 };
 
-
 // Store that holds whether the chat is open or closed
 export const chatOpenStore = writable(false);
 
 // Store to hold the chat_id or message_id of the chatter being talked to.
 export const chatPartnerStore = writable(0);
+
+export const previewStore = writable<PreviewMessage[] | null>(null);
