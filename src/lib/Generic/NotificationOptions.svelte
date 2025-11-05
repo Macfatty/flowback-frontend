@@ -27,11 +27,6 @@
 		channel_sender_type: string;
 	}
 
-	interface NotificationListObject {
-		channel_id: number;
-		channel_name: string;
-	}
-
 	const closeWindowWhenClickingOutside = () => {
 		window.addEventListener('click', function (e) {
 			if (
@@ -81,6 +76,26 @@
 		notifications = notifications;
 	};
 
+	const subscribeToAll = async () => {
+		console.log(notifications, categories, 'STUFF');
+
+		const { res, json } = await fetchRequest('POST', `${api}`, {
+			tags: categories
+		});
+
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: 'Failed to subscribe to all', success: false });
+			return;
+		}
+
+		ErrorHandlerStore.set({ message: 'Subscribed to all', success: true });
+
+		notifications = categories.map((category) => ({
+			channel_category: category,
+			channel_sender_id: id,
+			channel_sender_type: type
+		}));
+	};
 	onMount(() => {
 		closeWindowWhenClickingOutside();
 		getNotifications();
@@ -88,7 +103,6 @@
 
 	$: if (notificationOpen) {
 		getNotifications();
-		// getNotificationList();
 	}
 </script>
 
@@ -112,6 +126,7 @@
 	{#if notificationOpen && categories}
 		<div class={`z-50 absolute mt-2 bg-white dark:bg-darkobject shadow-xl text-sm ${ClassOpen}`}>
 			<div class="text-xs p-2">{$_('Manage Subscriptions')}</div>
+			<button on:click={subscribeToAll} class="text-xs p-2">{$_('Subscribe to All')}</button>
 			{#each categories as category, i}
 				<button
 					class="bg-gray-200 dark:bg-gray-700 w-full p-2 px-5 flex justify-between items-center transition-all"
