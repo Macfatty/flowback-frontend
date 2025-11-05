@@ -22,10 +22,10 @@ const createSocket = (userId: number) => {
 			messageStore.set(parsedMessage);
 		}
 
-		console.log(parsedMessage, '<- New message received');
-
 		previewStore.update((previews) => {
-			if (!previews.find((p) => p.channel_id === parsedMessage.id)) {
+			console.log(previews, parsedMessage, "STUFF");
+			
+			if (!previews.find((p) => p.channel_id === parsedMessage.channel_id)) {
 
 				return [...previews, {
 					channel_id: parsedMessage.channel_id,
@@ -44,6 +44,7 @@ const createSocket = (userId: number) => {
 				}];
 
 			}
+			else return previews
 		}
 		)
 
