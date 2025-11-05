@@ -77,8 +77,6 @@
 	};
 
 	const subscribeToAll = async () => {
-		console.log(notifications, categories, 'STUFF');
-
 		const { res, json } = await fetchRequest('POST', `${api}`, {
 			tags: categories
 		});
