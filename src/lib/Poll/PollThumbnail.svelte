@@ -246,8 +246,8 @@
 					<NotificationOptions
 						type="poll"
 						id={poll?.id}
-						api={`group/poll/${poll?.id}`}
-						categories={['poll', 'timeline', 'comment_all']}
+						api={`group/poll/${poll?.id}/subscribe`}
+						categories={['poll', 'poll_comment', 'poll_phase']}
 						labels={['Poll', 'Timeline', 'Comments']}
 						Class="text-black dark:text-darkmodeText"
 						ClassOpen="right-0"
