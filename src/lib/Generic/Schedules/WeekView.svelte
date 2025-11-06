@@ -136,7 +136,13 @@
 		if (cellPreviouslySelected) {
 			selectedDates = selectedDates.filter((d) => d.date.getTime() !== date.getTime());
 		} else {
-			selectedDates = [...selectedDates, { date, id: -1 }];
+			selectedDates = [
+				...selectedDates,
+				{
+					id: proposals.find((p) => new Date(p.start_date).getTime() === date.getTime())?.id ?? 0,
+					date
+				}
+			];
 		}
 
 		noChanges = false;
@@ -246,10 +252,17 @@
 				{/each}
 			{/each}
 		</div>
-		{arraysEqual(selectedDates, savedDates)}
+		{arraysEqual(
+			selectedDates.sort((a, b) => a.id - b.id),
+			savedDates.sort((a, b) => a.id - b.id)
+		)}
+
 		<div class="pt-4 px-4 border-t flex gap-4 bg-white dark:bg-darkobject">
 			<Button
-				disabled={arraysEqual(selectedDates, savedDates) || selectedDates.length === 0}
+				disabled={arraysEqual(
+					selectedDates.map((d) => d.date.getTime()).sort(),
+					savedDates.map((d) => d.date.getTime()).sort()
+				)}
 				onClick={saveSelection}
 				buttonStyle="primary-light"
 				Class="flex-1">{$_('Submit')}</Button
