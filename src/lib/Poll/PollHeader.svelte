@@ -74,10 +74,10 @@
 		<NotificationOptions
 			type="poll"
 			id={poll?.id}
-			api={`group/poll/${poll?.id}`}
+			api={`group/poll/${poll?.id}/subscribe`}
 			categories={['poll', 'timeline', 'comment_all']}
 			labels={['Poll', 'Timeline', 'Comments']}
-			Class="justify-self-center mt-2"
+			Class="text-black dark:text-darkmodeText"
 			ClassOpen="right-0"
 		/>
 
