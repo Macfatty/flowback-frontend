@@ -75,9 +75,9 @@
 			type="poll"
 			id={poll?.id}
 			api={`group/poll/${poll?.id}/subscribe`}
-			categories={['poll', 'timeline', 'comment_all']}
+			categories={['poll', 'poll_comment', 'poll_phase']}
 			labels={['Poll', 'Timeline', 'Comments']}
-			Class="text-black dark:text-darkmodeText"
+			Class="justify-self-center mt-2"
 			ClassOpen="right-0"
 		/>
 
