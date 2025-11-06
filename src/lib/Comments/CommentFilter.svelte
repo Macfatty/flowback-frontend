@@ -16,6 +16,7 @@
 		displayProposalsModal = false;
 
 	$: if (selectedProposals.length === 0) commentsStore.filterByProposal(null);
+	
 	else {
 		const _proposals = proposals.filter((p) => selectedProposals.includes(p.id));
 		commentsStore.filterByProposals(_proposals, 'or');

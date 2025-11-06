@@ -59,9 +59,9 @@
 		<CommentPost bind:proposals {api} {delegate_pool_id} />
 
 		<CommentFilter
+			Class="flex flex-row-reverse items-center justify-end mb-2 gap-8"
 			bind:sortBy
 			bind:searchString
-			Class="flex flex-row-reverse items-center justify-end mb-2 gap-8"
 			bind:proposals
 		/>
 	</div>
@@ -81,5 +81,3 @@
 		</div>
 	{/if}
 </div>
-
- 
