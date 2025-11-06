@@ -122,7 +122,7 @@
 	</button>
 
 	{#if notificationOpen && categories}
-		<div class={`z-50 absolute mt-2 bg-white dark:bg-darkobject shadow-xl text-sm ${ClassOpen}`}>
+		<div class={`z-40 absolute mt-2 bg-white dark:bg-darkobject shadow-xl text-sm ${ClassOpen}`}>
 			<div class="text-xs p-2">{$_('Manage Subscriptions')}</div>
 			<button on:click={subscribeToAll} class="text-xs p-2">{$_('Subscribe to All')}</button>
 			{#each categories as category, i}
