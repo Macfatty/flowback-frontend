@@ -89,7 +89,7 @@
 				const end_date = new Date(selectedDate.date.getTime() + 60 * 60 * 1000);
 
 				const { res, json } = await fetchRequest('POST', `group/poll/${pollId}/proposal/create`, {
-					start_date: selectedDate,
+					start_date: selectedDate.date,
 					end_date
 				});
 
@@ -204,8 +204,6 @@
 		initialMonday = getRecentMonday(new Date());
 	}
 
-	$: console.log(savedDates, proposals, selectedDates);
-
 	$: if (selectedDates === savedDates) {
 		noChanges = true;
 	} else {
@@ -252,11 +250,6 @@
 				{/each}
 			{/each}
 		</div>
-		{arraysEqual(
-			selectedDates.sort((a, b) => a.id - b.id),
-			savedDates.sort((a, b) => a.id - b.id)
-		)}
-
 		<div class="pt-4 px-4 border-t flex gap-4 bg-white dark:bg-darkobject">
 			<Button
 				disabled={arraysEqual(
