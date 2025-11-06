@@ -55,8 +55,11 @@
 		// );
 	};
 
-	const notificationSubscription = async (category: string) => {
-		notificationsList = [...notificationsList, category];
+	const notificationSubscription = async (category: string, method: 'add' | 'remove' = 'add') => {
+		method === 'add'
+			? (notificationsList = [...notificationsList, category])
+			: (notificationsList = notificationsList.filter((item) => item !== category));
+
 		const { res, json } = await fetchRequest('POST', `${api}`, {
 			tags: notificationsList
 		});
@@ -65,11 +68,15 @@
 			return;
 		}
 
-		notifications.push({
-			channel_category: category,
-			channel_sender_id: id,
-			channel_sender_type: type
-		});
+		method === 'add'
+			? notifications.push({
+					channel_category: category,
+					channel_sender_id: id,
+					channel_sender_type: type
+				})
+			: (notifications = notifications.filter(
+					(notification) => notification.channel_category !== category
+				));
 
 		ErrorHandlerStore.set({ message: 'Subscribed', success: true });
 
@@ -142,7 +149,8 @@
 					)}
 					on:click={() => {
 						if (!notifications.find((object) => object.channel_category === category))
-							notificationSubscription(category);
+							notificationSubscription(category, 'add');
+						else notificationSubscription(category, 'remove');
 					}}
 				>
 					{$_(labels[i])}

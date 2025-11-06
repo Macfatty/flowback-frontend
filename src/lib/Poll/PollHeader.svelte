@@ -68,7 +68,6 @@
 	<h1 class="text-left text-2xl text-primary dark:text-secondary font-semibold break-words">
 		{poll?.title}
 	</h1>
-	<!-- <HeaderIcon Class="p-2 cursor-default" icon={faHourglass} text={'End date'} /> -->
 
 	<div class="flex gap-3 justify-center m-auto">
 		<NotificationOptions
