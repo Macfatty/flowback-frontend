@@ -13,21 +13,25 @@
 	import { ProposalsApi } from '$lib/api/proposals';
 	import { ErrorHandlerStore } from '../ErrorHandlerStore';
 	import { fetchRequest } from '$lib/FetchRequest';
+	import { onMount } from 'svelte';
+	import { arraysEqual } from '$lib/Generic/GenericFunctions';
 
 	export let x = 10,
 		y = 10,
-		votes: number[],
 		proposals: timeProposal[];
 
 	let weekOffset = 0,
 		initialMonday: Date,
 		loading = false,
-		selectedDates: Date[] = [],
+		// Saved dates are ones which the user has currently selected, while selected dates are ones which are saved in the databse.
+		savedDates: SelDate[] = [],
+		selectedDates: SelDate[] = [],
 		weekDates: Date[] = [],
 		currentMonth = '',
 		currentYear = 0,
 		noChanges = true;
 
+	type SelDate = { date: Date; id: number };
 	const pollId = $page.params.pollId;
 
 	// Date utility functions
@@ -46,25 +50,46 @@
 		return monday;
 	};
 
+	async function fetchProposals() {
+		const response = await ProposalsApi.getProposals(pollId ?? '');
+		proposals = response.results;
+	}
+
+	async function fetchProposalVotes() {
+		const response = await ProposalsApi.getVotes(pollId ?? '');
+
+		savedDates = response.results.map((vote) => {
+			const savedDate: SelDate = {
+				id: vote.proposal,
+				date: new Date(
+					proposals.find((proposal) => proposal.id === vote.proposal)?.start_date ?? ''
+				)
+			};
+			return savedDate;
+		});
+
+		selectedDates = savedDates;
+	}
+
 	async function saveSelection() {
 		if (!pollId) return;
 
 		loading = true;
 		let voteIds: number[] = [];
 
-		for (const date of selectedDates) {
+		for (const selectedDate of selectedDates) {
 			const existingProposal = proposals.find((proposal) => {
 				const proposalDate = new Date(proposal.start_date);
-				return proposalDate.getTime() === date.getTime();
+				return proposalDate.getTime() === selectedDate.date.getTime();
 			});
 
 			if (existingProposal) {
 				voteIds.push(existingProposal.id);
 			} else {
-				const end_date = new Date(date.getTime() + 60 * 60 * 1000);
+				const end_date = new Date(selectedDate.date.getTime() + 60 * 60 * 1000);
 
 				const { res, json } = await fetchRequest('POST', `group/poll/${pollId}/proposal/create`, {
-					start_date: date,
+					start_date: selectedDate,
 					end_date
 				});
 
@@ -88,8 +113,7 @@
 			return;
 		}
 
-		votes = voteIds;
-		selectedDates = selectedDates;
+		savedDates = selectedDates;
 		noChanges = true;
 		loading = false;
 		ErrorHandlerStore.set({ message: 'Successfully saved selections', success: true });
@@ -101,21 +125,27 @@
 		noChanges = false;
 	};
 
+	// Triggers when user clicks a date cell
 	const toggleDate = (date: Date) => {
-		selectedDates = isSelected(date)
-			? selectedDates.filter((d) => d.getTime() !== date.getTime())
-			: [...selectedDates, date];
+		const cellPreviouslySelected = selectedDates.find(
+			(_date) => _date?.date.getTime() === date?.getTime()
+		);
+
+		// If date is already selected, remove it; otherwise add it
+
+		if (cellPreviouslySelected) {
+			selectedDates = selectedDates.filter((d) => d.date.getTime() !== date.getTime());
+		} else {
+			selectedDates = [...selectedDates, { date, id: -1 }];
+		}
+
 		noChanges = false;
 	};
-
-	const isSelected = (date: Date) =>
-		selectedDates.some((_date) => _date?.getTime() === date?.getTime());
 
 	// Navigation
 	const prevWeek = () => weekOffset--;
 	const nextWeek = () => weekOffset++;
 
-	// Constants
 	const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 	const months = [
 		'January',
@@ -131,6 +161,11 @@
 		'November',
 		'December'
 	];
+
+	onMount(async () => {
+		await fetchProposals();
+		await fetchProposalVotes();
+	});
 
 	$: {
 		const monday = getMondayForOffset(weekOffset);
@@ -163,17 +198,13 @@
 		initialMonday = getRecentMonday(new Date());
 	}
 
-	$: if (votes && proposals) {
-		const votedProposals = proposals.filter(
-			(proposal) => proposal?.id && votes.includes(proposal.id)
-		);
+	$: console.log(savedDates, proposals, selectedDates);
 
-		selectedDates = votedProposals
-			.map((proposal) => (proposal?.start_date ? new Date(proposal.start_date) : null))
-			.filter((date): date is Date => date instanceof Date);
+	$: if (selectedDates === savedDates) {
+		noChanges = true;
+	} else {
+		noChanges = false;
 	}
-
-	$: console.log(votes, proposals, selectedDates);
 </script>
 
 <Loader bind:loading>
@@ -204,7 +235,7 @@
 				<div class="bg-primary text-white flex justify-center px-0.5">{j}:00</div>
 				{#each row as date, i}
 					<button class="border h-12 w-24" on:click={() => toggleDate(date)}>
-						{#if selectedDates.find((_date) => _date?.getTime() === date?.getTime())}
+						{#if selectedDates.find((_date) => _date.date.getTime() === date?.getTime())}
 							<div class="bg-green-600 w-full flex items-center justify-center h-full">
 								<Fa icon={faCheck} color="white" size="2x" />
 							</div>
@@ -215,10 +246,10 @@
 				{/each}
 			{/each}
 		</div>
-
+		{arraysEqual(selectedDates, savedDates)}
 		<div class="pt-4 px-4 border-t flex gap-4 bg-white dark:bg-darkobject">
 			<Button
-				disabled={noChanges || selectedDates.length === 0}
+				disabled={arraysEqual(selectedDates, savedDates) || selectedDates.length === 0}
 				onClick={saveSelection}
 				buttonStyle="primary-light"
 				Class="flex-1">{$_('Submit')}</Button
