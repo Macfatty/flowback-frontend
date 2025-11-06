@@ -27,6 +27,15 @@
 		channel_sender_type: string;
 	}
 
+	interface NotificationSubscriptionResponse {
+		channel_id: number;
+		channel_name: 'group' | 'poll' | 'thread';
+		tags: {
+			name: string;
+			reminders: null;
+		}[];
+	}
+
 	const closeWindowWhenClickingOutside = () => {
 		window.addEventListener('click', function (e) {
 			if (
@@ -44,15 +53,13 @@
 
 	const getNotifications = async () => {
 		const { res, json } = await fetchRequest('GET', 'notification/subscription');
-		// notifications = json?.results.filter(
-		// 	(notificationObject: any) => notificationObject.channel_sender_id === id
-		// );
-
 		if (!res.ok) return;
 
-		// notificationsList = json.results.map(
-		// 	(notification: NotificationListObject) => notification.channel_name
-		// );
+		const notifications = json.results.find(
+			(notification: NotificationSubscriptionResponse) => notification.channel_id === id
+		);
+
+		console.log('n', notifications, json.results);
 	};
 
 	const notificationSubscription = async (category: string, method: 'add' | 'remove' = 'add') => {
