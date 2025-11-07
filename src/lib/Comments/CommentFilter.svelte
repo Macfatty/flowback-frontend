@@ -18,10 +18,11 @@
 		displayProposalsModal = false;
 
 	const filterByTags = async () => {
+		let loading = true;
 		let toKeep: Comment[] = [];
 		const tags = proposals.map((p) => `#${p.title.replaceAll(' ', '-')}`);
 
-		$commentsStore.allComments.forEach(async (comment) => {
+		for (const comment of $commentsStore.allComments) {
 			const { res, json } = await fetchRequest(
 				'GET',
 				`group/poll/${$page.params.pollId}/comment/${comment.id}/ancestor`
@@ -31,18 +32,29 @@
 
 			const ancestors: Comment[] = json.results;
 
-			if (ancestors.find((comment: Comment) => tags.some((tag) => comment.message?.includes(tag))))
+			if (
+				ancestors.find((_comment: Comment) => tags.some((tag) => _comment.message?.includes(tag)))
+			)
 				toKeep = [...toKeep, ...ancestors];
-		});
+			console.log(toKeep);
+		}
+		// Filter Duplicates
+		toKeep = toKeep.filter(
+			(comment, index, self) => index === self.findIndex((c) => c.id === comment.id)
+		);
+
 		commentsStore.updates(toKeep);
+		loading = false;
 	};
 
-	$: if (selectedProposals) filterByTags();
+	$: (async () => {
+		// if (selectedProposals) await filterByTags();
+	})();
 
 	$: if (selectedProposals.length === 0) commentsStore.filterByProposal(null);
 	else {
 		const _proposals = proposals.filter((p) => selectedProposals.includes(p.id));
-		// commentsStore.filterByProposals(_proposals, 'or');
+		commentsStore.filterByProposals(_proposals, 'or');
 	}
 </script>
 

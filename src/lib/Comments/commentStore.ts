@@ -71,7 +71,11 @@ function createCommentStore() {
                 filteredComments: [],
                 filterByProposal: null
             }),
-        updates: (comments: Comment[]) => update(store => ({ ...store, filteredComments: comments }))
+        updates: (comments: Comment[]) => {
+            console.log(comments, "COMMENT");
+            
+            update(store => ({ ...store, filteredComments: comments }))
+        } 
     };
 }
 
