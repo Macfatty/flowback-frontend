@@ -139,7 +139,7 @@
 			</form>
 		</div>
 
-		<Structure Class="mx-auto !p-6 !pt-0 max-w-screen-xl">
+		<Structure Class="mx-auto !p-6 !pt-0 max-w-screen-xl" showBothSlotsOnMobile={true}>
 			<div
 				slot="left"
 				class="p-4 bg-white dark:bg-darkobject rounded shadow max-h-[100%] overflow-auto"
