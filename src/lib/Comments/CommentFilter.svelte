@@ -29,13 +29,12 @@
 
 			if (!res.ok) return;
 
-			if (
-				json.results.find((comment: Comment) => tags.some((tag) => comment.message?.includes(tag)))
-			)
-				toKeep.push(comment);
-		});
+			const ancestors: Comment[] = json.results;
 
-		$commentsStore.filteredComments = toKeep;
+			if (ancestors.find((comment: Comment) => tags.some((tag) => comment.message?.includes(tag))))
+				toKeep = [...toKeep, ...ancestors];
+		});
+		commentsStore.updates(toKeep);
 	};
 
 	$: if (selectedProposals) filterByTags();
@@ -43,7 +42,7 @@
 	$: if (selectedProposals.length === 0) commentsStore.filterByProposal(null);
 	else {
 		const _proposals = proposals.filter((p) => selectedProposals.includes(p.id));
-		commentsStore.filterByProposals(_proposals, 'or');
+		// commentsStore.filterByProposals(_proposals, 'or');
 	}
 </script>
 
