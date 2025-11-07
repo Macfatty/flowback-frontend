@@ -135,6 +135,7 @@
 		commentsStore.subscribe((store) => {
 			comments = store.allComments;
 		});
+
 	});
 </script>
 

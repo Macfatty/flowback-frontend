@@ -1,11 +1,13 @@
 <script lang="ts">
 	import Select from '$lib/Generic/Select.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import type { proposal } from '$lib/Poll/interface';
+	import type { Comment, proposal } from '$lib/Poll/interface';
 	import { _ } from 'svelte-i18n';
 	import { commentsStore } from './commentStore';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import Button from '$lib/Generic/Button.svelte';
+	import { fetchRequest } from '$lib/FetchRequest';
+	import { page } from '$app/stores';
 
 	export let sortBy: string | null = null,
 		Class = '',
@@ -15,8 +17,30 @@
 	let selectedProposals: number[] = [],
 		displayProposalsModal = false;
 
+	const filterByTags = async () => {
+		let toKeep: Comment[] = [];
+		const tags = proposals.map((p) => `#${p.title.replaceAll(' ', '-')}`);
+
+		$commentsStore.allComments.forEach(async (comment) => {
+			const { res, json } = await fetchRequest(
+				'GET',
+				`group/poll/${$page.params.pollId}/comment/${comment.id}/ancestor`
+			);
+
+			if (!res.ok) return;
+
+			if (
+				json.results.find((comment: Comment) => tags.some((tag) => comment.message?.includes(tag)))
+			)
+				toKeep.push(comment);
+		});
+
+		$commentsStore.filteredComments = toKeep;
+	};
+
+	$: if (selectedProposals) filterByTags();
+
 	$: if (selectedProposals.length === 0) commentsStore.filterByProposal(null);
-	
 	else {
 		const _proposals = proposals.filter((p) => selectedProposals.includes(p.id));
 		commentsStore.filterByProposals(_proposals, 'or');
