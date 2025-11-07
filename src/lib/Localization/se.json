@@ -760,5 +760,7 @@
 	"You are": "Du är",
 	"not": "inte",
 	"Successfully self-delegated": "Lyckades själv-delegera",
-	"Couldn't create self-delegation": "Kunde inte skapa själv-delegering"
+	"Couldn't create self-delegation": "Kunde inte skapa själv-delegering",
+	"Failed to subscribe to all": "Misslyckades att prenumerera på alla",
+	"Successfully saved selections": "Lyckades spara val"
 }

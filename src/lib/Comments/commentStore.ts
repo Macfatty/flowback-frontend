@@ -1,5 +1,6 @@
 import type { Comment, proposal } from '$lib/Poll/interface';
 import { writable } from 'svelte/store';
+import { getComments } from './functions';
 
 function createCommentStore() {
     const { subscribe, set, update } = writable<{
@@ -69,7 +70,12 @@ function createCommentStore() {
                 allComments: [],
                 filteredComments: [],
                 filterByProposal: null
-            })
+            }),
+        updates: (comments: Comment[]) => {
+            console.log(comments, "COMMENT");
+            
+            update(store => ({ ...store, filteredComments: comments }))
+        } 
     };
 }
 
@@ -112,18 +118,45 @@ function applyFilters(
     const tags = proposals.map(p => `#${p.title.replaceAll(' ', '-')}`);
 
     return comments.filter(comment => {
-        const msg = comment.message || '';
-        if (mode === 'or') {
-            return tags.some(tag => msg.includes(tag));
-        } else {
-            return tags.every(tag => msg.includes(tag));
-        }
+        const msg = comment.message ?? '';
+        return tags.some(tag => msg.includes(tag));
+        // if (mode === 'or') {
+        // } else {
+        //     return tags.every(tag => msg.includes(tag));
+        // }
     });
 }
 
-const findIfParentHasTag = () => {
+const newFilter = async (comments: Comment[],
+    proposals: proposal[],
+) => {
+    if (proposals.length === 0) return comments;
 
-    // const parent = comments.find(parentComment => comment.parent_id === parentComment.id)
+    const tags = proposals.map(p => `#${p.title.replaceAll(' ', '-')}`);
+
+    //Two arrays: One for yes, oien for maybe. The no pile will just be everything minus the yes pill as the maybe pile should be 0 at the end
+    const yesPile: Comment[] = [];
+    const maybePile: Comment[] = [];
+    // const noPile: Comment[] = [];
+
+
+    await comments.forEach(async comment => {
+        const msg = comment.message ?? '';
+        const hasTag = tags.some(tag => msg.includes(tag));
+        if (hasTag) {
+            yesPile.push(comment);
+            const { comments } = await getComments(comment.parent_id, 'poll')
+            yesPile.push(comments[0]);
+            const parent = comments[0]
+            {
+
+                const { comments } = await getComments(parent.parent_id, 'poll')
+            }
+        }
+
+    });
+
+
 }
 
 export const commentsStore = createCommentStore();

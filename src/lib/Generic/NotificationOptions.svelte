@@ -27,9 +27,13 @@
 		channel_sender_type: string;
 	}
 
-	interface NotificationListObject {
+	interface NotificationSubscriptionResponse {
 		channel_id: number;
-		channel_name: string;
+		channel_name: 'group' | 'poll' | 'thread';
+		tags: {
+			name: string;
+			reminders: null;
+		}[];
 	}
 
 	const closeWindowWhenClickingOutside = () => {
@@ -49,19 +53,20 @@
 
 	const getNotifications = async () => {
 		const { res, json } = await fetchRequest('GET', 'notification/subscription');
-		// notifications = json?.results.filter(
-		// 	(notificationObject: any) => notificationObject.channel_sender_id === id
-		// );
-
 		if (!res.ok) return;
 
-		// notificationsList = json.results.map(
-		// 	(notification: NotificationListObject) => notification.channel_name
-		// );
+		const notifications = json.results.find(
+			(notification: NotificationSubscriptionResponse) => notification.channel_id === id
+		);
+
+		console.log('n', notifications, json.results);
 	};
 
-	const notificationSubscription = async (category: string) => {
-		notificationsList = [...notificationsList, category];
+	const notificationSubscription = async (category: string, method: 'add' | 'remove' = 'add') => {
+		method === 'add'
+			? (notificationsList = [...notificationsList, category])
+			: (notificationsList = notificationsList.filter((item) => item !== category));
+
 		const { res, json } = await fetchRequest('POST', `${api}`, {
 			tags: notificationsList
 		});
@@ -70,17 +75,39 @@
 			return;
 		}
 
-		notifications.push({
-			channel_category: category,
-			channel_sender_id: id,
-			channel_sender_type: type
-		});
+		method === 'add'
+			? notifications.push({
+					channel_category: category,
+					channel_sender_id: id,
+					channel_sender_type: type
+				})
+			: (notifications = notifications.filter(
+					(notification) => notification.channel_category !== category
+				));
 
 		ErrorHandlerStore.set({ message: 'Subscribed', success: true });
 
 		notifications = notifications;
 	};
 
+	const subscribeToAll = async () => {
+		const { res, json } = await fetchRequest('POST', `${api}`, {
+			tags: categories
+		});
+
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: 'Failed to subscribe to all', success: false });
+			return;
+		}
+
+		ErrorHandlerStore.set({ message: 'Subscribed to all', success: true });
+
+		notifications = categories.map((category) => ({
+			channel_category: category,
+			channel_sender_id: id,
+			channel_sender_type: type
+		}));
+	};
 	onMount(() => {
 		closeWindowWhenClickingOutside();
 		getNotifications();
@@ -88,7 +115,6 @@
 
 	$: if (notificationOpen) {
 		getNotifications();
-		// getNotificationList();
 	}
 </script>
 
@@ -110,8 +136,9 @@
 	</button>
 
 	{#if notificationOpen && categories}
-		<div class={`z-50 absolute mt-2 bg-white dark:bg-darkobject shadow-xl text-sm ${ClassOpen}`}>
+		<div class={`z-40 absolute mt-2 bg-white dark:bg-darkobject shadow-xl text-sm ${ClassOpen}`}>
 			<div class="text-xs p-2">{$_('Manage Subscriptions')}</div>
+			<button on:click={subscribeToAll} class="text-xs p-2">{$_('Subscribe to All')}</button>
 			{#each categories as category, i}
 				<button
 					class="bg-gray-200 dark:bg-gray-700 w-full p-2 px-5 flex justify-between items-center transition-all"
@@ -129,7 +156,8 @@
 					)}
 					on:click={() => {
 						if (!notifications.find((object) => object.channel_category === category))
-							notificationSubscription(category);
+							notificationSubscription(category, 'add');
+						else notificationSubscription(category, 'remove');
 					}}
 				>
 					{$_(labels[i])}

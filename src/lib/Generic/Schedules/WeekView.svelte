@@ -11,21 +11,27 @@
 	import type { timeProposal } from '$lib/Poll/interface';
 	import Button from '$lib/Generic/Button.svelte';
 	import { ProposalsApi } from '$lib/api/proposals';
+	import { ErrorHandlerStore } from '../ErrorHandlerStore';
+	import { fetchRequest } from '$lib/FetchRequest';
+	import { onMount } from 'svelte';
+	import { arraysEqual } from '$lib/Generic/GenericFunctions';
 
 	export let x = 10,
 		y = 10,
-		votes: number[],
 		proposals: timeProposal[];
 
-	let weekOffset = 0;
-	let initialMonday: Date;
-	let loading = false;
-	let selectedDates: Date[] = [];
-	let weekDates: Date[] = [];
-	let currentMonth = '';
-	let currentYear = 0;
-	let noChanges = true;
+	let weekOffset = 0,
+		initialMonday: Date,
+		loading = false,
+		// Saved dates are ones which the user has currently selected, while selected dates are ones which are saved in the databse.
+		savedDates: SelDate[] = [],
+		selectedDates: SelDate[] = [],
+		weekDates: Date[] = [],
+		currentMonth = '',
+		currentYear = 0,
+		noChanges = true;
 
+	type SelDate = { date: Date; id: number };
 	const pollId = $page.params.pollId;
 
 	// Date utility functions
@@ -44,71 +50,129 @@
 		return monday;
 	};
 
-	// Data fetching and manipulation
-	async function saveSelection() {
-		loading = true;
-		try {
-			const validSelectedDates = selectedDates.filter((date): date is Date => date instanceof Date);
-			let voteIds: number[] = [];
-
-			for (const date of validSelectedDates) {
-				const existingProposal = proposals.find(proposal => {
-					const proposalDate = new Date(proposal.start_date);
-					return proposalDate.getTime() === date.getTime();
-				});
-
-				if (existingProposal) {
-					voteIds.push(existingProposal.id);
-				} else {
-					const end_date = new Date(date.getTime() + 60 * 60 * 1000);
-					const newProposalId = await ProposalsApi.createProposal(pollId, { start_date: date, end_date });
-					voteIds.push(newProposalId);
-				}
-			}
-
-			await ProposalsApi.updateVotes(pollId, voteIds);
-			votes = voteIds;
-			const response = await ProposalsApi.getProposals(pollId);
-			proposals = response.results;
-			selectedDates = validSelectedDates;
-			noChanges = true;
-		} catch (error) {
-			console.error('Error saving selection:', error);
-		} finally {
-			loading = false;
-		}
+	async function fetchProposals() {
+		const response = await ProposalsApi.getProposals(pollId ?? '');
+		proposals = response.results;
 	}
 
-	// UI interaction handlers
+	async function fetchProposalVotes() {
+		const response = await ProposalsApi.getVotes(pollId ?? '');
+
+		savedDates = response.results.map((vote) => {
+			const savedDate: SelDate = {
+				id: vote.proposal,
+				date: new Date(
+					proposals.find((proposal) => proposal.id === vote.proposal)?.start_date ?? ''
+				)
+			};
+			return savedDate;
+		});
+
+		selectedDates = savedDates;
+	}
+
+	async function saveSelection() {
+		if (!pollId) return;
+
+		loading = true;
+		let voteIds: number[] = [];
+
+		for (const selectedDate of selectedDates) {
+			const existingProposal = proposals.find((proposal) => {
+				const proposalDate = new Date(proposal.start_date);
+				return proposalDate.getTime() === selectedDate.date.getTime();
+			});
+
+			if (existingProposal) {
+				voteIds.push(existingProposal.id);
+			} else {
+				const end_date = new Date(selectedDate.date.getTime() + 60 * 60 * 1000);
+
+				const { res, json } = await fetchRequest('POST', `group/poll/${pollId}/proposal/create`, {
+					start_date: selectedDate.date,
+					end_date
+				});
+
+				if (!res.ok) {
+					ErrorHandlerStore.set({ message: "Couldn't save some dates", success: false });
+					continue;
+				}
+
+				const newProposalId = json;
+				voteIds.push(newProposalId);
+			}
+		}
+
+		try {
+			await ProposalsApi.updateVotes(pollId, voteIds);
+			const { results } = await ProposalsApi.getProposals(pollId);
+			proposals = results;
+		} catch (error) {
+			ErrorHandlerStore.set({ message: "Couldn't save selections", success: false });
+			loading = false;
+			return;
+		}
+
+		savedDates = selectedDates;
+		noChanges = true;
+		loading = false;
+		ErrorHandlerStore.set({ message: 'Successfully saved selections', success: true });
+	}
+
+	// Triggers when user clicks "Clear" button
 	const clearSelection = () => {
 		selectedDates = [];
 		noChanges = false;
 	};
 
+	// Triggers when user clicks a date cell
 	const toggleDate = (date: Date) => {
-		if (!(date instanceof Date)) return;
-		
-		selectedDates = isSelected(date) 
-			? selectedDates.filter(d => d.getTime() !== date.getTime())
-			: [...selectedDates, date];
+		const cellPreviouslySelected = selectedDates.find(
+			(_date) => _date?.date.getTime() === date?.getTime()
+		);
+
+		// If date is already selected, remove it; otherwise add it
+
+		if (cellPreviouslySelected) {
+			selectedDates = selectedDates.filter((d) => d.date.getTime() !== date.getTime());
+		} else {
+			selectedDates = [
+				...selectedDates,
+				{
+					id: proposals.find((p) => new Date(p.start_date).getTime() === date.getTime())?.id ?? 0,
+					date
+				}
+			];
+		}
+
 		noChanges = false;
 	};
-
-	const isSelected = (date: Date) => 
-		selectedDates.some((_date) => _date?.getTime() === date?.getTime());
 
 	// Navigation
 	const prevWeek = () => weekOffset--;
 	const nextWeek = () => weekOffset++;
 
-	// Constants
 	const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 	const months = [
-		'January', 'February', 'March', 'April', 'May', 'June',
-		'July', 'August', 'September', 'October', 'November', 'December'
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December'
 	];
 
-	// Reactive declarations
+	onMount(async () => {
+		await fetchProposals();
+		await fetchProposalVotes();
+	});
+
 	$: {
 		const monday = getMondayForOffset(weekOffset);
 		weekDates = Array.from({ length: 7 }, (_, i) => {
@@ -140,14 +204,10 @@
 		initialMonday = getRecentMonday(new Date());
 	}
 
-	$: if (votes && proposals) {
-		const votedProposals = proposals.filter(proposal => 
-			proposal?.id && votes.includes(proposal.id)
-		);
-		
-		selectedDates = votedProposals
-			.map(proposal => proposal?.start_date ? new Date(proposal.start_date) : null)
-			.filter((date): date is Date => date instanceof Date);
+	$: if (selectedDates === savedDates) {
+		noChanges = true;
+	} else {
+		noChanges = false;
 	}
 </script>
 
@@ -156,7 +216,6 @@
 		<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>
 		{currentMonth}
 		{currentYear}
-		(CET)
 		<button on:click={nextWeek}><Fa icon={faChevronRight} /></button>
 	</div>
 
@@ -176,13 +235,12 @@
 				</div>
 			{/each}
 
-			<!-- {@debug selectedDates} -->
 			{#each gridDates as row, j}
 				<div class="bg-primary text-white flex justify-center px-0.5">{j}:00</div>
 				{#each row as date, i}
 					<button class="border h-12 w-24" on:click={() => toggleDate(date)}>
-						{#if selectedDates.find((_date) => _date?.getTime() === date?.getTime())}
-							<div class="bg-green-600  w-full flex items-center justify-center">
+						{#if selectedDates.find((_date) => _date.date.getTime() === date?.getTime())}
+							<div class="bg-green-600 w-full flex items-center justify-center h-full">
 								<Fa icon={faCheck} color="white" size="2x" />
 							</div>
 						{:else}
@@ -192,34 +250,22 @@
 				{/each}
 			{/each}
 		</div>
-
 		<div class="pt-4 px-4 border-t flex gap-4 bg-white dark:bg-darkobject">
 			<Button
-				disabled={noChanges || selectedDates.length === 0}
+				disabled={arraysEqual(
+					selectedDates.map((d) => d.date.getTime()).sort(),
+					savedDates.map((d) => d.date.getTime()).sort()
+				)}
 				onClick={saveSelection}
-				buttonStyle="primary"
+				buttonStyle="primary-light"
 				Class="flex-1">{$_('Submit')}</Button
 			>
-			<Button 
-				onClick={clearSelection} 
-				buttonStyle="warning" 
+			<Button
+				onClick={clearSelection}
+				buttonStyle="warning-light"
 				disabled={selectedDates.length === 0}
 				Class="flex-1 disabled:!text-gray-300">{$_('Clear')}</Button
 			>
 		</div>
 	</div></Loader
 >
-
-<style>
-	.calendar {
-		display: grid;
-		grid-template-columns: repeat(7, 1fr);
-		grid-template-rows: repeat(6, 1fr);
-		/* 100vh to stretch the calendar to the bottom, then we subtract 2 rem from the padding
-    on the header, 40px from the height of each symbol/the logo on the header, and 
-    28 px for the controlls on the calendar. This scuffed solution might need to be improved 
-	
-	TODO: Don't do this*/
-		height: calc(100vh - 2rem - 40px - 28px);
-	}
-</style>

@@ -1,11 +1,13 @@
 <script lang="ts">
 	import Select from '$lib/Generic/Select.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import type { proposal } from '$lib/Poll/interface';
+	import type { Comment, proposal } from '$lib/Poll/interface';
 	import { _ } from 'svelte-i18n';
 	import { commentsStore } from './commentStore';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import Button from '$lib/Generic/Button.svelte';
+	import { fetchRequest } from '$lib/FetchRequest';
+	import { page } from '$app/stores';
 
 	export let sortBy: string | null = null,
 		Class = '',
@@ -14,6 +16,40 @@
 
 	let selectedProposals: number[] = [],
 		displayProposalsModal = false;
+
+	const filterByTags = async () => {
+		let loading = true;
+		let toKeep: Comment[] = [];
+		const tags = proposals.map((p) => `#${p.title.replaceAll(' ', '-')}`);
+
+		for (const comment of $commentsStore.allComments) {
+			const { res, json } = await fetchRequest(
+				'GET',
+				`group/poll/${$page.params.pollId}/comment/${comment.id}/ancestor`
+			);
+
+			if (!res.ok) return;
+
+			const ancestors: Comment[] = json.results;
+
+			if (
+				ancestors.find((_comment: Comment) => tags.some((tag) => _comment.message?.includes(tag)))
+			)
+				toKeep = [...toKeep, ...ancestors];
+			console.log(toKeep);
+		}
+		// Filter Duplicates
+		toKeep = toKeep.filter(
+			(comment, index, self) => index === self.findIndex((c) => c.id === comment.id)
+		);
+
+		commentsStore.updates(toKeep);
+		loading = false;
+	};
+
+	$: (async () => {
+		// if (selectedProposals) await filterByTags();
+	})();
 
 	$: if (selectedProposals.length === 0) commentsStore.filterByProposal(null);
 	else {

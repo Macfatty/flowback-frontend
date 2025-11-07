@@ -1,26 +1,16 @@
 <script lang="ts">
-	import { type GroupMembers, type invite, type PreviewMessage } from './interfaces';
+	import { type GroupMembers, type invite } from './interfaces';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { onMount } from 'svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import {
-		chatOpenStore,
-		chatPartnerStore,
-		fixDirectMessageChannelName,
-		getUserChannelId,
-
-		previewStore
-
-	} from './functions';
+	import { chatOpenStore, chatPartnerStore, getUserChannelId, previewStore } from './functions';
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 	import { idfy } from '$lib/Generic/GenericFunctions2';
 	import UserSearch from '$lib/Generic/UserSearch.svelte';
 	import Fa from 'svelte-fa';
 	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-	import { userStore } from '$lib/User/interfaces';
-	import EveryProperty from '$lib/Generic/EveryProperty.svelte';
 
 	let chatSearch = '',
 		openUserSearch = false;
@@ -94,7 +84,6 @@
 			selectedChatChannelId = partner;
 			clickedChatter(partner);
 		});
-
 	});
 
 	// Update previews based on search
@@ -103,20 +92,16 @@
 	$: if (selectedChatChannelId) updateChatTitle();
 
 	$: if ($previewStore) {
-		
 		// let previewsNotified = $previewStore.filter((preview) => preview.recent_message?.notified);
 		// let previewsNotNotified = $previewStore.filter((preview) => !preview.recent_message?.notified);
-
 		// previewsNotNotified = previewsNotNotified.sort(
 		// 	(preview1, preview2) =>
 		// 		new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
 		// );
-
 		// previewsNotified = previewsNotified.sort(
 		// 	(preview1, preview2) =>
 		// 		new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
 		// );
-
 		// $previewStore = [...previewsNotified, ...previewsNotNotified];
 	}
 </script>
