@@ -118,7 +118,7 @@
 	}
 </script>
 
-<div class={`${Class} notifications-clickable-region`}>
+<div class={`${Class} notifications-clickable-region relative z-100 `}>
 	<button
 		class={``}
 		on:click={() => {
