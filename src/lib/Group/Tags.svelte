@@ -140,7 +140,7 @@
 </Loader>
 <!-- </div> -->
 
-<Modal Class={'cursor-default'} bind:open={areYouSureModal}>
+<Modal bind:open={areYouSureModal}>
 	<div slot="header">{$_('Are you sure?')}</div>
 	<div slot="body">
 		<span>{$_('Removing a tag removes all polls with that tag!')}</span>

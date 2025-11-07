@@ -43,7 +43,7 @@
 
 <div
 	id="overlay"
-	class="overlay"
+	class="overlay "
 	class:hidden={!open}
 	on:click={closeModal}
 	tabindex="0"
@@ -53,7 +53,7 @@
 	<div
 		{id}
 		tabindex="-1"
-		class={`w-[80%] max-h-[80vh] mt-10 dark:bg-darkbackground bg-white overflow-y-auto overflow-x-hidden border
+		class={`w-[80%] !cursor-default max-h-[80vh] mt-10 dark:bg-darkbackground bg-white overflow-y-auto overflow-x-hidden border
 		border-gray-300 rounded shadow-xl fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-50 max-w-[400px] ${Class}`}
 		on:click={stopPropagation}
 		on:keydown
