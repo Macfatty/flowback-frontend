@@ -17,17 +17,31 @@ const createSocket = (userId: number) => {
 	};
 
 	socket.onmessage = (event) => {
+		// If user types a message, just set it.
 		const parsedMessage = JSON.parse(event.data);
 		if (parsedMessage?.user?.id !== userId) {
 			messageStore.set(parsedMessage);
 		}
 
+
+		// When user recieves a messages, update the preview store to reflect the new message.
 		previewStore.update((previews) => {
-			
+
+			let preview = previews?.find((p: PreviewMessage) => p.channel_id === parsedMessage.channel_id);
+
+			if (preview) {
+				preview.recent_message = parsedMessage
+			}
+
+			return previews
+		})
+
+		// When recieving a message from the first time from someone, add it to the preview store.
+		previewStore.update((previews) => {
+
 			if (!previews) previews = [];
-			console.log('HERE AT ALL???', previews, parsedMessage, previews.find((p) => p.channel_id === parsedMessage.channel_id));
 			if (previews.find((p) => p.channel_id === parsedMessage.channel_id)) return previews
-			
+
 			// If user A messages B for the first time, make it show up in B's chat field.
 			const newPreview: PreviewMessage = {
 				channel_id: parsedMessage.channel_id,
@@ -51,7 +65,7 @@ const createSocket = (userId: number) => {
 				participants: parsedMessage.participants
 			};
 			// console.log(newPreview, parsedMessage, previews, "STUFF");
-			
+
 			return [...previews, newPreview];
 		})
 	};
