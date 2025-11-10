@@ -115,6 +115,7 @@
 	};
 
 	const notificationSubscribe = async (pool_id: number) => {
+		//TODO Unsubscribe when removing delegation
 		const { json, res } = await fetchRequest(
 			'POST',
 			`group/delegate/pool/${pool_id}/notification/subscribe`,
