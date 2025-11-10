@@ -9,6 +9,7 @@
 	import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 	import { _ } from 'svelte-i18n';
 	import { userStore } from '$lib/User/interfaces';
+	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 
 	export let group: Group,
 		delegates: Delegate[] = [];
@@ -109,6 +110,16 @@
 		if (successMessage)
 			ErrorHandlerStore.set({ message: 'Successfully saved delegation', success: true });
 	};
+
+	const notificationSubscribe = async (pool_id: number) => {
+		const { json, res } = await fetchRequest(
+			'POST',
+			`group/delegate/pool/${pool_id}/notification/subscribe`,
+			{
+				tags: ['poll_vote_update']
+			}
+		);
+	};
 </script>
 
 <div>
@@ -148,6 +159,7 @@
 											await createDelegateRelation(delegate.pool_id);
 											await getDelegateRelations();
 											await updateDelgation(delegate, tag);
+											await notificationSubscribe(delegate.pool_id);
 											// Refresh relations to ensure consistency with backend
 											getDelegateRelations();
 										}}

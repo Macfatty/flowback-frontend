@@ -10,7 +10,7 @@
 
 	export let notificationOpen = false,
 		categories: string[],
-		type: 'poll' | 'group' | 'thread',
+		type: 'poll' | 'group' | 'thread' | 'delegation',
 		labels: string[],
 		api: string,
 		id: number,
