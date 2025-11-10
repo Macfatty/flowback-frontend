@@ -20,15 +20,14 @@
 		showReadMore = true,
 		sortBy: null | string = null,
 		searchString: string = '',
-		selectedProposals: number[] = [];	
+		selectedProposals: number[] = [];
 
 	const setUpComments = async () => {
 		const { comments, next } = await getComments(getId(), api, offset, sortBy, searchString);
 
 		comments?.forEach((comment: comment) => {
 			comment.reply_depth = getCommentDepth(comment, comments);
-			console.log(comment.reply_depth, "DEPTH");
-			
+			console.log(comment.reply_depth, 'DEPTH');
 		});
 
 		commentsStore.setAll(comments);

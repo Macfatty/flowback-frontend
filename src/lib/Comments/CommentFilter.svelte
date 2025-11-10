@@ -49,11 +49,7 @@
 		commentsStore.update((store) => ({ ...store, filteredComments: toKeep }));
 		loading = false;
 	};
-
-	$: (async () => {
-		if (selectedProposals) await filterByTags();
-	})();
-
+	
 	$: if (selectedProposals.length === 0) commentsStore.filterByProposal(null);
 	else {
 		const _proposals = proposals.filter((p) => selectedProposals.includes(p.id));
@@ -112,6 +108,7 @@
 						id={`${proposal.id}`}
 						value={proposal.id}
 						bind:group={selectedProposals}
+						on:input={filterByTags}
 					/>
 					<label class="text-left" for={`proposal-${proposal.id}`}>{proposal.title}</label>
 				</div>

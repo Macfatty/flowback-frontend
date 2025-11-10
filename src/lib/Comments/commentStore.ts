@@ -50,14 +50,6 @@ function createCommentStore() {
                 filterMode: mode,
                 filteredComments: applyFilters(store.allComments, proposals, mode)
             })),
-        filterByProposalsIncludingParents: (proposals: proposal[] | null, mode: 'and' | 'or' = 'or') =>
-            update(store => ({
-                ...store,
-                filterProposals: proposals,
-                filterMode: mode,
-                filteredComments: applyFilters(store.allComments, proposals, mode)
-            })),
-
         getAll: () => {
             let allComments: Comment[] = [];
             update(store => {
@@ -74,9 +66,9 @@ function createCommentStore() {
             }),
         updates: (comments: Comment[]) => {
             console.log(comments, "COMMENT");
-            
-            update(store => ({ ...store, filteredComments: comments, filterByProposal: null}))
-        } 
+
+            update(store => ({ ...store, filteredComments: comments, filterByProposal: null }))
+        }
     };
 }
 
