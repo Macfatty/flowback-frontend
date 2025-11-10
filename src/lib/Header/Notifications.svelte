@@ -20,14 +20,13 @@
 		if (location.pathname === '/login') return;
 		const { json, res } = await fetchRequest(
 			'GET',
-			`notification/list`
-			//?order_by=timestamp_desc&limit=${notificationLimit}
+			`notification/list?order_by=timestamp_desc&limit=${notificationLimit}`
 		);
 		if (res.ok) notifications = json?.results;
 	};
 
 	const closeWindowWhenClickingOutside = () => {
-		window.addEventListener('click', function (e) {
+		window.addEventListener('click', (e) => {
 			const notificationListElement = document.getElementById(`notifications-list`);
 			if (
 				notificationsOpen &&
@@ -40,18 +39,20 @@
 	};
 
 	const readNotification = async (id: number) => {
-		const { res, json } = await fetchRequest('POST', 'notification/read', {
-			notification_ids: [id],
+		const { res, json } = await fetchRequest('POST', 'notification/update', {
+			notification_object_ids: [id],
 			read: true
 		});
 		if (!res.ok) return;
 
-		notifications = notifications.filter((notification) => notification.id !== id);
+		// notifications = notifications.filter((notification) => notification.id !== id);
+		// let notification = notifications.find(n => n.object_id === id)
+		// notification?.read = true;
 	};
 
 	const markAllAsRead = async () => {
-		const { res, json } = await fetchRequest('POST', 'notification/read', {
-			notification_ids: notifications.map((notification) => notification.id),
+		const { res, json } = await fetchRequest('POST', 'notification/update', {
+			notification_object_ids: notifications.map((notification) => notification.object_id),
 			read: true
 		});
 		if (!res.ok) return;
@@ -112,11 +113,18 @@
 		</button>
 		{#if notifications?.length > 0}
 			{#each notifications as notification}
+				<!-- class:bg-gray-200={hovered.find((hover) => hover === notification.id)} -->
 				<li
 					class="flex justify-between max-w-[25rem] border-gray-200 dark:border-gray-600 border hover:shadow transition-all hover:bg-blue-100 hover:border-l-2 hover:border-l-primary"
-					class:bg-gray-200={hovered.find((hover) => hover === notification.id)}
+					class:bg-green-300={!notification.read}
 				>
-					<button on:click={() => gotoNotificationSource(notification)}>
+					<button
+						on:click={async () => {
+							await gotoNotificationSource(notification);
+							await readNotification(notification.object_id);
+							notification.read = true;
+						}}
+					>
 						<div class="break-words pr-8 text-left pl-4 py-2">
 							<div>{$_(notification.message)}</div>
 							<div class="text-sm">{timeAgo.format(new Date(notification.timestamp))}</div>
@@ -125,11 +133,13 @@
 					<button
 						style="z-index: 1;"
 						class="pr-4"
-						on:click={() => {
-							readNotification(notification.id);
-							setTimeout(() => {
-								notificationsOpen = true;
-							}, 100);
+						on:click={async () => {
+							await readNotification(notification.object_id);
+							notification.read = true;
+
+							// setTimeout(() => {
+							// 	notificationsOpen = true;
+							// }, 100);
 							// hovered.push(notification.id);
 							// hovered = hovered;
 						}}

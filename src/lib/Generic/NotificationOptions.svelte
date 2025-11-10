@@ -10,7 +10,7 @@
 
 	export let notificationOpen = false,
 		categories: string[],
-		type: 'poll' | 'group' | 'thread',
+		type: 'poll' | 'group' | 'thread' | 'delegation',
 		labels: string[],
 		api: string,
 		id: number,
@@ -118,7 +118,7 @@
 	}
 </script>
 
-<div class={`${Class} notifications-clickable-region`}>
+<div class={`${Class} notifications-clickable-region relative z-100 `}>
 	<button
 		class={``}
 		on:click={() => {

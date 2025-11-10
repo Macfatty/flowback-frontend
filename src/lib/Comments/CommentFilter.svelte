@@ -8,14 +8,15 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { page } from '$app/stores';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	export let sortBy: string | null = null,
 		Class = '',
 		searchString: string = '',
-		proposals: proposal[] = [];
+		proposals: proposal[] = [],
+		selectedProposals: number[] = [];
 
-	let selectedProposals: number[] = [],
-		displayProposalsModal = false;
+	let displayProposalsModal = false;
 
 	const filterByTags = async () => {
 		let loading = true;
@@ -28,33 +29,31 @@
 				`group/poll/${$page.params.pollId}/comment/${comment.id}/ancestor`
 			);
 
-			if (!res.ok) return;
+			if (!res.ok) {
+				loading = false;
+				ErrorHandlerStore.set({ message: 'Failed to filter comments', success: false });
+				return;
+			}
 
 			const ancestors: Comment[] = json.results;
 
-			if (
-				ancestors.find((_comment: Comment) => tags.some((tag) => _comment.message?.includes(tag)))
-			)
+			// Keep ancestor trees such that they contain at least one of the selected tags
+			if (ancestors.some((_comment) => tags.some((tag) => _comment.message?.includes(tag))))
 				toKeep = [...toKeep, ...ancestors];
-			console.log(toKeep);
+			else console.log('skipping:', ancestors, comment);
 		}
-		// Filter Duplicates
-		toKeep = toKeep.filter(
-			(comment, index, self) => index === self.findIndex((c) => c.id === comment.id)
-		);
 
-		commentsStore.updates(toKeep);
+		// Filter Duplicates
+		toKeep = toKeep.filter((comment) => toKeep.some((c) => c.id === comment.id));
+
+		commentsStore.update((store) => ({ ...store, filteredComments: toKeep }));
 		loading = false;
 	};
-
-	$: (async () => {
-		// if (selectedProposals) await filterByTags();
-	})();
-
+	
 	$: if (selectedProposals.length === 0) commentsStore.filterByProposal(null);
 	else {
 		const _proposals = proposals.filter((p) => selectedProposals.includes(p.id));
-		commentsStore.filterByProposals(_proposals, 'or');
+		// commentsStore.filterByProposals(_proposals, 'or');
 	}
 </script>
 
@@ -109,6 +108,7 @@
 						id={`${proposal.id}`}
 						value={proposal.id}
 						bind:group={selectedProposals}
+						on:input={filterByTags}
 					/>
 					<label class="text-left" for={`proposal-${proposal.id}`}>{proposal.title}</label>
 				</div>

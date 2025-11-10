@@ -9,13 +9,15 @@
 	import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 	import { _ } from 'svelte-i18n';
 	import { userStore } from '$lib/User/interfaces';
+	import Loader from '$lib/Generic/Loader.svelte';
 
 	export let group: Group,
 		delegates: Delegate[] = [];
 
 	let tags: Tag[] = [],
 		expandedSection: any = null,
-		delegateRelations: DelegateRelation[] = [];
+		delegateRelations: DelegateRelation[] = [],
+		loading = false;
 
 	onMount(async () => {
 		groupDelegationSetup();
@@ -26,9 +28,11 @@
 	}
 
 	const groupDelegationSetup = async () => {
+		loading = true;
 		await getGroupTags();
 		await getDelegates();
 		await getDelegateRelations();
+		loading = false;
 	};
 
 	const updateDelgation = async (delegate: Delegate, tag: Tag) => {
@@ -109,80 +113,96 @@
 		if (successMessage)
 			ErrorHandlerStore.set({ message: 'Successfully saved delegation', success: true });
 	};
+
+	const notificationSubscribe = async (pool_id: number) => {
+		//TODO Unsubscribe when removing delegation
+		const { json, res } = await fetchRequest(
+			'POST',
+			`group/delegate/pool/${pool_id}/notification/subscribe`,
+			{
+				tags: ['poll_vote_update']
+			}
+		);
+	};
 </script>
 
-<div>
-	{#if delegates.length > 0}
-		{#each tags as tag, index}
-			<div class="section">
-				<button
-					type="button"
-					class="transition-all flex text-primary dark:text-secondary justify-between w-full section-title"
-					on:click={() => (expandedSection = expandedSection === index ? null : index)}
-				>
-					<span class="break-word text-left">{tag.name}</span>
-
-					<!-- Always use chevron-down and rotate when expanded -->
-					<div class="chevron {expandedSection === index ? 'expanded' : ''}">
-						<Fa icon={faChevronDown} />
-					</div>
-				</button>
-
-				{#if expandedSection === index}
-					<div class="voter-list">
-						{#each delegates as delegate}
-							<div class="voter-item">
-								<ProfilePicture
-									displayName
-									username={delegate.user.username}
-									userId={delegate.user.id}
-									profilePicture={delegate.user.profile_image}
-									href={`/user?id=${delegate.user.id}&delegate_id=${delegate.id}&group_id=${group.id}&is_admin=${delegate.is_admin}`}
-								/>
-
-								<span>
-									<input
-										disabled={delegates.find((delegate) => delegate.user.id === $userStore?.id) &&
-											delegate.user.id !== $userStore?.id}
-										on:input={async () => {
-											await createDelegateRelation(delegate.pool_id);
-											await getDelegateRelations();
-											await updateDelgation(delegate, tag);
-											// Refresh relations to ensure consistency with backend
-											getDelegateRelations();
-										}}
-										type="radio"
-										name={tag.name}
-										checked={delegateRelations
-											.find((relation) => relation.delegate_pool_id === delegate.pool_id)
-											?.tags.find((_tag) => _tag.id === tag.id) !== undefined}
-									/>
-								</span>
-							</div>
-						{/each}
-					</div>
+<Loader bind:loading>
+	<div>
+		{#if delegates.length > 0}
+			{#each tags as tag, index}
+				<div class="section">
 					<button
-						class="text-red-700 hover:underline"
-						on:click={async () => {
-							const delegateRelationToRemove = delegateRelations.find((relation) =>
-								relation.tags.find((_tag) => _tag.id === tag.id)
-							);
-
-							if (delegateRelationToRemove) {
-								await saveDelegation(delegateRelationToRemove.delegate_pool_id, tag.id, 'remove');
-								groupDelegationSetup();
-							}
-						}}>{$_('Clear Choice')}</button
+						type="button"
+						class="transition-all flex text-primary dark:text-secondary justify-between w-full section-title"
+						on:click={() => (expandedSection = expandedSection === index ? null : index)}
 					>
-				{:else}
-					<!-- <div class="voter-list">Inga rekommenderade väljare.</div> -->
-				{/if}
-			</div>
-		{/each}
-	{:else}
-		<span>{$_('There are currently no delegates for this group')}</span>
-	{/if}
-</div>
+						<span class="break-word text-left">{tag.name}</span>
+
+						<!-- Always use chevron-down and rotate when expanded -->
+						<div class="chevron {expandedSection === index ? 'expanded' : ''}">
+							<Fa icon={faChevronDown} />
+						</div>
+					</button>
+
+					{#if expandedSection === index}
+						<div class="voter-list">
+							{#each delegates as delegate}
+								<div class="voter-item">
+									<ProfilePicture
+										displayName
+										username={delegate.user.username}
+										userId={delegate.user.id}
+										profilePicture={delegate.user.profile_image}
+										href={`/user?id=${delegate.user.id}&delegate_id=${delegate.id}&group_id=${group.id}&is_admin=${delegate.is_admin}`}
+									/>
+
+									<span>
+										<input
+											disabled={delegates.find((delegate) => delegate.user.id === $userStore?.id) &&
+												delegate.user.id !== $userStore?.id}
+											on:input={async () => {
+												loading = true;
+												await createDelegateRelation(delegate.pool_id);
+												await getDelegateRelations();
+												await updateDelgation(delegate, tag);
+												await notificationSubscribe(delegate.pool_id);
+												// Refresh relations to ensure consistency with backend
+												await getDelegateRelations();
+												loading = false;
+											}}
+											type="radio"
+											name={tag.name}
+											checked={delegateRelations
+												.find((relation) => relation.delegate_pool_id === delegate.pool_id)
+												?.tags.find((_tag) => _tag.id === tag.id) !== undefined}
+										/>
+									</span>
+								</div>
+							{/each}
+						</div>
+						<button
+							class="text-red-700 hover:underline"
+							on:click={async () => {
+								const delegateRelationToRemove = delegateRelations.find((relation) =>
+									relation.tags.find((_tag) => _tag.id === tag.id)
+								);
+
+								if (delegateRelationToRemove) {
+									await saveDelegation(delegateRelationToRemove.delegate_pool_id, tag.id, 'remove');
+									groupDelegationSetup();
+								}
+							}}>{$_('Clear Choice')}</button
+						>
+					{:else}
+						<!-- <div class="voter-list">Inga rekommenderade väljare.</div> -->
+					{/if}
+				</div>
+			{/each}
+		{:else}
+			<span>{$_('There are currently no delegates for this group')}</span>
+		{/if}
+	</div>
+</Loader>
 
 <style>
 	.section {

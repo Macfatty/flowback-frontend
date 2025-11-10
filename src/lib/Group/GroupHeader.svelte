@@ -57,7 +57,7 @@
 
 			<Button
 				hoverEffect={false}
-				Class="absolute right-0 top-0 p-3 m-4 transition-all bg-gray-200 dark:bg-darkobject"
+				Class="absolute z-[40] right-0 top-0 p-3 m-4 transition-all bg-gray-200 dark:bg-darkobject"
 			>
 				<NotificationOptions
 					hoverEffect={false}
@@ -66,7 +66,7 @@
 					id={Number($page.params.groupId)}
 					categories={groupNotificationCategories}
 					labels={groupNotificationCategoriesReadable}
-					Class="text-gray-800 dark:text-gray-200"
+					Class="text-gray-800 dark:text-gray-200 z-100 relative"
 					ClassOpen="-left-[90px]"
 				/>
 			</Button>

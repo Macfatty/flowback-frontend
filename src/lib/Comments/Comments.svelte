@@ -19,13 +19,15 @@
 	let offset = 0,
 		showReadMore = true,
 		sortBy: null | string = null,
-		searchString: string = '';
+		searchString: string = '',
+		selectedProposals: number[] = [];
 
 	const setUpComments = async () => {
 		const { comments, next } = await getComments(getId(), api, offset, sortBy, searchString);
 
 		comments?.forEach((comment: comment) => {
 			comment.reply_depth = getCommentDepth(comment, comments);
+			console.log(comment.reply_depth, 'DEPTH');
 		});
 
 		commentsStore.setAll(comments);
@@ -49,7 +51,7 @@
 		await setUpComments();
 	});
 
-	$: if (sortBy || searchString) setUpComments();
+	$: if (sortBy || searchString || selectedProposals) setUpComments();
 </script>
 
 <div class={`rounded dark:text-darktext min-h-[200px] ${Class}`} id="comments">
@@ -63,6 +65,7 @@
 			bind:sortBy
 			bind:searchString
 			bind:proposals
+			bind:selectedProposals
 		/>
 	</div>
 
