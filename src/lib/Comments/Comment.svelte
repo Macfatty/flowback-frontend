@@ -159,6 +159,7 @@
 		style:margin-left={`${comment.reply_depth * 20}px`}
 		class:border-l-2={comment.reply_depth > 0}
 	>
+	{comment.reply_depth }
 		<div class="flex gap-2">
 			<ProfilePicture
 				profilePicture={comment.author_profile_image}

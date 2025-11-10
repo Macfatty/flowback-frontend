@@ -96,12 +96,12 @@
 			return;
 		}
 
-		const parentComment = $commentsStore.filteredComments.find(
+		const parentComment = $commentsStore.allComments.find(
 			(comment) => comment.id === parent_id
 		);
 
 		if (parentComment) {
-			replyDepth = getCommentDepth(parentComment, $commentsStore.filteredComments) + 1;
+			replyDepth = getCommentDepth(parentComment, $commentsStore.allComments) + 1;
 		}
 
 		const newComment: Comment = {

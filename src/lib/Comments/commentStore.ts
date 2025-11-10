@@ -15,6 +15,7 @@ function createCommentStore() {
 
     return {
         subscribe,
+        update,
         setAll: (comments: Comment[]) =>
             update(store => ({
                 ...store,
@@ -74,7 +75,7 @@ function createCommentStore() {
         updates: (comments: Comment[]) => {
             console.log(comments, "COMMENT");
             
-            update(store => ({ ...store, filteredComments: comments }))
+            update(store => ({ ...store, filteredComments: comments, filterByProposal: null}))
         } 
     };
 }
