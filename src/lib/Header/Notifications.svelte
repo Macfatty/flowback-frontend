@@ -20,8 +20,7 @@
 		if (location.pathname === '/login') return;
 		const { json, res } = await fetchRequest(
 			'GET',
-			`notification/list`
-			//?order_by=timestamp_desc&limit=${notificationLimit}
+			`notification/list?order_by=timestamp_desc&limit=${notificationLimit}`
 		);
 		if (res.ok) notifications = json?.results;
 	};
@@ -119,7 +118,13 @@
 					class="flex justify-between max-w-[25rem] border-gray-200 dark:border-gray-600 border hover:shadow transition-all hover:bg-blue-100 hover:border-l-2 hover:border-l-primary"
 					class:bg-green-300={!notification.read}
 				>
-					<button on:click={() => gotoNotificationSource(notification)}>
+					<button
+						on:click={async () => {
+							await gotoNotificationSource(notification);
+							await readNotification(notification.object_id);
+							notification.read = true;
+						}}
+					>
 						<div class="break-words pr-8 text-left pl-4 py-2">
 							<div>{$_(notification.message)}</div>
 							<div class="text-sm">{timeAgo.format(new Date(notification.timestamp))}</div>
