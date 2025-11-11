@@ -127,7 +127,7 @@
 	{/if}
 	{#if enableDetails && displayDetails}
 		<button
-			class="hover:underline flex items-center gap-1 cursor-pointer text-xs"
+			class="hover:underline flex items-center gap-1 text-xs"
 			on:click={() => (displayDetails = false)}
 		>
 			<Fa icon={faDownLong} flip />
