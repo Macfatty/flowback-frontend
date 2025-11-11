@@ -427,7 +427,7 @@
 					<input
 						type="datetime-local"
 						bind:value={kanbanEdited.end_date}
-						class="w-full border rounded p-1 border-gray-300 dark:border-gray-600 dark:bg-darkobject
+						class="dark:text-darkmodeText w-full border rounded p-1 border-gray-300 dark:border-gray-600 dark:bg-darkobject
 						   {kanbanEdited.end_date ? 'text-black' : 'text-gray-500'}"
 						placeholder={$_('No end date set')}
 					/>
