@@ -105,6 +105,9 @@
 	}
 
 	$: if (selectedProposal) resetScroll = true;
+	$: showRightFormSlot = selectedProposal !== null || displayForm;
+	$: showRightSlot = selectedProposal !== null;
+	$: showBothSlots = phase === 'result' || phase === 'prediction_vote';
 </script>
 
 <Layout centered>
@@ -138,7 +141,7 @@
 
 			<!-- PHASE 2: PROPOSAL CREATION -->
 			{:else if phase === 'proposal'}
-				<Structure bind:phase bind:poll bind:resetScroll showRightOnMobile={!!selectedProposal || displayForm}>
+				<Structure bind:phase bind:poll bind:resetScroll mobileSlots={{showRight: showRightFormSlot, showBoth: showBothSlots}}>
 					<div slot="left" class="h-full relative flex flex-col">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
@@ -201,7 +204,7 @@
 
 			<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
 			{:else if phase === 'prediction_statement'}
-				<Structure bind:phase bind:poll bind:resetScroll overrideGenericStyle={''} showRightOnMobile={!!selectedProposal || displayForm}>
+				<Structure bind:phase bind:poll bind:resetScroll mobileSlots={{showRight: showRightFormSlot, showBoth: showBothSlots}}>
 					<div slot="left" class="relative h-full flex flex-col">
 						<span>{$_('Proposals')} ({proposals?.length})</span>
 						<div class="h-full overflow-auto max-h-[80%]">
@@ -280,7 +283,7 @@
 
 			<!-- PHASE 4: PREDICTION BETTING -->
 			{:else if phase === 'prediction_bet'}
-				<Structure bind:phase bind:poll bind:resetScroll showRightOnMobile={!!selectedProposal}>
+				<Structure bind:phase bind:poll bind:resetScroll mobileSlots={{showRight: showRightSlot, showBoth: showBothSlots}}>
 					<div slot="left" class="h-full">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
@@ -330,7 +333,7 @@
 
 			<!-- PHASE 5: DELEGATE VOTING -->
 			{:else if phase === 'delegate_vote'}
-				<Structure bind:phase bind:poll bind:resetScroll showRightOnMobile={!!selectedProposal}>
+				<Structure bind:phase bind:poll bind:resetScroll mobileSlots={{showRight: showRightSlot, showBoth: showBothSlots}}>
 					<div slot="left" class="h-full">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
@@ -374,7 +377,7 @@
 
 			<!-- PHASE 6: NON-DELEGATE VOTING -->
 			{:else if phase === 'vote'}
-				<Structure bind:phase bind:poll bind:resetScroll showRightOnMobile={!!selectedProposal}>
+				<Structure bind:phase bind:poll bind:resetScroll  mobileSlots={{showRight: showRightSlot, showBoth: showBothSlots}}>
 					<div slot="left" class="h-full" id="proposals-section">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
@@ -425,7 +428,7 @@
 				
 			<!-- PHASE 7: RESULTS AND EVALUATION -->
 			{:else if phase === 'result' || phase === 'prediction_vote'}
-				<Structure bind:phase bind:poll bind:resetScroll showBothSlotsOnMobile={true} showRightOnMobile={true}>
+				<Structure bind:phase bind:poll bind:resetScroll mobileSlots={{showRight: true, showBoth: showBothSlots}}>
 					<div slot="left" class="h-full overflow-y-auto">
 						<PredictionStatements bind:selectedProposal bind:phase bind:poll />
 					</div>
