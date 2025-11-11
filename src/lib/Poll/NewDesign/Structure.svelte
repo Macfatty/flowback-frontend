@@ -5,12 +5,14 @@
 
 	export let poll: poll | null = null,
 		Class = '',
-		overrideGenericStyle = '',
 		phase: Phase = 'area_vote',
 		resetScroll = false;
 
-	export let showRightOnMobile = false;
-	export let showBothSlotsOnMobile = false;
+  export let mobileSlots = {
+    showRight: false,
+    showBoth: false
+  };
+
 	let isMobile = false;
 
 	// 'bg-white h-[490px] max-h-[490px] dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
@@ -33,14 +35,24 @@
 		right?.scrollTo(0, 0);
 		resetScroll = false;
 	}
+
+	$: gridClass = `
+		${Class} 
+		${poll ? 'poll-grid' : 'poll-grid-no-timeline'} 
+		p-3 md:p-6 lg:p-12 max-w-[1200px] w-full gap-4 lg:gap-6 
+		${isMobile ? 'flex flex-col' : 'grid'}
+	`;
+
+	$: showLeftSlot = $$slots.left && 
+		(!isMobile || !mobileSlots.showRight || mobileSlots.showBoth);
+
+	$: showRightSlot = $$slots.right && 
+		(isMobile ? (mobileSlots.showRight || mobileSlots.showBoth) : true);
+
+	$: showBottomSlot = $$slots.bottom;
 </script>
 
-<div
-	class={`${Class} ${
-		poll ? 'poll-grid' : 'poll-grid-no-timeline'
-	} p-3 md:p-6 lg:p-12 max-w-[1200px] w-full gap-4 lg:gap-6 ${isMobile ? 'flex flex-col' : 'grid'}`}
-	id="poll-structure"
->
+<div class={gridClass} id="poll-structure">
 	{#if poll}
 		<Timeline
 			bind:phase
@@ -51,46 +63,19 @@
 		/>
 	{/if}
 
-	{#if isMobile}
-		{#if showBothSlotsOnMobile}
-      {#if $$slots.left}
-        <div class={`${genericStyle}`}>
-          <slot name="left" class="h-full" />
-        </div>
-      {/if}
-      {#if $$slots.right}
-        <div bind:this={right} class={`${genericStyle} ${overrideGenericStyle}`}>
-          <slot name="right" class="h-full" />
-        </div>
-      {/if}
-
-    {:else}
-		{#if showRightOnMobile && $$slots.right}
-			<div bind:this={right} class={`${genericStyle} ${overrideGenericStyle}`}>
-				<slot name="right" class="h-full" />
-			</div>
-		{:else if $$slots.left}
-			<div class={`${genericStyle}`}>
-				<slot name="left" class="h-full" />
-			</div>
-		{/if}
+	{#if showLeftSlot}
+		<div class={genericStyle}>
+			<slot name="left" class="h-full" />
+		</div>
 	{/if}
 
-	{:else}
-		{#if $$slots.left}
-			<div class={`${genericStyle} `}>
-				<slot name="left" class="h-full" />
-			</div>
-		{/if}
-
-		{#if $$slots.right}
-			<div bind:this={right} class={`${genericStyle}  ${overrideGenericStyle}`}>
-				<slot name="right" class="h-full" />
-			</div>
-		{/if}
+	{#if showRightSlot}
+		<div bind:this={right} class={genericStyle}>
+			<slot name="right" class="h-full" />
+		</div>
 	{/if}
 
-	{#if $$slots.bottom}
+	{#if showBottomSlot}
 		<div class={`${genericStyle} overflow-auto bottom-grid h-fit`}>
 			<slot name="bottom" />
 		</div>
