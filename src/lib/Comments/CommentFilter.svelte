@@ -25,8 +25,8 @@
 			.filter((p) => selectedProposals.find((sp) => sp === p.id))
 			.map((p) => `#${p.title.replaceAll(' ', '-')}`);
 
-			console.log('proposals', proposals, tags);
-			
+		console.log('proposals', proposals, tags);
+
 		for (const comment of $commentsStore.allComments) {
 			const { res, json } = await fetchRequest(
 				'GET',
@@ -42,26 +42,25 @@
 			const ancestors: Comment[] = json.results;
 
 			// Keep ancestor trees such that they contain at least one of the selected tags
-			if (ancestors.some((_comment) => tags.some((tag) => _comment.message?.includes(tag)))) {
+			if (ancestors.some((_comment) => tags.some((tag) => _comment.message?.includes(tag))))
 				toKeep = [...toKeep, ...ancestors];
-				console.log('including:', ancestors, comment);
-			} else console.log('skipping:', ancestors, comment);
 		}
+		console.log(toKeep, "BEFORE");
+		
 
 		// Filter Duplicates
 		toKeep = toKeep.filter((comment) => toKeep.some((c) => c.id === comment.id));
 
-		console.log('only here once');
-
-		// commentsStore.update((store) => ({ ...store, filteredComments: toKeep }));
+		console.log(toKeep, "AFTER");
+		commentsStore.update((store) => ({ ...store, filteredComments: toKeep }));
 		loading = false;
 	};
 
 	$: if (selectedProposals.length === 0) commentsStore.filterByProposal(null);
 	else {
 		filterByTags();
-	// const _proposals = proposals.filter((p) => selectedProposals.includes(p.id));
-	// commentsStore.filterByProposals(_proposals, 'or');
+		// const _proposals = proposals.filter((p) => selectedProposals.includes(p.id));
+		// commentsStore.filterByProposals(_proposals, 'or');
 	}
 </script>
 
@@ -116,8 +115,8 @@
 						id={`${proposal.id}`}
 						value={proposal.id}
 						bind:group={selectedProposals}
-						/>
-						<!-- on:input={filterByTags} -->
+					/>
+					<!-- on:input={filterByTags} -->
 					<label class="text-left" for={`proposal-${proposal.id}`}>{proposal.title}</label>
 				</div>
 			{/each}
