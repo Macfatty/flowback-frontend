@@ -61,12 +61,13 @@
 		loading = false;
 	};
 
-	$: if (selectedProposals.length === 0) commentsStore.filterByProposal(null);
-	else {
-		filterByTags();
-		// const _proposals = proposals.filter((p) => selectedProposals.includes(p.id));
-		// commentsStore.filterByProposals(_proposals, 'or');
-	}
+	$: if (selectedProposals.length === 0)
+		commentsStore.update((store) => ({
+			allComments: store.allComments,
+			filterByProposal: null,
+			filteredComments: store.allComments
+		}));
+	else filterByTags();
 </script>
 
 <div class={Class}>

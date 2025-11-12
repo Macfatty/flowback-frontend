@@ -34,16 +34,6 @@
 			top: comments?.offsetTop,
 			behavior: 'smooth'
 		});
-
-		//Filtering comments by proposal
-		if (commentFilterProposalId === proposal.id) {
-			// commentsStore.filterByProposal(null);
-			commentFilterProposalId = null;
-		} else {
-			// commentsStore.filterByProposal(proposal);
-
-			commentFilterProposalId = proposal.id;
-		}
 	};
 
 	onMount(() => {
