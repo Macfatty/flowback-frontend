@@ -7,6 +7,7 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import Button from '$lib/Generic/Button.svelte';
 	import { page } from '$app/stores';
+	import { idfy } from '$lib/Generic/GenericFunctions2';
 
 	export let sortBy: string | null = null,
 		Class = '',
@@ -75,7 +76,7 @@
 					<input
 						type="checkbox"
 						name="proposals"
-						id={`${proposal.id}`}
+						id={`${idfy(proposal.title)}`}
 						value={proposal.id}
 						bind:group={selectedProposals}
 					/>

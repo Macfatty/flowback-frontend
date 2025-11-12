@@ -44,7 +44,6 @@
 		commentFilterProposalId = proposal.id;
 		// Scroll to the comments section
 		const comments = document.getElementById('comments');
-		console.log(comments);
 		
 		scrollTo({
 			top: comments?.offsetTop,
