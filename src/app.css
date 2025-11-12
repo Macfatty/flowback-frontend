@@ -35,8 +35,9 @@ body {
 	/* overflow-x: hidden; */
 	/* overflow-y: scroll; */
 	/* overscroll-behavior-y: none; */
-	height:100vh;
-	overflow: scroll;
+	height:100%;
+	overflow:auto;
+	/* overflow: scroll; */
 }
 
 html.dark {
@@ -44,7 +45,8 @@ html.dark {
 }
 
 html {
-	overflow:hidden
+	height:100%;
+	/* overflow:hidden */
 }
 
 body::before {
