@@ -171,21 +171,21 @@
 		} else {
 			let previewMessage = preview.find((p) => p.channel_id === message.channel_id);
 			if (!previewMessage) {
-			// 	previewMessage = {
-			// 		id: message.id,
-			// 		message: message.message,
-			// 		// created_at: message.created_at.toString(),
-			// 		timestamp: new Date().toString(),
-			// 		notified: true,
-			// 		profile_image: message.user?.profile_image,
-			// 		user_id: message.user?.id,
-			// 		user: message.user,
-			// 		channel_id: message.channel_id,
-			// 		...(message.channel_origin_name === 'group'
-			// 			? { group_id: message.channel_id }
-			// 			: { target_id: message.user?.id })
-			// 	};
-			// 	preview.push(previewMessage);
+				// 	previewMessage = {
+				// 		id: message.id,
+				// 		message: message.message,
+				// 		// created_at: message.created_at.toString(),
+				// 		timestamp: new Date().toString(),
+				// 		notified: true,
+				// 		profile_image: message.user?.profile_image,
+				// 		user_id: message.user?.id,
+				// 		user: message.user,
+				// 		channel_id: message.channel_id,
+				// 		...(message.channel_origin_name === 'group'
+				// 			? { group_id: message.channel_id }
+				// 			: { target_id: message.user?.id })
+				// 	};
+				// 	preview.push(previewMessage);
 			} else {
 				// previewMessage.recent_message.message = message.message;
 				// previewMessage.recent_message.created_at = message.created_at.toString();
@@ -271,7 +271,11 @@
 			{/if}
 			{#each messages as message (message.id)}
 				{#if message.type === 'info'}
-					<li class="px-4 py-2 max-w-[80%] text-center">{message.message}</li>
+					{@const user = message.user.username}
+
+					<li class="px-4 py-2 max-w-[100%] text-center">
+						{$_({ id: 'channelJoin', values: { user } })}
+					</li>
 				{:else}
 					{@const sentByUser = message.user?.id === $userStore?.id}
 					<li class="px-4 py-2 max-w-[80%]" class:ml-auto={sentByUser}>

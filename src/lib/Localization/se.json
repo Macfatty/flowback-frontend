@@ -763,5 +763,7 @@
 	"Couldn't create self-delegation": "Kunde inte skapa själv-delegering",
 	"Failed to subscribe to all": "Misslyckades att prenumerera på alla",
 	"Successfully saved selections": "Lyckades spara val",
-	"Search chatters": "Sök chattmedlemmar"
+	"Search chatters": "Sök chattmedlemmar",
+	"User {user} joined the channel": "Användaren {user} har gått med i kanalen",
+	"channelJoin": "Användaren {user} har gått med i kanalen"
 }
