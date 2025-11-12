@@ -21,8 +21,12 @@
 	const filterByTags = async () => {
 		let loading = true;
 		let toKeep: Comment[] = [];
-		const tags = proposals.map((p) => `#${p.title.replaceAll(' ', '-')}`);
+		const tags = proposals
+			.filter((p) => selectedProposals.find((sp) => sp === p.id))
+			.map((p) => `#${p.title.replaceAll(' ', '-')}`);
 
+			console.log('proposals', proposals, tags);
+			
 		for (const comment of $commentsStore.allComments) {
 			const { res, json } = await fetchRequest(
 				'GET',
@@ -38,22 +42,26 @@
 			const ancestors: Comment[] = json.results;
 
 			// Keep ancestor trees such that they contain at least one of the selected tags
-			if (ancestors.some((_comment) => tags.some((tag) => _comment.message?.includes(tag))))
+			if (ancestors.some((_comment) => tags.some((tag) => _comment.message?.includes(tag)))) {
 				toKeep = [...toKeep, ...ancestors];
-			else console.log('skipping:', ancestors, comment);
+				console.log('including:', ancestors, comment);
+			} else console.log('skipping:', ancestors, comment);
 		}
 
 		// Filter Duplicates
 		toKeep = toKeep.filter((comment) => toKeep.some((c) => c.id === comment.id));
 
-		commentsStore.update((store) => ({ ...store, filteredComments: toKeep }));
+		console.log('only here once');
+
+		// commentsStore.update((store) => ({ ...store, filteredComments: toKeep }));
 		loading = false;
 	};
-	
+
 	$: if (selectedProposals.length === 0) commentsStore.filterByProposal(null);
 	else {
-		const _proposals = proposals.filter((p) => selectedProposals.includes(p.id));
-		// commentsStore.filterByProposals(_proposals, 'or');
+		filterByTags();
+	// const _proposals = proposals.filter((p) => selectedProposals.includes(p.id));
+	// commentsStore.filterByProposals(_proposals, 'or');
 	}
 </script>
 
@@ -108,8 +116,8 @@
 						id={`${proposal.id}`}
 						value={proposal.id}
 						bind:group={selectedProposals}
-						on:input={filterByTags}
-					/>
+						/>
+						<!-- on:input={filterByTags} -->
 					<label class="text-left" for={`proposal-${proposal.id}`}>{proposal.title}</label>
 				</div>
 			{/each}

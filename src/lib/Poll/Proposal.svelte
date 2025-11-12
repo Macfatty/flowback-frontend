@@ -37,10 +37,10 @@
 
 		//Filtering comments by proposal
 		if (commentFilterProposalId === proposal.id) {
-			commentsStore.filterByProposal(null);
+			// commentsStore.filterByProposal(null);
 			commentFilterProposalId = null;
 		} else {
-			commentsStore.filterByProposal(proposal);
+			// commentsStore.filterByProposal(proposal);
 
 			commentFilterProposalId = proposal.id;
 		}
