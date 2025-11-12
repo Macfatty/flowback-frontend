@@ -1,14 +1,12 @@
 <script lang="ts">
 	import Select from '$lib/Generic/Select.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import type { Comment, proposal } from '$lib/Poll/interface';
+	import type { proposal } from '$lib/Poll/interface';
 	import { _ } from 'svelte-i18n';
-	import { commentsStore } from './commentStore';
+	import { commentsStore, filterByTags } from './commentStore';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import Button from '$lib/Generic/Button.svelte';
-	import { fetchRequest } from '$lib/FetchRequest';
 	import { page } from '$app/stores';
-	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	export let sortBy: string | null = null,
 		Class = '',
@@ -18,56 +16,15 @@
 
 	let displayProposalsModal = false;
 
-	// Function to filter comments by selected proposal tags
-	// TODO: Make it more efficient. Right now it's putting duplicates and then filtering them out, aswell as ordering them (potentially unecessarily)
-	// TODO: Avoid n+1 API problem with calling ancestor on every comment
-	const filterByTags = async () => {
-		let loading = true;
-		let toKeep: Comment[] = [];
-		const tags = proposals
-			.filter((p) => selectedProposals.find((sp) => sp === p.id))
-			.map((p) => `#${p.title.replaceAll(' ', '-')}`);
-
-		console.log('proposals', proposals, tags);
-
-		for (const comment of $commentsStore.allComments) {
-			const { res, json } = await fetchRequest(
-				'GET',
-				`group/poll/${$page.params.pollId}/comment/${comment.id}/ancestor`
-			);
-
-			if (!res.ok) {
-				loading = false;
-				ErrorHandlerStore.set({ message: 'Failed to filter comments', success: false });
-				return;
-			}
-
-			const ancestors: Comment[] = json.results;
-
-			// Keep ancestor trees such that they contain at least one of the selected tags
-			if (ancestors.some((_comment) => tags.some((tag) => _comment.message?.includes(tag))))
-				toKeep = [...toKeep, ...ancestors];
-		}
-
-		// Filter Duplicates
-		toKeep = toKeep.filter((comment) => toKeep.some((c) => c.id === comment.id));
-
-		let toKeepOrdered: Comment[] = [];
-		$commentsStore.allComments.forEach((comment, i) => {
-			toKeep.find((c) => c.id === comment.id) ? toKeepOrdered.push(comment) : null;
-		});
-
-		commentsStore.update((store) => ({ ...store, filteredComments: toKeepOrdered }));
-		loading = false;
-	};
-
 	$: if (selectedProposals.length === 0)
 		commentsStore.update((store) => ({
 			allComments: store.allComments,
 			filterByProposal: null,
 			filteredComments: store.allComments
 		}));
-	else filterByTags();
+	else {
+		filterByTags(proposals, selectedProposals, $page.params.pollId ?? '');
+	}
 </script>
 
 <div class={Class}>

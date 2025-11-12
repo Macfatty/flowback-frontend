@@ -1,6 +1,7 @@
 import type { Comment, proposal } from '$lib/Poll/interface';
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import { getComments } from './functions';
+import { fetchRequest } from '$lib/FetchRequest';
 
 function createCommentStore() {
     const { subscribe, set, update } = writable<{
@@ -16,6 +17,7 @@ function createCommentStore() {
     return {
         subscribe,
         update,
+        get: () => get({ subscribe }),
         setAll: (comments: Comment[]) =>
             update(store => ({
                 ...store,
@@ -70,5 +72,46 @@ function insertFilteredComments(comments: Comment[], newComment: Comment) {
 
     return comments;
 }
+
+// Function to filter comments by selected proposal tags
+// TODO: Make it more efficient. Right now it's putting duplicates and then filtering them out, aswell as ordering them (potentially unecessarily)
+// TODO: Avoid n+1 API problem with calling ancestor on every comment
+export const filterByTags = async (proposals: proposal[], selectedProposals: number[], pollId: number | string) => {
+    let loading = true;
+    let toKeep: Comment[] = [];
+    const tags = proposals
+        .filter((p) => selectedProposals.find((sp) => sp === p.id))
+        .map((p) => `#${p.title.replaceAll(' ', '-')}`);
+
+    for (const comment of commentsStore.get().allComments) {
+        const { res, json } = await fetchRequest(
+            'GET',
+            `group/poll/${pollId}/comment/${comment.id}/ancestor`
+        );
+
+        if (!res.ok) {
+            loading = false;
+            // ErrorHandlerStore.set({ message: 'Failed to filter comments', success: false });
+            return;
+        }
+
+        const ancestors: Comment[] = json.results;
+
+        // Keep ancestor trees such that they contain at least one of the selected tags
+        if (ancestors.some((_comment) => tags.some((tag) => _comment.message?.includes(tag))))
+            toKeep = [...toKeep, ...ancestors];
+    }
+
+    // Filter Duplicates
+    toKeep = toKeep.filter((comment) => toKeep.some((c) => c.id === comment.id));
+
+    let toKeepOrdered: Comment[] = [];
+    commentsStore.get().allComments.forEach((comment) => {
+        toKeep.find((c) => c.id === comment.id) ? toKeepOrdered.push(comment) : null;
+    });
+
+    commentsStore.update((store) => ({ ...store, filteredComments: toKeepOrdered }));
+    loading = false;
+};
 
 export const commentsStore = createCommentStore();
