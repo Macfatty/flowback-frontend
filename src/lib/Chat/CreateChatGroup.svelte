@@ -3,9 +3,9 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 	import type { GroupMembers } from './interfaces';
-	
 	import { userStore } from '$lib/User/interfaces';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import UserSearch from '$lib/Generic/UserSearch.svelte';
 
 	export let creatingGroup: boolean,
 		groupMembers: GroupMembers[] = [];
@@ -45,6 +45,24 @@
 			{member.username}
 		{/each}
 	</div>
+
+	<UserSearch showSelf={false}>
+		<div slot="action" let:item>
+			<Button
+				type="button"
+				onClick={() => {
+					console.log('item', item);
+
+					if (groupMembers.some((member) => member.id === item.id)) {
+						return;
+					}
+					// @ts-ignore
+					groupMembers.push(item);
+					groupMembers = groupMembers;
+				}}>Add Me!</Button
+			>
+		</div>
+	</UserSearch>
 
 	<Button buttonStyle="primary-light" type="submit">{$_('Confirm')}</Button>
 	<Button buttonStyle="warning-light" onClick={cancelGroupChatCreate}>{$_('Cancel')}</Button>

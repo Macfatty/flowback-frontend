@@ -60,7 +60,7 @@
 		notifications = [];
 	};
 
-	const gotoNotificationSource = async (notification: notification) => {
+	const gotoNotificationOrigin = async (notification: notification) => {
 		if (notification.channel_sender_type === 'group')
 			goto(`/groups/${notification.channel_id}?page=${notification.channel_category}`);
 		else if (notification.channel_sender_type === 'poll') {
@@ -120,7 +120,7 @@
 				>
 					<button
 						on:click={async () => {
-							await gotoNotificationSource(notification);
+							await gotoNotificationOrigin(notification);
 							await readNotification(notification.object_id);
 							notification.read = true;
 						}}

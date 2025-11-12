@@ -26,7 +26,7 @@
 <div
 	class="p-4 shadow w-full bg-white dark:bg-darkobject flex items-center hover:bg-gray-100 dark:hover:bg-darkmodeObject transition-colors"
 >
-	<button on:click={() => (showUsers = true)} class="flex items-center gap-4 w-full">
+	<button on:click={() => (showUsers = true)} class="flex items-center gap-4 w-full" type="button">
 		<ProfilePicture />
 		<div class="bg-gray-300 px-2 py-0.5 rounded-lg dark:bg-gray-700">+ Invite user</div>
 	</button>

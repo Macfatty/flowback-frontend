@@ -1,5 +1,5 @@
 import { fetchRequest } from "$lib/FetchRequest";
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import type { PreviewMessage } from "./interfaces";
 
 export const updateUserData = async (selectedChat: number, timestamp?: Date | null, closed?: Date | null) => {
@@ -38,6 +38,15 @@ export const fixDirectMessageChannelName = (previews: PreviewMessage[], userId: 
 export const chatOpenStore = writable(false);
 
 // Store to hold the chat_id or message_id of the chatter being talked to.
-export const chatPartnerStore = writable(0);
+const createChatPartnerStore = () => {
+    const { set, subscribe, update } = writable(0);
+
+
+    return {
+        set, subscribe, update, get: () => get({ subscribe })
+    }
+};
+
+export const chatPartnerStore = createChatPartnerStore();
 
 export const previewStore = writable<PreviewMessage[] | null>(null);

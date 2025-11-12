@@ -54,10 +54,8 @@
 			false
 		);
 
-		const id = json;
-		statusMessageFormatter(res, id);
-
 		if (!res.ok) {
+			loading = false;
 			ErrorHandlerStore.set({ message: 'Failed to add proposal', success: false });
 			return;
 		}
@@ -70,7 +68,7 @@
 		proposals.push({
 			title,
 			description,
-			id,
+			id: json,
 			created_by,
 			poll: Number($page.params.pollId),
 			attachments: [],

@@ -18,8 +18,7 @@
 		ClassOpen = '',
 		hoverEffect = true;
 
-	let notifications: NotificationObject[] = [],
-		notificationsList: string[] = [];
+	let notifications: NotificationObject[] = [];
 
 	interface NotificationObject {
 		channel_category: string;
@@ -28,6 +27,7 @@
 	}
 
 	interface NotificationSubscriptionResponse {
+		origin_id: number;
 		channel_id: number;
 		channel_name: 'group' | 'poll' | 'thread';
 		tags: {
@@ -55,20 +55,29 @@
 		const { res, json } = await fetchRequest('GET', 'notification/subscription');
 		if (!res.ok) return;
 
-		const notifications = json.results.find(
-			(notification: NotificationSubscriptionResponse) => notification.channel_id === id
+		const notificationsData = json.results.find(
+			(notification: NotificationSubscriptionResponse) => notification.origin_id === id
 		);
 
-		console.log('n', notifications, json.results);
+		notifications = notificationsData
+			? notificationsData.tags.map((tag: any) => ({
+					channel_category: tag.name,
+					channel_sender_id: id,
+					channel_sender_type: type
+				}))
+			: [];
 	};
 
 	const notificationSubscription = async (category: string, method: 'add' | 'remove' = 'add') => {
 		method === 'add'
-			? (notificationsList = [...notificationsList, category])
-			: (notificationsList = notificationsList.filter((item) => item !== category));
+			? (notifications = [
+					...notifications,
+					{ channel_category: category, channel_sender_id: id, channel_sender_type: type }
+				])
+			: (notifications = notifications.filter((item) => item.channel_category !== category));
 
 		const { res, json } = await fetchRequest('POST', `${api}`, {
-			tags: notificationsList
+			tags: notifications.map((notification) => notification.channel_category)
 		});
 		if (!res.ok) {
 			ErrorHandlerStore.set({ message: 'Failed to subscribe', success: false });
@@ -110,12 +119,13 @@
 	};
 	onMount(() => {
 		closeWindowWhenClickingOutside();
-		getNotifications();
+		// getNotifications();
 	});
 
 	$: if (notificationOpen) {
 		getNotifications();
 	}
+	$: console.log(notifications);
 </script>
 
 <div class={`${Class} notifications-clickable-region relative z-100 `}>
