@@ -1,6 +1,5 @@
 import type { Comment, proposal } from '$lib/Poll/interface';
 import { writable, get } from 'svelte/store';
-import { getComments } from './functions';
 import { fetchRequest } from '$lib/FetchRequest';
 
 function createCommentStore() {

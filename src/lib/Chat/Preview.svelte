@@ -30,6 +30,15 @@
 			// message.recent_message.notified = false;
 		}
 
+		const { res, json } = await fetchRequest('POST', `chat/message/channel/userdata/update`, {
+			channel_id: chatterId,
+			timestamp: new Date()
+		});
+
+		if (!res.ok) {
+			return;
+		}
+
 		selectedChat = chatterId;
 		chatPartnerStore.set(chatterId);
 		selectedChatChannelId = chatterId;
@@ -65,16 +74,6 @@
 		// }
 	};
 
-	const getPreview = async () => {
-		const { res, json } = await fetchRequest(
-			'GET',
-			`chat/message/channel/preview/list?title=${chatSearch}`
-		);
-		if (!res.ok) return [];
-
-		// $previewStore = fixDirectMessageChannelName(json?.results, $userStore?.id);
-	};
-
 	onMount(async () => {
 		await UserChatInviteList();
 
@@ -86,9 +85,6 @@
 			clickedChatter(partner);
 		});
 	});
-
-	// Update previews based on search
-	$: if (chatSearch) getPreview();
 
 	$: if (selectedChatChannelId) updateChatTitle();
 
@@ -136,7 +132,6 @@
 						chatOpenStore.set(true);
 						chatPartnerStore.set(await getUserChannelId(item.id));
 						openUserSearch = false;
-						getPreview();
 					}}
 				>
 					<Fa icon={faPaperPlane} rotate="60" />
@@ -184,7 +179,7 @@
 				class:dark:bg-gray-700={selectedChat === chatter.channel_id}
 				on:click={() => clickedChatter(chatter.channel_id)}
 			>
-				{#if chatter?.recent_message?.notified}
+				{#if chatter?.recent_message?.notified === false || new Date(chatter.timestamp) < new Date(chatter.recent_message?.updated_at)}
 					<div class="p-1 rounded-full bg-purple-300"></div>
 				{/if}
 
@@ -202,7 +197,6 @@
 			{#if creatingGroup}
 				<div id={`chat-${idfy(chatter.channel_title ?? '')}`}>
 					<Button
-
 						onClick={() => {
 							if (groupMembers.some((member) => member.id === chatter.id)) {
 								return;
