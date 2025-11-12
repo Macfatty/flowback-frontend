@@ -18,6 +18,9 @@
 
 	let displayProposalsModal = false;
 
+	// Function to filter comments by selected proposal tags
+	// TODO: Make it more efficient. Right now it's putting duplicates and then filtering them out
+	// TODO: Avoid n+1 API problem with calling ancestor on every comment
 	const filterByTags = async () => {
 		let loading = true;
 		let toKeep: Comment[] = [];
@@ -45,14 +48,16 @@
 			if (ancestors.some((_comment) => tags.some((tag) => _comment.message?.includes(tag))))
 				toKeep = [...toKeep, ...ancestors];
 		}
-		console.log(toKeep, "BEFORE");
-		
 
 		// Filter Duplicates
 		toKeep = toKeep.filter((comment) => toKeep.some((c) => c.id === comment.id));
 
-		console.log(toKeep, "AFTER");
-		commentsStore.update((store) => ({ ...store, filteredComments: toKeep }));
+		let toKeepOrdered: Comment[] = [];
+		$commentsStore.allComments.forEach((comment, i) => {
+			toKeep.find((c) => c.id === comment.id) ? toKeepOrdered.push(comment) : null;
+		});
+
+		commentsStore.update((store) => ({ ...store, filteredComments: toKeepOrdered }));
 		loading = false;
 	};
 
