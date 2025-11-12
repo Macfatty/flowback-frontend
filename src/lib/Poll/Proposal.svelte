@@ -30,8 +30,18 @@
 	export const id: number = 0;
 
 	const handleClickedCommentSymbol = () => {
+		if (commentFilterProposalId === proposal.id) {
+			commentsStore.update((store) => ({
+				allComments: store.allComments,
+				filterByProposal: null,
+				filteredComments: store.allComments
+			}));
+			commentFilterProposalId = null;
+			return;
+		}
+
 		filterByTags(proposals, [proposal.id], $page.params.pollId ?? '');
-		commentFilterProposalId = proposal.id
+		commentFilterProposalId = proposal.id;
 		// Scroll to the comments section
 		const comments = document.getElementById('comments');
 		scrollTo({
