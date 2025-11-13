@@ -46,8 +46,6 @@
 			);
 		}
 
-		console.log(chatterId, 'HAI');
-
 		// $chatPartnerStore = chatterId;
 		chatPartnerStore.set(chatterId);
 	};
@@ -77,8 +75,6 @@
 		await UserChatInviteList();
 		clickedChatter($chatPartnerStore);
 	});
-
-	$: console.log($chatPartnerStore, 'PARTNER');
 
 	$: if ($previewStore) {
 		// let previewsNotified = $previewStore.filter((preview) => preview.recent_message?.notified);

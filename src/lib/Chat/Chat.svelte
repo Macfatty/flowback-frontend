@@ -34,17 +34,19 @@
 		if (!res.ok) return [];
 
 		let previews = json?.results.map((preview: PreviewMessage) => {
+			console.log(new Date(preview.timestamp) , new Date(preview.recent_message?.created_at), "DATES");
+			
 			return {
 				...preview,
 				recent_message: {
 					...preview.recent_message,
 					// @ts-ignore
-					notified: new Date(preview.timestamp) < new Date(preview.recent_message?.created_at)
+					notified: new Date(preview.timestamp) > new Date(preview.recent_message?.created_at)
 				}
 			};
 		});
 
-		$previewStore = json?.results;
+		$previewStore = previews;
 
 		fixDirectMessageChannelName(json?.results, $userStore?.id);
 	};
