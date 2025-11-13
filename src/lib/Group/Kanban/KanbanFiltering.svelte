@@ -68,7 +68,7 @@
 		await handleSearch();
 	}}
 >
-	<Button onClick={() => (advancedFilterOpen = true)}>Advanced Filtering</Button>
+	<Button onClick={() => (advancedFilterOpen = true)}>{$_('Advanced Filtering')}</Button>
 
 	<div class="w-full items-end gap-4">
 		<TextInput

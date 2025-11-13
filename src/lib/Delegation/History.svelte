@@ -157,40 +157,32 @@
 											'group_id'
 										)}/polls/${voteHistory?.poll_id}?source=delegate-history`}
 									>
-										{voteHistory?.poll_title || $_('No title')}
+										{voteHistory?.poll.title || $_('No title')}
 									</a>
 
-									{#if voteHistory?.poll_description}
+									{#if voteHistory?.poll.description}
 										<div class="text-sm text-gray-600 dark:text-gray-400 pl-1">
-											<p class="line-clamp-2">{voteHistory?.poll_description}</p>
+											<p class="line-clamp-2">{voteHistory?.poll.description}</p>
 										</div>
 									{/if}
 
 									<div class="flex flex-wrap gap-2 pl-1">
-										{#if voteHistory?.tag_name}
+										{#if voteHistory?.poll.tag_name}
 											<span
 												class="text-xs bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full"
 											>
-												{voteHistory?.tag_name}
+												{voteHistory?.poll.tag_name}
 											</span>
 										{/if}
 
-										{#if voteHistory?.subject_area}
-											<span
-												class="text-xs bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full"
-											>
-												{voteHistory?.subject_area}
-											</span>
-										{/if}
-
-										{#if voteHistory?.created_at}
+										<!-- {#if voteHistory?.created_at}
 											<span class="text-xs text-gray-500 dark:text-gray-400">
 												Created: {new Date(voteHistory?.created_at).toLocaleDateString()}
 											</span>
-										{/if}
+										{/if} -->
 									</div>
 
-									{#if voteHistory?.historical_data}
+									<!-- {#if voteHistory?.historical_data}
 										<div class="mt-1 pl-1 text-sm">
 											<details>
 												<summary
@@ -205,17 +197,17 @@
 												</div>
 											</details>
 										</div>
-									{/if}
+									{/if} -->
 
 									<div>
 										{$_('Area:')}
-										{voteHistory.tag_name ?? ''}
+										{voteHistory.poll.tag_name ?? ''}
 									</div>
 
 									<div>
 										{$_('Historical IMAC:')}
-										{voteHistory.poll_interval_mean_absolute_correctness ??
-											"Was not calculated at the time"}
+										{voteHistory.poll.interval_mean_absolute_correctness ??
+											'Was not calculated at the time'}
 									</div>
 									{#each voteHistory.vote as vote}
 										<div>{vote.proposal_title}</div>

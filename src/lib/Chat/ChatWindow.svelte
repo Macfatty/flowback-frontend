@@ -16,11 +16,10 @@
 	import { chatWindow as chatWindowLimit } from '../Generic/APILimits.json';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
-	import { chatOpenStore, chatPartnerStore } from './functions';
+	import { chatOpenStore, chatPartnerStore, previewStore } from './functions';
 
 	export let selectedChat: number | null,
 		selectedPage: 'direct' | 'group',
-		previewDirect: PreviewMessage[] = [],
 		isLookingAtOlderMessages: boolean;
 
 	let message: string = '',
@@ -58,32 +57,35 @@
 
 		if (newerMessages) await getRecentMessages();
 
-		let previewMessage = previewDirect.find(
-			(p) => p.id === selectedChat || p.group_id === selectedChat
+		let previewMessage = $previewStore?.find(
+			(p) => p.id === selectedChat || p.recent_message?.group_id === selectedChat
 		);
 
 		if (previewMessage) {
-			previewMessage.message = message;
-			previewMessage.created_at = new Date().toString();
-			previewMessage.notified = false;
-			previewMessage = previewMessage;
+			// previewMessage.recent_message.message = message;
+			// previewMessage.recent_message.created_at = new Date().toString();
+			// previewMessage.recent_message.notified = false;
+			// previewMessage = previewMessage;
 		} else {
 			previewMessage = {
 				id: Date.now(),
-				message,
-				created_at: new Date().toString(),
 				timestamp: new Date().toString(),
-				notified: false,
-				profile_image: $userStore?.profile_image || '',
-				user_id: $userStore?.id || -1,
-				user: {
-					id: $userStore?.id || -1,
-					username: $userStore?.username || '',
+				participants: [],
+				recent_message: {
+					message,
+					created_at: new Date().toString(),
+					notified: false,
 					profile_image: $userStore?.profile_image || '',
-					banner_image: ''
-				},
-				channel_id: $chatPartnerStore,
-				...(selectedPage === 'direct' ? { target_id: selectedChat } : { group_id: selectedChat })
+					user_id: $userStore?.id || -1,
+					user: {
+						id: $userStore?.id || -1,
+						username: $userStore?.username || '',
+						profile_image: $userStore?.profile_image || '',
+						banner_image: ''
+					},
+					channel_id: $chatPartnerStore,
+					...(selectedPage === 'direct' ? { target_id: selectedChat } : { group_id: selectedChat })
+				}
 			};
 		}
 
@@ -93,12 +95,10 @@
 			return;
 		}
 
-		const preview = previewDirect.find((p) => p.channel_id === $chatPartnerStore);
+		const preview = $previewStore?.find((p) => p.channel_id === $chatPartnerStore);
 		if (preview) {
-			preview.message = message;
+			// preview.recent_message.message = message;
 		}
-		previewDirect = previewDirect;
-
 		messages.push({
 			id: Date.now(),
 			message,
@@ -155,7 +155,7 @@
 					username: message.user?.username,
 					profile_image: message.user?.profile_image
 				},
-				created_at: message.created_at.toString(),
+				created_at: new Date().toString(),
 				active: true,
 				channel_id: message.channel_id,
 				channel_origin_name: message.channel_origin_name,
@@ -171,42 +171,41 @@
 		} else {
 			let previewMessage = preview.find((p) => p.channel_id === message.channel_id);
 			if (!previewMessage) {
-				previewMessage = {
-					id: message.id,
-					message: message.message,
-					created_at: message.created_at.toString(),
-					timestamp: new Date().toString(),
-					notified: true,
-					profile_image: message.user?.profile_image,
-					user_id: message.user?.id,
-					user: message.user,
-					channel_id: message.channel_id,
-					...(message.channel_origin_name === 'group'
-						? { group_id: message.channel_id }
-						: { target_id: message.user?.id })
-				};
-				preview.push(previewMessage);
+				// 	previewMessage = {
+				// 		id: message.id,
+				// 		message: message.message,
+				// 		// created_at: message.created_at.toString(),
+				// 		timestamp: new Date().toString(),
+				// 		notified: true,
+				// 		profile_image: message.user?.profile_image,
+				// 		user_id: message.user?.id,
+				// 		user: message.user,
+				// 		channel_id: message.channel_id,
+				// 		...(message.channel_origin_name === 'group'
+				// 			? { group_id: message.channel_id }
+				// 			: { target_id: message.user?.id })
+				// 	};
+				// 	preview.push(previewMessage);
 			} else {
-				previewMessage.message = message.message;
-				previewMessage.created_at = message.created_at.toString();
-				previewMessage.notified = true;
+				// previewMessage.recent_message.message = message.message;
+				// previewMessage.recent_message.created_at = message.created_at.toString();
+				// previewMessage.recent_message.notified = true;
 			}
 			preview = [...preview];
+			// $previewStore = preview;
 		}
 
-		const _preview = previewDirect.find((p) => p.channel_id === $chatPartnerStore);
-		if (_preview) {
-			_preview.message = message.message;
+		const _preview = $previewStore?.find((p) => p.channel_id === $chatPartnerStore);
+		if (_preview && _preview.recent_message) {
+			_preview.recent_message.message = message.message;
 		}
-		previewDirect = previewDirect;
 	};
 
 	// Subscribe to incoming messages
 	const receiveMessage = () => {
 		const unsubscribe = messageStore.subscribe((message: Message1 | null) => {
 			if (!message || message.user?.id === $userStore?.id) return;
-			handleReceiveMessage(previewDirect, message);
-			previewDirect = previewDirect;
+			handleReceiveMessage($previewStore ?? [], message);
 		});
 		return unsubscribe;
 	};
@@ -272,7 +271,11 @@
 			{/if}
 			{#each messages as message (message.id)}
 				{#if message.type === 'info'}
-					<li class="px-4 py-2 max-w-[80%] text-center">{message.message}</li>
+					{@const user = message.user.username}
+
+					<li class="px-4 py-2 max-w-[100%] text-center">
+						{$_({ id: 'channelJoin', values: { user } })}
+					</li>
 				{:else}
 					{@const sentByUser = message.user?.id === $userStore?.id}
 					<li class="px-4 py-2 max-w-[80%]" class:ml-auto={sentByUser}>
@@ -288,7 +291,7 @@
 							{message.message}
 						</p>
 						<span class="text-[14px] text-gray-400 ml-3">
-							{formatDate(message.created_at || new Date())}
+							<!-- {formatDate(message?.created_at || new Date())} -->
 						</span>
 					</li>
 				{/if}

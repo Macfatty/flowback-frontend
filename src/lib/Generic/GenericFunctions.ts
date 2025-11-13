@@ -32,7 +32,7 @@ export const checkForLinks = (text: string | null, id: string) => {
 	});
 
 	const descriptionHtmlElement = document.getElementById(id);
-	// ENORMOUS SECURITY RISK: HTML INJECTION. TODO: Fix this without the security flaw
+	// SECURITY RISK: HTML INJECTION. TODO: Fix this without the security flaw
 	// if (descriptionHtmlElement !== null) descriptionHtmlElement.innerHTML = linkified;
 };
 
@@ -86,6 +86,8 @@ export const getGroupUserInfo = async (groupId: number | string) => {
 };
 
 export const getPermissions = async (groupId: number | string, permissionId: number | string) => {
+	if (!groupId) return;
+
 	groupId = Number(groupId);
 	permissionId = Number(permissionId);
 
@@ -93,6 +95,8 @@ export const getPermissions = async (groupId: number | string, permissionId: num
 		'GET',
 		`group/${groupId}/permissions?id=${permissionId}`
 	);
+
+	if (!res.ok) return;
 
 	return json?.results[0];
 };
@@ -139,3 +143,7 @@ export const formatDateToLocalTime = (date: Date): string => {
 	}
 };
 
+export function arraysEqual(arr1: any[], arr2: any[]) {
+	if (arr1.length !== arr2.length) return false;
+	return arr1.every((value, index) => value === arr2[index]);
+}

@@ -202,6 +202,7 @@
 						<Proposal
 							bind:proposalsToPredictionMarket
 							bind:commentFilterProposalId
+							bind:proposals
 							bind:selectedProposal
 							bind:phase
 							bind:filteredComments={comments}

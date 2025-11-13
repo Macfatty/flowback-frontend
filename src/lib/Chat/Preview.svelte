@@ -1,15 +1,10 @@
 <script lang="ts">
-	import { type GroupMembers, type invite, type PreviewMessage } from './interfaces';
+	import { type GroupMembers, type invite } from './interfaces';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { onMount } from 'svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import {
-		chatOpenStore,
-		chatPartnerStore,
-		fixDirectMessageChannelName,
-		getUserChannelId
-	} from './functions';
+	import { chatOpenStore, chatPartnerStore, getUserChannelId, previewStore } from './functions';
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
 	import { idfy } from '$lib/Generic/GenericFunctions2';
@@ -24,18 +19,25 @@
 	export let selectedChat: number | null,
 		selectedChatChannelId: number | null,
 		creatingGroup: boolean,
-		previews: PreviewMessage[] = [],
 		inviteList: invite[] = [],
 		groupMembers: GroupMembers[] = [];
 
 	// Handle chat selection and clear notifications
 	const clickedChatter = async (chatterId: any) => {
-		let message = previews.find((message) => message.channel_id === chatterId);
+		let message = $previewStore?.find((message) => message.channel_id === chatterId);
 		if (message) {
 			message.timestamp = new Date().toString();
-			message.notified = false;
+			// message.recent_message.notified = false;
 		}
-		previews = previews;
+
+		const { res, json } = await fetchRequest('POST', `chat/message/channel/userdata/update`, {
+			channel_id: chatterId,
+			timestamp: new Date()
+		});
+
+		if (!res.ok) {
+			return;
+		}
 
 		selectedChat = chatterId;
 		chatPartnerStore.set(chatterId);
@@ -72,17 +74,6 @@
 		// }
 	};
 
-	const getPreview = async () => {
-		const { res, json } = await fetchRequest(
-			'GET',
-			`chat/message/channel/preview/list?title=${chatSearch}`
-		);
-		if (!res.ok) return [];
-
-		previews = fixDirectMessageChannelName(json?.results, $userStore?.id);
-		previews = previews;
-	};
-
 	onMount(async () => {
 		await UserChatInviteList();
 
@@ -94,26 +85,21 @@
 			clickedChatter(partner);
 		});
 	});
-	$: if (chatSearch !== undefined) getPreview();
 
 	$: if (selectedChatChannelId) updateChatTitle();
 
-	$: if (previews) {
-		let previewsNotified = previews.filter((preview) => preview.notified);
-		let previewsNotNotified = previews.filter((preview) => !preview.notified);
-
-		previewsNotNotified = previewsNotNotified.sort(
-			(preview1, preview2) =>
-				new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
-		);
-
-		previewsNotified = previewsNotified.sort(
-			(preview1, preview2) =>
-				new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
-		);
-
-		previews = [...previewsNotified, ...previewsNotNotified];
-		previews = previews;
+	$: if ($previewStore) {
+		// let previewsNotified = $previewStore.filter((preview) => preview.recent_message?.notified);
+		// let previewsNotNotified = $previewStore.filter((preview) => !preview.recent_message?.notified);
+		// previewsNotNotified = previewsNotNotified.sort(
+		// 	(preview1, preview2) =>
+		// 		new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
+		// );
+		// previewsNotified = previewsNotified.sort(
+		// 	(preview1, preview2) =>
+		// 		new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
+		// );
+		// $previewStore = [...previewsNotified, ...previewsNotNotified];
 	}
 </script>
 
@@ -146,7 +132,6 @@
 						chatOpenStore.set(true);
 						chatPartnerStore.set(await getUserChannelId(item.id));
 						openUserSearch = false;
-						getPreview();
 					}}
 				>
 					<Fa icon={faPaperPlane} rotate="60" />
@@ -181,55 +166,50 @@
 						<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
 							{groupChat.message_channel_name}
 						</span>
-						<span class="text-gray-400 text-sm truncate h-[20px] overflow-x-hidden max-w-[10%]" />
 					</div>
 				</button>
 			{/if}
 		{/each}
 	{/if}
-	{#each previews as chatter}
-		<!-- {#if chatter.channel_title?.includes(chatSearch) && ((chatter.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)} -->
-		<button
-			class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
-			class:bg-gray-200={selectedChat === chatter.channel_id}
-			class:dark:bg-gray-700={selectedChat === chatter.channel_id}
-			on:click={() => clickedChatter(chatter.channel_id)}
-		>
-			{#if chatter?.notified}
-				<div class="p-1 rounded-full bg-purple-300"></div>
+	{#each $previewStore as chatter}
+		{#if chatter.channel_title?.includes(chatSearch) && ((chatter?.recent_message?.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)}
+			<button
+				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
+				class:bg-gray-200={selectedChat === chatter.channel_id}
+				class:dark:bg-gray-700={selectedChat === chatter.channel_id}
+				on:click={() => clickedChatter(chatter.channel_id)}
+			>
+				{#if chatter?.recent_message?.notified === false || new Date(chatter.timestamp) < new Date(chatter.recent_message?.updated_at)}
+					<div class="p-1 rounded-full bg-purple-300"></div>
+				{/if}
+
+				<ProfilePicture profilePicture={chatter?.recent_message?.profile_image} />
+				<div class="flex flex-col max-w-[40%]">
+					<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
+						<!-- {chatter?.user.username} -->
+						{chatter.channel_title ?? chatter.recent_message?.channel_title ?? 'Name not found'}
+					</span>
+					<span class="text-gray-400 text-sm h-[20px]">
+						{chatter?.recent_message?.message || ''}
+					</span>
+				</div>
+			</button>
+			{#if creatingGroup}
+				<div id={`chat-${idfy(chatter.channel_title ?? '')}`}>
+					<Button
+						onClick={() => {
+							if (groupMembers.some((member) => member.id === chatter.id)) {
+								return;
+							}
+							const newMember = chatter.participants.find((user) => user.id !== $userStore?.id);
+							// @ts-ignore
+							groupMembers = [...groupMembers, newMember];
+						}}
+					>
+						{$_('Add User')}
+					</Button>
+				</div>
 			{/if}
-
-			<ProfilePicture profilePicture={chatter?.profile_image} />
-			<div class="flex flex-col max-w-[40%]">
-				<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
-					<!-- {chatter?.user.username} -->
-					{chatter.channel_title || 'Name not found'}
-				</span>
-				<span class="text-gray-400 text-sm h-[20px]">
-					{chatter?.message || ''}
-				</span>
-			</div>
-		</button>
-		{#if creatingGroup}
-			<div id={`chat-${idfy(chatter.channel_title ?? '')}`}>
-				<Button
-					onClick={() => {
-						if (groupMembers.some((member) => member.id === chatter.id)) {
-							return;
-						}
-
-						const newMember = {
-							id: chatter.user.id,
-							username: chatter.user.username ?? 'Unknown',
-							profile_image: chatter.user.profile_image ?? null
-						};
-						//@ts-ignore
-						groupMembers = [...groupMembers, newMember];
-					}}
-				>
-					{$_('Add User')}
-				</Button>
-			</div>
 		{/if}
 	{/each}
 </div>

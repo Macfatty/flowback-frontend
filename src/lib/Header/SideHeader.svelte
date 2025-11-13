@@ -73,7 +73,7 @@
 
 <div
 	class:hidden={!sideHeaderOpen}
-	class="z-[80] absolute top-[4.5rem] right-0 bg-white z-50 select-none shadow slide-animation dark:bg-darkobject dark:text-darkmodeText flex flex-col"
+	class="z-[80] absolute top-[4.5rem] right-0 bg-white z-[110] select-none shadow slide-animation dark:bg-darkobject dark:text-darkmodeText flex flex-col"
 	id="side-header"
 	on:click={() => (sideHeaderOpen = !sideHeaderOpen)}
 >
@@ -124,7 +124,7 @@
 	</div>
 </Modal>
 
-<Modal bind:open={open_tos} Class="h-[90%] overflow-y-auto">
+<Modal bind:open={open_tos} Class="max-w-[600px] overflow-y-auto">
 	<div slot="body" class="">
 		<TermsOfService Class="!border-none !p-0 leading-8" />
 	</div>

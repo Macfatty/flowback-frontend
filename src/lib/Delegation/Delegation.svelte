@@ -83,6 +83,7 @@
 			})
 		);
 
+		//TODO Add error handling
 		const results = await Promise.all(promises);
 
 		ErrorHandlerStore.set({ message: 'Removed delegations', success: true });
@@ -165,10 +166,10 @@
 						bind:value={search}
 					/>
 				</div>
-				
+
 				{$_('You are')}
 				{$_(userPermissions?.allow_vote || groupUser?.is_admin ? '' : 'not')}
-				{$_("allowed to vote in this group:")}
+				{$_('allowed to vote in this group:')}
 
 				<Select
 					classInner="w-full bg-white dark:bg-darkobject dark:text-darkmodeText p-2 border-gray-300 rounded border"

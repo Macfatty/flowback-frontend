@@ -23,7 +23,6 @@
 	import { getUserChannelId } from '$lib/Chat/functions';
 	import UserSearch from '$lib/Generic/UserSearch.svelte';
 	import type { Permissions } from './Permissions/interface';
-	import EveryProperty from '$lib/Generic/EveryProperty.svelte';
 
 	let users: GroupUser[] = [],
 		usersAskingForInvite: any[] = [],
@@ -45,7 +44,6 @@
 		getUsers();
 		getInvitesList();
 		searchUsers('');
-		getDelegatePools();
 		getPermissions();
 		//Does this one even do anything?
 		fetchRequest('GET', `group/${$page.params.groupId}/invites`);
@@ -151,23 +149,6 @@
 		await getInvitesList();
 	};
 
-	/*
-		Temporary fix to make each delegate pool be associated with one user.
-		TODO: Implement delegate pool feature in the front end (Figma design first)
-	*/
-	const getDelegatePools = async () => {
-		const { json, res } = await fetchRequest(
-			'GET',
-			`group/${$page.params.groupId}/delegate/pools?limit=1000`
-		);
-
-		if (!res.ok) return;
-
-		delegates = json?.results.map((delegatePool: any) => {
-			return { ...delegatePool.delegates[0].group_user, pool_id: delegatePool.id };
-		});
-	};
-
 	const userRemove = async (userToRemove: number) => {
 		const { res } = await fetchRequest('POST', `group/${$page.params.groupId}/user/delete`, {
 			target_user_id: userToRemove
@@ -243,7 +224,7 @@
 						<span class="pl-4">{$_('Role')}: </span>
 						<Select
 							classInner="p-1 font-semibold"
-							labels={["All", ...permissions.map((permission) => permission.role_name)]}
+							labels={['All', ...permissions.map((permission) => permission.role_name)]}
 							values={[null, ...permissions.map((permission) => permission.id)]}
 							bind:value={roleFilter}
 							onInput={() => searchUsers(searchUserQuery)}
@@ -315,17 +296,12 @@
 					>{$_('All members')}</span
 				>
 				{#each searchedUsers as user}
-					{#if ((user.is_admin && adminFilter === 'Admin') || (!user.is_admin && adminFilter === 'Member') || adminFilter === 'All') 
-					&& (user.permission_id === roleFilter || roleFilter === null)}
-					
-						{@const delegationId = delegates.find(
-							(delegate) => delegate.user.id === user.user.id
-						)?.pool_id}
+					{#if ((user.is_admin && adminFilter === 'Admin') || (!user.is_admin && adminFilter === 'Member') || adminFilter === 'All') && (user.permission_id === roleFilter || roleFilter === null)}
 						<div class="flex items-center">
 							<button
 								on:click={() =>
 									goto(
-										`/user?id=${user.user.id}&delegate_id=${delegationId || ''}&group_id=${
+										`/user?id=${user.user.id}&delegate_id=${user.delegate_pool_id || ''}&group_id=${
 											$page.params.groupId
 										}&is_admin=${adminFilter}`
 									)}

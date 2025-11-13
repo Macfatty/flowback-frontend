@@ -14,7 +14,6 @@
 	let open = false;
 	let date: Date;
 	let proposals: timeProposal[] = [];
-	let votes: number[] = [];
 
 	const pollId = $page.params.pollId;
 
@@ -22,45 +21,25 @@
 		const end_date = new Date(date);
 		end_date.setHours(date.getHours() + 1);
 
-		await ProposalsApi.createProposal(pollId ?? "", {
+		await ProposalsApi.createProposal(pollId ?? '', {
 			start_date: date,
 			end_date
 		});
 	}
 
-	async function fetchProposals() {
-		const response = await ProposalsApi.getProposals(pollId ?? "");
-		proposals = response.results;
-	}
-
-	async function fetchProposalVotes() {
-		const response = await ProposalsApi.getVotes(pollId ?? "");
-		votes = response.results.map((vote) => vote.proposal);
-	}
-
-	async function updateVotes(id: number, adding: boolean) {
-		const newVotes =
-			adding && !votes.includes(id) ? [...votes, id] : votes.filter((vote) => vote !== id);
-
-		votes = newVotes;
-		await ProposalsApi.updateVotes(pollId ?? "", newVotes);
-	}
-
 	async function handleProposalSubmit() {
 		await createProposal(date);
-		await fetchProposals();
 		open = false;
 	}
 
 	onMount(async () => {
-		await Promise.all([fetchProposals(), fetchProposalVotes()]);
 	});
 </script>
 
 <Structure Class="!max-w-[1400px]" poll={null}>
 	<div slot="left">
 		<div class="overflow-auto">
-			<WeekView bind:proposals bind:votes x={7} y={24} />
+			<WeekView bind:proposals x={7} y={24} />
 		</div>
 	</div>
 

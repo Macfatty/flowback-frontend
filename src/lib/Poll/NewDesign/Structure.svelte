@@ -5,6 +5,8 @@
 
 	export let poll: poll | null = null,
 		Class = '',
+		innerClassLeft = '',
+		innerClassRight = '',
 		phase: Phase = 'area_vote',
 		resetScroll = false;
 
@@ -17,7 +19,7 @@
 
 	// 'bg-white h-[490px] max-h-[490px] dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
 	let genericStyle =
-			'h-full overflow-y-auto bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
+			'h-full bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
 		right: HTMLDivElement | null = null;
 
   onMount(() => {
@@ -52,25 +54,38 @@
 	$: showBottomSlot = $$slots.bottom;
 </script>
 
-<div class={gridClass} id="poll-structure">
+<div
+	class={`${Class} ${
+		poll ? 'poll-grid' : 'poll-grid-no-timeline'
+	} p-3 md:p-6 lg:p-12 max-w-[1200px] w-full gap-4 lg:gap-6 flex flex-col md:grid`}
+	id="poll-structure"
+>
 	{#if poll}
 		<Timeline
 			bind:phase
 			bind:poll
 			enableDetails={false}
-			Class={isMobile ? 'w-full mobile-timeline' : 'desktop-timeline h-[490px]'}
-			horizontal={isMobile}
+			Class={'hidden md:block !absolute md:!relative left-4 md:left-0 h-[490px] desktop-timeline'}
 		/>
+		<div class="md:hidden w-full">
+			<Timeline
+				bind:phase
+				bind:poll
+				enableDetails={false}
+				horizontal={true}
+				Class={'w-full mobile-timeline'}
+			/>
+		</div>
 	{/if}
 
-	{#if showLeftSlot}
-		<div class={genericStyle}>
+	{#if $$slots.left}
+		<div class={`${genericStyle} ${innerClassLeft}`}>
 			<slot name="left" class="h-full" />
 		</div>
 	{/if}
 
-	{#if showRightSlot}
-		<div bind:this={right} class={genericStyle}>
+	{#if $$slots.right}
+		<div bind:this={right} class={`${genericStyle} ${innerClassRight}`}>
 			<slot name="right" class="h-full" />
 		</div>
 	{/if}

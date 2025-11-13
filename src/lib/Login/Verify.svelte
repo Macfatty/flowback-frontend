@@ -4,7 +4,6 @@
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { _ } from 'svelte-i18n';
 	import TextInput from '../Generic/TextInput.svelte';
-	import { mailStore } from './stores';
 	import RadioButtons from '$lib/Generic/RadioButtons.svelte';
 	import { goto } from '$app/navigation';
 	import { env } from '$env/dynamic/public';
@@ -46,6 +45,8 @@
 			false
 		);
 
+		loading = false;
+
 		if (!res.ok) {
 			if (
 				json?.detail?.verification_code ||
@@ -69,7 +70,7 @@
 
 		localStorage.setItem('token', json.token);
 
-		loading = false;
+		loading = true;
 
 		{
 			const { res, json } = await fetchRequest('POST', 'user/update', {
@@ -93,6 +94,7 @@
 			}
 		}
 
+		loading = false;
 		goto('/home');
 	}
 
