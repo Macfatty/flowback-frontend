@@ -30,10 +30,17 @@ const createSocket = (userId: number) => {
 
 			if (!preview) return previews
 
-			if (chatPartnerStore.get() === parsedMessage.chat_id)
-				preview.recent_message = { ...parsedMessage, notified: true }
-			else
+
+			if (chatPartnerStore.get() !== parsedMessage.channel_id) {
+
+				console.log("NO", chatPartnerStore.get(), parsedMessage.channel_id, chatPartnerStore.get() === parsedMessage.channel_id);
 				preview.recent_message = { ...parsedMessage, notified: false }
+			}
+			else {
+
+				console.log("YES", chatPartnerStore.get(), parsedMessage.channel_id, chatPartnerStore.get() === parsedMessage.channel_id);
+				preview.recent_message = { ...parsedMessage, notified: true }
+			}
 
 			return previews
 		})

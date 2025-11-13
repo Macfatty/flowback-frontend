@@ -18,9 +18,7 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import { chatOpenStore, chatPartnerStore, previewStore } from './functions';
 
-	export let selectedChat: number | null,
-		selectedPage: 'direct' | 'group',
-		isLookingAtOlderMessages: boolean;
+	export let selectedPage: 'direct' | 'group', isLookingAtOlderMessages: boolean;
 
 	let message: string = '',
 		olderMessages: string,
@@ -41,8 +39,8 @@
 			`chat/message/channel/${$chatPartnerStore}/list?order_by=created_at_desc&limit=${chatWindowLimit}`
 		);
 		if (!res.ok) {
-			selectedChat = null;
 			messages = [];
+			$chatPartnerStore = null;
 			errorState = true;
 			return;
 		}
@@ -52,13 +50,12 @@
 	};
 
 	const postMessage = async () => {
-		if (!selectedChat || !$chatPartnerStore || message.length === 0 || message.match(/^\s+$/))
-			return;
+		if (!$chatPartnerStore || message.length === 0 || message.match(/^\s+$/)) return;
 
 		if (newerMessages) await getRecentMessages();
 
 		let previewMessage = $previewStore?.find(
-			(p) => p.id === selectedChat || p.recent_message?.group_id === selectedChat
+			(p) => p.id === $chatPartnerStore || p.recent_message?.group_id === $chatPartnerStore
 		);
 
 		if (previewMessage) {
@@ -84,7 +81,9 @@
 						banner_image: ''
 					},
 					channel_id: $chatPartnerStore,
-					...(selectedPage === 'direct' ? { target_id: selectedChat } : { group_id: selectedChat })
+					...(selectedPage === 'direct'
+						? { target_id: $chatPartnerStore }
+						: { group_id: $chatPartnerStore })
 				}
 			};
 		}

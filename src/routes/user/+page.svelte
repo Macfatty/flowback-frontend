@@ -159,16 +159,6 @@
 
 	$: if (currentlyCroppingProfile) imageToBeCropped = profileImagePreview;
 	else if (currentlyCroppingBanner) imageToBeCropped = bannerImagePreview;
-
-	const openChat = async (userId: number) => {
-		const channelId = await getUserChannelId(userId);
-		if (!channelId) return;
-	
-		chatOpenStore.set(true);
-		// Need to wait a tick for chat to open before setting partner
-		await new Promise((resolve) => setTimeout(resolve, 0));
-		chatPartnerStore.set(channelId);
-	};
 </script>
 
 {#if currentlyCroppingProfile || currentlyCroppingBanner}
@@ -251,7 +241,6 @@
 							<button
 								on:click={() => {
 									chatOpenStore.set(true);
-									chatPartnerStore.set(channelId);
 								}}
 								Class="text-primary"
 							>
