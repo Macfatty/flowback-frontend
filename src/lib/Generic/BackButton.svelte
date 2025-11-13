@@ -12,7 +12,6 @@
   <Button
     buttonStyle="primary-light"
     onClick={() => {
-      console.log('BackButton clicked!');
       displayForm = false;
       selectedProposal = null;
       resetScroll = true;
