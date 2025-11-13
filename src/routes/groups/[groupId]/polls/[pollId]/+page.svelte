@@ -6,6 +6,7 @@
 	import { page } from '$app/stores';
 	import type { Comment, Phase, poll, proposal } from '$lib/Poll/interface';
 	import Button from '$lib/Generic/Button.svelte';
+	import BackButton from '$lib/Generic/BackButton.svelte';
 	import { _ } from 'svelte-i18n';
 	import Results from '$lib/Poll/Results.svelte';
 	import { checkForLinks } from '$lib/Generic/GenericFunctions';
@@ -105,6 +106,9 @@
 	}
 
 	$: if (selectedProposal) resetScroll = true;
+	$: showRightFormSlot = selectedProposal !== null || displayForm;
+	$: showRightSlot = selectedProposal !== null;
+	$: showBothSlots = phase === 'result' || phase === 'prediction_vote';
 </script>
 
 <Layout centered>
@@ -129,14 +133,14 @@
 
 				<!-- PHASE 1: AREA VOTE -->
 			{:else if phase === 'area_vote'}
-				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-full"><AreaVote /></div>
-					<div slot="right" class="!p-0">
-						<Comments bind:proposals api={'poll'} />
-					</div>
-				</Structure>
+			<Structure bind:phase bind:poll>
+				<div slot="left" class="h-full"><AreaVote /></div>
+				<div slot="bottom" class="!p-0">
+					<Comments bind:proposals api={'poll'} />
+				</div>
+			</Structure>
 
-				<!-- PHASE 2: PROPOSAL CREATION -->
+			<!-- PHASE 2: PROPOSAL CREATION -->
 			{:else if phase === 'proposal'}
 				<Structure bind:phase bind:poll bind:resetScroll>
 					<div slot="left" class="h-full relative flex flex-col">
@@ -158,6 +162,7 @@
 					</div>
 					<div slot="right" class="relative h-full max-h-full overflow-y-auto">
 						{#if selectedProposal}
+							<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 							<div class="flex flex-col p-2">
 								<span
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
@@ -189,7 +194,7 @@
 					</div>
 				</Structure>
 
-				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
+			<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
 			{:else if phase === 'prediction_statement'}
 				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={''}>
 					<div slot="left" class="!overflow-hidden relative h-full">
@@ -203,19 +208,25 @@
 								bind:proposalsToPredictionMarket
 							/>
 						</div>
+						{#if proposalsToPredictionMarket.length === 0}
+							<span class="md:hidden text-center block text-primary dark:text-secondary font-semibold pt-4">
+								{$_('To make a consequence, please select at least one proposal')}
+							</span>
+						{/if}
 						<Button
-							Class="w-full absolute bottom-0 mt-2"
+							Class="w-full mt-auto"
 							buttonStyle="primary-light"
-							disabled={displayForm && !selectedProposal}
+							disabled={proposalsToPredictionMarket.length === 0}
 							onClick={() => {
 								selectedProposal = null;
 								displayForm = true;
 							}}>{$_('Create Consequence')}</Button
 						>
 					</div>
-					<div slot="right" class="relative h-full">
+					<div slot="right" class="relative h-full flex flex-col">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
+								<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 								<div
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
 								>
@@ -229,6 +240,7 @@
 								<PredictionStatements bind:selectedProposal bind:phase bind:poll />
 							</div>
 						{:else if proposalsToPredictionMarket.length === 0}
+							<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 							<span class="text-center block text-primary dark:text-secondary font-semibold pt-4">
 								{$_('To make a consequence, please select at least one proposal')}
 							</span>
@@ -241,7 +253,7 @@
 					</div>
 				</Structure>
 
-				<!-- PHASE 4: PREDICTION BETTING -->
+			<!-- PHASE 4: PREDICTION BETTING -->
 			{:else if phase === 'prediction_bet'}
 				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={'overflow-y-auto'}>
 					<div slot="left" class="h-full">
@@ -266,6 +278,7 @@
 								>
 									{selectedProposal.title}
 								</div>
+								<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 								<NewDescription
 									description={selectedProposal.description}
 									limit={2}
@@ -280,7 +293,7 @@
 					</div>
 				</Structure>
 
-				<!-- PHASE 5: DELEGATE VOTING -->
+			<!-- PHASE 5: DELEGATE VOTING -->
 			{:else if phase === 'delegate_vote'}
 				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={'overflow-y-auto'}>
 					<div slot="left" class="h-full">
@@ -299,6 +312,7 @@
 								>
 									{selectedProposal.title}
 								</div>
+								<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 								<NewDescription
 									description={selectedProposal.description}
 									limit={2}
@@ -312,7 +326,8 @@
 						<Comments bind:proposals api={'poll'} />
 					</div>
 				</Structure>
-				<!-- PHASE 6: NON-DELEGATE VOTING -->
+
+			<!-- PHASE 6: NON-DELEGATE VOTING -->
 			{:else if phase === 'vote'}
 				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={'overflow-y-auto'}>
 					<div slot="left" class="h-full" id="proposals-section">
@@ -336,6 +351,7 @@
 								<div
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
 								>
+									<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 									{selectedProposal.title}
 								</div>
 								<NewDescription
@@ -351,7 +367,8 @@
 						<Comments bind:proposals api={'poll'} />
 					</div>
 				</Structure>
-				<!-- PHASE 7: RESULTS AND EVALUATION -->
+				
+			<!-- PHASE 7: RESULTS AND EVALUATION -->
 			{:else if phase === 'result' || phase === 'prediction_vote'}
 				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={'overflow-y-auto'}>
 					<div slot="left" class="h-full overflow-y-auto">
@@ -366,7 +383,7 @@
 				</Structure>
 			{/if}
 
-			<!-- Date Poll -->
+		<!-- Date Poll -->
 		{:else if pollType === 3}
 			{#if phase === 'area_vote' || phase === 'pre_start'}
 				<DatePoll />

@@ -90,7 +90,7 @@
 	};
 </script>
 
-<div class="w-full">
+<div class="w-full flex flex-col">
 	<span class="text-primary dark:text-secondary font-semibold text-xl text-center block py-2"
 		>{$_('Results')}</span
 	>
