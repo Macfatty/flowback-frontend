@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import type { Phase, poll } from '../interface';
 	import Timeline from './Timeline.svelte';
 
@@ -9,16 +10,48 @@
 		phase: Phase = 'area_vote',
 		resetScroll = false;
 
+  export let mobileSlots = {
+    showRight: false,
+    showBoth: false
+  };
+
+	let isMobile = false;
+
 	// 'bg-white h-[490px] max-h-[490px] dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
 	let genericStyle =
 			'h-full bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
 		right: HTMLDivElement | null = null;
+
+  onMount(() => {
+    const checkMobile = () => {
+      isMobile = window.innerWidth < 768;
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  });
 
 	$: if (resetScroll) {
 		right?.children[0].scrollTo(0, 0);
 		right?.scrollTo(0, 0);
 		resetScroll = false;
 	}
+
+	$: gridClass = `
+		${Class} 
+		${poll ? 'poll-grid' : 'poll-grid-no-timeline'} 
+		p-3 md:p-6 lg:p-12 max-w-[1200px] w-full gap-4 lg:gap-6 
+		${isMobile ? 'flex flex-col' : 'grid'}
+	`;
+
+	$: showLeftSlot = $$slots.left && 
+		(!isMobile || !mobileSlots.showRight || mobileSlots.showBoth);
+
+	$: showRightSlot = $$slots.right && 
+		(isMobile ? (mobileSlots.showRight || mobileSlots.showBoth) : true);
+
+	$: showBottomSlot = $$slots.bottom;
 </script>
 
 <div
@@ -57,7 +90,7 @@
 		</div>
 	{/if}
 
-	{#if $$slots.bottom}
+	{#if showBottomSlot}
 		<div class={`${genericStyle} overflow-auto bottom-grid h-fit`}>
 			<slot name="bottom" />
 		</div>
