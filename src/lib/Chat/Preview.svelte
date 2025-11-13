@@ -167,7 +167,6 @@
 				class:dark:bg-gray-700={$chatPartnerStore === chatter.channel_id}
 				on:click={() => clickedChatter(chatter.channel_id)}
 			>
-				{chatter.recent_message?.notified}
 				{#if chatter?.recent_message?.notified === false}
 					<div class="p-1 rounded-full bg-purple-300"></div>
 				{/if}
