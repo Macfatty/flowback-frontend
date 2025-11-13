@@ -208,11 +208,6 @@
 								bind:proposalsToPredictionMarket
 							/>
 						</div>
-						{#if proposalsToPredictionMarket.length === 0}
-							<span class="md:hidden text-center block text-primary dark:text-secondary font-semibold pt-4">
-								{$_('To make a consequence, please select at least one proposal')}
-							</span>
-						{/if}
 						<Button
 							Class="w-full mt-auto"
 							buttonStyle="primary-light"
