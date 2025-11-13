@@ -16,9 +16,7 @@
 	let chatSearch = '',
 		openUserSearch = false;
 
-	export let selectedChat: number | null,
-		selectedChatChannelId: number | null,
-		creatingGroup: boolean,
+	export let creatingGroup: boolean,
 		inviteList: invite[] = [],
 		groupMembers: GroupMembers[] = [];
 
@@ -48,9 +46,10 @@
 			);
 		}
 
-		selectedChat = chatterId;
+		console.log(chatterId, 'HAI');
+
+		// $chatPartnerStore = chatterId;
 		chatPartnerStore.set(chatterId);
-		selectedChatChannelId = chatterId;
 	};
 
 	// Fetch chat invites
@@ -74,29 +73,12 @@
 		});
 	};
 
-	// Update chat title
-	const updateChatTitle = async () => {
-		// if (selectedChatChannelId) {
-		// 	await fetchRequest('POST', 'user/chat/update', {
-		// 		channel_id: selectedChatChannelId,
-		// 		title: 'chat example'
-		// 	});
-		// }
-	};
-
 	onMount(async () => {
 		await UserChatInviteList();
-
-		chatPartnerStore.subscribe((partner) => {
-			if (partner === null) return;
-			// selectedPage = 'direct';
-			selectedChat = partner;
-			selectedChatChannelId = partner;
-			clickedChatter(partner);
-		});
+		clickedChatter($chatPartnerStore);
 	});
 
-	$: if (selectedChatChannelId) updateChatTitle();
+	$: console.log($chatPartnerStore, 'PARTNER');
 
 	$: if ($previewStore) {
 		// let previewsNotified = $previewStore.filter((preview) => preview.recent_message?.notified);
@@ -161,11 +143,11 @@
 				{/if}
 				<button
 					class="w-full transition transition-color p-3 flex items-center gap-3 cursor-pointer dark:bg-darkobject"
-					class:dark:bg-gray-700={selectedChat === groupChat.message_channel_id}
+					class:dark:bg-gray-700={$chatPartnerStore === groupChat.message_channel_id}
 					class:dark:hover:bg-darkbackground={groupChat.rejected === false}
 					class:hover:bg-gray-200={groupChat.rejected === false}
 					class:active:bg-gray-500={groupChat.rejected === false}
-					class:bg-gray-200={selectedChat === groupChat.message_channel_id}
+					class:bg-gray-200={$chatPartnerStore === groupChat.message_channel_id}
 					on:click={() => {
 						if (groupChat.rejected === false) clickedChatter(groupChat.message_channel_id);
 					}}
@@ -185,11 +167,12 @@
 		{#if chatter.channel_title?.includes(chatSearch) && ((chatter?.recent_message?.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)}
 			<button
 				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
-				class:bg-gray-200={selectedChat === chatter.channel_id}
-				class:dark:bg-gray-700={selectedChat === chatter.channel_id}
+				class:bg-gray-200={$chatPartnerStore === chatter.channel_id}
+				class:dark:bg-gray-700={$chatPartnerStore === chatter.channel_id}
 				on:click={() => clickedChatter(chatter.channel_id)}
 			>
-				{#if chatter?.recent_message?.notified === false || new Date(chatter.timestamp) < new Date(chatter.recent_message?.updated_at)}
+				{chatter.recent_message?.notified}
+				{#if chatter?.recent_message?.notified === false}
 					<div class="p-1 rounded-full bg-purple-300"></div>
 				{/if}
 

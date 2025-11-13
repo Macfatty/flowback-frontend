@@ -30,6 +30,8 @@ const createSocket = (userId: number) => {
 
 			if (!preview) return previews
 
+			console.log(chatPartnerStore.get(), parsedMessage.channel_id, chatPartnerStore.get() === parsedMessage.channel_id);
+
 			if (chatPartnerStore.get() === parsedMessage.chat_id)
 				preview.recent_message = { ...parsedMessage, notified: true }
 			else

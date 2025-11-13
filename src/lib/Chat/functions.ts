@@ -27,7 +27,7 @@ export const fixDirectMessageChannelName = (previews: PreviewMessage[], userId: 
 
     previews.map((preview) => {
         if (preview.recent_message?.channel_origin_name === 'user')
-            preview.recent_message.channel_title = preview.participants.find(
+            preview.channel_title = preview.participants.find(
                 (participant) => participant.id !== userId
             )?.username;
     });
@@ -39,11 +39,10 @@ export const chatOpenStore = writable(false);
 
 // Store to hold the chat_id or message_id of the chatter being talked to.
 const createChatPartnerStore = () => {
-    const { set, subscribe, update } = writable(0);
-
+    const { subscribe, set, update } = writable(0);
 
     return {
-        set, subscribe, update, get: () => get({ subscribe })
+        set, update, subscribe, get: () => get({ subscribe })
     }
 };
 

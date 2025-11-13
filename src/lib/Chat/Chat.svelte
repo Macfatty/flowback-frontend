@@ -9,7 +9,12 @@
 	import { faCog } from '@fortawesome/free-solid-svg-icons';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import { darkModeStore, getIconFilter } from '$lib/Generic/DarkMode';
-	import { chatPartnerStore, chatOpenStore, fixDirectMessageChannelName, previewStore } from './functions';
+	import {
+		chatPartnerStore,
+		chatOpenStore,
+		fixDirectMessageChannelName,
+		previewStore
+	} from './functions';
 	import { goto } from '$app/navigation';
 	import CreateChatGroup from '$lib/Chat/CreateChatGroup.svelte';
 	import CrossButton from '$lib/Generic/CrossButton.svelte';
@@ -18,10 +23,8 @@
 
 	let chatOpen = false,
 		selectedPage: 'direct' | 'group' = 'direct',
-		selectedChat: number | null,
 		isLookingAtOlderMessages = false,
 		chatDiv: HTMLDivElement,
-		selectedChatChannelId: number | null,
 		creatingGroup = false,
 		groupMembers: GroupMembers[] = [];
 
@@ -30,7 +33,19 @@
 		const { res, json } = await fetchRequest('GET', `chat/message/channel/preview/list`);
 		if (!res.ok) return [];
 
+		let previews = json?.results.map((preview: PreviewMessage) => {
+			return {
+				...preview,
+				recent_message: {
+					...preview.recent_message,
+					// @ts-ignore
+					notified: new Date(preview.timestamp) < new Date(preview.recent_message?.created_at)
+				}
+			};
+		});
+
 		$previewStore = json?.results;
+
 		fixDirectMessageChannelName(json?.results, $userStore?.id);
 	};
 
@@ -79,17 +94,10 @@
 
 	// Automatically select the first chat when the chat window opens
 	//TODO Make it work
-	$: if (
-		chatOpen &&
-		selectedChat === null &&
-		selectedChatChannelId === null &&
-		$previewStore &&
-		$previewStore?.length > 0
-	) {
+	$: if (chatOpen && $previewStore && $previewStore?.length > 0) {
 		const firstDirectChat = $previewStore[0];
-		selectedChat = firstDirectChat.channel_id || null;
 		// selectedChatChannelId = firstDirectChat.channel_id || null;
-		chatPartnerStore.set(firstDirectChat.channel_id || -1);
+		// chatPartnerStore.set(firstDirectChat.channel_id || -1);
 		// Clear notification and update timestamp for the selected chat
 		clearChatNotification(firstDirectChat.channel_id || -1);
 	}
@@ -137,23 +145,14 @@
 	<div class="flex w-full gap-6 max-w-[1200px] h-[80vh]">
 		<div class="bg-white w-[40%] overflow-y-auto flex-grow ml-6 dark:bg-darkobject p-2">
 			{#key creatingGroup}
-				<Preview
-					bind:selectedChat
-					bind:selectedChatChannelId
-					bind:creatingGroup
-					bind:groupMembers
-				/>
+				<Preview bind:creatingGroup bind:groupMembers />
 			{/key}
 		</div>
 		<div class="bg-white w-[60%] flex-grow mr-6 dark:bg-darkobject p-2">
 			{#if creatingGroup}
 				<CreateChatGroup bind:creatingGroup bind:groupMembers />
 			{:else}
-				<ChatWindow
-					bind:selectedChat		
-					bind:selectedPage
-					bind:isLookingAtOlderMessages
-				/>
+				<ChatWindow bind:selectedPage bind:isLookingAtOlderMessages />
 			{/if}
 		</div>
 	</div>
