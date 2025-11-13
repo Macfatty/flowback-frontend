@@ -43,7 +43,6 @@
 				notified: true
 			};
 
-			preview = preview;
 			previewStore.update((store) =>
 				store ? store?.map((p) => (p.id === preview?.id ? preview : p)) : []
 			);
