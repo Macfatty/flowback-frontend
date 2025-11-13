@@ -24,11 +24,7 @@
 
 	// Handle chat selection and clear notifications
 	const clickedChatter = async (chatterId: any) => {
-		let message = $previewStore?.find((message) => message.channel_id === chatterId);
-		if (message) {
-			message.timestamp = new Date().toString();
-			// message.recent_message.notified = false;
-		}
+		let preview = $previewStore?.find((_preview) => _preview.channel_id === chatterId);
 
 		const { res, json } = await fetchRequest('POST', `chat/message/channel/userdata/update`, {
 			channel_id: chatterId,
@@ -37,6 +33,20 @@
 
 		if (!res.ok) {
 			return;
+		}
+
+		// Whenever the user clicks a chatter, remove notification
+		if (preview && preview.recent_message) {
+			preview.timestamp = new Date().toString();
+			preview.recent_message = {
+				...preview.recent_message,
+				notified: true
+			};
+
+			preview = preview;
+			previewStore.update((store) =>
+				store ? store?.map((p) => (p.id === preview?.id ? preview : p)) : []
+			);
 		}
 
 		selectedChat = chatterId;
@@ -57,6 +67,7 @@
 			invite_id,
 			accept
 		});
+
 		if (!res.ok) return;
 		inviteList = inviteList.map((invitee) => {
 			if (invitee.id === invite_id) invitee.rejected = !accept;

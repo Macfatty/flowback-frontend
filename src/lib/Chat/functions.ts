@@ -49,4 +49,4 @@ const createChatPartnerStore = () => {
 
 export const chatPartnerStore = createChatPartnerStore();
 
-export const previewStore = writable<PreviewMessage[] | null>(null);
+export const previewStore = writable<PreviewMessage[]>([]);
