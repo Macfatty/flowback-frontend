@@ -6,6 +6,7 @@
 	import { page } from '$app/stores';
 	import type { Comment, Phase, poll, proposal } from '$lib/Poll/interface';
 	import Button from '$lib/Generic/Button.svelte';
+	import BackButton from '$lib/Generic/BackButton.svelte';
 	import { _ } from 'svelte-i18n';
 	import Results from '$lib/Poll/Results.svelte';
 	import { checkForLinks } from '$lib/Generic/GenericFunctions';
@@ -161,16 +162,7 @@
 					</div>
 					<div slot="right" class="relative h-full max-h-full overflow-y-auto">
 						{#if selectedProposal}
-							<div class="md:hidden">
-								<Button onClick={() => {
-									selectedProposal = null;
-									resetScroll = true;
-								}}
-									buttonStyle="primary-light"
-								>
-									<Fa icon={faArrowLeft} />
-								</Button>
-							</div>
+							<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 							<div class="flex flex-col p-2">
 								<span
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
@@ -234,17 +226,7 @@
 					<div slot="right" class="relative h-full flex flex-col">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
-								<div class="md:hidden">
-									<Button onClick={() => {
-										displayForm = false;
-										selectedProposal = null;
-										resetScroll = true;
-									}}
-										buttonStyle="primary-light"
-									>
-										<Fa icon={faArrowLeft} />
-									</Button>
-								</div>
+								<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 								<div
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
 								>
@@ -258,17 +240,7 @@
 								<PredictionStatements bind:selectedProposal bind:phase bind:poll />
 							</div>
 						{:else if proposalsToPredictionMarket.length === 0}
-							<div class="md:hidden">
-								<Button onClick={() => {
-									displayForm = false;
-									selectedProposal = null;
-									resetScroll = true;
-								}}
-									buttonStyle="primary-light"
-								>
-									<Fa icon={faArrowLeft} />
-								</Button>
-							</div>
+							<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 							<span class="text-center block text-primary dark:text-secondary font-semibold pt-4">
 								{$_('To make a consequence, please select at least one proposal')}
 							</span>
@@ -306,17 +278,7 @@
 								>
 									{selectedProposal.title}
 								</div>
-								<div class="md:hidden">
-									<Button onClick={() => {
-										displayForm = false;
-										selectedProposal = null;
-										resetScroll = true;
-									}}
-										buttonStyle="primary-light"
-									>
-										<Fa icon={faArrowLeft} />
-									</Button>
-								</div>
+								<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 								<NewDescription
 									description={selectedProposal.description}
 									limit={2}
@@ -350,17 +312,7 @@
 								>
 									{selectedProposal.title}
 								</div>
-								<div class="md:hidden">
-									<Button onClick={() => {
-										displayForm = false;
-										selectedProposal = null;
-										resetScroll = true;
-									}}
-										buttonStyle="primary-light"
-									>
-										<Fa icon={faArrowLeft} />
-									</Button>
-								</div>
+								<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 								<NewDescription
 									description={selectedProposal.description}
 									limit={2}
@@ -399,17 +351,7 @@
 								<div
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
 								>
-								<div class="md:hidden">
-									<Button onClick={() => {
-										displayForm = false;
-										selectedProposal = null;
-										resetScroll = true;
-									}}
-										buttonStyle="primary-light"
-									>
-										<Fa icon={faArrowLeft} />
-									</Button>
-								</div>
+									<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 									{selectedProposal.title}
 								</div>
 								<NewDescription
