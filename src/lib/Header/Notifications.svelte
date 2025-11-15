@@ -12,6 +12,7 @@
 	import { notifications as notificationLimit } from '$lib/Generic/APILimits.json';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import { N } from 'ethers';
 
 	let notifications: notification[],
 		timeAgo: TimeAgo,
@@ -63,7 +64,7 @@
 			return;
 		}
 
-		notifications = [];
+		notifications = notifications.map((n) => ({ ...n, read: (n.read = true) }));
 	};
 
 	const gotoNotificationOrigin = async (notification: notification) => {
