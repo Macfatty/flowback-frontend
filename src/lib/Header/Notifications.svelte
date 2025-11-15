@@ -11,6 +11,7 @@
 	import { goto } from '$app/navigation';
 	import { notifications as notificationLimit } from '$lib/Generic/APILimits.json';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	let notifications: notification[],
 		hovered: number[] = [];
@@ -55,22 +56,18 @@
 			notification_object_ids: notifications.map((notification) => notification.object_id),
 			read: true
 		});
-		if (!res.ok) return;
+
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: "Couldn't mark all notifications as read", success: false });
+			return;
+		}
 
 		notifications = [];
 	};
 
 	const gotoNotificationOrigin = async (notification: notification) => {
-		if (notification.channel_sender_type === 'group')
-			goto(`/groups/${notification.channel_id}?page=${notification.channel_category}`);
-		else if (notification.channel_sender_type === 'poll') {
-			const { res, json } = await fetchRequest(
-				'GET',
-				`home/polls?id=${notification.channel_sender_id}`
-			);
-			const groupId = json?.results[0].group_id;
-			goto(`/groups/${groupId}/polls/${notification.channel_sender_id}`);
-		}
+		if (notification.channel_name === 'group')
+			goto(`/groups/${notification.data.group_id}?page=${notification.data.poll_id}`);
 	};
 
 	let timeAgo: TimeAgo;
@@ -115,8 +112,9 @@
 			{#each notifications as notification}
 				<!-- class:bg-gray-200={hovered.find((hover) => hover === notification.id)} -->
 				<li
-					class="flex justify-between max-w-[25rem] border-gray-200 dark:border-gray-600 border hover:shadow transition-all hover:bg-blue-100 hover:border-l-2 hover:border-l-primary"
+					class=" flex justify-between max-w-[25rem] border-gray-200 dark:border-gray-600 border hover:shadow transition-all hover:bg-blue-100 hover:border-l-2 hover:border-l-primary"
 					class:bg-green-300={!notification.read}
+					class:dark:bg-slate-600={!notification.read}
 				>
 					<button
 						on:click={async () => {
