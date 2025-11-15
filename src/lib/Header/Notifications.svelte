@@ -166,7 +166,7 @@
 							// hovered = hovered;
 						}}
 					>
-						<Fa icon={faX} class="text-gray-300" />
+						<!-- <Fa icon={faX} class="text-gray-300" /> -->
 					</button>
 				</li>
 			{/each}
