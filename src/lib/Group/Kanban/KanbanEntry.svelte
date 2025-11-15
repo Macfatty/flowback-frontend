@@ -261,9 +261,8 @@
 	}
 
 	$: if (isEditing) {
-		images = kanban.attachments
+		images = kanban.attachments;
 	}
-
 </script>
 
 <svelte:window bind:innerWidth bind:outerWidth />
@@ -307,7 +306,7 @@
 		class="mt-2 gap-2 items-center text-sm hover:underline"
 		on:click={() => {
 			if ($page.params.groupId) goto(`/user?id=${kanban?.assignee?.id}`);
-			else if (kanban.origin_type === 'group') goto(`/groups/${kanban.origin_id}?page=kanban`);
+			else if (kanban.origin_type === 'group') goto(`/groups/${kanban.origin_id}`);
 		}}
 		role="button"
 		tabindex="0"
@@ -322,22 +321,24 @@
 			/>
 			{$_('My own')}
 		{:else}
-			{$_('Group')}: {kanban.group_name}
+			<span class="text-xs dark:text-gray-500 text-gray-400 italic">{$_('Group')}: {kanban.group_name}</span>
 
-			{#if kanban?.assignee}
-				<ProfilePicture
-					username={filter.type === 'group' ? kanban?.assignee?.username : kanban.group_name}
-					profilePicture={kanban?.assignee?.profile_image}
-					Class=""
-					size={1}
-					displayName
-				/>
-			{/if}
+			<span class="text-xs dark:text-gray-500 text-gray-400 italic">
+				{#if kanban?.assignee}
+					<ProfilePicture
+						username={filter.type === 'group' ? kanban?.assignee?.username : kanban.group_name}
+						profilePicture={kanban?.assignee?.profile_image}
+						Class=""
+						size={1}
+						displayName
+					/>
+				{/if}
+			</span>
 		{/if}
 	</div>
 
 	{#if kanban.work_group && kanban.work_group.name}
-		<div class="text-sm">
+		<div class="text-xs dark:text-gray-500 text-gray-400 italic ">
 			{$_('Work Group')}: {elipsis(kanban.work_group.name || '', 20)}
 		</div>
 	{/if}

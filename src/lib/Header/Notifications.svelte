@@ -136,7 +136,7 @@
 		{#if notifications?.length > 0}
 			{#each notifications as notification}
 				<li
-					class=" flex justify-between max-w-[25rem] border-gray-200 dark:border-gray-600 border hover:shadow transition-all hover:bg-blue-100 hover:border-l-2 hover:border-l-primary"
+					class=" flex justify-between max-w-[25rem] border-gray-200 dark:border-gray-600 border hover:shadow transition-all dark:hover:bg-slate-700 hover:bg-blue-300 hover:border-l-2 hover:border-l-primary"
 					class:bg-green-300={!notification.read}
 					class:dark:bg-slate-600={!notification.read}
 				>

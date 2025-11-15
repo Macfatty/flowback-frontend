@@ -87,7 +87,7 @@
 			ErrorHandlerStore.set({ message: 'Failed to fetch kanban tasks', success: false });
 			return;
 		}
-		
+
 		kanbanEntries = json.results;
 	};
 
