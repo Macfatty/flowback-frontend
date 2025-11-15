@@ -34,8 +34,12 @@
 		if (!res.ok) return [];
 
 		let previews = json?.results.map((preview: PreviewMessage) => {
-			console.log(new Date(preview.timestamp) , new Date(preview.recent_message?.created_at), "DATES");
-			
+			console.log(
+				new Date(preview.timestamp),
+				new Date(preview.recent_message?.created_at),
+				'DATES'
+			);
+
 			return {
 				...preview,
 				recent_message: {
@@ -51,7 +55,7 @@
 		fixDirectMessageChannelName(json?.results, $userStore?.id);
 	};
 
-	// Adjust chat window margin dynamically
+	// Adjust chat window based on the header
 	const correctMarginRelativeToHeader = () => {
 		const _headerHeight = document.querySelector('#header')?.clientHeight;
 		if (_headerHeight && chatDiv) chatDiv.style.marginTop = `${_headerHeight.toString()}px`;
@@ -104,8 +108,6 @@
 		clearChatNotification(firstDirectChat.channel_id || -1);
 	}
 
-	// Reset chat partner when chat is closed
-	// TODO fix issues with this
 	$: if (!chatOpen) {
 		chatPartnerStore.set(0);
 	}
@@ -113,7 +115,7 @@
 
 <svelte:head>
 	<title>
-		{`${displayNotification ? '🟣' : ''}`}
+		{`${!$previewStore.some((p) => p.recent_message?.notified) ? '🟣' : ''}`}
 	</title>
 </svelte:head>
 
@@ -165,7 +167,7 @@
 		chatOpen = !chatOpen;
 		chatOpenStore.set(chatOpen);
 	}}
-	class:small-notification={displayNotification}
+	class:small-notification={$previewStore.some((p) => !p.recent_message?.notified)}
 	class="dark:text-white transition-all fixed z-50 bg-white dark:bg-darkobject shadow-md border p-5 bottom-6 ml-5 rounded-full cursor-pointer hover:shadow-xl hover:border-gray-400 active:shadow-2xl active:p-6"
 >
 	<img
