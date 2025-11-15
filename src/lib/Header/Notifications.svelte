@@ -81,6 +81,9 @@
 			case 'kanban':
 				goto(`/kanban?groupId=${notification.data.group_id}`);
 				return;
+			case 'schedule':
+				goto(`/schedule?groupId=${notification.data.group_id}`);
+				return;
 			default:
 				return;
 		}
@@ -106,10 +109,10 @@
 >
 	<Fa icon={faBell} color={$darkModeStore ? 'white' : 'black'} size={'1.3x'} />
 	<div
-		class:hidden={notifications?.length === 0 || notifications?.length === undefined}
+		class:hidden={notifications?.filter((n) => !n.read)?.length === 0}
 		class="w-[2em] h-[2em] flex items-center justify-center rounded-full absolute -top-1.5 -right-1.5 text-[10px] text-white bg-secondary"
 	>
-		<span class="">{notifications?.length}</span>
+		<span class="">{Math.min(99, notifications?.filter((n) => !n.read)?.length)}</span>
 	</div>
 </button>
 
@@ -126,7 +129,6 @@
 		</button>
 		{#if notifications?.length > 0}
 			{#each notifications as notification}
-				<!-- class:bg-gray-200={hovered.find((hover) => hover === notification.id)} -->
 				<li
 					class=" flex justify-between max-w-[25rem] border-gray-200 dark:border-gray-600 border hover:shadow transition-all hover:bg-blue-100 hover:border-l-2 hover:border-l-primary"
 					class:bg-green-300={!notification.read}
