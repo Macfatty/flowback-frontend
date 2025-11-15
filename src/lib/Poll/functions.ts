@@ -110,7 +110,7 @@ export const getPhaseUserFriendlyNameWithNumber = (phase: Phase, poll_type: numb
 		switch (phase) {
 			case 'area_vote':
 				return `1. ${dateLabelsDate[0]}`;
-			case 'result':
+			case 'prediction_vote':
 				return `2. ${dateLabelsDate[1]}`;
 			default:
 				return "";
