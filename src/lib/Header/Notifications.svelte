@@ -66,8 +66,24 @@
 	};
 
 	const gotoNotificationOrigin = async (notification: notification) => {
-		if (notification.channel_name === 'group')
-			goto(`/groups/${notification.data.group_id}?page=${notification.data.poll_id}`);
+		console.log('Clicked Notification: ', notification);
+
+		switch (notification.tag) {
+			case 'poll':
+				goto(`/groups/${notification.data.group_id}/polls/${notification.data.poll_id}`);
+				return;
+			case 'thread':
+				goto(`/groups/${notification.data.group_id}/thread/${notification.data.thread_id}`);
+				return;
+			case 'group_user':
+				goto(`/groups/${notification.data.group_id}?page=members`);
+				return;
+			case 'kanban':
+				goto(`/kanban?groupId=${notification.data.group_id}`);
+				return;
+			default:
+				return;
+		}
 	};
 
 	let timeAgo: TimeAgo;

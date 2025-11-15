@@ -8,17 +8,19 @@ export interface notification {
     }
     data: {
         group_id: number;
-        group_image: null | string;
-        group_name: string;
         poll_id: number;
         poll_title: string;
-        work_group_id: null | number
-        work_group_name: null | string
+        group_image?: null | string;
+        group_name?: string;
+        work_group_id?: null | number
+        work_group_name?: null | string
+        thread_id?: null | string;
+        thread_title?: null | string
     }
     id: number;
     message: string;
     object_id: number;
     read: boolean;
     timestamp: string;
-
+    tag: 'poll' | 'thread' | 'group_user' | 'kanban';
 }
