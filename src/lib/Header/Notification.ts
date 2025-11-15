@@ -22,5 +22,5 @@ export interface notification {
     object_id: number;
     read: boolean;
     timestamp: string;
-    tag: 'poll' | 'thread' | 'group_user' | 'kanban' | 'schedule';
+    tag: 'poll' | 'thread' | 'group_user' | 'kanban' | 'schedule' | 'poll_comment' | 'thread_comment';
 }

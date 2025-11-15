@@ -14,7 +14,8 @@
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	let notifications: notification[],
-		hovered: number[] = [];
+		timeAgo: TimeAgo,
+		notificationsOpen = false;
 
 	const notificationList = async () => {
 		//Prevents infinite reload in /login where <Header /> is hidden
@@ -71,8 +72,13 @@
 		switch (notification.tag) {
 			case 'poll':
 				goto(`/groups/${notification.data.group_id}/polls/${notification.data.poll_id}`);
+			case 'poll_comment':
+				goto(
+					`/groups/${notification.data.group_id}/polls/${notification.data.poll_id}?section=comments`
+				);
 				return;
 			case 'thread':
+			case 'thread_comment':
 				goto(`/groups/${notification.data.group_id}/thread/${notification.data.thread_id}`);
 				return;
 			case 'group_user':
@@ -89,7 +95,6 @@
 		}
 	};
 
-	let timeAgo: TimeAgo;
 	onMount(async () => {
 		const en = (await import('javascript-time-ago/locale/en')).default;
 		TimeAgo.addDefaultLocale(en);
@@ -98,10 +103,9 @@
 		notificationList();
 		closeWindowWhenClickingOutside();
 	});
-
-	let notificationsOpen = false;
 </script>
 
+<!-- Notification bell in the header -->
 <button
 	id="notifications-list"
 	class="small-notification relative cursor-pointer"
@@ -109,13 +113,14 @@
 >
 	<Fa icon={faBell} color={$darkModeStore ? 'white' : 'black'} size={'1.3x'} />
 	<div
-		class:hidden={notifications?.filter((n) => !n.read)?.length === 0}
+		class:hidden={!notifications || notifications?.filter((n) => !n.read)?.length === 0}
 		class="w-[2em] h-[2em] flex items-center justify-center rounded-full absolute -top-1.5 -right-1.5 text-[10px] text-white bg-secondary"
 	>
-		<span class="">{Math.min(99, notifications?.filter((n) => !n.read)?.length)}</span>
+		<span>{Math.min(99, notifications?.filter((n) => !n.read)?.length)}</span>
 	</div>
 </button>
 
+<!-- Menu of notifications, that for now opens when clicking the notification bell in the header -->
 {#if notificationsOpen}
 	<ul
 		class="max-h-[90vh] overflow-y-scroll absolute right-0 top-full bg-white dark:bg-darkobject dark:text-darkmodeText select-none shadow slide-animation z-[60]"
