@@ -9,12 +9,7 @@
 	import { faCog } from '@fortawesome/free-solid-svg-icons';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import { darkModeStore, getIconFilter } from '$lib/Generic/DarkMode';
-	import {
-		chatPartnerStore,
-		chatOpenStore,
-		fixDirectMessageChannelName,
-		previewStore
-	} from './functions';
+	import { chatOpenStore, fixDirectMessageChannelName, previewStore } from './functions';
 	import { goto } from '$app/navigation';
 	import CreateChatGroup from '$lib/Chat/CreateChatGroup.svelte';
 	import CrossButton from '$lib/Generic/CrossButton.svelte';
@@ -26,7 +21,8 @@
 		isLookingAtOlderMessages = false,
 		chatDiv: HTMLDivElement,
 		creatingGroup = false,
-		groupMembers: GroupMembers[] = [];
+		groupMembers: GroupMembers[] = [],
+		notification = false;
 
 	// Fetch preview messages and set notified based on localStorage timestamps
 	const getPreview = async () => {
@@ -34,18 +30,14 @@
 		if (!res.ok) return [];
 
 		let previews = json?.results.map((preview: PreviewMessage) => {
-			console.log(
-				new Date(preview.timestamp),
-				new Date(preview.recent_message?.created_at),
-				'DATES'
-			);
-
 			return {
 				...preview,
 				recent_message: {
 					...preview.recent_message,
-					// @ts-ignore
-					notified: new Date(preview.timestamp) > new Date(preview.recent_message?.created_at)
+					notified:
+						//@ts-ignore
+						new Date(preview.timestamp) > new Date(preview.recent_message?.created_at) ||
+						preview.recent_message?.user.id === $userStore?.id
 				}
 			};
 		});
@@ -61,19 +53,6 @@
 		if (_headerHeight && chatDiv) chatDiv.style.marginTop = `${_headerHeight.toString()}px`;
 	};
 
-	// Clear notification and update localStorage timestamp when a chat is opened
-	const clearChatNotification = async (chatterId: number | null) => {
-		if (!chatterId) return;
-
-		// Clear notification for messages
-		let message = $previewStore?.find((message) => message.channel_id === chatterId);
-		if (message) {
-			message.timestamp = new Date().toString();
-			// message.notified = false;
-			// previews = [...previews];
-		}
-	};
-
 	onMount(async () => {
 		// Adjust chat window margin based on header height
 		correctMarginRelativeToHeader();
@@ -81,41 +60,15 @@
 		// Subscribe to chat open state
 		chatOpenStore.subscribe((open) => (chatOpen = open));
 		getPreview();
-		window.addEventListener('popstate', () => {
-			let url = new URL(window.location.toString());
-			// if (url.searchParams.get('chatOpen') === 'true') chatOpen = true;
-			// else chatOpen = false;
-		});
 	});
 
-	// Reactive variables to track unread messages
-	$: displayNotification = $previewStore?.some((p) => p.recent_message?.notified);
-
-	//Handles the chatOpen=true in the URL for correct "going back in history" behaviour
-	$: (() => {
-		const url = new URL(window.location.toString());
-		// url.searchParams.set('chatOpen', chatOpen.toString());
-		window.history.pushState({}, '', url);
-	})();
-
-	// Automatically select the first chat when the chat window opens
-	//TODO Make it work
-	$: if (chatOpen && $previewStore && $previewStore?.length > 0) {
-		const firstDirectChat = $previewStore[0];
-		// selectedChatChannelId = firstDirectChat.channel_id || null;
-		// chatPartnerStore.set(firstDirectChat.channel_id || -1);
-		// Clear notification and update timestamp for the selected chat
-		clearChatNotification(firstDirectChat.channel_id || -1);
-	}
-
-	$: if (!chatOpen) {
-		chatPartnerStore.set(0);
-	}
+	// Display purple notification circle whenever there is a message that hasn't been seen.
+	$: notification = $previewStore.some((p) => !p.recent_message?.notified);
 </script>
 
 <svelte:head>
 	<title>
-		{`${!$previewStore.some((p) => p.recent_message?.notified) ? '🟣' : ''}`}
+		{`${notification ? '🟣' : ''}`}
 	</title>
 </svelte:head>
 
@@ -167,7 +120,7 @@
 		chatOpen = !chatOpen;
 		chatOpenStore.set(chatOpen);
 	}}
-	class:small-notification={$previewStore.some((p) => !p.recent_message?.notified)}
+	class:small-notification={notification}
 	class="dark:text-white transition-all fixed z-50 bg-white dark:bg-darkobject shadow-md border p-5 bottom-6 ml-5 rounded-full cursor-pointer hover:shadow-xl hover:border-gray-400 active:shadow-2xl active:p-6"
 >
 	<img
