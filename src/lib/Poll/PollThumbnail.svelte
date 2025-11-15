@@ -345,13 +345,11 @@
 				{$_('Historical imac value')}: {imacFormatting(poll.interval_mean_absolute_correctness)}
 			{/if}
 
-			{#if poll?.poll_type === 4}
-				<!-- Phase -->
-				<div class="text-sm font-semibold text-primary dark:text-secondary">
-					{$_('Current phase')}
-					{$_(getPhaseUserFriendlyNameWithNumber(phase))}
-				</div>
-			{/if}
+			<!-- Phase -->
+			<div class="text-sm font-semibold text-primary dark:text-secondary">
+				{$_('Current phase')}
+				{$_(getPhaseUserFriendlyNameWithNumber(phase, poll.poll_type))}
+			</div>
 		</div>
 
 		{#if poll?.description?.length > 0}
