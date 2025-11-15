@@ -49,6 +49,11 @@ export const dateLabels = [
 	'Results and evaluation'
 ];
 
+const dateLabelsDate = [
+	'Date Voting',
+	'Results'
+]
+
 export const dateLabelsDatePoll = ['Hasn\'t started yet',
 	'Schedule', 'Results'];
 
@@ -77,29 +82,40 @@ export const getPhaseUserFriendlyName = (phase: Phase) => {
 	}
 };
 
-export const getPhaseUserFriendlyNameWithNumber = (phase: Phase) => {
-	switch (phase) {
-		case 'pre_start':
-			return `0. ${dateLabels[0]}`;
-		case 'area_vote':
-			return `1. ${dateLabels[1]}`;
-		case 'proposal':
-			return `2. ${dateLabels[2]}`;
-		case 'prediction_statement':
-			return `3. ${dateLabels[3]}`;
-		case 'prediction_bet':
-			return `4. ${dateLabels[4]}`;
-		case 'delegate_vote':
-			return `5. ${dateLabels[5]}`;
-		case 'vote':
-			return `6. ${dateLabels[6]}`;
-		case 'prediction_vote':
-			return `7. ${dateLabels[7]}`;
-		case 'result':
-			return `8. ${dateLabels[8]}`;
-		default:
-			return "";
-	}
+export const getPhaseUserFriendlyNameWithNumber = (phase: Phase, poll_type: number = 4) => {
+	if (poll_type === 4)
+		switch (phase) {
+			case 'pre_start':
+				return `0. ${dateLabels[0]}`;
+			case 'area_vote':
+				return `1. ${dateLabels[1]}`;
+			case 'proposal':
+				return `2. ${dateLabels[2]}`;
+			case 'prediction_statement':
+				return `3. ${dateLabels[3]}`;
+			case 'prediction_bet':
+				return `4. ${dateLabels[4]}`;
+			case 'delegate_vote':
+				return `5. ${dateLabels[5]}`;
+			case 'vote':
+				return `6. ${dateLabels[6]}`;
+			case 'prediction_vote':
+				return `7. ${dateLabels[7]}`;
+			case 'result':
+				return `8. ${dateLabels[8]}`;
+			default:
+				return "";
+		}
+	else if (poll_type === 3)
+		switch (phase) {
+			case 'area_vote':
+				return `1. ${dateLabelsDate[0]}`;
+			case 'prediction_vote':
+				return `2. ${dateLabelsDate[1]}`;
+			default:
+				return "";
+		}
+	else return ""
 };
 
 //TODO: To prevent many API calls, use svelte stores to transfer information between files about groups

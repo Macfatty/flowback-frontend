@@ -11,9 +11,12 @@
 	import { goto } from '$app/navigation';
 	import { notifications as notificationLimit } from '$lib/Generic/APILimits.json';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import { N } from 'ethers';
 
 	let notifications: notification[],
-		hovered: number[] = [];
+		timeAgo: TimeAgo,
+		notificationsOpen = false;
 
 	const notificationList = async () => {
 		//Prevents infinite reload in /login where <Header /> is hidden
@@ -55,25 +58,44 @@
 			notification_object_ids: notifications.map((notification) => notification.object_id),
 			read: true
 		});
-		if (!res.ok) return;
 
-		notifications = [];
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: "Couldn't mark all notifications as read", success: false });
+			return;
+		}
+
+		notifications = notifications.map((n) => ({ ...n, read: (n.read = true) }));
 	};
 
 	const gotoNotificationOrigin = async (notification: notification) => {
-		if (notification.channel_sender_type === 'group')
-			goto(`/groups/${notification.channel_id}?page=${notification.channel_category}`);
-		else if (notification.channel_sender_type === 'poll') {
-			const { res, json } = await fetchRequest(
-				'GET',
-				`home/polls?id=${notification.channel_sender_id}`
-			);
-			const groupId = json?.results[0].group_id;
-			goto(`/groups/${groupId}/polls/${notification.channel_sender_id}`);
+		console.log('Clicked Notification: ', notification);
+
+		switch (notification.tag) {
+			case 'poll':
+				goto(`/groups/${notification.data.group_id}/polls/${notification.data.poll_id}`);
+			case 'poll_comment':
+				goto(
+					`/groups/${notification.data.group_id}/polls/${notification.data.poll_id}?section=comments`
+				);
+				return;
+			case 'thread':
+			case 'thread_comment':
+				goto(`/groups/${notification.data.group_id}/thread/${notification.data.thread_id}`);
+				return;
+			case 'group_user':
+				goto(`/groups/${notification.data.group_id}?page=members`);
+				return;
+			case 'kanban':
+				goto(`/kanban?groupId=${notification.data.group_id}`);
+				return;
+			case 'schedule':
+				goto(`/schedule?groupId=${notification.data.group_id}`);
+				return;
+			default:
+				return;
 		}
 	};
 
-	let timeAgo: TimeAgo;
 	onMount(async () => {
 		const en = (await import('javascript-time-ago/locale/en')).default;
 		TimeAgo.addDefaultLocale(en);
@@ -82,10 +104,9 @@
 		notificationList();
 		closeWindowWhenClickingOutside();
 	});
-
-	let notificationsOpen = false;
 </script>
 
+<!-- Notification bell in the header -->
 <button
 	id="notifications-list"
 	class="small-notification relative cursor-pointer"
@@ -93,13 +114,14 @@
 >
 	<Fa icon={faBell} color={$darkModeStore ? 'white' : 'black'} size={'1.3x'} />
 	<div
-		class:hidden={notifications?.length === 0 || notifications?.length === undefined}
+		class:hidden={!notifications || notifications?.filter((n) => !n.read)?.length === 0}
 		class="w-[2em] h-[2em] flex items-center justify-center rounded-full absolute -top-1.5 -right-1.5 text-[10px] text-white bg-secondary"
 	>
-		<span class="">{notifications?.length}</span>
+		<span>{Math.min(99, notifications?.filter((n) => !n.read)?.length)}</span>
 	</div>
 </button>
 
+<!-- Menu of notifications, that for now opens when clicking the notification bell in the header -->
 {#if notificationsOpen}
 	<ul
 		class="max-h-[90vh] overflow-y-scroll absolute right-0 top-full bg-white dark:bg-darkobject dark:text-darkmodeText select-none shadow slide-animation z-[60]"
@@ -113,10 +135,10 @@
 		</button>
 		{#if notifications?.length > 0}
 			{#each notifications as notification}
-				<!-- class:bg-gray-200={hovered.find((hover) => hover === notification.id)} -->
 				<li
-					class="flex justify-between max-w-[25rem] border-gray-200 dark:border-gray-600 border hover:shadow transition-all hover:bg-blue-100 hover:border-l-2 hover:border-l-primary"
+					class=" flex justify-between max-w-[25rem] border-gray-200 dark:border-gray-600 border hover:shadow transition-all dark:hover:bg-slate-700 hover:bg-blue-300 hover:border-l-2 hover:border-l-primary"
 					class:bg-green-300={!notification.read}
+					class:dark:bg-slate-600={!notification.read}
 				>
 					<button
 						on:click={async () => {
@@ -144,7 +166,7 @@
 							// hovered = hovered;
 						}}
 					>
-						<Fa icon={faX} class="text-gray-300" />
+						<!-- <Fa icon={faX} class="text-gray-300" /> -->
 					</button>
 				</li>
 			{/each}

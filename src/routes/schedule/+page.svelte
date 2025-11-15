@@ -2,6 +2,7 @@
 	import { env } from '$env/dynamic/public';
 	import Layout from '$lib/Generic/Layout.svelte';
 	import Schedule from '$lib/Schedule/Schedule.svelte';
+	import Schedule2 from '$lib/Schedule/Schedule2.svelte';
 </script>
 
 <svelte:head>
@@ -9,5 +10,6 @@
 </svelte:head>
 
 <Layout>
-	<Schedule type={env.PUBLIC_ONE_GROUP_FLOWBACK === "TRUE" ? "group" : "user"}/>
+	<!-- <Schedule type={env.PUBLIC_ONE_GROUP_FLOWBACK === "TRUE" ? "group" : "user"}/> -->
+	<Schedule2 />
 </Layout>

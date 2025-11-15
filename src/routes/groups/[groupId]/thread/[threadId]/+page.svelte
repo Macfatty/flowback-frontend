@@ -16,9 +16,9 @@
 	import DeletePostModal from '$lib/Poll/DeletePostModal.svelte';
 	import Button from '$lib/Generic/Button.svelte';
 	import ThreadVoting from '$lib/Thread/ThreadVoting.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	let thread: Thread,
-		 
 		reportModalShow = false,
 		deleteModalShow = false;
 
@@ -67,8 +67,8 @@
 				<NotificationOptions
 					type="thread"
 					id={thread?.id}
-					api={`group/thread/${thread?.id}`}
-					categories={['thread']}
+					api={`group/thread/${thread?.id}/subscribe`}
+					categories={['poll_comment']}
 					labels={['thread']}
 				/>
 				<MultipleChoices

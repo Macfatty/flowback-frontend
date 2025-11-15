@@ -133,14 +133,14 @@
 
 				<!-- PHASE 1: AREA VOTE -->
 			{:else if phase === 'area_vote'}
-			<Structure bind:phase bind:poll>
-				<div slot="left" class="h-full"><AreaVote /></div>
-				<div slot="bottom" class="!p-0">
-					<Comments bind:proposals api={'poll'} />
-				</div>
-			</Structure>
+				<Structure bind:phase bind:poll>
+					<div slot="left" class="h-full"><AreaVote /></div>
+					<div slot="bottom" class="!p-0">
+						<Comments bind:proposals api={'poll'} />
+					</div>
+				</Structure>
 
-			<!-- PHASE 2: PROPOSAL CREATION -->
+				<!-- PHASE 2: PROPOSAL CREATION -->
 			{:else if phase === 'proposal'}
 				<Structure bind:phase bind:poll bind:resetScroll>
 					<div slot="left" class="h-full relative flex flex-col">
@@ -155,8 +155,8 @@
 							buttonStyle="primary-light"
 							disabled={displayForm && !selectedProposal}
 							onClick={() => {
-									selectedProposal = null;
-									displayForm = true;
+								selectedProposal = null;
+								displayForm = true;
 							}}>{$_('Add Proposal')}</Button
 						>
 					</div>
@@ -194,7 +194,7 @@
 					</div>
 				</Structure>
 
-			<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
+				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
 			{:else if phase === 'prediction_statement'}
 				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={''}>
 					<div slot="left" class="!overflow-hidden relative h-full">
@@ -248,7 +248,7 @@
 					</div>
 				</Structure>
 
-			<!-- PHASE 4: PREDICTION BETTING -->
+				<!-- PHASE 4: PREDICTION BETTING -->
 			{:else if phase === 'prediction_bet'}
 				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={'overflow-y-auto'}>
 					<div slot="left" class="h-full">
@@ -288,7 +288,7 @@
 					</div>
 				</Structure>
 
-			<!-- PHASE 5: DELEGATE VOTING -->
+				<!-- PHASE 5: DELEGATE VOTING -->
 			{:else if phase === 'delegate_vote'}
 				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={'overflow-y-auto'}>
 					<div slot="left" class="h-full">
@@ -322,7 +322,7 @@
 					</div>
 				</Structure>
 
-			<!-- PHASE 6: NON-DELEGATE VOTING -->
+				<!-- PHASE 6: NON-DELEGATE VOTING -->
 			{:else if phase === 'vote'}
 				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={'overflow-y-auto'}>
 					<div slot="left" class="h-full" id="proposals-section">
@@ -362,8 +362,8 @@
 						<Comments bind:proposals api={'poll'} />
 					</div>
 				</Structure>
-				
-			<!-- PHASE 7: RESULTS AND EVALUATION -->
+
+				<!-- PHASE 7: RESULTS AND EVALUATION -->
 			{:else if phase === 'result' || phase === 'prediction_vote'}
 				<Structure bind:phase bind:poll bind:resetScroll innerClassRight={'overflow-y-auto'}>
 					<div slot="left" class="h-full overflow-y-auto">
@@ -378,13 +378,13 @@
 				</Structure>
 			{/if}
 
-		<!-- Date Poll -->
+			<!-- Date Poll -->
 		{:else if pollType === 3}
 			{#if phase === 'area_vote' || phase === 'pre_start'}
 				<DatePoll />
 			{:else}
 				<Structure bind:phase bind:poll>
-					<div slot="left" class="w-[600px]">
+					<div slot="left">
 						<Results bind:poll {getPollData} {pollType} />
 					</div>
 
