@@ -6,13 +6,10 @@
 	export let poll: poll | null = null,
 		Class = '',
 		phase: Phase = 'area_vote',
-		resetScroll = false;
-
-  export let mobileSlots = {
-    showRight: false,
-    showBoth: false
-  };
-
+		resetScroll = false,
+		showRight = false,
+    showBoth = false;
+		
 	let isMobile = false;
 
 	// 'bg-white h-[490px] max-h-[490px] dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
@@ -44,10 +41,10 @@
 	`;
 
 	$: showLeftSlot = $$slots.left && 
-		(!isMobile || !mobileSlots.showRight || mobileSlots.showBoth);
+		(!isMobile || !showRight || showBoth);
 
 	$: showRightSlot = $$slots.right && 
-		(isMobile ? (mobileSlots.showRight || mobileSlots.showBoth) : true);
+		(isMobile ? (showRight || showBoth) : true);
 
 	$: showBottomSlot = $$slots.bottom;
 </script>
