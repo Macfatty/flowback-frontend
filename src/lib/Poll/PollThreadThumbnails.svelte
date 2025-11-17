@@ -68,20 +68,21 @@
 	async function fetchPolls() {
 		let api = `
 		user/home?
-		group_ids=${$page.params.groupId ?? ''}
+		group_ids=${$page.params.groupId ?? ''}&
 		order_by=${filter.order_by ? `pinned,${filter.order_by}` : 'pinned'}&
 		limit=${pollThumbnailsLimit}&
 		title__icontains:${filter.search ?? ''}&
 		tag_id=${filter.tag ?? ''}&
 		work_group_ids=${filter.workgroup}&
-		public=${infoToGet === 'public' ? true : ''}
+		public=${infoToGet === 'public' ? 'true' : ''}&
+		created_at
+
 		`;
 
 		if (next === undefined) {
 			loading = true;
 
 			const { res, json } = await fetchRequest('GET', api);
-
 
 			loading = false;
 			if (!res.ok) ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
