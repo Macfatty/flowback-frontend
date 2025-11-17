@@ -41,7 +41,9 @@
 			public: false,
 			order_by: 'start_date_desc',
 			tag: null,
-			workgroup: null
+			workgroup: null,
+			from: new Date(0),
+			to: new Date()
 		},
 		showThreads = true,
 		showPolls = true;
@@ -64,27 +66,28 @@
 	}
 
 	async function fetchPolls() {
-		const params = {
-			order_by: filter.order_by ? `pinned,${filter.order_by}` : 'pinned',
-			limit: pollThumbnailsLimit,
-			title__icontains: filter.search || undefined,
-			tag_id: filter.tag || undefined,
-			group_ids: infoToGet === 'group' ? $page.params.groupId : undefined,
-			work_group_ids: filter.workgroup,
-			public: infoToGet === 'public' ? true : undefined,
-			...(filter.finishedSelection !== 'all' && {
-				[`end_date${filter.finishedSelection === 'finished' ? '__lt' : '__gt'}`]:
-					new Date().toISOString()
-			})
-		};
+		let api = `
+		user/home?
+		group_ids=${$page.params.groupId ?? ''}
+		order_by=${filter.order_by ? `pinned,${filter.order_by}` : 'pinned'}&
+		limit=${pollThumbnailsLimit}&
+		title__icontains:${filter.search ?? ''}&
+		tag_id=${filter.tag ?? ''}&
+		work_group_ids=${filter.workgroup}&
+		public=${infoToGet === 'public' ? true : ''}
+		`;
 
 		if (next === undefined) {
 			loading = true;
-			const response = await PollsApi.getPosts(infoToGet, params, delegate.pool_id);
 
-			// ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
-			$posts = response.results;
-			next = response.next ?? null;
+			const { res, json } = await fetchRequest('GET', api);
+
+
+			loading = false;
+			if (!res.ok) ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
+
+			$posts = json.results ?? [];
+			next = json.next ?? null;
 			// prev = response.previous;
 		} else if (next === null) return;
 		else {

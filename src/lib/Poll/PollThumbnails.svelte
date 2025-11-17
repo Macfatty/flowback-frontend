@@ -41,8 +41,6 @@
 		else if (infoToGet === 'user') API += `home/polls?`;
 		//TODO remove public
 		else if (infoToGet === 'public') API += `home/polls?public=true`;
-
-		console.log(filter.order_by, 'Order by filter');
 		
 		if (filter.order_by) API += `&order_by=pinned,${filter.order_by}`;
 		else API += `&order_by=pinned`;
