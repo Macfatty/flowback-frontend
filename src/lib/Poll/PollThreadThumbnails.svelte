@@ -71,12 +71,11 @@
 		group_ids=${$page.params.groupId ?? ''}&
 		order_by=${filter.order_by ? `pinned,${filter.order_by}` : 'pinned'}&
 		limit=${pollThumbnailsLimit}&
-		title__icontains:${filter.search ?? ''}&
+		title__icontains=${filter.search ?? ''}&
 		tag_id=${filter.tag ?? ''}&
 		work_group_ids=${filter.workgroup}&
 		public=${infoToGet === 'public' ? 'true' : ''}&
-		created_at
-
+		created_at__gt=${new Date().toISOString()}
 		`;
 
 		if (next === undefined) {
