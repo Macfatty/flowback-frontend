@@ -68,7 +68,7 @@
 					type="thread"
 					id={thread?.id}
 					api={`group/thread/${thread?.id}/subscribe`}
-					categories={['poll_comment']}
+					categories={['thread_comment']}
 					labels={['thread']}
 				/>
 				<MultipleChoices

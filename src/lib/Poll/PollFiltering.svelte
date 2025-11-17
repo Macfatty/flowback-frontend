@@ -170,6 +170,10 @@
 			innerLabel={null}
 		/>
 
+
+		From: <input type="date" bind:value={filter.from}/>
+		To: <input type="date" bind:value={filter.to}/>
+
 		<CheckboxButtons
 			label=""
 			labels={contentTypeLabels}

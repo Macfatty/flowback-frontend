@@ -10,7 +10,6 @@
 	import PollThreadThumbnails from '$lib/Poll/PollThreadThumbnails.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { idfy } from '$lib/Generic/GenericFunctions2';
-	import { lazyLoading } from '$lib/Generic/GenericFunctions';
 
 	interface Invitation {
 		external: boolean;

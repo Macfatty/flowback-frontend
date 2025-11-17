@@ -75,7 +75,7 @@
 				goto(`/groups/${notification.data.group_id}/polls/${notification.data.poll_id}`);
 			case 'poll_comment':
 				goto(
-					`/groups/${notification.data.group_id}/polls/${notification.data.poll_id}?section=comments`
+					`/groups/${notification.data.group_id}/thread/${notification.data.thread_id}?section=comments`
 				);
 				return;
 			case 'thread':
