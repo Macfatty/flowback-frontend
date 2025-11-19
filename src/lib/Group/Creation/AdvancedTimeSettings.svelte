@@ -232,7 +232,7 @@
 					/>
 				</div>
 				<div>
-					<span class="mt-4">{$_('Delegate Voting end date')}</span>
+					<span class="mt-4">{$_('Delegate voting end date')}</span>
 
 					<input
 						id="consequence-creation"
