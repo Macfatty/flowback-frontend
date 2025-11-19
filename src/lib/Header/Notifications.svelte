@@ -68,28 +68,32 @@
 	};
 
 	const gotoNotificationOrigin = async (notification: notification) => {
-		console.log('Clicked Notification: ', notification);
-
+		console.log(notification, "NOTIF");
+		
 		switch (notification.tag) {
 			case 'poll':
-				goto(`/groups/${notification.data.group_id}/polls/${notification.data.poll_id}`);
+				await goto(`/groups/${notification.data.group_id}/polls/${notification.data.poll_id}`);
+				return;
 			case 'poll_comment':
-				goto(
+				await goto(
 					`/groups/${notification.data.group_id}/thread/${notification.data.thread_id}?section=comments`
 				);
 				return;
 			case 'thread':
+				await goto(`/groups/${notification.data.group_id}/thread/${notification.data.thread_id}`);
+				return;
 			case 'thread_comment':
-				goto(`/groups/${notification.data.group_id}/thread/${notification.data.thread_id}`);
+				// TODO: Fix scuffed solution with channel_data by changing data in backend probably group models.py
+				await goto(`/groups/${notification.data.group_id}/thread/${notification.channel_data.thread_id}?section=comments`);
 				return;
 			case 'group_user':
-				goto(`/groups/${notification.data.group_id}?page=members`);
+				await goto(`/groups/${notification.data.group_id}?page=members`);
 				return;
 			case 'kanban':
-				goto(`/kanban?groupId=${notification.data.group_id}`);
+				await  goto(`/kanban?groupId=${notification.data.group_id}`);
 				return;
 			case 'schedule':
-				goto(`/schedule?groupId=${notification.data.group_id}`);
+				await goto(`/schedule?groupId=${notification.data.group_id}`);
 				return;
 			default:
 				return;

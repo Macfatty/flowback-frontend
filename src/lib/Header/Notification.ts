@@ -1,10 +1,12 @@
 export interface notification {
     action: 'update' | 'CREATED';
     channel_name: 'group';
-    channel_date: {
+    channel_data: {
         group_id: number;
         group_image: string;
         group_name: string;
+        thread_id?: number;
+        thread_title?:string;
     }
     data: {
         group_id: number;
