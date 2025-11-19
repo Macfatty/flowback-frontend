@@ -10,8 +10,9 @@
 	import { idfy } from '$lib/Generic/GenericFunctions2';
 	import UserSearch from '$lib/Generic/UserSearch.svelte';
 	import Fa from 'svelte-fa';
-	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+	import { faCircle, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import { userStore } from '$lib/User/interfaces';
+	import { elipsis } from '$lib/Generic/GenericFunctions';
 
 	let chatSearch = '',
 		openUserSearch = false;
@@ -75,20 +76,6 @@
 		await UserChatInviteList();
 		clickedChatter($chatPartnerStore);
 	});
-
-	$: if ($previewStore) {
-		// let previewsNotified = $previewStore.filter((preview) => preview.recent_message?.notified);
-		// let previewsNotNotified = $previewStore.filter((preview) => !preview.recent_message?.notified);
-		// previewsNotNotified = previewsNotNotified.sort(
-		// 	(preview1, preview2) =>
-		// 		new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
-		// );
-		// previewsNotified = previewsNotified.sort(
-		// 	(preview1, preview2) =>
-		// 		new Date(preview2.timestamp).getDate() - new Date(preview1.timestamp).getDate()
-		// );
-		// $previewStore = [...previewsNotified, ...previewsNotNotified];
-	}
 </script>
 
 <div class="max-h-[100%] pb-2">
@@ -167,19 +154,20 @@
 				class:dark:bg-gray-700={$chatPartnerStore === chatter.channel_id}
 				on:click={() => clickedChatter(chatter.channel_id)}
 			>
-				{#if chatter?.recent_message?.notified === false}
-					<div class="p-1 rounded-full bg-purple-300"></div>
-				{/if}
-
 				<ProfilePicture profilePicture={chatter?.recent_message?.profile_image} />
-				<div class="flex flex-col max-w-[40%]">
-					<span class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
-						<!-- {chatter?.user.username} -->
-						{chatter.channel_title ?? chatter.recent_message?.channel_title ?? 'Name not found'}
-					</span>
-					<span class="text-gray-400 text-sm h-[20px]">
-						{chatter?.recent_message?.message || ''}
-					</span>
+				<div class="flex justify-between items-center w-full">
+					<div>
+						<div class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
+							<!-- {chatter?.user.username} -->
+							{chatter.channel_title ?? chatter.recent_message?.channel_title ?? 'Name not found'}
+						</div>
+						<div class="text-left text-gray-400 text-sm h-[20px]">
+							{elipsis(chatter?.recent_message?.message || '', 15)}
+						</div>
+					</div>
+					{#if chatter?.recent_message?.notified === false}
+						<div class="rounded-full text-purple-300"><Fa size={"xs"} icon={faCircle}/></div>
+					{/if}
 				</div>
 			</button>
 			{#if creatingGroup}

@@ -43,6 +43,7 @@
 			await getVotes();
 		}
 
+		// TODO: Remove "needsReload" while making sure things reload properly
 		needsReload++;
 	});
 

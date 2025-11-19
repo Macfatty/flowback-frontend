@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
-	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import type { Thread } from '$lib/Group/interface';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
@@ -22,11 +21,8 @@
 		reportModalShow = $state(false),
 		deleteModalShow = $state(false);
 
-	onMount(() => {
-		getThread();
-	});
-
 	$effect(() => {
+		// Fixes a bug where clicking between threads (because of links or in notification) doesn't update page properly
 		const { threadId } = $page.params;
 		getThread();
 	});
