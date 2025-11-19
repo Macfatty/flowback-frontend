@@ -68,8 +68,6 @@
 	};
 
 	const gotoNotificationOrigin = async (notification: notification) => {
-		console.log(notification, "NOTIF");
-		
 		switch (notification.tag) {
 			case 'poll':
 				await goto(`/groups/${notification.data.group_id}/polls/${notification.data.poll_id}`);
@@ -84,13 +82,15 @@
 				return;
 			case 'thread_comment':
 				// TODO: Fix scuffed solution with channel_data by changing data in backend probably group models.py
-				await goto(`/groups/${notification.data.group_id}/thread/${notification.channel_data.thread_id}?section=comments`);
+				await goto(
+					`/groups/${notification.data.group_id}/thread/${notification.channel_data.thread_id}?section=comments`
+				);
 				return;
 			case 'group_user':
 				await goto(`/groups/${notification.data.group_id}?page=members`);
 				return;
 			case 'kanban':
-				await  goto(`/kanban?groupId=${notification.data.group_id}`);
+				await goto(`/kanban?groupId=${notification.data.group_id}`);
 				return;
 			case 'schedule':
 				await goto(`/schedule?groupId=${notification.data.group_id}`);
