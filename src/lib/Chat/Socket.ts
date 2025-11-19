@@ -1,4 +1,4 @@
-import { writable, get } from 'svelte/store';
+import { writable } from 'svelte/store';
 import { type Message1, type PreviewMessage } from './interfaces';
 import { env } from '$env/dynamic/public';
 import { chatPartnerStore, previewStore } from './functions';
@@ -29,7 +29,6 @@ const createSocket = (userId: number) => {
 			let preview = previews?.find((p: PreviewMessage) => p.channel_id === parsedMessage.channel_id);
 
 			if (!preview) return previews
-
 
 			if (chatPartnerStore.get() !== parsedMessage.channel_id)
 				preview.recent_message = { ...parsedMessage, notified: false }

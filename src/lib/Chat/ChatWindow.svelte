@@ -16,7 +16,7 @@
 	import { chatWindow as chatWindowLimit } from '../Generic/APILimits.json';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
-	import { chatOpenStore, chatPartnerStore, previewStore } from './functions';
+	import { chatPartnerStore, previewStore } from './functions';
 
 	export let selectedPage: 'direct' | 'group', isLookingAtOlderMessages: boolean;
 

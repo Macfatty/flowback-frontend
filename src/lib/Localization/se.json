@@ -51,6 +51,9 @@
 	"Ends:": "Slutar:",
 	"Start:": "Börjar:",
 	"Comments": "Kommentarer",
+	"chat": {
+		"add": "Lägg till mig!"
+	},
 	"Chat": "Chatt",
 	"Private Messages": "Privata meddelanden",
 	"Group Chats": "Gruppchatter",
