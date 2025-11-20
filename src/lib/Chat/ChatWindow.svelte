@@ -245,16 +245,14 @@
 			if (!interval)
 				interval = setInterval(() => {
 					console.log('Attempting to reconnect');
-
+					if (socket.readyState === socket.OPEN || retries === 100) {
+						clearInterval(interval);
+						return;
+					}
+					socket = Socket.createSocket($userStore?.id);
 					retries++;
-
-					if (retries === 6) clearInterval(interval);
-
 					// TODO: Add randomness to the interval to prevent many people reconnecting at once if backend issue?
 				}, 4000);
-		};
-		socket.onopen = () => {
-			clearInterval(interval);
 		};
 	});
 
