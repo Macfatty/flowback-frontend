@@ -58,7 +58,7 @@
 					// @ts-ignore
 					groupMembers.push(item);
 					groupMembers = groupMembers;
-				}}>{$_("chat.add")}</Button
+				}}>{$_('chat.add')}</Button
 			>
 		</div>
 	</UserSearch>
