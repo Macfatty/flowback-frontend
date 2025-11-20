@@ -6,6 +6,7 @@
 	import { userStore } from '$lib/User/interfaces';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import UserSearch from '$lib/Generic/UserSearch.svelte';
+	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 
 	export let creatingGroup: boolean,
 		groupMembers: GroupMembers[] = [];
@@ -40,26 +41,24 @@
 	<!-- <TextInput autofocus required bind:value={name} label="Chatgroup Name" /> -->
 
 	{$_('Members')}
-	<div>
+	<ul>
 		{#each groupMembers as member}
-			{member.username}
+			<ProfilePicture displayName profilePicture={member.profile_image} {...member} />
 		{/each}
-	</div>
+	</ul>
 
 	<UserSearch showSelf={false}>
 		<div slot="action" let:item>
 			<Button
 				type="button"
 				onClick={() => {
-					console.log('item', item);
-
 					if (groupMembers.some((member) => member.id === item.id)) {
 						return;
 					}
 					// @ts-ignore
 					groupMembers.push(item);
 					groupMembers = groupMembers;
-				}}>Add Me!</Button
+				}}>{$_('chat.add')}</Button
 			>
 		</div>
 	</UserSearch>

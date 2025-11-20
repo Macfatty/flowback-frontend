@@ -16,7 +16,7 @@
 	import { chatWindow as chatWindowLimit } from '../Generic/APILimits.json';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
-	import { chatOpenStore, chatPartnerStore, previewStore } from './functions';
+	import { chatPartnerStore, previewStore } from './functions';
 
 	export let selectedPage: 'direct' | 'group', isLookingAtOlderMessages: boolean;
 
@@ -236,6 +236,24 @@
 		unsubscribeMessageStore = receiveMessage();
 		correctHeightRelativeToHeader();
 		window.addEventListener('resize', correctHeightRelativeToHeader);
+
+		let retries = 0;
+		let interval: NodeJS.Timeout;
+		// Attempt reconnecting websocket when server is shut down
+		// Inspired by the user2909737's reply https://stackoverflow.com/questions/3780511/reconnection-of-client-when-server-reboots-in-websocket
+		socket.onclose = () => {
+			if (!interval)
+				interval = setInterval(() => {
+					console.log('Attempting to reconnect');
+					if (socket.readyState === socket.OPEN || retries === 100) {
+						clearInterval(interval);
+						return;
+					}
+					socket = Socket.createSocket($userStore?.id);
+					retries++;
+					// TODO: Add randomness to the interval to prevent many people reconnecting at once if backend issue?
+				}, 4000);
+		};
 	});
 
 	onDestroy(() => {
@@ -247,6 +265,7 @@
 	$: (selectedPage || $chatPartnerStore) && getRecentMessages();
 	$: (selectedPage || $chatPartnerStore) && getChannelParticipants();
 	$: isLookingAtOlderMessages = !!newerMessages;
+	// @ts-ignore
 	$: if ($userStore) socket = Socket.createSocket($userStore?.id);
 	$: messages &&
 		browser &&
