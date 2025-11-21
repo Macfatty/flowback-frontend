@@ -3,14 +3,17 @@
 	import { onMount } from 'svelte';
 	import dayGridPlugin from '@fullcalendar/daygrid';
 	import { fetchRequest } from '$lib/FetchRequest';
+	import timeGridPlugin from '@fullcalendar/timegrid';
+	import listPlugin from '@fullcalendar/list';
+	import multiMonthPlugin from '@fullcalendar/multimonth';
 	import interactionPlugin from '@fullcalendar/interaction';
 	import Modal from '$lib/Generic/Modal.svelte';
-	
-	let open = false,
-		startDate = new Date().toISOString().slice(0,16),
-		endDate = new Date().toISOString().slice(0,16);
 
-		const userScheduleEventCreate = async () => {
+	let open = false,
+		startDate = new Date().toISOString().slice(0, 16),
+		endDate = new Date().toISOString().slice(0, 16);
+
+	const userScheduleEventCreate = async () => {
 		// const { res, json } = await fetchRequest('POST', 'user/schedule/event/create', {
 		// 	title: 'Hello',
 		// 	start_date: new Date().toISOString()
@@ -25,13 +28,13 @@
 		let calendarEl = document.getElementById('calendar-2');
 		if (!calendarEl) return;
 		let calendar = new Calendar(calendarEl, {
-			plugins: [dayGridPlugin, interactionPlugin],
+			plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin, multiMonthPlugin],
 			initialView: 'dayGridMonth',
 			height: 'calc(100vh - 2rem - 40px - 28px)',
 			headerToolbar: {
 				left: 'prev,next today',
 				center: 'title',
-				right: 'dayGridMonth'
+				right: 'dayGridMonth, timeGridDay, listWeek, multiMonthYear, dayGridYear'
 			},
 
 			selectable: true,
@@ -40,8 +43,8 @@
 				console.log(selectionInfo);
 
 				open = true;
-				startDate = selectionInfo.start.toISOString().slice(0,16);;
-				endDate = selectionInfo.end.toISOString().slice(0,16);
+				startDate = selectionInfo.start.toISOString().slice(0, 16);
+				endDate = selectionInfo.end.toISOString().slice(0, 16);
 				// selectionInfo.start, selectionInfo.end, selectionInfo.allDay
 				// your logic to prompt for a title and then call calendar.addEvent(...)
 			},
