@@ -9,9 +9,9 @@
 	import interactionPlugin from '@fullcalendar/interaction';
 	import Modal from '$lib/Generic/Modal.svelte';
 
-	let open = false,
-		startDate = new Date().toISOString().slice(0, 16),
-		endDate = new Date().toISOString().slice(0, 16);
+	let open = $state(false),
+		startDate = $state(new Date().toISOString().slice(0, 16)),
+		endDate = $state(new Date().toISOString().slice(0, 16));
 
 	const userScheduleEventCreate = async () => {
 		// const { res, json } = await fetchRequest('POST', 'user/schedule/event/create', {
@@ -34,7 +34,7 @@
 			headerToolbar: {
 				left: 'prev,next today',
 				center: 'title',
-				right: 'dayGridMonth, timeGridDay, listWeek, multiMonthYear, dayGridYear'
+				right: 'dayGridMonth, timeGridDay, listWeek, multiMonthYear, dayGridYear, timeGridWeek'
 			},
 
 			selectable: true,
