@@ -4,8 +4,13 @@
 	import dayGridPlugin from '@fullcalendar/daygrid';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import interactionPlugin from '@fullcalendar/interaction';
+	import Modal from '$lib/Generic/Modal.svelte';
+	
+	let open = false,
+		startDate = new Date().toISOString().slice(0,16),
+		endDate = new Date().toISOString().slice(0,16);
 
-	const userScheduleEventCreate = async () => {
+		const userScheduleEventCreate = async () => {
 		// const { res, json } = await fetchRequest('POST', 'user/schedule/event/create', {
 		// 	title: 'Hello',
 		// 	start_date: new Date().toISOString()
@@ -27,6 +32,23 @@
 				left: 'prev,next today',
 				center: 'title',
 				right: 'dayGridMonth'
+			},
+
+			selectable: true,
+			selectMirror: true, // optional: shows a “mirror” placeholder during drag
+			select: function (selectionInfo) {
+				console.log(selectionInfo);
+
+				open = true;
+				startDate = selectionInfo.start.toISOString().slice(0,16);;
+				endDate = selectionInfo.end.toISOString().slice(0,16);
+				// selectionInfo.start, selectionInfo.end, selectionInfo.allDay
+				// your logic to prompt for a title and then call calendar.addEvent(...)
+			},
+			dateClick: function (clickInfo) {
+				console.log(clickInfo);
+				// clickInfo.date, clickInfo.allDay, etc.
+				// alternate logic if you just want a click
 			}
 		});
 		calendar.render();
@@ -41,3 +63,12 @@
 <div class="flex justify-center h-[100vh] w-full">
 	<div class="w-full" id="calendar-2"></div>
 </div>
+
+<Modal bind:open>
+	<div slot="body">
+		<form>
+			<input type="datetime-local" bind:value={startDate} />
+			<input type="datetime-local" bind:value={endDate} />
+		</form>
+	</div>
+</Modal>
