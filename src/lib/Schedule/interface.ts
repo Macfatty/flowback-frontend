@@ -1,3 +1,5 @@
+import type { User } from "$lib/Group/interface";
+
 // interface.ts
 export interface scheduledEvent {
     created_by: number;
@@ -19,6 +21,29 @@ export interface scheduledEvent {
     assignee_ids?: number[]; // List of assigned group member IDs
     reminders?: number[]; // List of reminder times in seconds
     schedule_origin_id?: number; // ID of the group where the event was created
+}
+
+export interface ScheduleItem2 {
+  id: number;
+  schedule_id: number;
+  title: string;
+  description: string | null;
+  start_date: string;  // ISO timestamp
+  end_date: string | null;
+  active: boolean;
+  meeting_link: string | null;
+  repeat_frequency: string | null;
+  tag_id: number;
+  tag_name: string;
+  origin_name: string;
+  origin_id: number;
+  schedule_origin_name: string;
+  schedule_origin_id: number;
+  assignees: number[] | null;
+  reminders: number[] | null;
+  user_tags: number[] | null;
+  locked: boolean | null;
+  subscribed: boolean;
 }
 
 export interface WorkGroupScheduledEventCreate {

@@ -8,22 +8,33 @@
 	import multiMonthPlugin from '@fullcalendar/multimonth';
 	import interactionPlugin from '@fullcalendar/interaction';
 	import Modal from '$lib/Generic/Modal.svelte';
+	import type { ScheduleItem2 } from '$lib/Schedule/interface';
 
 	let open = $state(false),
+		events: ScheduleItem2[] = $state([]),
 		startDate = $state(new Date().toISOString().slice(0, 16)),
 		endDate = $state(new Date().toISOString().slice(0, 16));
 
 	const userScheduleEventCreate = async () => {
-		// const { res, json } = await fetchRequest('POST', 'user/schedule/event/create', {
-		// 	title: 'Hello',
-		// 	start_date: new Date().toISOString()
-		// });
-
-		{
-			const { res, json } = await fetchRequest('GET', 'schedule/event/list');
-		}
+		const { res, json } = await fetchRequest('POST', 'user/schedule/event/create', {
+			title: 'Hello',
+			start_date: startDate,
+			end_date: endDate
+		});
 	};
 
+	const userScheduleEventList = async () => {
+		const { res, json } = await fetchRequest('GET', 'schedule/event/list?limit=50');
+		events = json.results;
+	};
+
+	const userScheduleEventDelete = async () => {
+		const { res, json } = await fetchRequest('POST', 'user/schedule/event/delete', {
+			// event_id: events[0].id
+		});
+	};
+
+	// Read documentation for this calendar module: https://fullcalendar.io/
 	const renderCalendar = () => {
 		let calendarEl = document.getElementById('calendar-2');
 		if (!calendarEl) return;
@@ -33,33 +44,42 @@
 			height: 'calc(100vh - 2rem - 40px - 28px)',
 			headerToolbar: {
 				left: 'prev,next today',
-				center: 'title',
+				center: 'title, addEventButton',
 				right: 'dayGridMonth, timeGridDay, listWeek, multiMonthYear, dayGridYear, timeGridWeek'
 			},
 
 			selectable: true,
-			selectMirror: true, // optional: shows a “mirror” placeholder during drag
+			// selectMirror: true,
 			select: function (selectionInfo) {
 				console.log(selectionInfo);
 
 				open = true;
 				startDate = selectionInfo.start.toISOString().slice(0, 16);
 				endDate = selectionInfo.end.toISOString().slice(0, 16);
-				// selectionInfo.start, selectionInfo.end, selectionInfo.allDay
-				// your logic to prompt for a title and then call calendar.addEvent(...)
 			},
 			dateClick: function (clickInfo) {
 				console.log(clickInfo);
-				// clickInfo.date, clickInfo.allDay, etc.
-				// alternate logic if you just want a click
-			}
+			},
+			customButtons: {
+				addEventButton: {
+					text: '+',
+					click: () => {
+						open = true;
+					}
+				}
+			},
+			events: events.map((e) => ({ start: e.start_date, end: e.end_date }))
 		});
 		calendar.render();
 	};
 
-	onMount(() => {
+	onMount(async () => {
+		await userScheduleEventList();
 		renderCalendar();
-		userScheduleEventCreate();
+	});
+
+	$effect(() => {
+		if (events) renderCalendar();
 	});
 </script>
 
@@ -67,7 +87,19 @@
 	<div class="w-full" id="calendar-2"></div>
 </div>
 
-<Modal bind:open>
+<Modal
+	bind:open
+	buttons={[
+		{
+			label: 'submit',
+			onClick: async () => {
+				await userScheduleEventCreate();
+				userScheduleEventList();
+			},
+			type: 'default'
+		}
+	]}
+>
 	<div slot="body">
 		<form>
 			<input type="datetime-local" bind:value={startDate} />
