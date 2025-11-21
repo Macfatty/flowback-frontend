@@ -9,15 +9,17 @@
 	import interactionPlugin from '@fullcalendar/interaction';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import type { ScheduleItem2 } from '$lib/Schedule/interface';
+	import TextInput from '$lib/Generic/TextInput.svelte';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
 		startDate = $state(new Date().toISOString().slice(0, 16)),
-		endDate = $state(new Date().toISOString().slice(0, 16));
+		endDate = $state(new Date().toISOString().slice(0, 16)),
+		title = $state('');
 
 	const userScheduleEventCreate = async () => {
 		const { res, json } = await fetchRequest('POST', 'user/schedule/event/create', {
-			title: 'Hello',
+			title,
 			start_date: startDate,
 			end_date: endDate
 		});
@@ -68,7 +70,7 @@
 					}
 				}
 			},
-			events: events.map((e) => ({ start: e.start_date, end: e.end_date }))
+			events: events.map((e) => ({ start: e.start_date, end: e.end_date, title: e.title }))
 		});
 		calendar.render();
 	};
@@ -102,6 +104,7 @@
 >
 	<div slot="body">
 		<form>
+			<TextInput label="Title" bind:value={title} />
 			<input type="datetime-local" bind:value={startDate} />
 			<input type="datetime-local" bind:value={endDate} />
 		</form>
