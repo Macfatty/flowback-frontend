@@ -24,26 +24,25 @@ export interface scheduledEvent {
 }
 
 export interface ScheduleItem2 {
-  id: number;
-  schedule_id: number;
-  title: string;
-  description: string | null;
-  start_date: string;  // ISO timestamp
-  end_date: string | null;
-  active: boolean;
-  meeting_link: string | null;
-  repeat_frequency: string | null;
-  tag_id: number;
-  tag_name: string;
-  origin_name: string;
-  origin_id: number;
-  schedule_origin_name: string;
-  schedule_origin_id: number;
-  assignees: number[] | null;
-  reminders: number[] | null;
-  user_tags: number[] | null;
-  locked: boolean | null;
-  subscribed: boolean;
+    active: boolean | null;
+    description: string | null;
+    id: number;
+    schedule_id: number;
+    title: string;
+    start_date: string;  // ISO timestamp
+    end_date: string | null;  // ISO timestamp
+    meeting_link: string | null;
+    repeat_frequency: number | null;
+    tag_id: number;
+    tag_name: string;
+    origin_name: string;
+    origin_id: number;
+    schedule_origin_name: string;
+    schedule_origin_id: number;
+    reminders: number[] | null;
+    user_tags: string[] | null;
+    locked: boolean | null;
+    subscribed: boolean;
 }
 
 export interface WorkGroupScheduledEventCreate {
@@ -65,9 +64,9 @@ export interface options {
 }
 
 export interface Filter {
-	assignee: number | null;
-	group: string | null;
-	workgroup: number | null;
-	search: string;
-	type: 'home' | 'group'
+    assignee: number | null;
+    group: string | null;
+    workgroup: number | null;
+    search: string;
+    type: 'home' | 'group'
 }

@@ -10,19 +10,35 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import type { ScheduleItem2 } from '$lib/Schedule/interface';
 	import TextInput from '$lib/Generic/TextInput.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
-		startDate = $state(new Date().toISOString().slice(0, 16)),
-		endDate = $state(new Date().toISOString().slice(0, 16)),
-		title = $state('');
+		selectedEvent: ScheduleItem2 = $state({
+			id: 0,
+			schedule_id: 0,
+			title: '',
+			description: '',
+			start_date: new Date().toISOString().slice(0, 16),
+			end_date: new Date().toISOString().slice(0, 16),
+			active: true,
+			meeting_link: '',
+			repeat_frequency: 0,
+			tag_id: 0,
+			tag_name: '',
+			origin_name: '',
+			origin_id: 0,
+			schedule_origin_name: '',
+			schedule_origin_id: 0,
+			assignees: [],
+			reminders: [],
+			user_tags: [],
+			locked: true,
+			subscribed: false
+		});
 
 	const userScheduleEventCreate = async () => {
-		const { res, json } = await fetchRequest('POST', 'user/schedule/event/create', {
-			title,
-			start_date: startDate,
-			end_date: endDate
-		});
+		const { res, json } = await fetchRequest('POST', 'user/schedule/event/create', selectedEvent);
 	};
 
 	const userScheduleEventList = async () => {
@@ -30,10 +46,18 @@
 		events = json.results;
 	};
 
-	const userScheduleEventDelete = async () => {
+	const userScheduleEventDelete = async (event_id: number) => {
 		const { res, json } = await fetchRequest('POST', 'user/schedule/event/delete', {
-			// event_id: events[0].id
+			event_id
 		});
+
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: 'Failed to Delete event', success: false });
+			return;
+		}
+
+		events = events.filter((e) => e.id !== event_id);
+		open = false;
 	};
 
 	// Read documentation for this calendar module: https://fullcalendar.io/
@@ -52,14 +76,12 @@
 
 			selectable: true,
 			// selectMirror: true,
-			select: function (selectionInfo) {
-				console.log(selectionInfo);
-
+			select: (selectionInfo) => {
 				open = true;
-				startDate = selectionInfo.start.toISOString().slice(0, 16);
-				endDate = selectionInfo.end.toISOString().slice(0, 16);
+				selectedEvent.start_date = selectionInfo.start.toISOString().slice(0, 16);
+				selectedEvent.end_date = selectionInfo.end.toISOString().slice(0, 16);
 			},
-			dateClick: function (clickInfo) {
+			dateClick: (clickInfo) => {
 				console.log(clickInfo);
 			},
 			customButtons: {
@@ -70,7 +92,18 @@
 					}
 				}
 			},
-			events: events.map((e) => ({ start: e.start_date, end: e.end_date, title: e.title }))
+			events: events.map((e) => ({
+				...e,
+				start: e.start_date,
+				end: e.end_date
+			})),
+			eventClick: (info) => {
+				open = true;
+				let _selectedEvent = events.find((e) => e.id.toString() === info.event.id);
+				if (_selectedEvent) selectedEvent = _selectedEvent;
+			},
+			dayMaxEventRows: 3,
+			eventInteractive: true
 		});
 		calendar.render();
 	};
@@ -93,7 +126,7 @@
 	bind:open
 	buttons={[
 		{
-			label: 'submit',
+			label: 'Submit',
 			onClick: async () => {
 				await userScheduleEventCreate();
 				userScheduleEventList();
@@ -104,9 +137,12 @@
 >
 	<div slot="body">
 		<form>
-			<TextInput label="Title" bind:value={title} />
-			<input type="datetime-local" bind:value={startDate} />
-			<input type="datetime-local" bind:value={endDate} />
+			<TextInput label="Title" bind:value={selectedEvent.title} />
+			<input type="datetime-local" bind:value={selectedEvent.start_date} />
+			<input type="datetime-local" bind:value={selectedEvent.end_date} />
+			{selectedEvent.id}
+			<button type="button" onclick={() => userScheduleEventDelete(selectedEvent.id)}>Delete</button
+			>
 		</form>
 	</div>
 </Modal>
