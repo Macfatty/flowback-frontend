@@ -95,7 +95,8 @@
 			events: events.map((e) => ({
 				...e,
 				start: e.start_date,
-				end: e.end_date
+				end: e.end_date,
+				allDay: true
 			})),
 			eventClick: (info) => {
 				open = true;
@@ -108,13 +109,22 @@
 			windowResize: () => {
 				renderCalendar();
 			},
-			eventDragStop: (info) => {
+			eventDragStop: async (info) => {
 				// selectedEvent = {...info.event}
 				selectedEvent.title = info.event.title;
 				selectedEvent.id = Number(info.event.id);
 				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
 				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
-				userScheduleEventEdit();
+				await userScheduleEventEdit();
+				userScheduleEventList();
+			},
+			eventResize: async (info) => {
+				selectedEvent.title = info.event.title;
+				selectedEvent.id = Number(info.event.id);
+				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
+				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
+				await userScheduleEventEdit();
+				userScheduleEventList();
 			},
 			dayMaxEventRows: 3,
 			eventInteractive: true,
@@ -147,7 +157,7 @@
 		{
 			label: 'Submit',
 			onClick: async () => {
-				await userScheduleEventCreate();
+				selectedEvent.id ? await userScheduleEventCreate() : await userScheduleEventEdit();
 				userScheduleEventList();
 				selectedEvent = ScheduleItem2Default;
 				open = false;
