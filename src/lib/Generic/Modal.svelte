@@ -16,7 +16,7 @@
 
 	let modal: HTMLDivElement | undefined, escEvent;
 
-	const closeModal = (event: MouseEvent | KeyboardEvent ) => {
+	const closeModal = (event: MouseEvent | KeyboardEvent) => {
 		event.stopPropagation();
 		open = false;
 		hideScrollbar(false);
@@ -35,7 +35,6 @@
 		hideScrollbar(true);
 		onOpen();
 		document.addEventListener('keydown', (e) => {
-			
 			if (e.key === 'Escape') {
 				closeModal(e);
 			}

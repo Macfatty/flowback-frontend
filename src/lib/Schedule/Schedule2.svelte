@@ -88,15 +88,19 @@
 				selectedEvent = ScheduleItem2Default;
 				let _selectedEvent = events.find((e) => e.id.toString() === info.event.id);
 				if (_selectedEvent) selectedEvent = _selectedEvent;
-				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
-				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
+				selectedEvent.start_date = info.event.start?.toLocaleString().slice(0, 16) ?? '';
+				selectedEvent.end_date = info.event.end?.toLocaleString().slice(0, 16) ?? '';
 			},
 			windowResize: () => {
 				renderCalendar();
 			},
 			dayMaxEventRows: 3,
 			eventInteractive: true,
-			eventClassNames: 'cursor-pointer'
+			eventClassNames: 'cursor-pointer',
+			editable: true,
+			eventStartEditable: true,
+			eventResizableFromStart: true,
+			eventDurationEditable: true
 		});
 		calendar.render();
 	};
