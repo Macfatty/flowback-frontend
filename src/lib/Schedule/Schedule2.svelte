@@ -63,6 +63,7 @@
 			// selectMirror: true,
 			select: (selectionInfo) => {
 				open = true;
+				selectedEvent = ScheduleItem2Default;
 				selectedEvent.start_date = selectionInfo.start.toISOString().slice(0, 16);
 				selectedEvent.end_date = selectionInfo.end.toISOString().slice(0, 16);
 			},
@@ -84,10 +85,11 @@
 			})),
 			eventClick: (info) => {
 				open = true;
+				selectedEvent = ScheduleItem2Default;
 				let _selectedEvent = events.find((e) => e.id.toString() === info.event.id);
 				if (_selectedEvent) selectedEvent = _selectedEvent;
-				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
-				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
+				// selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
+				// selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
 			},
 			dayMaxEventRows: 3,
 			eventInteractive: true,
