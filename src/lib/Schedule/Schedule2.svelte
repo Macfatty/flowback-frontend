@@ -28,6 +28,7 @@
 			ErrorHandlerStore.set({ message: 'Failed to create event', success: false });
 			return;
 		}
+		ErrorHandlerStore.set({ message: 'Successfully created event', success: true });
 	};
 
 	const userScheduleEventEdit = async () => {
@@ -92,6 +93,7 @@
 					}
 				}
 			},
+			// @ts-ignore
 			events: events.map((e) => ({
 				...e,
 				start: e.start_date,
@@ -109,22 +111,19 @@
 			windowResize: () => {
 				renderCalendar();
 			},
-			eventDragStop: async (info) => {
-				// selectedEvent = {...info.event}
+			eventDragStop: (info) => {
 				selectedEvent.title = info.event.title;
 				selectedEvent.id = Number(info.event.id);
 				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
 				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
-				await userScheduleEventEdit();
-				userScheduleEventList();
+				userScheduleEventEdit();
 			},
-			eventResize: async (info) => {
+			eventResize: (info) => {
 				selectedEvent.title = info.event.title;
 				selectedEvent.id = Number(info.event.id);
 				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
 				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
-				await userScheduleEventEdit();
-				userScheduleEventList();
+				userScheduleEventEdit();
 			},
 			dayMaxEventRows: 3,
 			eventInteractive: true,
@@ -157,7 +156,7 @@
 		{
 			label: 'Submit',
 			onClick: async () => {
-				selectedEvent.id ? await userScheduleEventCreate() : await userScheduleEventEdit();
+				selectedEvent.id === 0 ? await userScheduleEventCreate() : await userScheduleEventEdit();
 				userScheduleEventList();
 				selectedEvent = ScheduleItem2Default;
 				open = false;
