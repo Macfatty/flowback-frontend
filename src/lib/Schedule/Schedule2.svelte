@@ -16,6 +16,11 @@
 		events: ScheduleItem2[] = $state([]),
 		selectedEvent: ScheduleItem2 = $state(ScheduleItem2Default);
 
+	const userScheduleEventList = async () => {
+		const { res, json } = await fetchRequest('GET', 'schedule/event/list?limit=50');
+		events = json.results;
+	};
+
 	const userScheduleEventCreate = async () => {
 		const { res, json } = await fetchRequest('POST', 'user/schedule/event/create', selectedEvent);
 
@@ -25,9 +30,18 @@
 		}
 	};
 
-	const userScheduleEventList = async () => {
-		const { res, json } = await fetchRequest('GET', 'schedule/event/list?limit=50');
-		events = json.results;
+	const userScheduleEventEdit = async () => {
+		const { res, json } = await fetchRequest('POST', 'user/schedule/event/update', {
+			...selectedEvent,
+			event_id: selectedEvent.id
+		});
+
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: 'Failed to edit event', success: false });
+			return;
+		}
+
+		ErrorHandlerStore.set({ message: 'Successfully edited event', success: true });
 	};
 
 	const userScheduleEventDelete = async (event_id: number) => {
@@ -93,6 +107,14 @@
 			},
 			windowResize: () => {
 				renderCalendar();
+			},
+			eventDragStop: (info) => {
+				// selectedEvent = {...info.event}
+				selectedEvent.title = info.event.title;
+				selectedEvent.id = Number(info.event.id);
+				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
+				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
+				userScheduleEventEdit();
 			},
 			dayMaxEventRows: 3,
 			eventInteractive: true,
