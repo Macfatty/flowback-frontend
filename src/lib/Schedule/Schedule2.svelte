@@ -108,9 +108,6 @@
 				selectedEvent.start_date = info.event.start?.toLocaleString().slice(0, 16) ?? '';
 				selectedEvent.end_date = info.event.end?.toLocaleString().slice(0, 16) ?? '';
 			},
-			windowResize: () => {
-				renderCalendar();
-			},
 			eventDragStop: (info) => {
 				selectedEvent.title = info.event.title;
 				selectedEvent.id = Number(info.event.id);
