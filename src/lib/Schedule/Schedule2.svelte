@@ -8,37 +8,21 @@
 	import multiMonthPlugin from '@fullcalendar/multimonth';
 	import interactionPlugin from '@fullcalendar/interaction';
 	import Modal from '$lib/Generic/Modal.svelte';
-	import type { ScheduleItem2 } from '$lib/Schedule/interface';
+	import { ScheduleItem2Default, type ScheduleItem2 } from '$lib/Schedule/interface';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
-		selectedEvent: ScheduleItem2 = $state({
-			id: 0,
-			schedule_id: 0,
-			title: '',
-			description: '',
-			start_date: new Date().toISOString().slice(0, 16),
-			end_date: new Date().toISOString().slice(0, 16),
-			active: true,
-			meeting_link: '',
-			repeat_frequency: 0,
-			tag_id: 0,
-			tag_name: '',
-			origin_name: '',
-			origin_id: 0,
-			schedule_origin_name: '',
-			schedule_origin_id: 0,
-			assignees: [],
-			reminders: [],
-			user_tags: [],
-			locked: true,
-			subscribed: false
-		});
+		selectedEvent: ScheduleItem2 = $state(ScheduleItem2Default);
 
 	const userScheduleEventCreate = async () => {
 		const { res, json } = await fetchRequest('POST', 'user/schedule/event/create', selectedEvent);
+
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: 'Failed to create event', success: false });
+			return;
+		}
 	};
 
 	const userScheduleEventList = async () => {
@@ -52,7 +36,7 @@
 		});
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to Delete event', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to delete event', success: false });
 			return;
 		}
 
@@ -67,6 +51,7 @@
 		let calendar = new Calendar(calendarEl, {
 			plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin, multiMonthPlugin],
 			initialView: 'dayGridMonth',
+			//TODO: Rework the calculation so these calculations don't need to be rerun at header changes
 			height: 'calc(100vh - 2rem - 40px - 28px)',
 			headerToolbar: {
 				left: 'prev,next today',
@@ -101,9 +86,12 @@
 				open = true;
 				let _selectedEvent = events.find((e) => e.id.toString() === info.event.id);
 				if (_selectedEvent) selectedEvent = _selectedEvent;
+				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
+				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
 			},
 			dayMaxEventRows: 3,
-			eventInteractive: true
+			eventInteractive: true,
+			eventClassNames: 'cursor-pointer'
 		});
 		calendar.render();
 	};
@@ -130,19 +118,29 @@
 			onClick: async () => {
 				await userScheduleEventCreate();
 				userScheduleEventList();
+				selectedEvent = ScheduleItem2Default;
+				open = false;
 			},
-			type: 'default'
+			type: 'default',
+			submit: true
+		},
+		{
+			label: 'Delete',
+			onClick: () => userScheduleEventDelete(selectedEvent.id),
+			type: 'warning',
+			class: selectedEvent.id ? 'visible' : 'invisible'
 		}
 	]}
+	onClose={() => {
+		selectedEvent = ScheduleItem2Default;
+	}}
+	stopAtPropagation={false}
 >
 	<div slot="body">
 		<form>
 			<TextInput label="Title" bind:value={selectedEvent.title} />
 			<input type="datetime-local" bind:value={selectedEvent.start_date} />
 			<input type="datetime-local" bind:value={selectedEvent.end_date} />
-			{selectedEvent.id}
-			<button type="button" onclick={() => userScheduleEventDelete(selectedEvent.id)}>Delete</button
-			>
 		</form>
 	</div>
 </Modal>

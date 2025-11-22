@@ -11,7 +11,8 @@
 		onClose = () => {},
 		onSubmit = () => {},
 		buttons: ModalButton[] = [],
-		id = 'popup-modal';
+		id = 'popup-modal',
+		stopAtPropagation = true;
 
 	let modal:HTMLDivElement | undefined;
 
@@ -23,6 +24,7 @@
 
 	const stopPropagation = (event: MouseEvent) => {
 		event.stopPropagation();
+		if (stopAtPropagation)
 		onCloseModal();
 	};
 

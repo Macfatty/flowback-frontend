@@ -32,7 +32,7 @@ export interface ScheduleItem2 {
     start_date: string;  // ISO timestamp
     end_date: string | null;  // ISO timestamp
     meeting_link: string | null;
-    repeat_frequency: number | null;
+    repeat_frequency?: number | null;
     tag_id: number;
     tag_name: string;
     origin_name: string;
@@ -44,6 +44,28 @@ export interface ScheduleItem2 {
     locked: boolean | null;
     subscribed: boolean;
 }
+
+export const ScheduleItem2Default = {
+			id: 0,
+			schedule_id: 0,
+			title: '',
+			description: '',
+			start_date: new Date().toISOString().slice(0, 16),
+			end_date: new Date().toISOString().slice(0, 16),
+			active: true,
+			meeting_link: '',
+			tag_id: 0,
+			tag_name: '',
+			origin_name: '',
+			origin_id: 0,
+			schedule_origin_name: '',
+			schedule_origin_id: 0,
+			assignees: [],
+			reminders: [],
+			user_tags: [],
+			locked: true,
+			subscribed: false
+		}
 
 export interface WorkGroupScheduledEventCreate {
     title: string;
