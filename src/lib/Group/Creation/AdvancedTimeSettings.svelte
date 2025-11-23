@@ -40,8 +40,8 @@
 	};
 
 	const changeDaysBetweenPhases = (days: number | string) => {
-		console.log(times, times.length, "HEIIiiiiiiii");
-		
+		console.log(times, times.length, 'HEIIiiiiiiii');
+
 		days = Number(days);
 		// start_date = new Date();
 		// start_date.setHours(0, 0, 0, 0);
@@ -53,12 +53,12 @@
 		if (daysBetweenPhases === 0) {
 			//For debug purposes this puts one second delay between each phase. Useful for playwright testing.
 			times.forEach((_: Date, i: number) => {
-				times[i] = new Date(inc.setSeconds(inc.getSeconds() + 1));
+				if (i !== 0) times[i] = new Date(inc.setSeconds(inc.getSeconds() + 1));
 			});
 		} else {
 			//For users to select over multiple days
 			times.forEach((_: Date, i: number) => {
-				times[i] = new Date(inc.setDate(inc.getDate() + days));
+				if (i !== 0) times[i] = new Date(inc.setDate(inc.getDate() + days));
 			});
 		}
 	};
@@ -91,9 +91,7 @@
 	{/if}
 </button>
 
-<div class:hidden={!showAdvancedTimeSettings}>hi</div>
-
-<div>
+<div class:hidden={!showAdvancedTimeSettings}>
 	<RadioButtons2
 		name="advancedTimeSettingChoice"
 		bind:value={calendarView}
@@ -104,196 +102,36 @@
 		{#key [daysBetweenPhases, templateCounter]}
 			<AdvancedCalendarSelector bind:times />
 		{/key}
-	{/if}
-</div>
-<!--	
 	{:else if calendarView === '0'}
 		<div class="grid grid-cols-2 gap-6 justify-center">
-			<div>
-				<span class="mt-4">{$_('Poll start')}</span>
-
-				<input
-					id="start_date"
-					type="datetime-local"
-					min={new Date().toString()}
-					max={maxDatePickerYear.toString()}
-					value={formatDateToLocalTime(start_date).slice(0, 16)}
-					class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-					required
-					on:input={(e) => {
-						//@ts-ignore
-						let date = new Date(e.target.value);
-
-						// End date needs to be after start date to be valid
-						if (new Date() <= date) start_date = date;
-						//@ts-ignore
-						else e.target.value = formatDateToLocalTime(start_date).slice(0, 16);
-					}}
-				/>
-			</div>
-
-			{#if selected_poll !== 'Date Poll'}
+			{#each times as time, i}
 				<div>
-					<span class="mt-4">{$_('Area voting end')}</span>
+					<span class="mt-4">{$_('Poll start')}</span>
 					<input
-						id="area-vote-end-date"
+						id="start_date"
 						type="datetime-local"
 						min={new Date().toString()}
 						max={maxDatePickerYear.toString()}
-						value={formatDateToLocalTime(area_vote_end_date).slice(0, 16)}
+						value={formatDateToLocalTime(time).slice(0, 16)}
 						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 						required
-						on:input={(e) => {
+						oninput={(e) => {
 							//@ts-ignore
 							let date = new Date(e.target.value);
 
 							// End date needs to be after start date to be valid
-							if (new Date() <= date) area_vote_end_date = date;
+							if (new Date() <= date) times[i] = date;
 							//@ts-ignore
-							else e.target.value = formatDateToLocalTime(area_vote_end_date).slice(0, 16);
+							else e.target.value = formatDateToLocalTime(start_date).slice(0, 16);
 						}}
 					/>
 				</div>
-
-				<div>
-					<span class="mt-4">{$_('Proposal end')}</span>
-
-					<input
-						id="proposal_end"
-						type="datetime-local"
-						min={new Date().toString()}
-						max={maxDatePickerYear.toString()}
-						value={formatDateToLocalTime(proposal_end_date).slice(0, 16)}
-						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-						required
-						on:input={(e) => {
-							//@ts-ignore
-							let date = new Date(e.target.value);
-
-							// End date needs to be after start date to be valid
-							if (new Date() <= date) proposal_end_date = date;
-							//@ts-ignore
-							else e.target.value = formatDateToLocalTime(proposal_end_date).slice(0, 16);
-						}}
-					/>
-				</div>
-
-				<div>
-					<span class="mt-4">{$_('Consequences creation end')}</span>
-
-					<input
-						id="consequence-creation"
-						type="datetime-local"
-						min={new Date().toString()}
-						max={maxDatePickerYear.toString()}
-						value={formatDateToLocalTime(prediction_statement_end_date).slice(0, 16)}
-						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-						required
-						on:input={(e) => {
-							//@ts-ignore
-							let date = new Date(e.target.value);
-
-							// End date needs to be after start date to be valid
-							if (new Date() <= date) prediction_statement_end_date = date;
-							else
-							//@ts-ignore
-								e.target.value = formatDateToLocalTime(prediction_statement_end_date).slice(0, 16);
-						}}
-					/>
-				</div>
-				<div>
-					<span class="mt-4">{$_('Consequence bet end')}</span>
-
-					<input
-						id="consequence-creation"
-						type="datetime-local"
-						min={new Date().toString()}
-						max={maxDatePickerYear.toString()}
-						value={formatDateToLocalTime(prediction_bet_end_date).slice(0, 16)}
-						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-						required
-						on:input={(e) => {
-							//@ts-ignore
-							let date = new Date(e.target.value);
-
-							// End date needs to be after start date to be valid
-							if (new Date() <= date) prediction_bet_end_date = date;
-							//@ts-ignore
-							else e.target.value = formatDateToLocalTime(prediction_bet_end_date).slice(0, 16);
-						}}
-					/>
-				</div>
-				<div>
-					<span class="mt-4">{$_('Delegate voting end date')}</span>
-
-					<input
-						id="consequence-creation"
-						type="datetime-local"
-						min={new Date().toString()}
-						max={maxDatePickerYear.toString()}
-						value={formatDateToLocalTime(delegate_vote_end_date).slice(0, 16)}
-						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-						required
-						on:input={(e) => {
-							//@ts-ignore
-							let date = new Date(e.target.value);
-
-							// End date needs to be after start date to be valid
-							if (new Date() <= date) delegate_vote_end_date = date;
-							//@ts-ignore
-							else e.target.value = formatDateToLocalTime(delegate_vote_end_date).slice(0, 16);
-						}}
-					/>
-				</div>
-				<div>
-					<span class="mt-4">{$_('Voting end date')}</span>
-
-					<input
-						id="consequence-creation"
-						type="datetime-local"
-						min={new Date().toString()}
-						max={maxDatePickerYear.toString()}
-						value={formatDateToLocalTime(vote_end_date).slice(0, 16)}
-						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-						required
-						on:input={(e) => {
-							//@ts-ignore
-							let date = new Date(e.target.value);
-
-							// End date needs to be after start date to be valid
-							if (new Date() <= date) vote_end_date = date;
-							//@ts-ignore
-							else e.target.value = formatDateToLocalTime(vote_end_date).slice(0, 16);
-						}}
-					/>
-				</div>
-			{/if}
-			<div>
-				<span class="mt-4">{$_('End date')}</span>
-
-				<input
-					id="consequence-creation"
-					type="datetime-local"
-					min={new Date().toString()}
-					max={maxDatePickerYear.toString()}
-					value={formatDateToLocalTime(end_date).slice(0, 16)}
-					class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-					required
-					on:input={(e) => {
-						//@ts-ignore
-						let date = new Date(e.target.value);
-
-						// End date needs to be after start date to be valid
-						if (new Date() <= date) end_date = date;
-						//@ts-ignore
-						else e.target.value = formatDateToLocalTime(end_date).slice(0, 16);
-					}}
-				/>
-			</div>
+			{/each}
 		</div>
 	{/if}
 </div>
-{#if selected_poll === 'Text Poll'}
+
+<!-- {#if selected_poll === 'Text Poll'}
 	<TimelineTemplate
 		area_vote_time_delta={area_vote_end_date.getTime() - start_date.getTime()}
 		proposal_time_delta={proposal_end_date.getTime() - area_vote_end_date.getTime()}
@@ -307,4 +145,4 @@
 		poll_type={selected_poll === 'Text Poll' ? 4 : 3}
 		{handleSelectTemplate}
 	/>
-{/if} -->
+{/if}  -->
