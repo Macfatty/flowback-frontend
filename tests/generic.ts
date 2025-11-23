@@ -107,3 +107,11 @@ export function randomString() {
     const rand = Math.random().toString(36).slice(2, 10);
     return rand
 }
+
+// Part of Svelte 5 migration https://svelte.dev/docs/svelte/v5-migration-guide 
+// export const preventDefault = (fn:any) => {
+//     return function (event:any) {
+//         event.preventDefault();
+//         fn.call(this, event);
+//     };
+// }
