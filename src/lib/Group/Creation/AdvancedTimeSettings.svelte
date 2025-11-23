@@ -58,10 +58,8 @@
 	};
 
 	onMount(() => {
-		changeDaysBetweenPhases(2);
+		changeDaysBetweenPhases(daysBetweenPhases);
 	});
-
-	$inspect(times)
 </script>
 
 <div class="flex justify-between">
