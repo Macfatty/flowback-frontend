@@ -98,13 +98,13 @@
 		document.title = poll?.title;
 		getDisplayForm();
 		setUpPredictionStore();
-	}
+	};
 
 	onMount(() => {
-		setup()
+		setup();
 	});
 
-	// Fixes a bug where clicking between threads (because of links or in notification) doesn't update page properly
+	// Fixes a bug where clicking between polls (because of links or in notification) doesn't update page properly
 	$effect(() => {
 		const { pollId } = $page.params;
 		setup();

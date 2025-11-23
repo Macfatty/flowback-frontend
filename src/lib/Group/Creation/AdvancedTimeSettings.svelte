@@ -6,6 +6,7 @@
 	import MonthView from '$lib/Generic/Schedules/MonthView.svelte';
 	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
 	import { formatDateToLocalTime } from '$lib/Generic/GenericFunctions';
+	import AdvancedCalendarSelector from './AdvancedCalendarSelector.svelte';
 
 	export let selected_poll: pollType,
 		start_date = new Date(),
@@ -104,7 +105,8 @@
 	/>
 	{#if calendarView === '1'}
 		{#key [daysBetweenPhases, templateCounter]}
-			<MonthView
+			<AdvancedCalendarSelector />
+			<!-- <MonthView
 				bind:start_date
 				bind:area_vote_end_date
 				bind:proposal_end_date
@@ -113,7 +115,7 @@
 				bind:delegate_vote_end_date
 				bind:vote_end_date
 				bind:end_date
-			/>
+			/> -->
 		{/key}
 	{:else if calendarView === '0'}
 		<div class="grid grid-cols-2 gap-6 justify-center">
