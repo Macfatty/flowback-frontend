@@ -210,7 +210,7 @@
 						<Button
 							Class="w-full mt-auto"
 							buttonStyle="primary-light"
-							disabled={proposalsToPredictionMarket.length === 0}
+							disabled={proposalsToPredictionMarket.length === 0 || selectedProposal === null}
 							onClick={() => {
 								selectedProposal = null;
 								displayForm = true;
