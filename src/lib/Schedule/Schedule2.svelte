@@ -135,7 +135,6 @@
 
 	onMount(async () => {
 		await userScheduleEventList();
-		renderCalendar();
 	});
 
 	$effect(() => {

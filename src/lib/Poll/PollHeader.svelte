@@ -52,7 +52,7 @@
 </script>
 
 <div
-	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded shadow w-full poll-header-grid py-4"
+	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded shadow w-full poll-header-grid py-4 max-w-[1200px]"
 >
 	<button
 		class="cursor-pointer bg-white dark:bg-darkobject dark:text-darkmodeText justify-center m-auto"
@@ -147,7 +147,7 @@
 	</div>
 
 	{#if poll?.description.length > 0}
-		<div class="grid-area-description break-words">
+		<div class="grid-area-description break-words w-[90vw] max-w-[1100px]">
 			<NewDescription limit={3} lengthLimit={300} description={poll?.description} />
 		</div>
 	{/if}
