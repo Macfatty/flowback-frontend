@@ -27,27 +27,19 @@
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
-	let poll: poll,
-		pollType = 1,
-		finished: boolean,
-		phase: Phase = 'pre_start',
-		proposals: proposal[],
-		selectedProposal: proposal | null,
-		proposalsToPredictionMarket: proposal[] = [],
-		displayForm: boolean,
-		comments: Comment[] = [],
-		loading = true,
-		resetScroll = false;
-
-	onMount(async () => {
-		await getPollData();
-		phase = getPhase(poll);
-		scrollToSection();
-		checkForLinks(poll?.description, 'poll-description');
-		document.title = poll?.title;
-		getDisplayForm();
-		setUpPredictionStore();
-	});
+	let poll: poll | null = $state(null),
+		pollType = $state(1),
+		finished: boolean = $state(false),
+		phase: Phase = $state('pre_start'),
+		proposals: proposal[] = $state([]),
+		selectedProposal: proposal | null = $state(null),
+		proposalsToPredictionMarket: proposal[] = $state([]),
+		displayForm: boolean = $state(false),
+		comments: Comment[] = $state([]),
+		loading = $state(true),
+		resetScroll = $state(false),
+		showRightFormSlot = $state(false),
+		showRightSlot = $state(false);
 
 	const getPollData = async () => {
 		if (!$page.params) return;
@@ -97,17 +89,47 @@
 		predictionStatementsStore.set(json?.results);
 	};
 
-	// When fast forwarding from area phase to proposal phase, get tag info in real time
-	$: if (phase === 'proposal') {
-		const a = setTimeout(() => {
-			getPollData();
-			clearTimeout(a);
-		}, 2000);
-	}
+	let setup = async () => {
+		await getPollData();
+		if (!poll) return;
+		phase = getPhase(poll);
+		scrollToSection();
+		// checkForLinks(poll?.description, 'poll-description');
+		document.title = poll?.title;
+		getDisplayForm();
+		setUpPredictionStore();
+	};
 
-	$: if (selectedProposal) resetScroll = true;
-	$: showRightFormSlot = selectedProposal !== null || displayForm;
-	$: showRightSlot = selectedProposal !== null;
+	onMount(() => {
+		setup();
+	});
+
+	// Fixes a bug where clicking between polls (because of links or in notification) doesn't update page properly
+	$effect(() => {
+		const { pollId } = $page.params;
+		setup();
+	});
+
+	// When fast forwarding from area phase to proposal phase, get tag info in real time
+	$effect(() => {
+		if (phase === 'proposal') {
+			const a = setTimeout(() => {
+				getPollData();
+				clearTimeout(a);
+			}, 2000);
+		}
+	});
+
+	$effect(() => {
+		if (selectedProposal) resetScroll = true;
+	});
+
+	$effect(() => {
+		showRightFormSlot = selectedProposal !== null || displayForm;
+	});
+	$effect(() => {
+		showRightSlot = selectedProposal !== null;
+	});
 </script>
 
 <Layout centered>
@@ -130,16 +152,16 @@
 					<Comments bind:proposals api={'poll'} />
 				</div>
 
-			<!-- PHASE 1: AREA VOTE -->
+				<!-- PHASE 1: AREA VOTE -->
 			{:else if phase === 'area_vote'}
-			<Structure bind:phase bind:poll>
-				<div slot="left" class="h-full"><AreaVote /></div>
-				<div slot="bottom" class="!p-0">
-					<Comments bind:proposals api={'poll'} />
-				</div>
-			</Structure>
+				<Structure bind:phase bind:poll>
+					<div slot="left" class="h-full"><AreaVote /></div>
+					<div slot="bottom" class="!p-0">
+						<Comments bind:proposals api={'poll'} />
+					</div>
+				</Structure>
 
-			<!-- PHASE 2: PROPOSAL CREATION -->
+				<!-- PHASE 2: PROPOSAL CREATION -->
 			{:else if phase === 'proposal'}
 				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightFormSlot}>
 					<div slot="left" class="h-full relative flex flex-col">
@@ -154,8 +176,8 @@
 							buttonStyle="primary-light"
 							disabled={displayForm && !selectedProposal}
 							onClick={() => {
-									selectedProposal = null;
-									displayForm = true;
+								selectedProposal = null;
+								displayForm = true;
 							}}>{$_('Add Proposal')}</Button
 						>
 					</div>
@@ -193,7 +215,7 @@
 					</div>
 				</Structure>
 
-			<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
+				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
 			{:else if phase === 'prediction_statement'}
 				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightFormSlot}>
 					<div slot="left" class="relative h-full flex flex-col">
@@ -210,7 +232,7 @@
 						<Button
 							Class="w-full mt-auto"
 							buttonStyle="primary-light"
-							disabled={proposalsToPredictionMarket.length === 0}
+							disabled={proposalsToPredictionMarket.length === 0 || selectedProposal === null}
 							onClick={() => {
 								selectedProposal = null;
 								displayForm = true;
@@ -247,7 +269,7 @@
 					</div>
 				</Structure>
 
-			<!-- PHASE 4: PREDICTION BETTING -->
+				<!-- PHASE 4: PREDICTION BETTING -->
 			{:else if phase === 'prediction_bet'}
 				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightSlot}>
 					<div slot="left" class="h-full">
@@ -287,7 +309,7 @@
 					</div>
 				</Structure>
 
-			<!-- PHASE 5: DELEGATE VOTING -->
+				<!-- PHASE 5: DELEGATE VOTING -->
 			{:else if phase === 'delegate_vote'}
 				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightSlot}>
 					<div slot="left" class="h-full">
@@ -321,7 +343,7 @@
 					</div>
 				</Structure>
 
-			<!-- PHASE 6: NON-DELEGATE VOTING -->
+				<!-- PHASE 6: NON-DELEGATE VOTING -->
 			{:else if phase === 'vote'}
 				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightSlot}>
 					<div slot="left" class="h-full" id="proposals-section">
@@ -361,8 +383,8 @@
 						<Comments bind:proposals api={'poll'} />
 					</div>
 				</Structure>
-				
-			<!-- PHASE 7: RESULTS AND EVALUATION -->
+
+				<!-- PHASE 7: RESULTS AND EVALUATION -->
 			{:else if phase === 'result' || phase === 'prediction_vote'}
 				<Structure bind:phase bind:poll bind:resetScroll showBoth>
 					<div slot="left" class="h-full overflow-y-auto">
@@ -377,7 +399,7 @@
 				</Structure>
 			{/if}
 
-		<!-- Date Poll -->
+			<!-- Date Poll -->
 		{:else if pollType === 3}
 			{#if phase === 'area_vote' || phase === 'pre_start'}
 				<DatePoll />

@@ -14,12 +14,7 @@
 	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
 	import Tab from '$lib/Generic/Tab.svelte';
 	import { env } from '$env/dynamic/public';
-	import {
-		faAlignLeft,
-		faArrowLeft,
-		faCalendarAlt,
-		faChevronDown
-	} from '@fortawesome/free-solid-svg-icons';
+	import { faAlignLeft, faArrowLeft, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { onDestroy, onMount } from 'svelte';
 	import Select from '$lib/Generic/Select.svelte';
@@ -28,29 +23,21 @@
 	import type { pollType } from './interface';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
-	let title = '',
-		description = '',
-		start_date = new Date(),
-		area_vote_end_date = new Date(),
-		proposal_end_date = new Date(),
-		prediction_statement_end_date = new Date(),
-		prediction_bet_end_date = new Date(),
-		delegate_vote_end_date = new Date(),
-		vote_end_date = new Date(),
-		end_date = new Date(),
-		isPublic = false,
-		loading = false,
-		showAdvancedTimeSettings = false,
-		daysBetweenPhases = 2,
-		images: File[],
-		isFF = false,
-		pushToBlockchain = true,
-		selectedPoll: pollType = 'Text Poll',
-		selectedPage: 'poll' | 'thread' =
-			$page.url.searchParams.get('type') === 'thread' ? 'thread' : 'poll',
-		tags: { id: number }[] = [],
-		workGroups: WorkGroup[] = [],
-		workGroup: number,
+	let title = $state(''),
+		description = $state(''),
+		times: Date[] = $state([]),
+		isPublic = $state(false),
+		loading = $state(false),
+		images: File[] = $state([]),
+		isFF = $state(false),
+		pushToBlockchain = $state(true),
+		selectedPoll: pollType = $state('Text Poll'),
+		selectedPage: 'poll' | 'thread' = $state(
+			$page.url.searchParams.get('type') === 'thread' ? 'thread' : 'poll'
+		),
+		tags: { id: number }[] = $state([]),
+		workGroups: WorkGroup[] = $state([]),
+		workGroup: number | null = $state(null),
 		permissions: any;
 
 	const groupId = $page.url.searchParams.get('id');
@@ -78,14 +65,14 @@
 
 		formData.append('title', title);
 		formData.append('description', description);
-		formData.append('start_date', start_date.toISOString());
-		formData.append('area_vote_end_date', area_vote_end_date.toISOString());
-		formData.append('proposal_end_date', proposal_end_date.toISOString());
-		formData.append('prediction_statement_end_date', prediction_statement_end_date.toISOString());
-		formData.append('prediction_bet_end_date', prediction_bet_end_date.toISOString());
-		formData.append('delegate_vote_end_date', delegate_vote_end_date.toISOString());
-		formData.append('vote_end_date', vote_end_date.toISOString());
-		formData.append('end_date', end_date.toISOString());
+		formData.append('start_date', times[0].toISOString());
+		formData.append('area_vote_end_date', times[1].toISOString());
+		formData.append('proposal_end_date', times[2].toISOString());
+		formData.append('prediction_statement_end_date', times[3].toISOString());
+		formData.append('prediction_bet_end_date', times[4].toISOString());
+		formData.append('delegate_vote_end_date', times[5].toISOString());
+		formData.append('vote_end_date', times[6].toISOString());
+		formData.append('end_date', times[7].toISOString());
 		formData.append('allow_fast_forward', isFF.toString());
 		formData.append('poll_type', (selectedPoll === 'Text Poll' ? 4 : 3).toString());
 		formData.append('dynamic', selectedPoll === 'Text Poll' ? 'false' : 'true');
@@ -183,15 +170,23 @@
 		getGroupTags();
 		getWorkGroupList();
 	});
+
+	$effect(() => {
+		times =
+			selectedPoll === 'Text Poll' ? new Array(7).fill(new Date()) : new Array(2).fill(new Date());
+	});
 </script>
 
 <form
-	on:submit|preventDefault={() => (selectedPage === 'poll' ? createPoll() : createThread())}
+	onsubmitcapture={(e) => {
+		e.preventDefault();
+		selectedPage === 'poll' ? createPoll() : createThread();
+	}}
 	class="relative md:w-2/3 max-w-[800px] dark:text-darkmodeText my-6"
 >
 	<button
 		class="absolute -left-12 bg-white dark:bg-darkobject p-3 rounded shadow z-40 hover:bg-gray-100 active:bg-gray-200 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-		on:click={goBack}
+		onclick={goBack}
 		type="button"
 		aria-label="Go back"
 	>
@@ -220,44 +215,9 @@
 
 			{#if selectedPage === 'poll'}
 				<div class="rounded border border-gray-200 dark:border-gray-500 p-2">
-					<div class="flex justify-between">
-						<h2>{$_('Days between phases')}:</h2>
-						<input
-							type="number"
-							class="dark:bg-darkbackground show-buttons-all-times text-right"
-							bind:value={daysBetweenPhases}
-							min="0"
-							max="1000"
-						/>
-					</div>
-
-					<button
-						class="w-full flex justify-center items-center border-t-2"
-						type="button"
-						on:click={() => (showAdvancedTimeSettings = !showAdvancedTimeSettings)}
-					>
-						<Fa icon={faChevronDown} rotate={showAdvancedTimeSettings ? 180 : 0} />
-						{#if !showAdvancedTimeSettings}
-							<p>{$_('Display advanced time settings')}</p>
-						{:else}
-							<p>{$_('Hide advanced time settings')}</p>
-						{/if}
-					</button>
-
-					<div class:hidden={!showAdvancedTimeSettings}>
-						<AdvancedTimeSettings
-							bind:selected_poll={selectedPoll}
-							bind:start_date
-							bind:area_vote_end_date
-							bind:proposal_end_date
-							bind:prediction_statement_end_date
-							bind:prediction_bet_end_date
-							bind:delegate_vote_end_date
-							bind:vote_end_date
-							bind:end_date
-							bind:daysBetweenPhases
-						/>
-					</div>
+					{#key times}
+						<AdvancedTimeSettings bind:times />
+					{/key}
 				</div>
 			{/if}
 
@@ -288,10 +248,3 @@
 		</div>
 	</Loader>
 </form>
-
-<style>
-	.show-buttons-all-times::-webkit-inner-spin-button,
-	.show-buttons-all-times::-webkit-outer-spin-button {
-		opacity: 1;
-	}
-</style>

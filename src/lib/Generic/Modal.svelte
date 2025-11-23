@@ -11,11 +11,12 @@
 		onClose = () => {},
 		onSubmit = () => {},
 		buttons: ModalButton[] = [],
-		id = 'popup-modal';
+		id = 'popup-modal',
+		stopAtPropagation = true;
 
-	let modal:HTMLDivElement | undefined;
+	let modal: HTMLDivElement | undefined, escEvent;
 
-	const closeModal = (event: MouseEvent) => {
+	const closeModal = (event: MouseEvent | KeyboardEvent) => {
 		event.stopPropagation();
 		open = false;
 		hideScrollbar(false);
@@ -23,7 +24,7 @@
 
 	const stopPropagation = (event: MouseEvent) => {
 		event.stopPropagation();
-		onCloseModal();
+		if (stopAtPropagation) onCloseModal();
 	};
 
 	const hideScrollbar = (hide: boolean) => {
@@ -33,10 +34,11 @@
 	const onOpenModal = () => {
 		hideScrollbar(true);
 		onOpen();
-		//TODO Fix focus for keyboard navigation
-		modal?.focus()
-		console.log(modal);
-		
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape') {
+				closeModal(e);
+			}
+		});
 	};
 
 	const onCloseModal = () => {

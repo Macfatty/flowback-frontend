@@ -38,7 +38,6 @@
 		priority: number | undefined = 3,
 		end_date: string | null = new Date().toISOString().slice(0, 16),
 		loading = false,
-		 
 		images: File[] = [],
 		workGroup: number | undefined;
 
@@ -97,7 +96,7 @@
 					id: assignee,
 					profile_image: userAssigned?.user.profile_image || '',
 					username: userAssigned?.user.username || ''
-			  }
+				}
 			: null;
 
 		kanbanEntries.push({
@@ -110,18 +109,18 @@
 			created_by: {
 				id: $userStore?.id || -1,
 				profile_image: localStorage.getItem('pfp-link') || '',
-				username:  $userStore?.username || '',
+				username: $userStore?.username || ''
 			},
 			origin_id: 1,
 			origin_type: filter.type === 'group' ? 'group' : 'user',
 			group_name: '',
 			priority,
-			end_date: end_date || null,
+			end_date: end_date ?? null,
 			work_group: workGroup
 				? {
 						id: workGroup,
 						name: workGroups.find((group) => group.id === workGroup)?.name || ''
-				  }
+					}
 				: undefined,
 			attachments: []
 		});
@@ -250,7 +249,7 @@
 						<span class="block text-md">
 							{$_('Attachments')}
 						</span>
-						<FileUploads bind:files={images} disableCropping/>
+						<FileUploads bind:files={images} disableCropping />
 					</div>
 				</div>
 			</div>
@@ -264,5 +263,3 @@
 		>
 	</div>
 </Modal>
-
- 
