@@ -215,7 +215,9 @@
 
 			{#if selectedPage === 'poll'}
 				<div class="rounded border border-gray-200 dark:border-gray-500 p-2">
-					<AdvancedTimeSettings bind:times />
+					{#key times}
+						<AdvancedTimeSettings bind:times />
+					{/key}
 				</div>
 			{/if}
 

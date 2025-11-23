@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { _, time } from 'svelte-i18n';
+	import { _ } from 'svelte-i18n';
 	import { maxDatePickerYear } from '$lib/Generic/DateFormatter';
-	import TimelineTemplate from './TimelineTemplate.svelte';
-	import type { pollType, template } from './interface';
-	import MonthView from '$lib/Generic/Schedules/MonthView.svelte';
+	import type { template } from './interface';
 	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
 	import { formatDateToLocalTime } from '$lib/Generic/GenericFunctions';
 	import AdvancedCalendarSelector from './AdvancedCalendarSelector.svelte';
@@ -40,11 +38,7 @@
 	};
 
 	const changeDaysBetweenPhases = (days: number | string) => {
-		console.log(times, times.length, 'HEIIiiiiiiii');
-
 		days = Number(days);
-		// start_date = new Date();
-		// start_date.setHours(0, 0, 0, 0);
 		times[0] = new Date();
 		times[0].setHours(0, 0, 0, 0);
 		//Time incrementer
@@ -63,7 +57,11 @@
 		}
 	};
 
-	$inspect(times, daysBetweenPhases);
+	onMount(() => {
+		changeDaysBetweenPhases(2);
+	});
+
+	$inspect(times)
 </script>
 
 <div class="flex justify-between">
@@ -130,7 +128,6 @@
 		</div>
 	{/if}
 </div>
-
 <!-- {#if selected_poll === 'Text Poll'}
 	<TimelineTemplate
 		area_vote_time_delta={area_vote_end_date.getTime() - start_date.getTime()}
