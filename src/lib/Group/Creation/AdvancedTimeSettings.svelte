@@ -3,7 +3,7 @@
 	import { maxDatePickerYear } from '$lib/Generic/DateFormatter';
 	import type { template } from './interface';
 	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
-	import { formatDateToLocalTime } from '$lib/Generic/GenericFunctions';
+	import { deepCopy, formatDateToLocalTime } from '$lib/Generic/GenericFunctions';
 	import AdvancedCalendarSelector from './AdvancedCalendarSelector.svelte';
 	import Fa from 'svelte-fa';
 	import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
@@ -39,22 +39,23 @@
 
 	const changeDaysBetweenPhases = (days: number | string) => {
 		days = Number(days);
-		times[0] = new Date();
-		times[0].setHours(0, 0, 0, 0);
-		//Time incrementer
-		const inc = new Date();
+		let _times = times;
+		_times[0] = new Date();
+		_times[0].setHours(0, 0, 0, 0);
+		const incrementer = new Date();
 
 		if (daysBetweenPhases === 0) {
 			//For debug purposes this puts one second delay between each phase. Useful for playwright testing.
-			times.forEach((_: Date, i: number) => {
-				if (i !== 0) times[i] = new Date(inc.setSeconds(inc.getSeconds() + 1));
+			_times.forEach((_: Date, i: number) => {
+				if (i !== 0) _times[i] = new Date(incrementer.setSeconds(incrementer.getSeconds() + 1));
 			});
 		} else {
 			//For users to select over multiple days
-			times.forEach((_: Date, i: number) => {
-				if (i !== 0) times[i] = new Date(inc.setDate(inc.getDate() + days));
+			_times.forEach((_: Date, i: number) => {
+				if (i !== 0) _times[i] = new Date(incrementer.setDate(incrementer.getDate() + days));
 			});
 		}
+		times = _times;
 	};
 
 	onMount(() => {
@@ -95,7 +96,7 @@
 		labels={['List', 'Calendar']}
 	/>
 	{#if calendarView === '1'}
-		{#key [daysBetweenPhases, templateCounter]}
+		{#key daysBetweenPhases}
 			<AdvancedCalendarSelector bind:times />
 		{/key}
 	{:else if calendarView === '0'}

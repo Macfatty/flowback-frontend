@@ -7,8 +7,9 @@
 	import multiMonthPlugin from '@fullcalendar/multimonth';
 	import interactionPlugin from '@fullcalendar/interaction';
 	import { ScheduleItem2Default, type ScheduleItem2 } from '$lib/Schedule/interface';
+	import { dateLabels } from '$lib/Poll/functions';
 
-	let { times = $bindable() } = $props();
+	let { times = $bindable() }: { times: Date[] } = $props();
 
 	let open = $state(false),
 		events: EventInput[] = $state([]),
@@ -50,10 +51,8 @@
 			},
 			events,
 			eventDrop: (info) => {
-				selectedEvent.title = info.event.title;
-				selectedEvent.id = Number(info.event.id);
-				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
-				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
+				let i = dateLabels.findIndex((l) => l === info.event.title);
+				if (i !== -1) times[i] = info.event.start ?? new Date();
 			},
 			eventOverlap: true,
 			eventResize: (info) => {
@@ -77,18 +76,15 @@
 	};
 
 	onMount(() => {
-		times.forEach((time: number) => {
-			events.push({
-				allDay: true,
-				start: time
-			});
-		});
+		events = times.map((t, i) => ({
+			allDay: true,
+			start: t,
+			title: dateLabels[i + 1].toString()
+		}));
 		renderCalendar();
 	});
 
-	$effect(() => {
-		if (events) renderCalendar();
-	});
+	$inspect(times, 'TIME');
 </script>
 
 <div class="flex justify-center h-[100vh] w-full">
