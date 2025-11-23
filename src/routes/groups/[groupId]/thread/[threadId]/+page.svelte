@@ -21,8 +21,8 @@
 		reportModalShow = $state(false),
 		deleteModalShow = $state(false);
 
+	// Fixes a bug where clicking between threads (because of links or in notification) doesn't update page properly
 	$effect(() => {
-		// Fixes a bug where clicking between threads (because of links or in notification) doesn't update page properly
 		const { threadId } = $page.params;
 		getThread();
 	});
