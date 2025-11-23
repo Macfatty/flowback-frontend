@@ -108,12 +108,13 @@
 				selectedEvent.start_date = info.event.start?.toLocaleString().slice(0, 16) ?? '';
 				selectedEvent.end_date = info.event.end?.toLocaleString().slice(0, 16) ?? '';
 			},
-			eventDragStop: (info) => {
+			eventDrop: (info) => {
 				selectedEvent.title = info.event.title;
 				selectedEvent.id = Number(info.event.id);
 				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
 				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
 				userScheduleEventEdit();
+					
 			},
 			eventResize: (info) => {
 				selectedEvent.title = info.event.title;
