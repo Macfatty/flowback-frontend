@@ -28,7 +28,7 @@
 	};
 
 	const hideScrollbar = (hide: boolean) => {
-		document.body.style.overflowY = hide ? 'hidden' : 'scroll';
+		// document.body.style.overflowY = hide ? 'hidden' : 'scroll';
 	};
 
 	const onOpenModal = () => {

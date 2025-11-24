@@ -8,11 +8,12 @@
 	import Fa from 'svelte-fa';
 	import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
+	import { dateLabels } from '$lib/Poll/functions';
 
-	let { times = $bindable() } = $props();
+	let { times = $bindable() }: { times: Date[] } = $props();
 
 	let calendarView = $state('0'),
-		templateCounter = $state(0), // Add counter
+		// templateCounter = $state(0), // Add counter
 		showAdvancedTimeSettings = $state(false),
 		daysBetweenPhases = $state(2);
 
@@ -103,7 +104,7 @@
 		<div class="grid grid-cols-2 gap-6 justify-center">
 			{#each times as time, i}
 				<div>
-					<span class="mt-4">{$_('Poll start')}</span>
+					<span class="mt-4">{$_(dateLabels[i])}</span>
 					<input
 						id="start_date"
 						type="datetime-local"
@@ -116,7 +117,7 @@
 							//@ts-ignore
 							let date = new Date(e.target.value);
 
-							// End date needs to be after start date to be valid
+							// End date needs to be before now to be valid
 							if (new Date() <= date) times[i] = date;
 							//@ts-ignore
 							else e.target.value = formatDateToLocalTime(start_date).slice(0, 16);

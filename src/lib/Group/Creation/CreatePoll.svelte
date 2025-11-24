@@ -105,8 +105,6 @@
 			return;
 		}
 
-		console.log('CODE REACHES HERE');
-
 		ErrorHandlerStore.set({
 			message: 'Poll Created',
 			success: true
@@ -173,7 +171,7 @@
 
 	$effect(() => {
 		times =
-			selectedPoll === 'Text Poll' ? new Array(7).fill(new Date()) : new Array(2).fill(new Date());
+			selectedPoll === 'Text Poll' ? new Array(8).fill(new Date()) : new Array(2).fill(new Date());
 	});
 </script>
 
