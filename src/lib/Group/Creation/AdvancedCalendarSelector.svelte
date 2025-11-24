@@ -79,7 +79,7 @@
 		events = times.map((t, i) => ({
 			allDay: true,
 			start: t,
-			title: dateLabels[i + 1].toString()
+			title: dateLabels[i].toString()
 		}));
 		renderCalendar();
 	});

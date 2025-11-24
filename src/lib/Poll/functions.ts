@@ -39,7 +39,7 @@ export const getPhase = (poll: poll): Phase => {
 
 // Labels for the circles on the timeline
 export const dateLabels = [
-	'Hasn\'t started yet',
+	'Start Date',
 	'Area voting',
 	'Proposals creation',
 	'Prediction statements creation',
