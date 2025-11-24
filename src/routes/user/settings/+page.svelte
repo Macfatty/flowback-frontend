@@ -89,7 +89,7 @@
 		},
 		reports: report[] = [],
 		serverConfig: any = {},
-		version = '50',
+		version = '51',
 		open = false,
 		selectedRepport: report = {
 			description: '',

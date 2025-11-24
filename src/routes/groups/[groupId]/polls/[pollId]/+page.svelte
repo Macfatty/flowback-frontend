@@ -219,8 +219,10 @@
 			{:else if phase === 'prediction_statement'}
 				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightFormSlot}>
 					<div slot="left" class="relative h-full flex flex-col">
-						<span>{$_('Proposals')} ({proposals?.length})</span>
-						<div class="h-full overflow-auto max-h-[80%]">
+						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
+							>{$_('Proposals')} ({proposals?.length})</span
+						>
+						<div class="max-h-full overflow-y-auto mb-5">
 							<ProposalScoreVoting
 								bind:comments
 								bind:proposals
@@ -276,7 +278,7 @@
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
-						<div class="max-h-full overflow-y-auto">
+						<div class="max-h-[90%] overflow-y-auto">
 							<ProposalScoreVoting
 								{getPollData}
 								bind:comments
