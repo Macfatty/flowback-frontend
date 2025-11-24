@@ -32,7 +32,13 @@ export interface ScheduleItem2 {
     start_date: string;  // ISO timestamp
     end_date: string | null;  // ISO timestamp
     meeting_link: string | null;
-    repeat_frequency?: number | null;
+
+    // DAILY = 1, _("Daily")
+    // WEEKLY = 2, _("Weekly")
+    // MONTHLY = 3, _("Monthly")  # If event start_date day is 29 or higher, skip months that has these dates
+    // YEARLY = 4, _("Yearly")
+    repeat_frequency: 1 | 2 | 3 | 4 | null;
+
     tag_id: number;
     tag_name: string;
     origin_name: string;
@@ -46,26 +52,27 @@ export interface ScheduleItem2 {
 }
 
 export const ScheduleItem2Default = {
-			id: 0,
-			schedule_id: 0,
-			title: '',
-			description: '',
-			start_date: new Date().toISOString().slice(0, 16),
-			end_date: new Date().toISOString().slice(0, 16),
-			active: true,
-			meeting_link: '',
-			tag_id: 0,
-			tag_name: '',
-			origin_name: '',
-			origin_id: 0,
-			schedule_origin_name: '',
-			schedule_origin_id: 0,
-			assignees: [],
-			reminders: [],
-			user_tags: [],
-			locked: true,
-			subscribed: false
-		}
+    id: 0,
+    schedule_id: 0,
+    title: '',
+    description: '',
+    start_date: new Date().toISOString().slice(0, 16),
+    end_date: new Date().toISOString().slice(0, 16),
+    active: true,
+    meeting_link: '',
+    repeat_frequency: null,
+    tag_id: 0,
+    tag_name: '',
+    origin_name: '',
+    origin_id: 0,
+    schedule_origin_name: '',
+    schedule_origin_id: 0,
+    assignees: [],
+    reminders: [],
+    user_tags: [],
+    locked: true,
+    subscribed: false
+}
 
 export interface WorkGroupScheduledEventCreate {
     title: string;

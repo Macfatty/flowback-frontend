@@ -11,6 +11,7 @@
 	import { ScheduleItem2Default, type ScheduleItem2 } from '$lib/Schedule/interface';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import TextArea from '$lib/Generic/TextArea.svelte';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
@@ -114,7 +115,6 @@
 				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
 				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
 				userScheduleEventEdit();
-					
 			},
 			eventResize: (info) => {
 				selectedEvent.title = info.event.title;
@@ -176,8 +176,12 @@
 	<div slot="body">
 		<form>
 			<TextInput label="Title" bind:value={selectedEvent.title} />
+			<TextArea label="Description" bind:value={selectedEvent.description} />
 			<input type="datetime-local" bind:value={selectedEvent.start_date} />
 			<input type="datetime-local" bind:value={selectedEvent.end_date} />
+			<input type="number" bind:value={selectedEvent.repeat_frequency} />
+			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />
+			<TextInput label="Tag" bind:value={selectedEvent.tag_name} />
 		</form>
 	</div>
 </Modal>
