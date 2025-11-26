@@ -56,17 +56,15 @@
 	}
 
 	async function fetchProposalVotes() {
-		const response = await ProposalsApi.getVotes(pollId ?? '');
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/poll/${pollId}/proposal/votes?limit=10000`
+		);
 
-		savedDates = response.results.map((vote) => {
-			const savedDate: SelDate = {
-				id: vote.proposal,
-				date: new Date(
-					proposals.find((proposal) => proposal.id === vote.proposal)?.start_date ?? ''
-				)
-			};
-			return savedDate;
-		});
+		savedDates = json.results.map((vote: any) => ({
+			id: vote.proposal,
+			date: new Date(proposals.find((proposal) => proposal.id === vote.proposal)?.start_date ?? '')
+		}));
 
 		selectedDates = savedDates;
 	}
@@ -209,6 +207,9 @@
 	} else {
 		noChanges = false;
 	}
+
+	$: console.log(selectedDates, "DATESA");
+	
 </script>
 
 <Loader bind:loading>

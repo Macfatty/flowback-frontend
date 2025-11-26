@@ -12,6 +12,7 @@
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import TextArea from '$lib/Generic/TextArea.svelte';
+	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
@@ -182,6 +183,8 @@
 			<input type="number" bind:value={selectedEvent.repeat_frequency} />
 			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />
 			<TextInput label="Tag" bind:value={selectedEvent.tag_name} />
+			<!-- <NotificationOptions api={`schedule/${selectedEvent.schedule_id}/event/subscribe`} labels={["subsc"]}  categories=/> -->
+			 ssss
 		</form>
 	</div>
 </Modal>

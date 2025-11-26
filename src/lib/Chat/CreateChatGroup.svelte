@@ -31,7 +31,7 @@
 		groupMembers = [];
 		ErrorHandlerStore.set({ message: 'Successfully created group chat', success: true });
 
-		chatPartnerStore.set(json.id)
+		chatPartnerStore.set(json.id);
 	};
 
 	const cancelGroupChatCreate = () => {
