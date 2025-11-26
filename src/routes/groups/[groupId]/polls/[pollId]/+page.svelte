@@ -403,7 +403,7 @@
 
 			<!-- Date Poll -->
 		{:else if pollType === 3}
-			{#if phase === 'area_vote' || phase === 'pre_start'}
+			{#if phase === 'area_vote' || phase === 'pre_start' || phase === 'vote'}
 				<DatePoll />
 			{:else}
 				<Structure bind:phase bind:poll>

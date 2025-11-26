@@ -7,6 +7,7 @@
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import UserSearch from '$lib/Generic/UserSearch.svelte';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
+	import { chatPartnerStore } from './functions';
 
 	export let creatingGroup: boolean,
 		groupMembers: GroupMembers[] = [];
@@ -29,6 +30,8 @@
 		creatingGroup = false;
 		groupMembers = [];
 		ErrorHandlerStore.set({ message: 'Successfully created group chat', success: true });
+
+		chatPartnerStore.set(json.id);
 	};
 
 	const cancelGroupChatCreate = () => {
