@@ -66,13 +66,17 @@
 		formData.append('title', title);
 		formData.append('description', description);
 		formData.append('start_date', times[0].toISOString());
-		formData.append('area_vote_end_date', times[1].toISOString());
-		formData.append('proposal_end_date', times[2].toISOString());
-		formData.append('prediction_statement_end_date', times[3].toISOString());
-		formData.append('prediction_bet_end_date', times[4].toISOString());
-		formData.append('delegate_vote_end_date', times[5].toISOString());
-		formData.append('vote_end_date', times[6].toISOString());
-		formData.append('end_date', times[7].toISOString());
+		if (selectedPoll === 'Text Poll') {
+			formData.append('area_vote_end_date', times[1].toISOString());
+			formData.append('proposal_end_date', times[2].toISOString());
+			formData.append('prediction_statement_end_date', times[3].toISOString());
+			formData.append('prediction_bet_end_date', times[4].toISOString());
+			formData.append('delegate_vote_end_date', times[5].toISOString());
+			formData.append('vote_end_date', times[6].toISOString());
+			formData.append('end_date', times[7].toISOString());
+		} else if (selectedPoll === 'Date Poll') {
+			formData.append('end_date', times[1].toISOString());
+		}
 		formData.append('allow_fast_forward', isFF.toString());
 		formData.append('poll_type', (selectedPoll === 'Text Poll' ? 4 : 3).toString());
 		formData.append('dynamic', selectedPoll === 'Text Poll' ? 'false' : 'true');
