@@ -32,19 +32,20 @@
 		open = false;
 	}
 
-	onMount(async () => {
-	});
+	onMount(async () => {});
 </script>
 
-<Structure Class="!max-w-[1400px]" poll={null}>
-	<div slot="left">
-		<div class="overflow-auto">
-			<WeekView bind:proposals x={7} y={24} />
-		</div>
-	</div>
+<!-- <Structure Class="!max-w-[1400px]" poll={null}> -->
+<!-- <div slot="left"> -->
+<div>
+	<WeekView bind:proposals x={7} y={24} />
+</div>
+<!-- </div> -->
 
-	<div slot="right"><Comments api="poll" /></div>
-</Structure>
+<!-- <div slot="bottom">-->
+<Comments api="poll" />
+<!-- </div> -->
+<!-- </Structure> -->
 
 <Modal bind:open onSubmit={handleProposalSubmit}>
 	<div slot="body" class="">

@@ -208,65 +208,63 @@
 		noChanges = false;
 	}
 
-	$: console.log(selectedDates, "DATESA");
-	
+	$: console.log(selectedDates, 'DATESA');
 </script>
 
-<Loader bind:loading>
-	<div class="flex items-center justify-between border-b border-gray-300 py-1 px-4">
-		<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>
-		{currentMonth}
-		{currentYear}
-		<button on:click={nextWeek}><Fa icon={faChevronRight} /></button>
-	</div>
-
-	<div class="relative w-full">
-		<div
-			class="grid w-full text-sm text-center"
-			style={`grid-template-columns: repeat(${x + 1}, 1fr); grid-template-rows: repeat(${
-				y + 1
-			}, 1fr);`}
-			id="weekView"
-		>
-			<br />
-			{#each weekDates as date, i}
-				<div class="flex flex-col items-center">
-					<div class="font-semibold pt-2">{date.getDate()}</div>
-					<div class="text-gray-600">{$_(weekdays[i])}</div>
-				</div>
-			{/each}
-
-			{#each gridDates as row, j}
-				<div class="bg-primary text-white flex justify-center px-0.5">{j}:00</div>
-				{#each row as date, i}
-					<button class="border h-12 w-24" on:click={() => toggleDate(date)}>
-						{#if selectedDates.find((_date) => _date.date.getTime() === date?.getTime())}
-							<div class="bg-green-600 w-full flex items-center justify-center h-full">
-								<Fa icon={faCheck} color="white" size="2x" />
-							</div>
-						{:else}
-							<slot {i} {j} />
-						{/if}
-					</button>
-				{/each}
-			{/each}
-		</div>
-		<div class="pt-4 px-4 border-t flex gap-4 bg-white dark:bg-darkobject">
-			<Button
-				disabled={arraysEqual(
-					selectedDates.map((d) => d.date.getTime()).sort(),
-					savedDates.map((d) => d.date.getTime()).sort()
-				)}
-				onClick={saveSelection}
-				buttonStyle="primary-light"
-				Class="flex-1">{$_('Submit')}</Button
-			>
-			<Button
-				onClick={clearSelection}
-				buttonStyle="warning-light"
-				disabled={selectedDates.length === 0}
-				Class="flex-1 disabled:!text-gray-300">{$_('Clear')}</Button
-			>
-		</div>
-	</div></Loader
+<!-- <Loader bind:loading> -->
+<div
+	class="sticky top-[5rem] bg-black flex items-center justify-between border-b border-gray-300 py-1 px-4"
 >
+	<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>
+	{currentMonth}
+	{currentYear}
+	<button on:click={nextWeek}><Fa icon={faChevronRight} /></button>
+</div>
+
+<div
+	class=" grid w-full text-sm text-center"
+	style={`grid-template-columns: repeat(${x + 1}, 1fr); grid-template-rows: repeat(${y + 1}, 1fr);`}
+	id="weekView"
+>
+	<br />
+	{#each weekDates as date, i}
+		<div class="flex flex-col items-center">
+			<div class="font-semibold pt-2">{date.getDate()}</div>
+			<div class="text-gray-600">{$_(weekdays[i])}</div>
+		</div>
+	{/each}
+
+	{#each gridDates as row, j}
+		<div class="bg-primary text-white flex justify-center px-0.5">{j}:00</div>
+		{#each row as date, i}
+			<button class="border h-12 w-24" on:click={() => toggleDate(date)}>
+				{#if selectedDates.find((_date) => _date.date.getTime() === date?.getTime())}
+					<div class="bg-green-600 w-full flex items-center justify-center h-full">
+						<Fa icon={faCheck} color="white" size="2x" />
+					</div>
+				{:else}
+					<slot {i} {j} />
+				{/if}
+			</button>
+		{/each}
+	{/each}
+</div>
+<div class="pt-4 px-4 border-t flex gap-4 bg-white dark:bg-darkobject">
+	<Button
+		disabled={arraysEqual(
+			selectedDates.map((d) => d.date.getTime()).sort(),
+			savedDates.map((d) => d.date.getTime()).sort()
+		)}
+		onClick={saveSelection}
+		buttonStyle="primary-light"
+		Class="flex-1">{$_('Submit')}</Button
+	>
+	<Button
+		onClick={clearSelection}
+		buttonStyle="warning-light"
+		disabled={selectedDates.length === 0}
+		Class="flex-1 disabled:!text-gray-300">{$_('Clear')}</Button
+	>
+</div>
+<!-- </Loader
+> -->
