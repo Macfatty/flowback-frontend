@@ -172,6 +172,7 @@
 		await fetchProposals();
 		await fetchProposalVotes();
 	});
+
 	let isMobile = false;
 
 	onMount(() => {
@@ -258,7 +259,7 @@
 	{/each}
 	{:else}
 	<div
-		class="mt-4 sticky top-[5.5rem] dark:bg-darkbackground bg-white flex items-center justify-between py-1 px-4"
+		class="mt-4 sticky top-[5.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between py-1 px-4"
 	>
 		<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>
 		{currentMonth}
@@ -266,7 +267,7 @@
 		<button on:click={nextWeek}><Fa icon={faChevronRight} /></button>
 	</div>
 	<div
-		class="sticky top-[7.5rem] dark:bg-darkbackground bg-white  grid grid-cols-8 text-center border-b border-gray-300 py-1 px-4"
+		class="sticky top-[7.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white grid grid-cols-8 text-center border-b border-gray-300 py-1"
 	>
 		<br />
 		{#each weekDates as date, i}
@@ -299,6 +300,7 @@
 			{/each}
 		{/each}
 	</div>
+	{/if}
 	<div class="p-4 border-t flex gap-4 bg-white dark:bg-darkobject">
 		<Button
 			disabled={arraysEqual(
@@ -316,5 +318,4 @@
 			Class="flex-1 disabled:!text-gray-300">{$_('Clear')}</Button
 		>
 	</div>
-	{/if}
 </Loader>
