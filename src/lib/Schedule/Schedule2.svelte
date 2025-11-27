@@ -19,16 +19,11 @@
 		selectedEvent: ScheduleItem2 = $state(ScheduleItem2Default),
 		groupId: null | number = $state(null);
 
-	const userScheduleEventList = async () => {
-		const { res, json } = await fetchRequest('GET', 'schedule/event/list?limit=50');
-		events = json.results;
-	};
+	const scheduleEventList = async () => {
+		let api = `schedule/event/list?limit=50&`;
+		if (groupId) api += `schedule_origin_id=${groupId}`;
 
-	const groupScheduleEventList = async () => {
-		const { res, json } = await fetchRequest(
-			'GET',
-			`schedule/event/list?limit=50&schedule_origin_id=${groupId}`
-		);
+		const { res, json } = await fetchRequest('GET', api);
 		events = json.results;
 	};
 
@@ -147,8 +142,7 @@
 	onMount(() => {
 		groupId = Number(new URLSearchParams(document.location.search).get('groupId')) ?? null;
 
-		if (groupId) groupScheduleEventList();
-		else userScheduleEventList();
+		scheduleEventList();
 	});
 
 	$effect(() => {
@@ -157,7 +151,7 @@
 </script>
 
 <div class="flex justify-center w-full">
-	<!-- <Select labels={}/> -->
+	<!-- <Select labels={groups}/> -->
 	<div class="w-full bg-white dark:bg-darkbackground" id="calendar-2"></div>
 </div>
 
@@ -168,7 +162,7 @@
 			label: 'Submit',
 			onClick: async () => {
 				selectedEvent.id === 0 ? await userScheduleEventCreate() : await userScheduleEventEdit();
-				userScheduleEventList();
+				scheduleEventList();
 				selectedEvent = ScheduleItem2Default;
 				open = false;
 			},
