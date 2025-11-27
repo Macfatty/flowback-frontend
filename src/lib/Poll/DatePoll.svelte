@@ -4,10 +4,8 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { DateInput } from 'date-picker-svelte';
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import WeekView from '$lib/Generic/Schedules/WeekView.svelte';
-	import Structure from './NewDesign/Structure.svelte';
 	import Comments from '$lib/Comments/Comments.svelte';
 	import type { timeProposal } from './interface';
 
@@ -31,8 +29,6 @@
 		await createProposal(date);
 		open = false;
 	}
-
-	onMount(async () => {});
 </script>
 
 <WeekView bind:proposals x={7} y={24} />

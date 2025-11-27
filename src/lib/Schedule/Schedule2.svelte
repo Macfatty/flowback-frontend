@@ -16,10 +16,19 @@
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
-		selectedEvent: ScheduleItem2 = $state(ScheduleItem2Default);
+		selectedEvent: ScheduleItem2 = $state(ScheduleItem2Default),
+		groupId: null | number = $state(null);
 
 	const userScheduleEventList = async () => {
 		const { res, json } = await fetchRequest('GET', 'schedule/event/list?limit=50');
+		events = json.results;
+	};
+
+	const groupScheduleEventList = async () => {
+		const { res, json } = await fetchRequest(
+			'GET',
+			`schedule/event/list?limit=50&schedule_origin_id=${groupId}`
+		);
 		events = json.results;
 	};
 
@@ -135,8 +144,11 @@
 		calendar.render();
 	};
 
-	onMount(async () => {
-		await userScheduleEventList();
+	onMount(() => {
+		groupId = Number(new URLSearchParams(document.location.search).get('groupId')) ?? null;
+
+		if (groupId) groupScheduleEventList();
+		else userScheduleEventList();
 	});
 
 	$effect(() => {
@@ -145,6 +157,7 @@
 </script>
 
 <div class="flex justify-center w-full">
+	<!-- <Select labels={}/> -->
 	<div class="w-full bg-white dark:bg-darkbackground" id="calendar-2"></div>
 </div>
 
