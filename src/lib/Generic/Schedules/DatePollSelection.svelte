@@ -172,6 +172,16 @@
 		await fetchProposals();
 		await fetchProposalVotes();
 	});
+	let isMobile = false;
+
+	onMount(() => {
+	const checkMobile = () => {
+		isMobile = window.innerWidth < 768;
+	};
+		checkMobile();
+		window.addEventListener('resize', checkMobile);
+		return () => window.removeEventListener('resize', checkMobile);
+	});
 
 	$: {
 		const monday = getMondayForOffset(weekOffset);
@@ -212,6 +222,41 @@
 </script>
 
 <Loader bind:loading>
+	{#if isMobile}
+	<div class="mt-4 sticky top-12 md:top-[5.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between py-1 px-4"
+	>
+		<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>
+		{currentMonth}
+		{currentYear}
+		<button on:click={nextWeek}><Fa icon={faChevronRight} /></button>
+	</div>
+	<div class="sticky top-20 md:top-[7.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white grid grid-cols-8 text-center border-b border-gray-300 py-1"
+	>
+		<br />
+		{#each weekDates as date, i}
+			<div class="flex flex-col items-center text-xs">
+				<span class="font-semibold">{date.getDate()}</span>
+				<span class="text-gray-600">{$_(weekdays[i])}</span>
+			</div>
+		{/each}
+	</div>
+	{#each gridDates as row, j}
+	<div class="grid grid-cols-8 h-14">
+		<div class="flex items-center justify-center bg-primary text-white">{j}:00</div>
+		{#each row as date, i}
+			<button class="border bg-white dark:bg-darkobject flex justify-center items-center" on:click={() => toggleDate(date)}>
+				{#if selectedDates.find(d => d.date.getTime() === date.getTime())}
+					<div class="bg-green-600 w-full h-full flex items-center justify-center">
+						<Fa icon={faCheck} color="white" size="1x"/>
+					</div>
+					{:else}
+						<slot {i} {j} />
+					{/if}
+				</button>
+			{/each}
+		</div>
+	{/each}
+	{:else}
 	<div
 		class="mt-4 sticky top-[5.5rem] dark:bg-darkbackground bg-white flex items-center justify-between py-1 px-4"
 	>
@@ -221,7 +266,7 @@
 		<button on:click={nextWeek}><Fa icon={faChevronRight} /></button>
 	</div>
 	<div
-		class="sticky top-[7.5rem] dark:bg-darkbackground bg-white flex items-center flex-1 justify-between border-b border-gray-300 py-1 px-4"
+		class="sticky top-[7.5rem] dark:bg-darkbackground bg-white  grid grid-cols-8 text-center border-b border-gray-300 py-1 px-4"
 	>
 		<br />
 		{#each weekDates as date, i}
@@ -237,7 +282,7 @@
 		id="weekView"
 	>
 		{#each gridDates as row, j}
-			<div class="bg-primary text-white flex justify-center px-0.5">{j}:00</div>
+			<div class="bg-primary text-white flex justify-center items-center px-0.5">{j}:00</div>
 			{#each row as date, i}
 				<button
 					class="bg-white dark:bg-darkobject border h-12 w-24"
@@ -271,4 +316,5 @@
 			Class="flex-1 disabled:!text-gray-300">{$_('Clear')}</Button
 		>
 	</div>
+	{/if}
 </Loader>
