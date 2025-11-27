@@ -144,8 +144,8 @@
 	});
 </script>
 
-<div class="flex justify-center h-[100vh] w-full">
-	<div class="w-full" id="calendar-2"></div>
+<div class="flex justify-center w-full">
+	<div class="w-full bg-white dark:bg-darkbackground" id="calendar-2"></div>
 </div>
 
 <Modal
@@ -183,8 +183,14 @@
 			<input type="number" bind:value={selectedEvent.repeat_frequency} />
 			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />
 			<TextInput label="Tag" bind:value={selectedEvent.tag_name} />
-			<!-- <NotificationOptions api={`schedule/${selectedEvent.schedule_id}/event/subscribe`} labels={["subsc"]}  categories=/> -->
-			 ssss
+			{selectedEvent.id}
+			<NotificationOptions
+				type="event"
+				id={selectedEvent.id}
+				api={`schedule/${selectedEvent.schedule_id}/event/subscribe`}
+				labels={['subsc']}
+				categories={['subsc']}
+			/>
 		</form>
 	</div>
 </Modal>

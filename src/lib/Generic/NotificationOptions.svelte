@@ -8,17 +8,29 @@
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import { ErrorHandlerStore } from './ErrorHandlerStore';
 
-	export let notificationOpen = false,
-		categories: string[],
-		type: 'poll' | 'group' | 'thread' | 'delegation',
-		labels: string[],
-		api: string,
-		id: number,
+	let {
+		notificationOpen = false,
+		categories,
+		labels,
+		type,
+		api,
+		id,
 		Class = '',
 		ClassOpen = '',
-		hoverEffect = true;
+		hoverEffect = true
+	}: {
+		notificationOpen: boolean;
+		categories: string[];
+		labels: string[];
+		type: 'poll' | 'group' | 'thread' | 'delegation' | 'event';
+		api: string;
+		id: number;
+		Class: string;
+		ClassOpen: string;
+		hoverEffect: boolean;
+	} = $props();
 
-	let notifications: NotificationObject[] = [];
+	let notifications: NotificationObject[] = $state([]);
 
 	interface NotificationObject {
 		channel_category: string;
@@ -76,9 +88,12 @@
 				])
 			: (notifications = notifications.filter((item) => item.channel_category !== category));
 
-		const { res, json } = await fetchRequest('POST', `${api}`, {
+		let payload: any = {
 			tags: notifications.map((notification) => notification.channel_category)
-		});
+		};
+		if (type === 'event') payload['event_ids'] = id.toString();
+
+		const { res, json } = await fetchRequest('POST', `${api}`, payload);
 		if (!res.ok) {
 			ErrorHandlerStore.set({ message: 'Failed to subscribe', success: false });
 			return;
@@ -117,24 +132,26 @@
 			channel_sender_type: type
 		}));
 	};
+
 	onMount(() => {
 		closeWindowWhenClickingOutside();
 		// getNotifications();
 	});
 
-	$: if (notificationOpen) {
-		getNotifications();
-	}
-	$: console.log(notifications);
+	$effect(() => {
+		if (notificationOpen) {
+			getNotifications();
+		}
+	});
 </script>
 
 <div class={`${Class} notifications-clickable-region relative z-100 `}>
 	<button
+		type="button"
 		class={``}
-		on:click={() => {
+		onclick={() => {
 			notificationOpen = !notificationOpen;
 		}}
-		on:keydown
 	>
 		{#key darkModeStore}
 			<Fa
@@ -148,7 +165,13 @@
 	{#if notificationOpen && categories}
 		<div class={`z-40 absolute mt-2 bg-white dark:bg-darkobject shadow-xl text-sm ${ClassOpen}`}>
 			<div class="text-xs p-2">{$_('Manage Subscriptions')}</div>
-			<button on:click={subscribeToAll} class="text-xs p-2">{$_('Subscribe to All')}</button>
+			<button
+				onclick={(e) => {
+					e.preventDefault();
+					subscribeToAll();
+				}}
+				class="text-xs p-2">{$_('Subscribe to All')}</button
+			>
 			{#each categories as category, i}
 				<button
 					class="bg-gray-200 dark:bg-gray-700 w-full p-2 px-5 flex justify-between items-center transition-all"
@@ -164,7 +187,8 @@
 					class:dark:!bg-slate-400={notifications?.find(
 						(notificationObject) => notificationObject.channel_category === category
 					)}
-					on:click={() => {
+					onclick={(e) => {
+						e.preventDefault();
 						if (!notifications.find((object) => object.channel_category === category))
 							notificationSubscription(category, 'add');
 						else notificationSubscription(category, 'remove');

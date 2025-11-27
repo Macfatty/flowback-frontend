@@ -37,8 +37,9 @@
 
 <WeekView bind:proposals x={7} y={24} />
 
-<div class="p-6 bg-white dark:bg-darkbackground dark:text-darkmodeText w-[90%] lg:w-[70%] max-w-[1000px] shadow rounded my-6">
-
+<div
+	class="p-6 bg-white dark:bg-darkbackground dark:text-darkmodeText w-[90%] lg:w-[70%] max-w-[1000px] shadow rounded my-6"
+>
 	<Comments api="poll" />
 </div>
 
