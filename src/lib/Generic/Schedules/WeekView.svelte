@@ -231,7 +231,7 @@
 	</div>
 	<div
 		class="grid w-full text-sm text-center"
-		style={`grid-template-columns: repeat(${x + 1}, 1fr); grid-template-rows: repeat(${y + 1}, 1fr);`}
+		style={`grid-template-columns: repeat(${x + 1}, 1fr); grid-template-rows: repeat(${y}, 1fr);`}
 		id="weekView"
 	>
 		{#each gridDates as row, j}
@@ -249,7 +249,7 @@
 			{/each}
 		{/each}
 	</div>
-	<div class="pt-4 px-4 border-t flex gap-4 bg-white dark:bg-darkobject">
+	<div class="p-4 border-t flex gap-4 bg-white dark:bg-darkobject">
 		<Button
 			disabled={arraysEqual(
 				selectedDates.map((d) => d.date.getTime()).sort(),

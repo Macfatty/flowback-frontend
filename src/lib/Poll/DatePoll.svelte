@@ -35,17 +35,12 @@
 	onMount(async () => {});
 </script>
 
-<!-- <Structure Class="!max-w-[1400px]" poll={null}> -->
-<!-- <div slot="left"> -->
-<div>
-	<WeekView bind:proposals x={7} y={24} />
-</div>
-<!-- </div> -->
+<WeekView bind:proposals x={7} y={24} />
 
-<!-- <div slot="bottom">-->
-<Comments api="poll" />
-<!-- </div> -->
-<!-- </Structure> -->
+<div class="p-6 bg-white dark:bg-darkbackground dark:text-darkmodeText w-[90%] lg:w-[70%] max-w-[1000px] shadow rounded my-6">
+
+	<Comments api="poll" />
+</div>
 
 <Modal bind:open onSubmit={handleProposalSubmit}>
 	<div slot="body" class="">
