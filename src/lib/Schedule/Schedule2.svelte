@@ -16,10 +16,14 @@
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
-		selectedEvent: ScheduleItem2 = $state(ScheduleItem2Default);
+		selectedEvent: ScheduleItem2 = $state(ScheduleItem2Default),
+		groupId: null | number = $state(null);
 
-	const userScheduleEventList = async () => {
-		const { res, json } = await fetchRequest('GET', 'schedule/event/list?limit=50');
+	const scheduleEventList = async () => {
+		let api = `schedule/event/list?limit=50&`;
+		if (groupId) api += `schedule_origin_id=${groupId}`;
+
+		const { res, json } = await fetchRequest('GET', api);
 		events = json.results;
 	};
 
@@ -135,8 +139,10 @@
 		calendar.render();
 	};
 
-	onMount(async () => {
-		await userScheduleEventList();
+	onMount(() => {
+		groupId = Number(new URLSearchParams(document.location.search).get('groupId')) ?? null;
+
+		scheduleEventList();
 	});
 
 	$effect(() => {
@@ -144,8 +150,9 @@
 	});
 </script>
 
-<div class="flex justify-center h-[100vh] w-full">
-	<div class="w-full" id="calendar-2"></div>
+<div class="flex justify-center w-full">
+	<!-- <Select labels={groups}/> -->
+	<div class="w-full bg-white dark:bg-darkbackground" id="calendar-2"></div>
 </div>
 
 <Modal
@@ -155,7 +162,7 @@
 			label: 'Submit',
 			onClick: async () => {
 				selectedEvent.id === 0 ? await userScheduleEventCreate() : await userScheduleEventEdit();
-				userScheduleEventList();
+				scheduleEventList();
 				selectedEvent = ScheduleItem2Default;
 				open = false;
 			},
@@ -183,8 +190,14 @@
 			<input type="number" bind:value={selectedEvent.repeat_frequency} />
 			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />
 			<TextInput label="Tag" bind:value={selectedEvent.tag_name} />
-			<!-- <NotificationOptions api={`schedule/${selectedEvent.schedule_id}/event/subscribe`} labels={["subsc"]}  categories=/> -->
-			 ssss
+			{selectedEvent.id}
+			<NotificationOptions
+				type="event"
+				id={selectedEvent.id}
+				api={`schedule/${selectedEvent.schedule_id}/event/subscribe`}
+				labels={['subsc']}
+				categories={['subsc']}
+			/>
 		</form>
 	</div>
 </Modal>

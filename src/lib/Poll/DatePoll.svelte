@@ -4,10 +4,8 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { DateInput } from 'date-picker-svelte';
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import WeekView from '$lib/Generic/Schedules/WeekView.svelte';
-	import Structure from './NewDesign/Structure.svelte';
 	import Comments from '$lib/Comments/Comments.svelte';
 	import type { timeProposal } from './interface';
 
@@ -31,20 +29,15 @@
 		await createProposal(date);
 		open = false;
 	}
-
-	onMount(async () => {
-	});
 </script>
 
-<Structure Class="!max-w-[1400px]" poll={null}>
-	<div slot="left">
-		<div class="overflow-auto">
-			<WeekView bind:proposals x={7} y={24} />
-		</div>
-	</div>
+<WeekView bind:proposals x={7} y={24} />
 
-	<div slot="right"><Comments api="poll" /></div>
-</Structure>
+<div
+	class="p-6 bg-white dark:bg-darkbackground dark:text-darkmodeText w-[90%] lg:w-[70%] max-w-[1000px] shadow rounded my-6"
+>
+	<Comments api="poll" />
+</div>
 
 <Modal bind:open onSubmit={handleProposalSubmit}>
 	<div slot="body" class="">
