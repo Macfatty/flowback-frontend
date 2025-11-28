@@ -157,7 +157,7 @@
 <Modal
 	bind:open
 	Class="min-w-[400px] max-w-[500px]"
-	onSubmit={createKanbanEntry}
+	onsubmit={createKanbanEntry}
 	id="create-kanban-entry-modal"
 >
 	<div slot="header">

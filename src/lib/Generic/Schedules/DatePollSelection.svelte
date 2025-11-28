@@ -31,7 +31,7 @@
 		currentYear = 0,
 		noChanges = true;
 
-	type SelDate = { date: Date; id: number };
+	type SelDate = { date: Date; id: number; numOfVotes: number };
 	const pollId = $page.params.pollId;
 
 	// Date utility functions
@@ -61,6 +61,7 @@
 			`group/poll/${pollId}/proposal/votes?limit=10000`
 		);
 
+		// Saved dates are meant to match tbe backend, while selected dates matches what the user has selected in the frontend
 		savedDates = json.results.map((vote: any) => ({
 			id: vote.proposal,
 			date: new Date(proposals.find((proposal) => proposal.id === vote.proposal)?.start_date ?? '')
@@ -138,7 +139,8 @@
 				...selectedDates,
 				{
 					id: proposals.find((p) => new Date(p.start_date).getTime() === date.getTime())?.id ?? 0,
-					date
+					date,
+					numOfVotes: 1
 				}
 			];
 		}
@@ -237,7 +239,10 @@
 		{#each gridDates as row, j}
 			<div class="bg-primary text-white flex justify-center px-0.5">{j}:00</div>
 			{#each row as date, i}
-				<button class="bg-white dark:bg-darkobject border h-12 w-24" on:click={() => toggleDate(date)}>
+				<button
+					class="bg-white dark:bg-darkobject border h-12 w-24"
+					on:click={() => toggleDate(date)}
+				>
 					{#if selectedDates.find((_date) => _date.date.getTime() === date?.getTime())}
 						<div class="bg-green-600 w-full flex items-center justify-center h-full">
 							<Fa icon={faCheck} color="white" size="2x" />

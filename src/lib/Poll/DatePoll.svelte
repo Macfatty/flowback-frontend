@@ -5,13 +5,13 @@
 	import { DateInput } from 'date-picker-svelte';
 	import { page } from '$app/stores';
 	import { _ } from 'svelte-i18n';
-	import WeekView from '$lib/Generic/Schedules/WeekView.svelte';
+	import DatePollSelection from '$lib/Generic/Schedules/DatePollSelection.svelte';
 	import Comments from '$lib/Comments/Comments.svelte';
 	import type { timeProposal } from './interface';
 
-	let open = false;
-	let date: Date;
-	let proposals: timeProposal[] = [];
+	let open = $state(false),
+		date: Date | null = $state(null),
+		proposals: timeProposal[] = $state([]);
 
 	const pollId = $page.params.pollId;
 
@@ -26,12 +26,12 @@
 	}
 
 	async function handleProposalSubmit() {
-		await createProposal(date);
+		if (date) await createProposal(date);
 		open = false;
 	}
 </script>
 
-<WeekView bind:proposals x={7} y={24} />
+<DatePollSelection bind:proposals x={7} y={24} />
 
 <div
 	class="p-6 bg-white dark:bg-darkbackground dark:text-darkmodeText w-[90%] lg:w-[70%] max-w-[1000px] shadow rounded my-6"
