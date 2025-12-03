@@ -15,6 +15,7 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { onMount } from 'svelte';
 	import { arraysEqual } from '$lib/Generic/GenericFunctions';
+	import { isMobile } from '$lib/utils/isMobile';
 
 	export let x = 10,
 		y = 10,
@@ -173,17 +174,6 @@
 		await fetchProposalVotes();
 	});
 
-	let isMobile = false;
-
-	onMount(() => {
-	const checkMobile = () => {
-		isMobile = window.innerWidth < 768;
-	};
-		checkMobile();
-		window.addEventListener('resize', checkMobile);
-		return () => window.removeEventListener('resize', checkMobile);
-	});
-
 	$: {
 		const monday = getMondayForOffset(weekOffset);
 		weekDates = Array.from({ length: 7 }, (_, i) => {
@@ -223,7 +213,7 @@
 </script>
 
 <Loader bind:loading>
-	{#if isMobile}
+	{#if $isMobile}
 	<div class="mt-4 sticky top-12 md:top-[5.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between py-1 px-4"
 	>
 		<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>

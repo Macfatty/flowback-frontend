@@ -8,6 +8,7 @@
 	import DatePollSelection from '$lib/Generic/Schedules/DatePollSelection.svelte';
 	import Comments from '$lib/Comments/Comments.svelte';
 	import type { timeProposal } from './interface';
+	import { isMobile } from '$lib/utils/isMobile';
 
 	let open = $state(false),
 		date: Date | null = $state(null),
@@ -32,9 +33,10 @@
 </script>
 
 <div
-  class="p-0 bg-white dark:bg-darkobject dark:text-darkmodeText w-full md:w-[90%] md:lg:w-[70%] md:p-6 max-w-[1000px] shadow rounded my-6"
-	>
-    <DatePollSelection bind:proposals x={7} y={24} />
+  class="bg-white dark:bg-darkobject dark:text-darkmodeText shadow rounded my-6
+	{$isMobile ? 'w-full p-0' : 'w-[90%] lg:w-[70%] p-6 max-w-[1000px]'}"
+>
+  <DatePollSelection bind:proposals x={7} y={24} />
 </div>
 
 <div
