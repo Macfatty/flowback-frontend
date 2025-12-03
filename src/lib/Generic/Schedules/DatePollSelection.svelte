@@ -243,7 +243,7 @@
 	</div>
 	{#each gridDates as row, j}
 	<div class="grid grid-cols-8 h-14">
-		<div class="flex items-center justify-center bg-primary text-white">{j}:00</div>
+		<div class="text-xs flex items-center justify-center bg-primary text-white">{j}:00</div>
 		{#each row as date, i}
 			<button class="border bg-white dark:bg-darkobject flex justify-center items-center" on:click={() => toggleDate(date)}>
 				{#if selectedDates.find(d => d.date.getTime() === date.getTime())}
@@ -286,7 +286,7 @@
 			<div class="bg-primary text-white flex justify-center items-center px-0.5">{j}:00</div>
 			{#each row as date, i}
 				<button
-					class="bg-white dark:bg-darkobject border h-12 w-24"
+					class="bg-white dark:bg-darkobject border h-12 w-full"
 					on:click={() => toggleDate(date)}
 				>
 					{#if selectedDates.find((_date) => _date.date.getTime() === date?.getTime())}
