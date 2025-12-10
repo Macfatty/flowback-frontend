@@ -16,7 +16,7 @@
 
 	const DefaultPFP = type === 'user' ? DefaultPFPUser : DefaultPFPGroup
 	// Change this to pixel size once we upgrade to tailwind 4
-	const sizeClass =
+	$: sizeClass =
 		size === 1
 			? 'w-5 h-5' // 20px
 			: size === 2
