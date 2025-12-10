@@ -16,7 +16,7 @@
 	import { env } from '$env/dynamic/public';
 
 	export let filter: Filter,
-		handleSearch: () => void,
+		handleSearch: () => void = () => {},
 		tagFiltering = false,
 		// Add new export for content type filtering
 		showThreads = true,
@@ -107,7 +107,9 @@
 			public: false,
 			order_by: 'start_date_desc',
 			tag: null,
-			workgroup: null
+			workgroup: null,
+			from: new Date(0),
+			to: new Date(99999999999999)
 		};
 		// Reset content type checkboxes
 		showThreads = true;
@@ -170,9 +172,8 @@
 			innerLabel={null}
 		/>
 
-
-		From: <input type="date" bind:value={filter.from}/>
-		To: <input type="date" bind:value={filter.to}/>
+		{$_("From")}: <input type="date" placeholder={filter.from} bind:value={filter.from}/>
+		{$_("To")}: <input type="date" placeholder={filter.from} bind:value={filter.to}/>
 
 		<CheckboxButtons
 			label=""

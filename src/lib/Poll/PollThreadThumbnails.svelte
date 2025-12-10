@@ -15,7 +15,7 @@
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { posts } from './stores';
 	import ThreadThumbnail from '$lib/Thread/ThreadThumbnail.svelte';
-	import { lazyLoading } from '$lib/Generic/GenericFunctions';
+	import { deepCopy, lazyLoading } from '$lib/Generic/GenericFunctions';
 	import { fetchRequest } from '$lib/FetchRequest';
 
 	// Props
@@ -34,7 +34,6 @@
 		workGroups: WorkGroup[] = [],
 		loading = false,
 		next: null | undefined | string,
-		prev = '',
 		filter: Filter = {
 			search: '',
 			finishedSelection: 'all',
@@ -42,8 +41,8 @@
 			order_by: 'start_date_desc',
 			tag: null,
 			workgroup: null,
-			from: new Date(0),
-			to: new Date()
+			from: new Date(0).toISOString().slice(0, 16),
+			to: new Date(99999999999999).toISOString().slice(0, 16)
 		},
 		showThreads = true,
 		showPolls = true;
@@ -66,8 +65,11 @@
 	}
 
 	async function fetchPolls() {
-		let api = `
-		user/home?
+		console.log(filter.to, 'TO');
+		console.log(filter.from, 'FREOM');
+
+		let api_params = `
+		
 		group_ids=${$page.params.groupId ?? ''}&
 		order_by=${filter.order_by ? `pinned,${filter.order_by}` : 'pinned'}&
 		limit=${pollThumbnailsLimit}&
@@ -75,48 +77,41 @@
 		tag_id=${filter.tag ?? ''}&
 		work_group_ids=${filter.workgroup}&
 		public=${infoToGet === 'public' ? 'true' : ''}&
-		created_at__gt=${new Date().toISOString()}
+		created_at__gt=${filter.from}&
+		created_at__lt=${filter.to}
 		`;
 
-		if (next === undefined) {
+		// if (next === undefined) {
+		if (true) {
 			loading = true;
 
-			const { res, json } = await fetchRequest('GET', api);
+			const { res, json } = await fetchRequest('GET', `user/home?${api_params}`);
 
 			loading = false;
 			if (!res.ok) ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
 
 			$posts = json.results ?? [];
 			next = json.next ?? null;
-			// prev = response.previous;
 		} else if (next === null) return;
 		else {
 			loading = true;
-			const { res, json } = await fetchRequest('GET', next);
+			const { res, json } = await fetchRequest('GET', next ?? '');
 			if (!res.ok) {
 				ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
 			}
 			$posts = [...$posts, ...json.results];
 			next = json.next;
 		}
-
 		loading = false;
 	}
 
 	async function fetchRelatedContent() {
-		const pollIds = $posts.filter((post) => post.related_model === 'poll').map((post) => post.id);
-
 		const threadIds = $posts
 			.filter((post) => post.related_model === 'thread')
 			.map((post) => post.id);
 
-		if (pollIds.length) {
-			const response =
-				infoToGet === 'home'
-					? await PollsApi.getHomePolls(filter.order_by)
-					: await PollsApi.getGroupPolls($page.params.groupId, pollIds, filter.order_by);
-			polls = response.results;
-		}
+		const { res, json } = await fetchRequest('GET', `home/polls?limit=1000`);
+		polls = json.results;
 
 		if (threadIds.length) {
 			const response =
@@ -132,7 +127,7 @@
 		workGroups = results;
 	}
 
-	function matchesFilter(post: Post): boolean {
+	const matchesFilter = (post: Post): boolean => {
 		// Find the corresponding thread (only needed for workgroup filtering on threads)
 		const thread = post.related_model === 'thread' ? threads.find((t) => t.id === post.id) : null;
 
@@ -160,6 +155,12 @@
 			await fetchRelatedContent();
 		}
 	});
+
+	$: if (filter) {
+		
+		fetchPolls();
+		fetchRelatedContent();
+	}
 </script>
 
 <svelte:body onscroll={() => lazyLoading(fetchPolls)} />
@@ -169,10 +170,6 @@
 		<div class={`flex flex-col gap-6 w-full`} id="thumbnails">
 			<PollFiltering
 				tagFiltering={infoToGet === 'group'}
-				handleSearch={() => {
-					fetchPolls();
-					fetchRelatedContent();
-				}}
 				bind:filter
 				bind:showThreads
 				bind:showPolls
