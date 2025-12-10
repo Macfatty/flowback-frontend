@@ -15,6 +15,7 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { onMount } from 'svelte';
 	import { arraysEqual } from '$lib/Generic/GenericFunctions';
+	import { isMobile } from '$lib/utils/isMobile';
 
 	export let x = 10,
 		y = 10,
@@ -213,7 +214,7 @@
 
 <Loader bind:loading>
 	<div
-		class="mt-4 sticky top-[5.5rem] dark:bg-darkbackground bg-white flex items-center justify-between py-1 px-4"
+		class="sticky top-[7.5rem] md:top-[5.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between mt-4 py-5 px-6 md:py-1 md:px-4"
 	>
 		<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>
 		{currentMonth}
@@ -221,11 +222,11 @@
 		<button on:click={nextWeek}><Fa icon={faChevronRight} /></button>
 	</div>
 	<div
-		class="sticky top-[7.5rem] dark:bg-darkbackground bg-white flex items-center flex-1 justify-between border-b border-gray-300 py-1 px-4"
+		class="sticky top-[11.5rem] md:top-[7.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white grid grid-cols-8 text-center border-b border-gray-300 py-1"
 	>
 		<br />
 		{#each weekDates as date, i}
-			<div class="flex flex-col items-center">
+			<div class="flex flex-col items-center {$isMobile ? 'text-xs' : ''}">
 				<div class="font-semibold pt-2">{date.getDate()}</div>
 				<div class="text-gray-600">{$_(weekdays[i])}</div>
 			</div>
@@ -237,10 +238,11 @@
 		id="weekView"
 	>
 		{#each gridDates as row, j}
-			<div class="bg-primary text-white flex justify-center px-0.5">{j}:00</div>
+			<div class="bg-primary text-white flex justify-center items-center px-0.5 
+				{$isMobile ? 'text-xs' : ''}">{j}:00</div>
 			{#each row as date, i}
 				<button
-					class="bg-white dark:bg-darkobject border h-12 w-24"
+					class="bg-white dark:bg-darkobject border h-12 w-full"
 					on:click={() => toggleDate(date)}
 				>
 					{#if selectedDates.find((_date) => _date.date.getTime() === date?.getTime())}
