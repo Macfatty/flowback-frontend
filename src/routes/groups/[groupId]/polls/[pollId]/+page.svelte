@@ -407,7 +407,7 @@
 				<DatePoll />
 			{:else}
 				<Structure bind:phase bind:poll>
-					<div slot="left" class="w-[600px]">
+					<div slot="left" class="w-full">
 						<Results bind:poll {getPollData} {pollType} />
 					</div>
 
