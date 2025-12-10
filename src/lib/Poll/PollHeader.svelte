@@ -54,7 +54,7 @@
 </script>
 
 <div
-	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded shadow poll-header-grid py-8 max-w-[1200px]"
+	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded shadow poll-header-grid py-8 w-full max-w-[1200px]"
 >
 	<button
 		class="cursor-pointer bg-white dark:bg-darkobject dark:text-darkmodeText justify-center m-0 px-4"
