@@ -214,7 +214,7 @@
 
 <Loader bind:loading>
 	<div
-		class="sticky top-[7.5rem] md:top-[5.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between mt-4 py-5 px-6 md:py-1 md:px-4"
+		class="sticky top-[7.6rem] md:top-[5.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between mt-4 py-5 px-6 md:py-1 md:px-4"
 	>
 		<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>
 		{currentMonth}
