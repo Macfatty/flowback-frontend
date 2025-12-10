@@ -101,7 +101,7 @@
 		/>
 	</div>
 
-	<div class="flex gap-4 items-center grid-area-items my-1">
+	<div class="flex gap-4 items-center grid-area-items my-1 border-b py-4">
 		{#if env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE'}
 			<a
 				href={`/groups/${$page.params.groupId}`}
@@ -155,7 +155,7 @@
 	</div>
 
 	{#if poll?.description.length > 0}
-		<div class="grid-area-description break-words w-[90vw] max-w-[1100px]">
+		<div class="grid-area-description break-words w-[90vw] max-w-[1100px] mt-4">
 			<NewDescription limit={3} lengthLimit={300} description={poll?.description} />
 		</div>
 	{/if}
