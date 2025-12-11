@@ -15,19 +15,12 @@
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { posts } from './stores';
 	import ThreadThumbnail from '$lib/Thread/ThreadThumbnail.svelte';
-	import { deepCopy, lazyLoading } from '$lib/Generic/GenericFunctions';
+	import { lazyLoading } from '$lib/Generic/GenericFunctions';
 	import { fetchRequest } from '$lib/FetchRequest';
 
 	// Props
 	export let Class = '',
-		infoToGet: 'group' | 'home' | 'public' | 'delegate' | 'user',
-		delegate: DelegateMinimal = {
-			id: 0,
-			pool_id: 0,
-			profile_image: '',
-			tags: [],
-			username: ''
-		};
+		infoToGet: 'group' | 'home' | 'public' | 'delegate' | 'user';
 
 	let polls: poll[] = [],
 		threads: Thread[] = [],
@@ -65,11 +58,8 @@
 	}
 
 	async function fetchPolls() {
-		console.log(filter.to, 'TO');
-		console.log(filter.from, 'FREOM');
-
-		let api_params = `
 		
+		let api_params = `
 		group_ids=${$page.params.groupId ?? ''}&
 		order_by=${filter.order_by ? `pinned,${filter.order_by}` : 'pinned'}&
 		limit=${pollThumbnailsLimit}&
@@ -92,6 +82,7 @@
 
 			$posts = json.results ?? [];
 			next = json.next ?? null;
+			//TODO: Get lazyloading to work again.
 		} else if (next === null) return;
 		else {
 			loading = true;

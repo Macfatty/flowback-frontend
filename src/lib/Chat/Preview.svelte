@@ -13,6 +13,7 @@
 	import { faCircle, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import { userStore } from '$lib/User/interfaces';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
+	import EveryProperty from '$lib/Generic/EveryProperty.svelte';
 
 	let chatSearch = '',
 		openUserSearch = false;
@@ -126,8 +127,9 @@
 			<div slot="action" let:item>
 				<button
 					on:click={async () => {
+						const id = await getUserChannelId(item.id);
+						chatPartnerStore.set(id);
 						chatOpenStore.set(true);
-						chatPartnerStore.set(await getUserChannelId(item.id));
 						openUserSearch = false;
 					}}
 				>
@@ -190,6 +192,7 @@
 							{elipsis(chatter?.recent_message?.message || '', 15)}
 						</div>
 					</div>
+					<!-- <EveryProperty obj={chatter.recent_message} /> -->
 					{#if chatter?.recent_message?.notified === false}
 						<div class="rounded-full text-purple-300"><Fa size={'xs'} icon={faCircle} /></div>
 					{/if}
