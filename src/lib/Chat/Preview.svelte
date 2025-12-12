@@ -185,19 +185,20 @@
 				<div class="flex justify-between items-center w-full">
 					<div>
 						<div class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
-							<!-- {chatter?.user.username} -->
 							{chatter.channel_title ?? chatter.recent_message?.channel_title ?? 'Name not found'}
 						</div>
 						<div class="text-left text-gray-400 text-sm h-[20px]">
 							{elipsis(chatter?.recent_message?.message || '', 15)}
 						</div>
 					</div>
-					<!-- <EveryProperty obj={chatter.recent_message} /> -->
+					<!-- <EveryProperty obj={chatter} /> -->
+					<!-- Purple dot on Chat indicating notification -->
 					{#if chatter?.recent_message?.notified === false}
 						<div class="rounded-full text-purple-300"><Fa size={'xs'} icon={faCircle} /></div>
 					{/if}
 				</div>
 			</button>
+			<!-- Button for creating group user chat -->
 			{#if creatingGroup}
 				<div id={`chat-${idfy(chatter.channel_title ?? '')}`}>
 					<Button
