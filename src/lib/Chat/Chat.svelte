@@ -37,8 +37,9 @@
 					notified:
 						// Makes sure that messages are notified whenever most recent message is before last click
 						// @ts-ignore
+						preview.recent_message === null  || (
 						new Date(preview.timestamp) > new Date(preview.recent_message?.created_at) ||
-						preview.recent_message?.user.id === $userStore?.id
+						preview.recent_message?.user.id === $userStore?.id)
 				}
 			};
 		});

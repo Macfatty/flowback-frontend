@@ -30,7 +30,7 @@
 	});
 </script>
 
-<div class={`${Class} notifications-clickable-region`} {id}>
+<div class={`${Class} notifications-clickable-region relative`} {id}>
 	<button
 		class={``}
 		on:click={() => {
@@ -48,7 +48,7 @@
 
 	{#if choicesOpen}
 		<div
-			class="z-50 absolute mt-2 bg-white dark:bg-darkobject dark:text-darkmodeText shadow-xl text-sm right-0"
+			class="z-50 absolute mt-2 bg-white dark:bg-darkobject dark:text-darkmodeText shadow-xl text-sm "
 		>
 			<div class="text-xs p-2">{$_('Actions')}</div>
 			{#each labels as label, i}

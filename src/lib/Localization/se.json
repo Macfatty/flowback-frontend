@@ -768,5 +768,9 @@
 	"Successfully saved selections": "Lyckades spara val",
 	"Search chatters": "Sök chattmedlemmar",
 	"User {user} joined the channel": "Användaren {user} har gått med i kanalen",
-	"channelJoin": "Användaren {user} har gått med i kanalen"
+	"channelJoin": "Användaren {user} har gått med i kanalen",
+	"You must join the group to access it": "Du måste gå med i en grupp för att få åtkomst till den",
+	"Delegations": "Delgering"
+
+
 }
