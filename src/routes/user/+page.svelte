@@ -53,7 +53,6 @@
 		isEditing = false,
 		profileImagePreview = DefaultPFP,
 		bannerImagePreview = '',
-		currentlyEditing: null | 'bio' | 'web' | 'name' | 'phone' | 'email' = null,
 		currentlyCroppingProfile: boolean = false,
 		currentlyCroppingBanner = false,
 		oldProfileImagePreview = '',
