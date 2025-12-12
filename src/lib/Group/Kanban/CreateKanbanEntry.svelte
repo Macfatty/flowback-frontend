@@ -67,11 +67,9 @@
 		description = description.trim() === '' ? $_('No description provided') : description;
 
 		formData.append('description', description);
-		if (images) {
-			images.forEach((image) => {
-				formData.append('attachments', image);
-			});
-		}
+		images.forEach((image) => {
+			formData.append('attachments', image);
+		});
 
 		const { res, json } = await fetchRequest(
 			'POST',

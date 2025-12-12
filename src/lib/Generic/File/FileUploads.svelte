@@ -18,11 +18,9 @@
 		files = files;
 	};
 
-	$: console.log(files, "FILE");
-	
 </script>
 
-{#if files?.length ?? 0 > 0}
+{#if files.length ?? 0 > 0}
 	<div>
 		{#each files as file, i}
 			<div

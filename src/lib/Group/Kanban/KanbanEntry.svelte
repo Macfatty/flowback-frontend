@@ -262,7 +262,7 @@
 	}
 
 	$: if (isEditing) {
-		images = kanban.attachments;
+		images = kanban.attachments ?? [];
 	}
 </script>
 
