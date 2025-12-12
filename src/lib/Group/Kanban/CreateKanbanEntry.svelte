@@ -5,7 +5,7 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
-	import FileUploads from '$lib/Generic/FileUploads.svelte';
+	import FileUploads from '$lib/Generic/File/FileUploads.svelte';
 	import type { GroupUser } from '../interface';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { WorkGroup } from '../WorkingGroups/interface';
@@ -157,7 +157,7 @@
 <Modal
 	bind:open
 	Class="min-w-[400px] max-w-[500px]"
-	onsubmit={createKanbanEntry}
+	onSubmit={createKanbanEntry}
 	id="create-kanban-entry-modal"
 >
 	<div slot="header">

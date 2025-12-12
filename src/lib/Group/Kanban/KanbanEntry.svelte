@@ -21,7 +21,7 @@
 	import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 	import Select from '$lib/Generic/Select.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import FileUploads from '$lib/Generic/FileUploads.svelte';
+	import FileUploads from '$lib/Generic/File/FileUploads.svelte';
 
 	export let kanban: kanban,
 		filter: Filter,
@@ -151,26 +151,27 @@
 				: `user/kanban/entry/list?id=${kanban.id}`
 		);
 
+		if (!res.ok) return;
 		// If all goes well, don't manually change kanban locally
-		if (res.ok) return;
+		// if (res.ok) return;
 
-		// Else, manually update locally
-		kanban = json.results[0];
-		kanban.title = kanbanEdited.title;
-		kanban.description = kanbanEdited.description;
-		kanban.priority = kanbanEdited.priority;
-		kanban.end_date = kanbanEdited.end_date;
-		kanban.work_group = kanbanEdited.work_group;
-		kanban.attachments = kanbanEdited.images || [];
+		// // Else, manually update locally
+		// kanban = json.results[0];
+		// kanban.title = kanbanEdited.title;
+		// kanban.description = kanbanEdited.description;
+		// kanban.priority = kanbanEdited.priority;
+		// kanban.end_date = kanbanEdited.end_date;
+		// kanban.work_group = kanbanEdited.work_group;
+		// kanban.attachments = kanbanEdited.images || [];
 
-		const assignee = users.find((user) => user.user.id === kanbanEdited.assignee_id);
-		kanban.assignee = kanbanEdited.assignee_id
-			? {
-					id: kanbanEdited.assignee_id,
-					username: assignee?.user.username || '',
-					profile_image: assignee?.user.profile_image || ''
-				}
-			: null;
+		// const assignee = users.find((user) => user.user.id === kanbanEdited.assignee_id);
+		// kanban.assignee = kanbanEdited.assignee_id
+		// 	? {
+		// 			id: kanbanEdited.assignee_id,
+		// 			username: assignee?.user.username || '',
+		// 			profile_image: assignee?.user.profile_image || ''
+		// 		}
+		// 	: null;
 
 		await getKanbanEntries();
 	};
