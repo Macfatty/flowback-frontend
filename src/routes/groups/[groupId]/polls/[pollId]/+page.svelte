@@ -406,8 +406,8 @@
 			{#if phase === 'area_vote' || phase === 'pre_start' || phase === 'vote'}
 				<DatePoll />
 			{:else}
-				<Structure bind:phase bind:poll>
-					<div slot="left" class="w-[600px]">
+				<Structure bind:phase bind:poll showBoth>
+					<div slot="left" class="w-full">
 						<Results bind:poll {getPollData} {pollType} />
 					</div>
 

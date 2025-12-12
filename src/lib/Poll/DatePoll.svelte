@@ -34,13 +34,13 @@
 
 <div
   class="bg-white dark:bg-darkobject dark:text-darkmodeText shadow rounded my-6
-	{$isMobile ? 'w-full p-0' : 'w-[90%] lg:w-[70%] p-6 max-w-[1000px]'}"
+	{$isMobile ? 'w-full p-0' : 'w-[100%] lg:w-[70%] p-6 max-w-[1000px]'}"
 >
   <DatePollSelection bind:proposals x={7} y={24} />
 </div>
 
 <div
-	class="p-6 bg-white dark:bg-darkobject dark:text-darkmodeText w-[90%] lg:w-[70%] max-w-[1000px] shadow rounded my-6"
+	class="h-full overflow-y-auto bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md my-6 max-w-[1000px] w-[95%] lg:w-[70%]"
 >
 	<Comments api="poll" />
 </div>
