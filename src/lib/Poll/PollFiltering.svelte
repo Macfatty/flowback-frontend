@@ -108,8 +108,8 @@
 			order_by: 'start_date_desc',
 			tag: null,
 			workgroup: null,
-			from: new Date(0),
-			to: new Date(99999999999999)
+			from: new Date(0).toISOString().slice(0, 16),
+			to: new Date(99999999999999).toISOString().slice(0, 16)
 		};
 		// Reset content type checkboxes
 		showThreads = true;
@@ -153,7 +153,8 @@
 		<TextInput
 			Class="w-4/5"
 			onInput={() => (searched = false)}
-			label=""§ 
+			label=""
+			§
 			max={null}
 			search={true}
 			placeholder={$_('Search polls')}
@@ -172,8 +173,8 @@
 			innerLabel={null}
 		/>
 
-		{$_("From")}: <input type="date" placeholder={filter.from} bind:value={filter.from}/>
-		{$_("To")}: <input type="date" placeholder={filter.from} bind:value={filter.to}/>
+		{$_('From')}: <input type="date" placeholder={filter.from} bind:value={filter.from} />
+		{$_('To')}: <input type="date" placeholder={filter.from} bind:value={filter.to} />
 
 		<CheckboxButtons
 			label=""
@@ -181,7 +182,7 @@
 			onChange={handleContentTypeChange}
 			Class="flex items-center"
 		/>
-		
+
 		{#if groupId}
 			<div class="flex flex-row gap-2 items-center">
 				<label class="block text-md whitespace-nowrap" for="work-group">
