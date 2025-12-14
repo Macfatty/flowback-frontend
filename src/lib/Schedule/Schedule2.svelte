@@ -17,6 +17,7 @@
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import type { Group } from '$lib/Group/interface';
 	import Button from '$lib/Generic/Button.svelte';
+	import { json } from '@sveltejs/kit';
 
 	let open = $state(false),
 		openFilter = $state(false),
@@ -44,7 +45,7 @@
 			return;
 		}
 
-		let api2 = `schedule/event/list?limit=50&schedule_ids=${schedules.map((s) => s.id).join(',')},`;
+		let api2 = `schedule/event/list?limit=50&schedule_ids=${schedules.map((s) => s.id).join(',')}`;
 
 		{
 			const { res, json } = await fetchRequest('GET', api2);
@@ -218,6 +219,12 @@
 				value={group.id}
 			/>
 			{group.name} <br />
+			{#await fetchRequest('GET', `group/${group.id}/list`) then { json, res }}
+				{json.results[0].id} <input type="checkbox" /> <br />
+			{:catch error}
+				<p>Error loading group details</p>
+			{/await}
+			<br />
 		{/each}
 	</div>
 </Modal>
