@@ -23,26 +23,28 @@
 		events: ScheduleItem2[] = $state([]),
 		selectedEvent: ScheduleItem2 = $state(ScheduleItem2Default),
 		groupId: null | number = $state(null),
+		groupIds: number[] = $state([]),
 		groups: Group[] = $state([]);
 
 	const scheduleEventList = async () => {
 		let api = `schedule/list?limit=50&`;
-		if (groupId) api += `origin_ids=${groupId}&origin_name=group`;
+
+		if (groupIds.length > 0) api += `origin_ids=${groupIds.join(',')}&origin_name=group`;
 		else api += `origin_name=user`;
 
-		let schedule: Schedule | null = null;
+		let schedules: Schedule[] = [];
 
 		{
 			const { res, json } = await fetchRequest('GET', api);
-			schedule = json.results[0] ?? null;
+			schedules = json.results ?? null;
 		}
 
-		if (!schedule) {
+		if (!schedules) {
 			events = [];
 			return;
 		}
 
-		let api2 = `schedule/event/list?limit=50&schedule_ids=${schedule.id},`;
+		let api2 = `schedule/event/list?limit=50&schedule_ids=${schedules.map((s) => s.id).join(',')},`;
 
 		{
 			const { res, json } = await fetchRequest('GET', api2);
@@ -51,7 +53,10 @@
 	};
 
 	const scheduleEventCreate = async () => {
-		let api = groupId ? `group/${groupId}/schedule/event/create` : `user/schedule/event/create`;
+		let api =
+			groupIds.length > 0
+				? `group/${groupIds[0]}/schedule/event/create`
+				: `user/schedule/event/create`;
 
 		const { res, json } = await fetchRequest('POST', api, selectedEvent);
 
@@ -192,12 +197,27 @@
 	$effect(() => {
 		if (groupId) scheduleEventList();
 	});
+
+	$effect(() => {
+		if (groupIds) scheduleEventList();
+	});
 </script>
 
 <Modal bind:open={openFilter}>
 	<div slot="body">
 		{#each groups as group}
-			<input type="checkbox" value={group.id} /> {group.name} <br />
+			<input
+				type="checkbox"
+				onchange={() => {
+					if (groupIds.includes(group.id)) {
+						groupIds = groupIds.filter((id) => id !== group.id);
+					} else {
+						groupIds = [...groupIds, group.id];
+					}
+				}}
+				value={group.id}
+			/>
+			{group.name} <br />
 		{/each}
 	</div>
 </Modal>
