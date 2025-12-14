@@ -51,14 +51,7 @@
 	const scheduleEventCreate = async () => {
 		let api = groupId ? `group/${groupId}/schedule/event/create` : `user/schedule/event/create`;
 
-		const { res, json } = await fetchRequest('POST', api, {
-			start_date: selectedEvent.start_date,
-			end_date: selectedEvent.end_date,
-			title: selectedEvent.title,
-			description: selectedEvent.description,
-			repeat_frequency: selectedEvent.repeat_frequency,
-			meeting_link: selectedEvent.meeting_link,
-		});
+		const { res, json } = await fetchRequest('POST', api, selectedEvent);
 
 		if (!res.ok) {
 			ErrorHandlerStore.set({ message: 'Failed to create event', success: false });
@@ -68,7 +61,8 @@
 	};
 
 	const userScheduleEventEdit = async () => {
-		const { res, json } = await fetchRequest('POST', 'user/schedule/event/update', {
+		let api = groupId ? `group/${groupId}/schedule/event/update` : `user/schedule/event/update`;
+		const { res, json } = await fetchRequest('POST', api, {
 			...selectedEvent,
 			event_id: selectedEvent.id
 		});
@@ -82,7 +76,9 @@
 	};
 
 	const userScheduleEventDelete = async (event_id: number) => {
-		const { res, json } = await fetchRequest('POST', 'user/schedule/event/delete', {
+		let api = groupId ? `group/${groupId}/schedule/event/delete` : `user/schedule/event/delete`;
+
+		const { res, json } = await fetchRequest('POST', api, {
 			event_id
 		});
 
