@@ -27,7 +27,6 @@
 		filter: Filter,
 		users: GroupUser[],
 		removeKanbanEntry: (id: number) => void,
-		numberOfOpen: number,
 		workGroups: WorkGroup[] = [],
 		getKanbanEntries: () => Promise<void>;
 
@@ -253,9 +252,6 @@
 
 	$: if (openModal && !isEditing)
 		checkForLinks(kanban.description, `kanban-${kanban.id}-description`);
-
-	$: if (openModal === true) numberOfOpen += 1;
-	else numberOfOpen -= 1; 
 
 	$: if (openModal && kanban.id === selectedEntry) {
 		initializeKanbanEdited();

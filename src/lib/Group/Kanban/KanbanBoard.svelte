@@ -24,7 +24,6 @@
 		users: GroupUser[] = [],
 		interval: any,
 		open = false,
-		numberOfOpen = 0,
 		filter: Filter = {
 			group: $page.url.searchParams.get('groupId'),
 			assignee: null,
@@ -129,7 +128,7 @@
 		await getGroupUsers();
 
 		interval = setInterval(async () => {
-			if (numberOfOpen === 0) await getKanbanEntries();
+			await getKanbanEntries();
 		}, 20410);
 	});
 
@@ -174,7 +173,6 @@
 										bind:workGroups
 										bind:kanban
 										bind:filter
-										bind:numberOfOpen
 										{users}
 										{removeKanbanEntry}
 										{getKanbanEntries}
