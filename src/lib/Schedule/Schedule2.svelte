@@ -186,6 +186,7 @@
 
 	onMount(() => {
 		groupId = Number(new URLSearchParams(document.location.search).get('groupId')) ?? null;
+		if (groupId) groupIds.push(groupId);
 
 		scheduleEventList();
 		getGroups();
@@ -216,11 +217,13 @@
 						groupIds = [...groupIds, group.id];
 					}
 				}}
-				value={group.id}
+				checked={groupIds.includes(group.id)}
 			/>
 			{group.name} <br />
 			{#await fetchRequest('GET', `group/${group.id}/list`) then { json, res }}
-				{json.results[0].id} <input type="checkbox" /> <br />
+				{#if json.results.length > 0}
+					{json.results[0]?.id} <input type="checkbox" /> <br />
+				{/if}
 			{:catch error}
 				<p>Error loading group details</p>
 			{/await}
