@@ -26,7 +26,7 @@
 	const scheduleEventList = async () => {
 		let api = `schedule/list?limit=50&`;
 		if (groupId) api += `origin_ids=${groupId}&origin_name=group`;
-		else api += `schedule_origin_type=user`;
+		else api += `origin_name=user`;
 
 		let schedule: Schedule | null = null;
 
@@ -40,7 +40,7 @@
 			return;
 		}
 
-		let api2 = `schedule/event/list?limit=50&schedule_origin_id=${schedule.id}`;
+		let api2 = `schedule/event/list?limit=50&schedule_ids=${schedule.id},`;
 
 		{
 			const { res, json } = await fetchRequest('GET', api2);
@@ -48,8 +48,17 @@
 		}
 	};
 
-	const userScheduleEventCreate = async () => {
-		const { res, json } = await fetchRequest('POST', 'user/schedule/event/create', selectedEvent);
+	const scheduleEventCreate = async () => {
+		let api = groupId ? `group/${groupId}/schedule/event/create` : `user/schedule/event/create`;
+
+		const { res, json } = await fetchRequest('POST', api, {
+			start_date: selectedEvent.start_date,
+			end_date: selectedEvent.end_date,
+			title: selectedEvent.title,
+			description: selectedEvent.description,
+			repeat_frequency: selectedEvent.repeat_frequency,
+			meeting_link: selectedEvent.meeting_link,
+		});
 
 		if (!res.ok) {
 			ErrorHandlerStore.set({ message: 'Failed to create event', success: false });
@@ -213,7 +222,7 @@
 		{
 			label: 'Submit',
 			onClick: async () => {
-				selectedEvent.id === 0 ? await userScheduleEventCreate() : await userScheduleEventEdit();
+				selectedEvent.id === 0 ? await scheduleEventCreate() : await userScheduleEventEdit();
 				scheduleEventList();
 				selectedEvent = ScheduleItem2Default;
 				open = false;
