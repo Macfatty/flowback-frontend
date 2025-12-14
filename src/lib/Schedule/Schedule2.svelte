@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Calendar } from '@fullcalendar/core';
+	import { _ } from 'svelte-i18n';
 	import { onMount } from 'svelte';
 	import dayGridPlugin from '@fullcalendar/daygrid';
 	import { fetchRequest } from '$lib/FetchRequest';
@@ -8,23 +9,43 @@
 	import multiMonthPlugin from '@fullcalendar/multimonth';
 	import interactionPlugin from '@fullcalendar/interaction';
 	import Modal from '$lib/Generic/Modal.svelte';
-	import { ScheduleItem2Default, type ScheduleItem2 } from '$lib/Schedule/interface';
+	import { ScheduleItem2Default, type Schedule, type ScheduleItem2 } from '$lib/Schedule/interface';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
+	import { elipsis } from '$lib/Generic/GenericFunctions';
+	import type { Group } from '$lib/Group/interface';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
 		selectedEvent: ScheduleItem2 = $state(ScheduleItem2Default),
-		groupId: null | number = $state(null);
+		groupId: null | number = $state(null),
+		groups: Group[] = $state([]);
 
 	const scheduleEventList = async () => {
-		let api = `schedule/event/list?limit=50&`;
-		if (groupId) api += `schedule_origin_id=${groupId}`;
+		let api = `schedule/list?limit=50&`;
+		if (groupId) api += `origin_ids=${groupId}&origin_name=group`;
+		else api += `schedule_origin_type=user`;
 
-		const { res, json } = await fetchRequest('GET', api);
-		events = json.results;
+		let schedule: Schedule | null = null;
+
+		{
+			const { res, json } = await fetchRequest('GET', api);
+			schedule = json.results[0] ?? null;
+		}
+
+		if (!schedule) {
+			events = [];
+			return;
+		}
+
+		let api2 = `schedule/event/list?limit=50&schedule_origin_id=${schedule.id}`;
+
+		{
+			const { res, json } = await fetchRequest('GET', api2);
+			events = json.results;
+		}
 	};
 
 	const userScheduleEventCreate = async () => {
@@ -65,6 +86,17 @@
 		open = false;
 	};
 
+	const getGroups = async () => {
+		let urlFilter = '';
+		urlFilter += 'joined=true';
+		// loading = true;
+		const { res, json } = await fetchRequest('GET', `group/list?${urlFilter}`);
+		// loading = false;
+
+		if (!res.ok) return;
+
+		groups = json?.results;
+	};
 	// Read documentation for this calendar module: https://fullcalendar.io/
 	const renderCalendar = () => {
 		let calendarEl = document.getElementById('calendar-2');
@@ -143,12 +175,32 @@
 		groupId = Number(new URLSearchParams(document.location.search).get('groupId')) ?? null;
 
 		scheduleEventList();
+		getGroups();
 	});
 
 	$effect(() => {
 		if (events) renderCalendar();
 	});
+
+	$effect(() => {
+		if (groupId) scheduleEventList();
+	});
 </script>
+
+<select
+	style="width:100%"
+	class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
+	onchange={(e) => {
+		// @ts-ignore
+		groupId = e?.target?.value;
+	}}
+	id="group"
+>
+	<option value={null}>{$_('None')}</option>
+	{#each groups as group}
+		<option value={group.id.toString()}>{elipsis(group.name)}</option>
+	{/each}
+</select>
 
 <div class="flex justify-center w-full">
 	<!-- <Select labels={groups}/> -->

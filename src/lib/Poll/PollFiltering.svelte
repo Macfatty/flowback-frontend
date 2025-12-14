@@ -1,19 +1,19 @@
 <script lang="ts">
-	import TextInput from '$lib/Generic/TextInput.svelte';
-	import type { Filter } from './interface';
-	import { _ } from 'svelte-i18n';
-	import Button from '$lib/Generic/Button.svelte';
-	import { fetchRequest } from '$lib/FetchRequest';
-	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
-	import { groupUserStore, type Tag } from '$lib/Group/interface';
-	import { homePolls as homePollsLimit } from '../Generic/APILimits.json';
-	import Select from '$lib/Generic/Select.svelte';
-	import CheckboxButtons from '$lib/Generic/CheckboxButtons.svelte';
 	import { browser } from '$app/environment';
-	import { elipsis } from '$lib/Generic/GenericFunctions';
-	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
+	import { page } from '$app/stores';
 	import { env } from '$env/dynamic/public';
+	import { fetchRequest } from '$lib/FetchRequest';
+	import Button from '$lib/Generic/Button.svelte';
+	import CheckboxButtons from '$lib/Generic/CheckboxButtons.svelte';
+	import { elipsis } from '$lib/Generic/GenericFunctions';
+	import Select from '$lib/Generic/Select.svelte';
+	import TextInput from '$lib/Generic/TextInput.svelte';
+	import { type Tag } from '$lib/Group/interface';
+	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
+	import { onMount } from 'svelte';
+	import { _ } from 'svelte-i18n';
+	import { homePolls as homePollsLimit } from '../Generic/APILimits.json';
+	import type { Filter } from './interface';
 
 	export let filter: Filter,
 		handleSearch: () => void = () => {},
@@ -154,7 +154,6 @@
 			Class="w-4/5"
 			onInput={() => (searched = false)}
 			label=""
-			§
 			max={null}
 			search={true}
 			placeholder={$_('Search polls')}

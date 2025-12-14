@@ -99,3 +99,11 @@ export interface Filter {
     search: string;
     type: 'home' | 'group'
 }
+
+export interface Schedule {
+    id: number;
+    origin_name: "user" | "group" | "workgroup";
+    origin_id: number;
+    default_tag: { id: number, name: string };
+    availible_tags: string[];
+}
