@@ -97,7 +97,7 @@
 		// let urlFilter = 'joined=true';
 		let urlFilter = '';
 		// loading = true;
-		const { res, json } = await fetchRequest('GET', `group/list?${urlFilter}`);
+		const { res, json } = await fetchRequest('GET', `group/list?limit=50&${urlFilter}`);
 		// loading = false;
 
 		if (!res.ok) return;

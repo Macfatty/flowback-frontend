@@ -2,7 +2,7 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import FIleUpload from '$lib/Generic/FileUpload.svelte';
+	import FIleUpload from '$lib/Generic/File/FileUpload.svelte';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
