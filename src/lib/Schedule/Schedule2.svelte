@@ -16,8 +16,10 @@
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import type { Group } from '$lib/Group/interface';
+	import Button from '$lib/Generic/Button.svelte';
 
 	let open = $state(false),
+		openFilter = $state(false),
 		events: ScheduleItem2[] = $state([]),
 		selectedEvent: ScheduleItem2 = $state(ScheduleItem2Default),
 		groupId: null | number = $state(null),
@@ -92,8 +94,8 @@
 	};
 
 	const getGroups = async () => {
+		// let urlFilter = 'joined=true';
 		let urlFilter = '';
-		urlFilter += 'joined=true';
 		// loading = true;
 		const { res, json } = await fetchRequest('GET', `group/list?${urlFilter}`);
 		// loading = false;
@@ -192,6 +194,15 @@
 	});
 </script>
 
+<Modal bind:open={openFilter}>
+	<div slot="body">
+		{#each groups as group}
+			<input type="checkbox" value={group.id} /> {group.name} <br />
+		{/each}
+	</div>
+</Modal>
+
+<Button onClick={() => (openFilter = true)}>Open Advanced Filter</Button>
 <select
 	style="width:100%"
 	class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"

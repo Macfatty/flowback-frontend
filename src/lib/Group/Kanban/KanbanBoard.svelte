@@ -37,13 +37,6 @@
 		// Add filteredKanbanEntries to store the client-side filtered result
 		filteredKanbanEntries: kanban[] = [];
 
-	const changeNumberOfOpen = (addOrSub: 'Addition' | 'Subtraction') => {
-		if (numberOfOpen < 0) numberOfOpen = 0;
-
-		if (addOrSub === 'Addition') numberOfOpen += 1;
-		if (addOrSub === 'Subtraction') numberOfOpen -= 1;
-	};
-
 	const getKanbanEntries = async () => {
 		if (filter.type === 'group') {
 			await getKanbanEntriesGroup();
@@ -181,9 +174,9 @@
 										bind:workGroups
 										bind:kanban
 										bind:filter
+										bind:numberOfOpen
 										{users}
 										{removeKanbanEntry}
-										{changeNumberOfOpen}
 										{getKanbanEntries}
 									/>
 								{/if}
