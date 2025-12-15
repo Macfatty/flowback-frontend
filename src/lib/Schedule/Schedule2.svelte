@@ -31,23 +31,23 @@
 		workgroups: WorkGroup[] = $state([]);
 
 	const scheduleEventList = async () => {
-		let api = `schedule/list?limit=50&`;
-		if (groupIds.length > 0) api += `origin_ids=${groupIds.join(',')}&origin_name=group`;
-		else api += `origin_name=user`;
-
 		let schedules: Schedule[] = [];
 
 		// Get group or user schedules
 		{
+			let api = `schedule/list?limit=50&`;
+			api += `origin_ids=0,${groupIds.join(',')}&origin_name=group`;
+			// else api += `origin_name=user`;
+
 			const { res, json } = await fetchRequest('GET', api);
-			schedules = json.results ?? null;
+			schedules = json.results ?? [];
 		}
 
 		// Get workgroup schedules
 		{
-			let api = `schedule/list?limit=50&origin_ids=${workgroupIds.join(',')}&origin_name=workgroup`;
+			let api = `schedule/list?limit=50&origin_ids=0,${workgroupIds.join(',')}&origin_name=workgroup`;
 			const { res, json } = await fetchRequest('GET', api);
-			schedules.push(json.results);
+			schedules.push(json.results ?? []);
 		}
 
 		if (!schedules) {
@@ -55,11 +55,11 @@
 			return;
 		}
 
-		let api2 = `schedule/event/list?limit=50&schedule_ids=${schedules.map((s) => s.id).join(',')}`;
-
+		// Finally, get the events from every schedule
 		{
-			const { res, json } = await fetchRequest('GET', api2);
-			events = json.results;
+			let api = `schedule/event/list?limit=50&schedule_ids=0,${schedules.map((s) => s.id).join(',')}`;
+			const { res, json } = await fetchRequest('GET', api);
+			events = json.results ?? [];
 		}
 	};
 
@@ -126,8 +126,8 @@
 		const workgroupsPromise = groups.map((g) => fetchRequest('GET', `group/${g.id}/list`));
 		let hasError = false;
 
-		console.log(workgroupsPromise, "PROMISE");
-		
+		console.log(workgroupsPromise, 'PROMISE');
+
 		// Fetches all workgroups concurrently and makes sure all events are in one neat array
 		workgroups = (await Promise.all(workgroupsPromise))
 			.map(({ res, json }) => {
@@ -230,11 +230,7 @@
 	});
 
 	$effect(() => {
-		if (groupId) scheduleEventList();
-	});
-
-	$effect(() => {
-		if (groupIds) scheduleEventList();
+		if (groupIds || workgroupIds) scheduleEventList();
 	});
 </script>
 
