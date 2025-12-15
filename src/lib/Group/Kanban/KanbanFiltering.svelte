@@ -8,18 +8,25 @@
 	import type { Group } from '$lib/Group/interface';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
-	import Button from '$lib/Generic/Button.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
+	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 
-	export let filter: Filter,
-		handleSearch: () => Promise<void>,
-		Class = '',
-		workGroups: WorkGroup[] = [];
+	interface Props {
+		filter: Filter;
+		handleSearch: () => Promise<void>;
+		Class?: string;
+		workGroups?: WorkGroup[];
+	}
 
-	let searched = true,
-		groupList: Group[] = [],
-		loading = false,
-		advancedFilterOpen = false;
+	let { filter, handleSearch, Class = '', workGroups = [] }: Props = $props();
+
+	let searched = $state(true),
+		groupList: Group[] = $state([]),
+		loading = $state(false),
+		advancedFilterOpen = $state(false),
+		groupIds: number[] = $state([]),
+		workgroupIds: number[] = $state([]),
+		userChecked = $state(false);
 
 	const onGroupChange = async (id: string) => {
 		filter.group = id;
@@ -57,17 +64,17 @@
 
 		loading = false;
 	};
-
 </script>
 
 <form
 	class="bg-white dark:bg-darkobject dark:text-darkmodeText shadow rounded p-4 flex flex-col w-full gap-4 ${Class}"
-	on:submit|preventDefault={async () => {
+	onsubmit={async (e) => {
+		e.preventDefault();
 		searched = true;
 		await handleSearch();
 	}}
 >
-	<Button onClick={() => (advancedFilterOpen = true)}>{$_('Advanced Filtering')}</Button>
+	<AdvancedFiltering bind:groupIds bind:workgroupIds bind:userChecked />
 
 	<div class="w-full items-end gap-4">
 		<TextInput
@@ -110,7 +117,8 @@
 					<select
 						style="width:100%"
 						class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
-						on:change={(e) => {
+						onchange={(e) => {
+							e.preventDefault();
 							//@ts-ignore
 							onGroupChange(e?.target?.value);
 						}}
@@ -130,7 +138,8 @@
 					<select
 						style="width:100%"
 						class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
-						on:change={(e) => {
+						onchange={(e) => {
+							e.preventDefault();
 							//@ts-ignore
 							onWorkGroupChange(e?.target?.value);
 						}}
@@ -158,7 +167,7 @@
 						name="advanced-filtering-kanban"
 						type="radio"
 						value={group.id}
-						on:change={() => onGroupChange(group.id.toString())}
+						onchange={() => onGroupChange(group.id.toString())}
 					/>{group.name}</label
 				>
 
@@ -169,7 +178,7 @@
 								name="advanced-filtering-workgroup-kanban"
 								type="radio"
 								value={workgroup.id}
-								on:change={() => onWorkGroupChange(workgroup.id.toString())}
+								onchange={() => onWorkGroupChange(workgroup.id.toString())}
 							/>{workgroup.name}</label
 						>
 					</div>
