@@ -11,16 +11,14 @@
 	import Fa from 'svelte-fa';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import type { kanban, Filter } from './Kanban';
-	import KanbanFiltering from './KanbanFiltering.svelte';
 	import { page } from '$app/stores';
-	import { userStore } from '$lib/User/interfaces';
+	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 
 	const tags = ['', 'Backlog', 'To do', 'Current', 'Evaluation', 'Done'];
 
 	let { Class = '' } = $props();
 
 	let kanbanEntries: kanban[] = $state([]),
-		assignee: number | null = $state(null),
 		users: GroupUser[] = $state([]),
 		interval: any,
 		open = $state(false),
@@ -32,7 +30,10 @@
 			type: $page.url.searchParams.get('groupId') ? 'group' : 'home'
 		}),
 		workGroups: WorkGroup[] = $state([]),
-		lane: number = $state(1);
+		lane: number = $state(1),
+		groupIds: number[] = $state([]),
+		workgroupIds: number[] = $state([]),
+		userChecked = $state(false);
 
 	const getKanbanEntries = async () => {
 		filter.type === 'group' ? await getKanbanEntriesGroup() : getKanbanEntriesHome();
@@ -98,15 +99,30 @@
 		kanbanEntries.filter((entry) => entry.id !== id);
 	};
 
-	onMount(async () => {
-		assignee = $userStore?.id || -1;
-		await getKanbanEntries();
-		await getWorkGroupList();
-		await getGroupUsers();
+	const getKanbanEntries2 = async () => {
+		let kanbanEntries2 = [];
 
-		interval = setInterval(async () => {
-			await getKanbanEntries();
-		}, 20410);
+		if (userChecked) {
+			let api = `user/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
+			const { res, json } = await fetchRequest('GET', api);
+			if (res.ok) {
+				kanbanEntries2.push(json.results ?? []);
+			}
+		}
+
+		kanbanEntries = kanbanEntries2;
+	};
+
+	onMount(async () => {
+		await getKanbanEntries2();
+		// assignee = $userStore?.id || -1;
+		// await getKanbanEntries();
+		// await getWorkGroupList();
+		// await getGroupUsers();
+
+		// interval = setInterval(async () => {
+		// 	await getKanbanEntries();
+		// }, 20410);
 	});
 
 	onDestroy(() => {
@@ -114,15 +130,19 @@
 	});
 
 	$effect(() => {
-		filter.group && getWorkGroupList();
+		// filter.group && getWorkGroupList();
 	});
 
 	$effect(() => {
-		filter.group && getGroupUsers();
+		// filter.group && getGroupUsers();
 	});
 
 	$effect(() => {
-		if (filter.type) getKanbanEntries();
+		// if (filter.type) getKanbanEntries();
+	});
+
+	$effect(() => {
+		if (groupIds || workgroupIds || userChecked) getKanbanEntries2();
 	});
 </script>
 
@@ -130,7 +150,8 @@
 	id="kanban-board"
 	class={'dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words' + Class}
 >
-	<KanbanFiltering bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" />
+	<AdvancedFiltering bind:groupIds bind:workgroupIds bind:userChecked />
+	<!-- <KanbanFiltering bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" /> -->
 	<div class="flex overflow-x-auto py-3">
 		{#each tags as _tag, i}
 			{#if i !== 0}
@@ -150,20 +171,18 @@
 						>
 					</div>
 					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
-						{#if kanbanEntries?.length > 0}
-							{#each kanbanEntries as kanban, i}
-								{#if kanban.lane === i}
-									<KanbanEntry
-										bind:kanban={kanbanEntries[i]}
-										bind:workGroups
-										bind:filter
-										{users}
-										{removeKanbanEntry}
-										{getKanbanEntries}
-									/>
-								{/if}
-							{/each}
-						{/if}
+						{#each kanbanEntries as kanban, j}
+							{#if kanban.lane === i}
+								<KanbanEntry
+									bind:kanban={kanbanEntries[j]}
+									bind:workGroups
+									bind:filter
+									{users}
+									{removeKanbanEntry}
+									{getKanbanEntries}
+								/>
+							{/if}
+						{/each}
 					</ul>
 					<div class="flex justify-between pt-4">
 						<button
