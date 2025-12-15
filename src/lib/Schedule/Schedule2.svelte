@@ -14,7 +14,6 @@
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
-	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import type { Group } from '$lib/Group/interface';
 	import Button from '$lib/Generic/Button.svelte';
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
@@ -28,32 +27,47 @@
 		groupIds: number[] = $state([]),
 		groups: Group[] = $state([]),
 		workgroupIds: number[] = $state([]),
-		workgroups: WorkGroup[] = $state([]);
+		workgroups: WorkGroup[] = $state([]),
+		userChecked = $state(false);
 
 	const scheduleEventList = async () => {
 		let schedules: Schedule[] = [];
 
-		// Get group or user schedules
-		{
-			let api = `schedule/list?limit=50&`;
-			api += `origin_ids=0,${groupIds.join(',')}&origin_name=group`;
-			// else api += `origin_name=user`;
+		// Before getting events, we need to get all schedules for the user, groups and workgroups
+		// because events are tied to schedules
+
+		// Get user schedule
+
+		if (userChecked) {
+			let api = `schedule/list?limit=50&origin_name=user`;
 
 			const { res, json } = await fetchRequest('GET', api);
-			schedules = json.results ?? [];
+			schedules.push(json.results ?? []);
+		}
+
+		// Get group schedules
+		if (groupIds.length > 0) {
+			let api = `schedule/list?limit=50&`;
+			api += `origin_ids=0,${groupIds.join(',')}&origin_name=group`;
+
+			const { res, json } = await fetchRequest('GET', api);
+			schedules.push(json.results ?? []);
 		}
 
 		// Get workgroup schedules
-		{
+		if (workgroupIds.length > 0) {
 			let api = `schedule/list?limit=50&origin_ids=0,${workgroupIds.join(',')}&origin_name=workgroup`;
 			const { res, json } = await fetchRequest('GET', api);
 			schedules.push(json.results ?? []);
 		}
 
-		if (!schedules) {
+		if (schedules.length === 0) {
 			events = [];
 			return;
 		}
+		schedules = schedules.flat(1);
+
+		console.log(schedules, schedules.map((s) => s.id).join(','), 'SCHED');
 
 		// Finally, get the events from every schedule
 		{
@@ -125,8 +139,6 @@
 		// Creates a list of promises to fetch workgroups for each groupId
 		const workgroupsPromise = groups.map((g) => fetchRequest('GET', `group/${g.id}/list`));
 		let hasError = false;
-
-		console.log(workgroupsPromise, 'PROMISE');
 
 		// Fetches all workgroups concurrently and makes sure all events are in one neat array
 		workgroups = (await Promise.all(workgroupsPromise))
@@ -236,6 +248,7 @@
 
 <Modal bind:open={openFilter}>
 	<div slot="body">
+		<input type="checkbox" bind:checked={userChecked} /> User Schedule <br />
 		{#each groups as group}
 			<input
 				type="checkbox"
@@ -269,20 +282,6 @@
 </Modal>
 
 <Button onClick={() => (openFilter = true)}>Open Advanced Filter</Button>
-<select
-	style="width:100%"
-	class="rounded p-1 dark:border-gray-600 dark:bg-darkobject text-gray-700 dark:text-darkmodeText font-semibold"
-	onchange={(e) => {
-		// @ts-ignore
-		groupId = e?.target?.value;
-	}}
-	id="group"
->
-	<option value={null}>{$_('None')}</option>
-	{#each groups as group}
-		<option value={group.id.toString()}>{elipsis(group.name)}</option>
-	{/each}
-</select>
 
 <div class="flex justify-center w-full">
 	<!-- <Select labels={groups}/> -->
