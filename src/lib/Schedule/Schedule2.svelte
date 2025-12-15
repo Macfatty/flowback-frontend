@@ -17,6 +17,7 @@
 	import type { Group } from '$lib/Group/interface';
 	import Button from '$lib/Generic/Button.svelte';
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
+	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 
 	let open = $state(false),
 		openFilter = $state(false),
@@ -25,9 +26,7 @@
 		//TODO get rid of groupid and use groupIds only
 		groupId: null | number = $state(null),
 		groupIds: number[] = $state([]),
-		groups: Group[] = $state([]),
 		workgroupIds: number[] = $state([]),
-		workgroups: WorkGroup[] = $state([]),
 		userChecked = $state(false);
 
 	const scheduleEventList = async () => {
@@ -37,7 +36,6 @@
 		// because events are tied to schedules
 
 		// Get user schedule
-
 		if (userChecked) {
 			let api = `schedule/list?limit=50&origin_name=user`;
 
@@ -66,8 +64,6 @@
 			return;
 		}
 		schedules = schedules.flat(1);
-
-		console.log(schedules, schedules.map((s) => s.id).join(','), 'SCHED');
 
 		// Finally, get the events from every schedule
 		{
@@ -121,36 +117,6 @@
 
 		events = events.filter((e) => e.id !== event_id);
 		open = false;
-	};
-
-	const getGroups = async () => {
-		// let urlFilter = 'joined=true';
-		let urlFilter = '';
-		// loading = true;
-		const { res, json } = await fetchRequest('GET', `group/list?limit=50&${urlFilter}`);
-		// loading = false;
-
-		if (!res.ok) return;
-
-		groups = json?.results;
-	};
-
-	const getWorkgroups = async () => {
-		// Creates a list of promises to fetch workgroups for each groupId
-		const workgroupsPromise = groups.map((g) => fetchRequest('GET', `group/${g.id}/list`));
-		let hasError = false;
-
-		// Fetches all workgroups concurrently and makes sure all events are in one neat array
-		workgroups = (await Promise.all(workgroupsPromise))
-			.map(({ res, json }) => {
-				if (!res.ok) hasError = true;
-				return json.results;
-			})
-			.flat(1);
-
-		// If any of the workgroup fetches failed, we set an error message
-		if (hasError)
-			ErrorHandlerStore.set({ message: 'Failed to fetch atleast some workgroups', success: false });
 	};
 
 	// Read documentation for this calendar module: https://fullcalendar.io/
@@ -232,9 +198,6 @@
 		if (groupId) groupIds.push(groupId);
 
 		scheduleEventList();
-
-		await getGroups();
-		getWorkgroups();
 	});
 
 	$effect(() => {
@@ -242,49 +205,13 @@
 	});
 
 	$effect(() => {
-		if (groupIds || workgroupIds) scheduleEventList();
+		if (groupIds || workgroupIds || userChecked) scheduleEventList();
 	});
 </script>
 
-<Modal bind:open={openFilter}>
-	<div slot="body">
-		<input type="checkbox" bind:checked={userChecked} /> User Schedule <br />
-		{#each groups as group}
-			<input
-				type="checkbox"
-				onchange={() => {
-					if (groupIds.includes(group.id)) {
-						groupIds = groupIds.filter((id) => id !== group.id);
-					} else {
-						groupIds = [...groupIds, group.id];
-					}
-				}}
-				checked={groupIds.includes(group.id)}
-			/>
-			{group.name} <br />
-
-			{#each workgroups.filter((wg) => wg.group_id === group.id) as workgroup}
-				<input
-					type="checkbox"
-					onchange={() => {
-						if (workgroupIds.includes(workgroup.id)) {
-							workgroupIds = workgroupIds.filter((id) => id !== workgroup.id);
-						} else {
-							workgroupIds = [...workgroupIds, workgroup.id];
-						}
-					}}
-					checked={workgroupIds.includes(workgroup.id)}
-				/>
-				{workgroup.name} <br />
-			{/each}
-		{/each}
-	</div>
-</Modal>
-
-<Button onClick={() => (openFilter = true)}>Open Advanced Filter</Button>
+<AdvancedFiltering bind:groupIds bind:workgroupIds bind:userChecked />
 
 <div class="flex justify-center w-full">
-	<!-- <Select labels={groups}/> -->
 	<div class="w-full bg-white dark:bg-darkbackground" id="calendar-2"></div>
 </div>
 
