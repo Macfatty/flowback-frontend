@@ -14,13 +14,9 @@
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
-	import type { Group } from '$lib/Group/interface';
-	import Button from '$lib/Generic/Button.svelte';
-	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 
 	let open = $state(false),
-		openFilter = $state(false),
 		events: ScheduleItem2[] = $state([]),
 		selectedEvent: ScheduleItem2 = $state(ScheduleItem2Default),
 		//TODO get rid of groupid and use groupIds only

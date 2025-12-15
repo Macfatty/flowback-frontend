@@ -32,19 +32,10 @@
 			type: $page.url.searchParams.get('groupId') ? 'group' : 'home'
 		},
 		workGroups: WorkGroup[] = [],
-		lane: number = 1,
-		// Add filteredKanbanEntries to store the client-side filtered result
-		filteredKanbanEntries: kanban[] = [];
+		lane: number = 1;
 
 	const getKanbanEntries = async () => {
-		if (filter.type === 'group') {
-			await getKanbanEntriesGroup();
-		} else if (filter.type === 'home') {
-			await getKanbanEntriesHome();
-		}
-
-		// Apply client-side filtering after fetching
-		filterKanbanEntries();
+		filter.type === 'group' ? await getKanbanEntriesGroup() : getKanbanEntriesHome();
 	};
 
 	const getKanbanEntriesGroup = async () => {
@@ -104,21 +95,7 @@
 	};
 
 	const removeKanbanEntry = (id: number) => {
-		kanbanEntries = kanbanEntries.filter((entry) => entry.id !== id);
-		// Reapply filtering after removal
-		filterKanbanEntries();
-	};
-
-	// New client-side filtering function
-	const filterKanbanEntries = () => {
-		filteredKanbanEntries = kanbanEntries.filter((entry) => {
-			const matchesSearch =
-				!filter.search ||
-				entry.title?.toLowerCase().includes(filter.search.toLowerCase()) ||
-				entry.description?.toLowerCase().includes(filter.search.toLowerCase());
-			const matchesWorkgroup = !filter.workgroup || entry.work_group?.id === filter.workgroup;
-			return matchesSearch && matchesWorkgroup;
-		});
+		kanbanEntries.filter((entry) => entry.id !== id);
 	};
 
 	onMount(async () => {
@@ -166,8 +143,8 @@
 						>
 					</div>
 					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
-						{#if filteredKanbanEntries?.length > 0}
-							{#each filteredKanbanEntries as kanban}
+						{#if kanbanEntries?.length > 0}
+							{#each kanbanEntries as kanban}
 								{#if kanban.lane === i}
 									<KanbanEntry
 										bind:workGroups

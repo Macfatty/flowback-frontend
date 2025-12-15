@@ -222,6 +222,7 @@
 			});
 			return;
 		}
+
 		removeKanbanEntry(kanban.id);
 	};
 

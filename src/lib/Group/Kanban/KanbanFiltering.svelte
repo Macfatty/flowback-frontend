@@ -18,7 +18,12 @@
 		workGroups?: WorkGroup[];
 	}
 
-	let { filter, handleSearch, Class = '', workGroups = [] }: Props = $props();
+	let {
+		filter = $bindable(),
+		workGroups = $bindable([]),
+		handleSearch,
+		Class = ''
+	}: Props = $props();
 
 	let searched = $state(true),
 		groupList: Group[] = $state([]),
