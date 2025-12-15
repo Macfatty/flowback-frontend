@@ -17,27 +17,37 @@
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 	import type { Group } from '$lib/Group/interface';
 	import Button from '$lib/Generic/Button.svelte';
-	import { json } from '@sveltejs/kit';
+	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 
 	let open = $state(false),
 		openFilter = $state(false),
 		events: ScheduleItem2[] = $state([]),
 		selectedEvent: ScheduleItem2 = $state(ScheduleItem2Default),
+		//TODO get rid of groupid and use groupIds only
 		groupId: null | number = $state(null),
 		groupIds: number[] = $state([]),
-		groups: Group[] = $state([]);
+		groups: Group[] = $state([]),
+		workgroupIds: number[] = $state([]),
+		workgroups: WorkGroup[] = $state([]);
 
 	const scheduleEventList = async () => {
 		let api = `schedule/list?limit=50&`;
-
 		if (groupIds.length > 0) api += `origin_ids=${groupIds.join(',')}&origin_name=group`;
 		else api += `origin_name=user`;
 
 		let schedules: Schedule[] = [];
 
+		// Get group or user schedules
 		{
 			const { res, json } = await fetchRequest('GET', api);
 			schedules = json.results ?? null;
+		}
+
+		// Get workgroup schedules
+		{
+			let api = `schedule/list?limit=50&origin_ids=${workgroupIds.join(',')}&origin_name=workgroup`;
+			const { res, json } = await fetchRequest('GET', api);
+			schedules.push(json.results);
 		}
 
 		if (!schedules) {
@@ -110,6 +120,27 @@
 
 		groups = json?.results;
 	};
+
+	const getWorkgroups = async () => {
+		// Creates a list of promises to fetch workgroups for each groupId
+		const workgroupsPromise = groups.map((g) => fetchRequest('GET', `group/${g.id}/list`));
+		let hasError = false;
+
+		console.log(workgroupsPromise, "PROMISE");
+		
+		// Fetches all workgroups concurrently and makes sure all events are in one neat array
+		workgroups = (await Promise.all(workgroupsPromise))
+			.map(({ res, json }) => {
+				if (!res.ok) hasError = true;
+				return json.results;
+			})
+			.flat(1);
+
+		// If any of the workgroup fetches failed, we set an error message
+		if (hasError)
+			ErrorHandlerStore.set({ message: 'Failed to fetch atleast some workgroups', success: false });
+	};
+
 	// Read documentation for this calendar module: https://fullcalendar.io/
 	const renderCalendar = () => {
 		let calendarEl = document.getElementById('calendar-2');
@@ -184,12 +215,14 @@
 		calendar.render();
 	};
 
-	onMount(() => {
+	onMount(async () => {
 		groupId = Number(new URLSearchParams(document.location.search).get('groupId')) ?? null;
 		if (groupId) groupIds.push(groupId);
 
 		scheduleEventList();
-		getGroups();
+
+		await getGroups();
+		getWorkgroups();
 	});
 
 	$effect(() => {
@@ -220,14 +253,21 @@
 				checked={groupIds.includes(group.id)}
 			/>
 			{group.name} <br />
-			{#await fetchRequest('GET', `group/${group.id}/list`) then { json, res }}
-				{#if json.results.length > 0}
-					{json.results[0]?.id} <input type="checkbox" /> <br />
-				{/if}
-			{:catch error}
-				<p>Error loading group details</p>
-			{/await}
-			<br />
+
+			{#each workgroups.filter((wg) => wg.group_id === group.id) as workgroup}
+				<input
+					type="checkbox"
+					onchange={() => {
+						if (workgroupIds.includes(workgroup.id)) {
+							workgroupIds = workgroupIds.filter((id) => id !== workgroup.id);
+						} else {
+							workgroupIds = [...workgroupIds, workgroup.id];
+						}
+					}}
+					checked={workgroupIds.includes(workgroup.id)}
+				/>
+				{workgroup.name} <br />
+			{/each}
 		{/each}
 	</div>
 </Modal>
