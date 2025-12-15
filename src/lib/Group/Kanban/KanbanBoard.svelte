@@ -17,22 +17,22 @@
 
 	const tags = ['', 'Backlog', 'To do', 'Current', 'Evaluation', 'Done'];
 
-	export let Class = '';
+	let { Class = '' } = $props();
 
-	let kanbanEntries: kanban[] = [],
-		assignee: number | null = null,
-		users: GroupUser[] = [],
+	let kanbanEntries: kanban[] = $state([]),
+		assignee: number | null = $state(null),
+		users: GroupUser[] = $state([]),
 		interval: any,
-		open = false,
-		filter: Filter = {
+		open = $state(false),
+		filter: Filter = $state({
 			group: $page.url.searchParams.get('groupId'),
 			assignee: null,
 			search: '',
 			workgroup: null,
 			type: $page.url.searchParams.get('groupId') ? 'group' : 'home'
-		},
-		workGroups: WorkGroup[] = [],
-		lane: number = 1;
+		}),
+		workGroups: WorkGroup[] = $state([]),
+		lane: number = $state(1);
 
 	const getKanbanEntries = async () => {
 		filter.type === 'group' ? await getKanbanEntriesGroup() : getKanbanEntriesHome();
@@ -113,10 +113,17 @@
 		clearInterval(interval);
 	});
 
-	$: filter.group && getWorkGroupList();
-	$: filter.group && getGroupUsers();
+	$effect(() => {
+		filter.group && getWorkGroupList();
+	});
 
-	$: if (filter.type) getKanbanEntries();
+	$effect(() => {
+		filter.group && getGroupUsers();
+	});
+
+	$effect(() => {
+		if (filter.type) getKanbanEntries();
+	});
 </script>
 
 <div
@@ -136,7 +143,7 @@
 						<button
 							id={`${_tag}-add`}
 							class="text-sm p-1"
-							on:click={() => {
+							onclick={() => {
 								open = true;
 								lane = i;
 							}}><Fa icon={faPlus} size="12px" /></button
@@ -144,11 +151,11 @@
 					</div>
 					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
 						{#if kanbanEntries?.length > 0}
-							{#each kanbanEntries as kanban}
+							{#each kanbanEntries as kanban, i}
 								{#if kanban.lane === i}
 									<KanbanEntry
+										bind:kanban={kanbanEntries[i]}
 										bind:workGroups
-										bind:kanban
 										bind:filter
 										{users}
 										{removeKanbanEntry}
@@ -161,7 +168,7 @@
 					<div class="flex justify-between pt-4">
 						<button
 							class="text-sm flex items-center gap-2"
-							on:click={() => {
+							onclick={() => {
 								open = true;
 								lane = i;
 							}}

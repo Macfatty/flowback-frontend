@@ -319,7 +319,9 @@
 			/>
 			{$_('My own')}
 		{:else}
-			<span class="text-xs dark:text-gray-500 text-gray-400 italic">{$_('Group')}: {kanban.group_name}</span>
+			<span class="text-xs dark:text-gray-500 text-gray-400 italic"
+				>{$_('Group')}: {kanban.group_name}</span
+			>
 
 			<span class="text-xs dark:text-gray-500 text-gray-400 italic">
 				{#if kanban?.assignee}
@@ -336,7 +338,7 @@
 	</div>
 
 	{#if kanban.work_group && kanban.work_group.name}
-		<div class="text-xs dark:text-gray-500 text-gray-400 italic ">
+		<div class="text-xs dark:text-gray-500 text-gray-400 italic">
 			{$_('Work Group')}: {elipsis(kanban.work_group.name || '', 20)}
 		</div>
 	{/if}
