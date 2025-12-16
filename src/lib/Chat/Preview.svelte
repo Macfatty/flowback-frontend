@@ -13,6 +13,7 @@
 	import { faCircle, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import { userStore } from '$lib/User/interfaces';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
+	import EveryProperty from '$lib/Generic/EveryProperty.svelte';
 
 	let chatSearch = '',
 		openUserSearch = false;
@@ -72,6 +73,28 @@
 		});
 	};
 
+	// Leaving user created group chats (scuffed way)
+	const leaveGroupScuffed = async (id: number | string) => {
+		id = Number(id);
+
+		// TODO: Fix this endpoint to properly leave a group chat
+		const { res, json } = await fetchRequest('POST', `chat/message/channel/userdata/update`, {
+			channel_id: id,
+			timestamp: '2999-12-31T23:59:59Z',
+			closed_at: '2999-12-31T23:59:59Z'
+		});
+
+		if (!res.ok) return;
+
+		// Remove the chat from previewStore
+		previewStore.update((store) => (store ? store?.filter((p) => p.channel_id !== id) : []));
+
+		// Clear chatPartnerStore if the user is currently in the left group
+		if ($chatPartnerStore === id) {
+			chatPartnerStore.set(-1);
+		}
+	};
+
 	onMount(async () => {
 		await UserChatInviteList();
 		clickedChatter($chatPartnerStore);
@@ -104,8 +127,9 @@
 			<div slot="action" let:item>
 				<button
 					on:click={async () => {
+						const id = await getUserChannelId(item.id);
+						chatPartnerStore.set(id);
 						chatOpenStore.set(true);
-						chatPartnerStore.set(await getUserChannelId(item.id));
 						openUserSearch = false;
 					}}
 				>
@@ -148,6 +172,9 @@
 	{/if}
 	{#each $previewStore as chatter}
 		{#if chatter.channel_title?.includes(chatSearch) && ((chatter?.recent_message?.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)}
+			{#if chatter?.recent_message?.channel_origin_name === 'user_group'}
+				<Button onClick={() => leaveGroupScuffed(chatter?.channel_id)}>LEAVE</Button>
+			{/if}
 			<button
 				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
 				class:bg-gray-200={$chatPartnerStore === chatter.channel_id}
@@ -158,18 +185,20 @@
 				<div class="flex justify-between items-center w-full">
 					<div>
 						<div class="max-w-full text-left overflow-x-hidden overflow-ellipsis">
-							<!-- {chatter?.user.username} -->
 							{chatter.channel_title ?? chatter.recent_message?.channel_title ?? 'Name not found'}
 						</div>
 						<div class="text-left text-gray-400 text-sm h-[20px]">
 							{elipsis(chatter?.recent_message?.message || '', 15)}
 						</div>
 					</div>
+					<!-- <EveryProperty obj={chatter} /> -->
+					<!-- Purple dot on Chat indicating notification -->
 					{#if chatter?.recent_message?.notified === false}
-						<div class="rounded-full text-purple-300"><Fa size={"xs"} icon={faCircle}/></div>
+						<div class="rounded-full text-purple-300"><Fa size={'xs'} icon={faCircle} /></div>
 					{/if}
 				</div>
 			</button>
+			<!-- Button for creating group user chat -->
 			{#if creatingGroup}
 				<div id={`chat-${idfy(chatter.channel_title ?? '')}`}>
 					<Button

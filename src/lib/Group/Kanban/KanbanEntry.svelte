@@ -21,13 +21,12 @@
 	import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 	import Select from '$lib/Generic/Select.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import FileUploads from '$lib/Generic/FileUploads.svelte';
+	import FileUploads from '$lib/Generic/File/FileUploads.svelte';
 
 	export let kanban: kanban,
 		filter: Filter,
 		users: GroupUser[],
 		removeKanbanEntry: (id: number) => void,
-		changeNumberOfOpen: (addOrSub: 'Addition' | 'Subtraction') => void,
 		workGroups: WorkGroup[] = [],
 		getKanbanEntries: () => Promise<void>;
 
@@ -151,26 +150,27 @@
 				: `user/kanban/entry/list?id=${kanban.id}`
 		);
 
+		if (!res.ok) return;
 		// If all goes well, don't manually change kanban locally
-		if (res.ok) return;
+		// if (res.ok) return;
 
-		// Else, manually update locally
-		kanban = json.results[0];
-		kanban.title = kanbanEdited.title;
-		kanban.description = kanbanEdited.description;
-		kanban.priority = kanbanEdited.priority;
-		kanban.end_date = kanbanEdited.end_date;
-		kanban.work_group = kanbanEdited.work_group;
-		kanban.attachments = kanbanEdited.images || [];
+		// // Else, manually update locally
+		// kanban = json.results[0];
+		// kanban.title = kanbanEdited.title;
+		// kanban.description = kanbanEdited.description;
+		// kanban.priority = kanbanEdited.priority;
+		// kanban.end_date = kanbanEdited.end_date;
+		// kanban.work_group = kanbanEdited.work_group;
+		// kanban.attachments = kanbanEdited.images || [];
 
-		const assignee = users.find((user) => user.user.id === kanbanEdited.assignee_id);
-		kanban.assignee = kanbanEdited.assignee_id
-			? {
-					id: kanbanEdited.assignee_id,
-					username: assignee?.user.username || '',
-					profile_image: assignee?.user.profile_image || ''
-				}
-			: null;
+		// const assignee = users.find((user) => user.user.id === kanbanEdited.assignee_id);
+		// kanban.assignee = kanbanEdited.assignee_id
+		// 	? {
+		// 			id: kanbanEdited.assignee_id,
+		// 			username: assignee?.user.username || '',
+		// 			profile_image: assignee?.user.profile_image || ''
+		// 		}
+		// 	: null;
 
 		await getKanbanEntries();
 	};
@@ -222,6 +222,7 @@
 			});
 			return;
 		}
+
 		removeKanbanEntry(kanban.id);
 	};
 
@@ -253,15 +254,12 @@
 	$: if (openModal && !isEditing)
 		checkForLinks(kanban.description, `kanban-${kanban.id}-description`);
 
-	$: if (openModal === true) changeNumberOfOpen('Addition');
-	else changeNumberOfOpen('Subtraction');
-
 	$: if (openModal && kanban.id === selectedEntry) {
 		initializeKanbanEdited();
 	}
 
 	$: if (isEditing) {
-		images = kanban.attachments;
+		images = kanban.attachments ?? [];
 	}
 </script>
 
@@ -321,7 +319,9 @@
 			/>
 			{$_('My own')}
 		{:else}
-			<span class="text-xs dark:text-gray-500 text-gray-400 italic">{$_('Group')}: {kanban.group_name}</span>
+			<span class="text-xs dark:text-gray-500 text-gray-400 italic"
+				>{$_('Group')}: {kanban.group_name}</span
+			>
 
 			<span class="text-xs dark:text-gray-500 text-gray-400 italic">
 				{#if kanban?.assignee}
@@ -338,7 +338,7 @@
 	</div>
 
 	{#if kanban.work_group && kanban.work_group.name}
-		<div class="text-xs dark:text-gray-500 text-gray-400 italic ">
+		<div class="text-xs dark:text-gray-500 text-gray-400 italic">
 			{$_('Work Group')}: {elipsis(kanban.work_group.name || '', 20)}
 		</div>
 	{/if}

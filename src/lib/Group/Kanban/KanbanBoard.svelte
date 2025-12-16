@@ -11,48 +11,32 @@
 	import Fa from 'svelte-fa';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import type { kanban, Filter } from './Kanban';
-	import KanbanFiltering from './KanbanFiltering.svelte';
 	import { page } from '$app/stores';
-	import { userStore } from '$lib/User/interfaces';
+	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 
 	const tags = ['', 'Backlog', 'To do', 'Current', 'Evaluation', 'Done'];
 
-	export let Class = '';
+	let { Class = '' } = $props();
 
-	let kanbanEntries: kanban[] = [],
-		assignee: number | null = null,
-		users: GroupUser[] = [],
+	let kanbanEntries: kanban[] = $state([]),
+		users: GroupUser[] = $state([]),
 		interval: any,
-		open = false,
-		numberOfOpen = 0,
-		filter: Filter = {
+		open = $state(false),
+		filter: Filter = $state({
 			group: $page.url.searchParams.get('groupId'),
 			assignee: null,
 			search: '',
 			workgroup: null,
 			type: $page.url.searchParams.get('groupId') ? 'group' : 'home'
-		},
-		workGroups: WorkGroup[] = [],
-		lane: number = 1,
-		// Add filteredKanbanEntries to store the client-side filtered result
-		filteredKanbanEntries: kanban[] = [];
-
-	const changeNumberOfOpen = (addOrSub: 'Addition' | 'Subtraction') => {
-		if (numberOfOpen < 0) numberOfOpen = 0;
-
-		if (addOrSub === 'Addition') numberOfOpen += 1;
-		if (addOrSub === 'Subtraction') numberOfOpen -= 1;
-	};
+		}),
+		workGroups: WorkGroup[] = $state([]),
+		lane: number = $state(1),
+		groupIds: number[] = $state([]),
+		workgroupIds: number[] = $state([]),
+		userChecked = $state(false);
 
 	const getKanbanEntries = async () => {
-		if (filter.type === 'group') {
-			await getKanbanEntriesGroup();
-		} else if (filter.type === 'home') {
-			await getKanbanEntriesHome();
-		}
-
-		// Apply client-side filtering after fetching
-		filterKanbanEntries();
+		filter.type === 'group' ? await getKanbanEntriesGroup() : getKanbanEntriesHome();
 	};
 
 	const getKanbanEntriesGroup = async () => {
@@ -112,49 +96,77 @@
 	};
 
 	const removeKanbanEntry = (id: number) => {
-		kanbanEntries = kanbanEntries.filter((entry) => entry.id !== id);
-		// Reapply filtering after removal
-		filterKanbanEntries();
+		kanbanEntries.filter((entry) => entry.id !== id);
 	};
 
-	// New client-side filtering function
-	const filterKanbanEntries = () => {
-		filteredKanbanEntries = kanbanEntries.filter((entry) => {
-			const matchesSearch =
-				!filter.search ||
-				entry.title?.toLowerCase().includes(filter.search.toLowerCase()) ||
-				entry.description?.toLowerCase().includes(filter.search.toLowerCase());
-			const matchesWorkgroup = !filter.workgroup || entry.work_group?.id === filter.workgroup;
-			return matchesSearch && matchesWorkgroup;
-		});
+	const getKanbanEntries2 = async () => {
+		let kanbanEntries2 = [];
+
+		if (userChecked) {
+			let api = `user/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
+			const { res, json } = await fetchRequest('GET', api);
+			if (res.ok) {
+				kanbanEntries2.push(json.results ?? []);
+			}
+		}
+
+		if (groupIds.length > 0) {
+			let apis = groupIds.map((id) =>
+				fetchRequest(
+					'GET',
+					`group/${id}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`
+				)
+			);
+			let response = (await Promise.all(apis))
+				.map(({ res, json }) => {
+					if (res.ok) return json.results ?? [];
+				})
+				.flat(1);
+			kanbanEntries2.push(response);
+		}
+
+		kanbanEntries = kanbanEntries2.flat(1);
 	};
 
 	onMount(async () => {
-		assignee = $userStore?.id || -1;
-		await getKanbanEntries();
-		await getWorkGroupList();
-		await getGroupUsers();
+		await getKanbanEntries2();
+		// assignee = $userStore?.id || -1;
+		// await getKanbanEntries();
+		// await getWorkGroupList();
+		// await getGroupUsers();
 
-		interval = setInterval(async () => {
-			if (numberOfOpen === 0) await getKanbanEntries();
-		}, 20410);
+		// interval = setInterval(async () => {
+		// 	await getKanbanEntries();
+		// }, 20410);
 	});
 
 	onDestroy(() => {
 		clearInterval(interval);
 	});
 
-	$: filter.group && getWorkGroupList();
-	$: filter.group && getGroupUsers();
+	$effect(() => {
+		// filter.group && getWorkGroupList();
+	});
 
-	$: if (filter.type) getKanbanEntries();
+	$effect(() => {
+		// filter.group && getGroupUsers();
+	});
+
+	$effect(() => {
+		// if (filter.type) getKanbanEntries();
+	});
+
+	$effect(() => {
+		if (groupIds || workgroupIds || userChecked) getKanbanEntries2();
+	});
 </script>
 
 <div
 	id="kanban-board"
 	class={'dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words' + Class}
 >
-	<KanbanFiltering bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" />
+	<AdvancedFiltering bind:groupIds bind:workgroupIds bind:userChecked />
+	<!-- <KanbanFiltering bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" /> -->
 	<div class="flex overflow-x-auto py-3">
 		{#each tags as _tag, i}
 			{#if i !== 0}
@@ -167,33 +179,31 @@
 						<button
 							id={`${_tag}-add`}
 							class="text-sm p-1"
-							on:click={() => {
+							onclick={() => {
 								open = true;
 								lane = i;
 							}}><Fa icon={faPlus} size="12px" /></button
 						>
 					</div>
 					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
-						{#if filteredKanbanEntries?.length > 0}
-							{#each filteredKanbanEntries as kanban}
-								{#if kanban.lane === i}
-									<KanbanEntry
-										bind:workGroups
-										bind:kanban
-										bind:filter
-										{users}
-										{removeKanbanEntry}
-										{changeNumberOfOpen}
-										{getKanbanEntries}
-									/>
-								{/if}
-							{/each}
-						{/if}
+						{#each kanbanEntries as kanban, j}
+							{#if kanban.lane === i}
+								{kanban.title}
+								<KanbanEntry
+									bind:kanban={kanbanEntries[j]}
+									bind:workGroups
+									bind:filter
+									{users}
+									{removeKanbanEntry}
+									{getKanbanEntries}
+								/>
+							{/if}
+						{/each}
 					</ul>
 					<div class="flex justify-between pt-4">
 						<button
 							class="text-sm flex items-center gap-2"
-							on:click={() => {
+							onclick={() => {
 								open = true;
 								lane = i;
 							}}

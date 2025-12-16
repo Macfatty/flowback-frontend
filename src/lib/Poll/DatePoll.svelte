@@ -5,13 +5,14 @@
 	import { DateInput } from 'date-picker-svelte';
 	import { page } from '$app/stores';
 	import { _ } from 'svelte-i18n';
-	import WeekView from '$lib/Generic/Schedules/WeekView.svelte';
+	import DatePollSelection from '$lib/Generic/Schedules/DatePollSelection.svelte';
 	import Comments from '$lib/Comments/Comments.svelte';
 	import type { timeProposal } from './interface';
+	import { isMobile } from '$lib/utils/isMobile';
 
-	let open = false;
-	let date: Date;
-	let proposals: timeProposal[] = [];
+	let open = $state(false),
+		date: Date | null = $state(null),
+		proposals: timeProposal[] = $state([]);
 
 	const pollId = $page.params.pollId;
 
@@ -26,15 +27,20 @@
 	}
 
 	async function handleProposalSubmit() {
-		await createProposal(date);
+		if (date) await createProposal(date);
 		open = false;
 	}
 </script>
 
-<WeekView bind:proposals x={7} y={24} />
+<div
+  class="bg-white dark:bg-darkobject dark:text-darkmodeText shadow rounded my-6
+	{$isMobile ? 'w-full p-0' : 'w-[100%] lg:w-[70%] p-6 max-w-[1000px]'}"
+>
+  <DatePollSelection bind:proposals x={7} y={24} />
+</div>
 
 <div
-	class="p-6 bg-white dark:bg-darkbackground dark:text-darkmodeText w-[90%] lg:w-[70%] max-w-[1000px] shadow rounded my-6"
+	class="h-full overflow-y-auto bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md my-6 max-w-[1000px] w-[95%] lg:w-[70%]"
 >
 	<Comments api="poll" />
 </div>

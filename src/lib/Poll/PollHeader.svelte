@@ -21,6 +21,7 @@
 	import type { Tag as TagType } from '$lib/Group/interface';
 	import { onMount } from 'svelte';
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
+	import { isMobile } from '$lib/utils/isMobile';
 
 	export let poll: poll,
 		displayTag = false,
@@ -47,15 +48,16 @@
 	onMount(() => {
 		getTag();
 	});
-
+	
+ 	$: pictureSize = $isMobile ? 2 : 1;
 	$: poll && getTag();
 </script>
 
 <div
-	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded shadow w-full poll-header-grid py-4 max-w-[1200px]"
+	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded shadow poll-header-grid py-8 w-full max-w-[1200px]"
 >
 	<button
-		class="cursor-pointer bg-white dark:bg-darkobject dark:text-darkmodeText justify-center m-auto"
+		class="cursor-pointer bg-white dark:bg-darkobject dark:text-darkmodeText justify-center m-0 px-4"
 		on:click={() => {
 			if (source === 'home') goto('/home');
 			else if (source === 'group') goto(`/groups/${$page.params.groupId}?page=flow`);
@@ -65,11 +67,12 @@
 		<!-- NOTE: In +layout, rote folder, there are URL related behaviours which are affected by this. -->
 		<Fa icon={faArrowLeft} />
 	</button>
+
 	<h1 class="text-left text-2xl text-primary dark:text-secondary font-semibold break-words">
 		{poll?.title}
 	</h1>
 
-	<div class="flex gap-3 justify-center m-auto">
+	<div class="flex gap-3 justify-center m-auto pr-4">
 		<NotificationOptions
 			type="poll"
 			id={poll?.id}
@@ -98,38 +101,25 @@
 		/>
 	</div>
 
-	<div class="flex gap-4 items-center grid-area-items my-1">
-		{#if poll?.work_group_id}
-			{$_('Workgroup')}: {poll.work_group_name}
-		{/if}
-		{#if poll?.interval_mean_absolute_correctness}
-			{$_('Historical imac value')}: {imacFormatting(poll.interval_mean_absolute_correctness)}
-		{/if}
-		{#if poll?.poll_type === 4}
-			<HeaderIcon Class="cursor-default" icon={faAlignLeft} text={'Text Poll'} />
-		{:else if poll?.poll_type === 3}
-			<HeaderIcon Class="cursor-default" icon={faCalendarAlt} text={'Date Poll'} />
-		{/if}
-
-		{#if displayTag && tag}
-			<Tag id={'poll-tag'} bind:tag />
-		{/if}
-
+	<div class="flex gap-4 items-center grid-area-items my-1 border-b py-4">
 		{#if env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE'}
 			<a
 				href={`/groups/${$page.params.groupId}`}
 				class:hover:underline={poll?.group_joined}
 				class="text-black dark:text-darkmodeText"
 			>
-				<ProfilePicture
-					displayName
+				<ProfilePicture 
+					Class={!$isMobile ? '' : 'w-10 h-10'} 
+  				displayName={!$isMobile}
 					profilePicture={poll?.group_image}
 					username={poll?.group_name}
 					type="group"
+					size={pictureSize} 
+					
 				/>
 			</a>
 
-			<div>
+			<div class="text-xs sm:text-base">
 				{#if $groupUserPermissionStore?.allow_vote}
 					{$_('You are allowed to vote')}
 				{:else}
@@ -143,11 +133,29 @@
 					{$_(getPhaseUserFriendlyName(phase))}
 				</div>
 			{/if}
+
+			{#if poll?.work_group_id}
+				{$_('Workgroup')}: {poll.work_group_name}
+			{/if}
+
+			{#if poll?.interval_mean_absolute_correctness}
+				{$_('Historical imac value')}: {imacFormatting(poll.interval_mean_absolute_correctness)}
+			{/if}
+
+			{#if poll?.poll_type === 4}
+				<HeaderIcon Class="cursor-default" icon={faAlignLeft} text={'Text Poll'} />
+			{:else if poll?.poll_type === 3}
+				<HeaderIcon Class="cursor-default" icon={faCalendarAlt} text={'Date Poll'} />
+			{/if}
+
+			{#if displayTag && tag}
+				<Tag id={'poll-tag'} bind:tag />
+			{/if}
 		{/if}
 	</div>
 
 	{#if poll?.description.length > 0}
-		<div class="grid-area-description break-words w-[90vw] max-w-[1100px]">
+		<div class="grid-area-description break-words w-[90vw] max-w-[1100px] mt-4">
 			<NewDescription limit={3} lengthLimit={300} description={poll?.description} />
 		</div>
 	{/if}
@@ -197,4 +205,15 @@
 	.grid-area-description {
 		grid-area: 3 / 2 / 4 / 3;
 	}
+
+	 @media (max-width: 768px) {
+    .poll-header-grid {
+      max-width: 100vw;
+    }
+
+    .grid-area-description {
+      width: 100%;
+      word-break: break-word;
+    }
+  }
 </style>

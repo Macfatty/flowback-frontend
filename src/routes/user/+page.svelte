@@ -17,9 +17,9 @@
 	import { faArrowLeft, faPen, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
 	import { TelInput, normalizedCountries } from 'svelte-tel-input';
-	import type { DetailedValue, CountryCode, E164Number } from 'svelte-tel-input/types';
+	import type { DetailedValue, CountryCode } from 'svelte-tel-input/types';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import { chatPartnerStore, chatOpenStore } from '$lib/Chat/functions';
+	import { chatOpenStore } from '$lib/Chat/functions';
 	import { getUserChannelId } from '$lib/Chat/functions';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { userStore } from '$lib/User/interfaces';
@@ -53,7 +53,6 @@
 		isEditing = false,
 		profileImagePreview = DefaultPFP,
 		bannerImagePreview = '',
-		currentlyEditing: null | 'bio' | 'web' | 'name' | 'phone' | 'email' = null,
 		currentlyCroppingProfile: boolean = false,
 		currentlyCroppingBanner = false,
 		oldProfileImagePreview = '',

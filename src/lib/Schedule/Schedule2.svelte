@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Calendar } from '@fullcalendar/core';
+	import { _ } from 'svelte-i18n';
 	import { onMount } from 'svelte';
 	import dayGridPlugin from '@fullcalendar/daygrid';
 	import { fetchRequest } from '$lib/FetchRequest';
@@ -8,27 +9,73 @@
 	import multiMonthPlugin from '@fullcalendar/multimonth';
 	import interactionPlugin from '@fullcalendar/interaction';
 	import Modal from '$lib/Generic/Modal.svelte';
-	import { ScheduleItem2Default, type ScheduleItem2 } from '$lib/Schedule/interface';
+	import { ScheduleItem2Default, type Schedule, type ScheduleItem2 } from '$lib/Schedule/interface';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
+	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
 		selectedEvent: ScheduleItem2 = $state(ScheduleItem2Default),
-		groupId: null | number = $state(null);
+		//TODO get rid of groupid and use groupIds only
+		groupId: null | number = $state(null),
+		groupIds: number[] = $state([]),
+		workgroupIds: number[] = $state([]),
+		userChecked = $state(false);
 
 	const scheduleEventList = async () => {
-		let api = `schedule/event/list?limit=50&`;
-		if (groupId) api += `schedule_origin_id=${groupId}`;
+		let schedules: Schedule[] = [];
 
-		const { res, json } = await fetchRequest('GET', api);
-		events = json.results;
+		// Before getting events, we need to get all schedules for the user, groups and workgroups
+		// because events are tied to schedules
+
+		// Get user schedule
+		if (userChecked) {
+			let api = `schedule/list?limit=50&origin_name=user`;
+
+			const { res, json } = await fetchRequest('GET', api);
+			schedules.push(json.results ?? []);
+		}
+
+		// Get group schedules
+		if (groupIds.length > 0) {
+			let api = `schedule/list?limit=50&`;
+			api += `origin_ids=0,${groupIds.join(',')}&origin_name=group`;
+
+			const { res, json } = await fetchRequest('GET', api);
+			schedules.push(json.results ?? []);
+		}
+
+		// Get workgroup schedules
+		if (workgroupIds.length > 0) {
+			let api = `schedule/list?limit=50&origin_ids=0,${workgroupIds.join(',')}&origin_name=workgroup`;
+			const { res, json } = await fetchRequest('GET', api);
+			schedules.push(json.results ?? []);
+		}
+
+		if (schedules.length === 0) {
+			events = [];
+			return;
+		}
+		schedules = schedules.flat(1);
+
+		// Finally, get the events from every schedule
+		{
+			let api = `schedule/event/list?limit=50&schedule_ids=0,${schedules.map((s) => s.id).join(',')}`;
+			const { res, json } = await fetchRequest('GET', api);
+			events = json.results ?? [];
+		}
 	};
 
-	const userScheduleEventCreate = async () => {
-		const { res, json } = await fetchRequest('POST', 'user/schedule/event/create', selectedEvent);
+	const scheduleEventCreate = async () => {
+		let api =
+			groupIds.length > 0
+				? `group/${groupIds[0]}/schedule/event/create`
+				: `user/schedule/event/create`;
+
+		const { res, json } = await fetchRequest('POST', api, selectedEvent);
 
 		if (!res.ok) {
 			ErrorHandlerStore.set({ message: 'Failed to create event', success: false });
@@ -38,7 +85,8 @@
 	};
 
 	const userScheduleEventEdit = async () => {
-		const { res, json } = await fetchRequest('POST', 'user/schedule/event/update', {
+		let api = groupId ? `group/${groupId}/schedule/event/update` : `user/schedule/event/update`;
+		const { res, json } = await fetchRequest('POST', api, {
 			...selectedEvent,
 			event_id: selectedEvent.id
 		});
@@ -52,7 +100,9 @@
 	};
 
 	const userScheduleEventDelete = async (event_id: number) => {
-		const { res, json } = await fetchRequest('POST', 'user/schedule/event/delete', {
+		let api = groupId ? `group/${groupId}/schedule/event/delete` : `user/schedule/event/delete`;
+
+		const { res, json } = await fetchRequest('POST', api, {
 			event_id
 		});
 
@@ -139,8 +189,9 @@
 		calendar.render();
 	};
 
-	onMount(() => {
+	onMount(async () => {
 		groupId = Number(new URLSearchParams(document.location.search).get('groupId')) ?? null;
+		if (groupId) groupIds.push(groupId);
 
 		scheduleEventList();
 	});
@@ -148,10 +199,15 @@
 	$effect(() => {
 		if (events) renderCalendar();
 	});
+
+	$effect(() => {
+		if (groupIds || workgroupIds || userChecked) scheduleEventList();
+	});
 </script>
 
+<AdvancedFiltering bind:groupIds bind:workgroupIds bind:userChecked />
+
 <div class="flex justify-center w-full">
-	<!-- <Select labels={groups}/> -->
 	<div class="w-full bg-white dark:bg-darkbackground" id="calendar-2"></div>
 </div>
 
@@ -161,7 +217,7 @@
 		{
 			label: 'Submit',
 			onClick: async () => {
-				selectedEvent.id === 0 ? await userScheduleEventCreate() : await userScheduleEventEdit();
+				selectedEvent.id === 0 ? await scheduleEventCreate() : await userScheduleEventEdit();
 				scheduleEventList();
 				selectedEvent = ScheduleItem2Default;
 				open = false;

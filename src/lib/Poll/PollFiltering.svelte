@@ -1,22 +1,22 @@
 <script lang="ts">
-	import TextInput from '$lib/Generic/TextInput.svelte';
-	import type { Filter } from './interface';
-	import { _ } from 'svelte-i18n';
-	import Button from '$lib/Generic/Button.svelte';
-	import { fetchRequest } from '$lib/FetchRequest';
-	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
-	import { groupUserStore, type Tag } from '$lib/Group/interface';
-	import { homePolls as homePollsLimit } from '../Generic/APILimits.json';
-	import Select from '$lib/Generic/Select.svelte';
-	import CheckboxButtons from '$lib/Generic/CheckboxButtons.svelte';
 	import { browser } from '$app/environment';
-	import { elipsis } from '$lib/Generic/GenericFunctions';
-	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
+	import { page } from '$app/stores';
 	import { env } from '$env/dynamic/public';
+	import { fetchRequest } from '$lib/FetchRequest';
+	import Button from '$lib/Generic/Button.svelte';
+	import CheckboxButtons from '$lib/Generic/CheckboxButtons.svelte';
+	import { elipsis } from '$lib/Generic/GenericFunctions';
+	import Select from '$lib/Generic/Select.svelte';
+	import TextInput from '$lib/Generic/TextInput.svelte';
+	import { type Tag } from '$lib/Group/interface';
+	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
+	import { onMount } from 'svelte';
+	import { _ } from 'svelte-i18n';
+	import { homePolls as homePollsLimit } from '../Generic/APILimits.json';
+	import type { Filter } from './interface';
 
 	export let filter: Filter,
-		handleSearch: () => void,
+		handleSearch: () => void = () => {},
 		tagFiltering = false,
 		// Add new export for content type filtering
 		showThreads = true,
@@ -107,7 +107,9 @@
 			public: false,
 			order_by: 'start_date_desc',
 			tag: null,
-			workgroup: null
+			workgroup: null,
+			from: new Date(0).toISOString().slice(0, 16),
+			to: new Date(99999999999999).toISOString().slice(0, 16)
 		};
 		// Reset content type checkboxes
 		showThreads = true;
@@ -151,7 +153,7 @@
 		<TextInput
 			Class="w-4/5"
 			onInput={() => (searched = false)}
-			label=""§ 
+			label=""
 			max={null}
 			search={true}
 			placeholder={$_('Search polls')}
@@ -170,9 +172,8 @@
 			innerLabel={null}
 		/>
 
-
-		From: <input type="date" bind:value={filter.from}/>
-		To: <input type="date" bind:value={filter.to}/>
+		{$_('From')}: <input type="date" placeholder={filter.from} bind:value={filter.from} />
+		{$_('To')}: <input type="date" placeholder={filter.from} bind:value={filter.to} />
 
 		<CheckboxButtons
 			label=""
@@ -180,7 +181,7 @@
 			onChange={handleContentTypeChange}
 			Class="flex items-center"
 		/>
-		
+
 		{#if groupId}
 			<div class="flex flex-row gap-2 items-center">
 				<label class="block text-md whitespace-nowrap" for="work-group">

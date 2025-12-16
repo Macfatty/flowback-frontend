@@ -5,7 +5,7 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
-	import FileUploads from '$lib/Generic/FileUploads.svelte';
+	import FileUploads from '$lib/Generic/File/FileUploads.svelte';
 	import type { GroupUser } from '../interface';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { WorkGroup } from '../WorkingGroups/interface';
@@ -67,11 +67,9 @@
 		description = description.trim() === '' ? $_('No description provided') : description;
 
 		formData.append('description', description);
-		if (images) {
-			images.forEach((image) => {
-				formData.append('attachments', image);
-			});
-		}
+		images.forEach((image) => {
+			formData.append('attachments', image);
+		});
 
 		const { res, json } = await fetchRequest(
 			'POST',

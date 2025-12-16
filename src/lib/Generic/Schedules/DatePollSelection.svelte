@@ -15,6 +15,7 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { onMount } from 'svelte';
 	import { arraysEqual } from '$lib/Generic/GenericFunctions';
+	import { isMobile } from '$lib/utils/isMobile';
 
 	export let x = 10,
 		y = 10,
@@ -31,7 +32,7 @@
 		currentYear = 0,
 		noChanges = true;
 
-	type SelDate = { date: Date; id: number };
+	type SelDate = { date: Date; id: number; numOfVotes: number };
 	const pollId = $page.params.pollId;
 
 	// Date utility functions
@@ -61,6 +62,7 @@
 			`group/poll/${pollId}/proposal/votes?limit=10000`
 		);
 
+		// Saved dates are meant to match tbe backend, while selected dates matches what the user has selected in the frontend
 		savedDates = json.results.map((vote: any) => ({
 			id: vote.proposal,
 			date: new Date(proposals.find((proposal) => proposal.id === vote.proposal)?.start_date ?? '')
@@ -138,7 +140,8 @@
 				...selectedDates,
 				{
 					id: proposals.find((p) => new Date(p.start_date).getTime() === date.getTime())?.id ?? 0,
-					date
+					date,
+					numOfVotes: 1
 				}
 			];
 		}
@@ -211,7 +214,7 @@
 
 <Loader bind:loading>
 	<div
-		class="mt-4 sticky top-[5.5rem] dark:bg-darkbackground bg-white flex items-center justify-between py-1 px-4"
+		class="sticky top-[7.6rem] md:top-[5.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between mt-4 py-5 px-6 md:py-1 md:px-4"
 	>
 		<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>
 		{currentMonth}
@@ -219,11 +222,11 @@
 		<button on:click={nextWeek}><Fa icon={faChevronRight} /></button>
 	</div>
 	<div
-		class="sticky top-[7.5rem] dark:bg-darkbackground bg-white flex items-center flex-1 justify-between border-b border-gray-300 py-1 px-4"
+		class="sticky top-[11.5rem] md:top-[7.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white grid grid-cols-8 text-center border-b border-gray-300 py-1"
 	>
 		<br />
 		{#each weekDates as date, i}
-			<div class="flex flex-col items-center">
+			<div class="flex flex-col items-center {$isMobile ? 'text-xs' : ''}">
 				<div class="font-semibold pt-2">{date.getDate()}</div>
 				<div class="text-gray-600">{$_(weekdays[i])}</div>
 			</div>
@@ -235,9 +238,13 @@
 		id="weekView"
 	>
 		{#each gridDates as row, j}
-			<div class="bg-primary text-white flex justify-center px-0.5">{j}:00</div>
+			<div class="bg-primary text-white flex justify-center items-center px-0.5 
+				{$isMobile ? 'text-xs' : ''}">{j}:00</div>
 			{#each row as date, i}
-				<button class="bg-white dark:bg-darkobject border h-12 w-24" on:click={() => toggleDate(date)}>
+				<button
+					class="bg-white dark:bg-darkobject border h-12 w-full"
+					on:click={() => toggleDate(date)}
+				>
 					{#if selectedDates.find((_date) => _date.date.getTime() === date?.getTime())}
 						<div class="bg-green-600 w-full flex items-center justify-center h-full">
 							<Fa icon={faCheck} color="white" size="2x" />

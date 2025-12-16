@@ -59,7 +59,7 @@ export interface PreviewMessage {
 		channel_origin_name?: 'user' | 'group' | 'workgroup' | 'user_group';
 	} | null;
 	channel_title?: string;
-	channel_id?: number;
+	channel_id: number;
 	id: number;
 	timestamp: string;
 	participants: {
