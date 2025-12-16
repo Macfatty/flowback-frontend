@@ -110,7 +110,22 @@
 			}
 		}
 
-		kanbanEntries = kanbanEntries2;
+		if (groupIds.length > 0) {
+			let apis = groupIds.map((id) =>
+				fetchRequest(
+					'GET',
+					`group/${id}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`
+				)
+			);
+			let response = (await Promise.all(apis))
+				.map(({ res, json }) => {
+					if (res.ok) return json.results ?? [];
+				})
+				.flat(1);
+			kanbanEntries2.push(response);
+		}
+
+		kanbanEntries = kanbanEntries2.flat(1);
 	};
 
 	onMount(async () => {
@@ -173,6 +188,7 @@
 					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
 						{#each kanbanEntries as kanban, j}
 							{#if kanban.lane === i}
+								{kanban.title}
 								<KanbanEntry
 									bind:kanban={kanbanEntries[j]}
 									bind:workGroups
