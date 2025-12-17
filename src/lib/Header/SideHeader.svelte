@@ -73,9 +73,12 @@
 
 <div
 	class:hidden={!sideHeaderOpen}
-	class="z-[80] absolute top-[4.5rem] right-0 bg-white z-[110] select-none shadow slide-animation dark:bg-darkobject dark:text-darkmodeText flex flex-col"
+	class="z-[80] absolute md:top-[4.5rem] bottom-16 right-0 bg-white z-[110] select-none shadow slide-animation dark:bg-darkobject dark:text-darkmodeText flex flex-col"
 	id="side-header"
+	role="button"
+	tabindex="0"
 	on:click={() => (sideHeaderOpen = !sideHeaderOpen)}
+	on:keydown={(e) => e.key === 'Enter' && (sideHeaderOpen = !sideHeaderOpen)}
 >
 	{#each navs as nav}
 		<button
