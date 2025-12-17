@@ -48,13 +48,13 @@
 
 	{#if choicesOpen}
 		<div
-			class="z-50 absolute mt-2 bg-white dark:bg-darkobject dark:text-darkmodeText shadow-xl text-sm "
+			class="right-0 z-50 absolute mt-2 bg-white dark:bg-darkobject dark:text-darkmodeText shadow-xl text-sm "
 		>
 			<div class="text-xs p-2">{$_('Actions')}</div>
 			{#each labels as label, i}
 				<button
 					on:click={() => functions[i]()}
-					class=" bg-white w-full hover:bg-gray-300 active:bg-gray-400 dark:bg-slate-700 dark:hover:bg-slate-800 dark:active:bg-slate-900 p-2 px-5 flex justify-between items-center hover:cursor-pointer transition-all"
+					class="bg-white w-full hover:bg-gray-300 active:bg-gray-400 dark:bg-slate-700 dark:hover:bg-slate-800 dark:active:bg-slate-900 p-2 px-5 flex justify-between text-left hover:cursor-pointer transition-all"
 					>{$_(label)}</button
 				>
 			{/each}
