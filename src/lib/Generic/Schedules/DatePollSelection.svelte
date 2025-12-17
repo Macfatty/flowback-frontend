@@ -214,7 +214,7 @@
 
 <Loader bind:loading>
 	<div
-		class="sticky top-[7.6rem] md:top-[5.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between mt-4 py-5 px-6 md:py-1 md:px-4"
+		class="sticky top-0 md:top-[5.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between mt-4 py-5 px-6 md:py-1 md:px-4"
 	>
 		<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>
 		{currentMonth}
@@ -222,7 +222,7 @@
 		<button on:click={nextWeek}><Fa icon={faChevronRight} /></button>
 	</div>
 	<div
-		class="sticky top-[11.5rem] md:top-[7.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white grid grid-cols-8 text-center border-b border-gray-300 py-1"
+		class="sticky top-[3.5rem] md:top-[7.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white grid grid-cols-8 text-center border-b border-gray-300 py-1"
 	>
 		<br />
 		{#each weekDates as date, i}
