@@ -28,13 +28,13 @@
 </script>
 
 <header
-	class="sticky top-0 z-50 md:flex justify-between flex-row items-center p-1.5 px-3 bg-white shadow select-none dark:bg-darkobject"
+	class="md:sticky md:top-0 fixed bottom-0 w-full z-50 md:flex justify-between flex-row items-center p-1.5 px-3 bg-white select-none dark:bg-darkobject shadow-[0_1px_5px_rgba(0,0,0,0.15)] md:shadow"
 	id="header"
 >
 	<a
 		href={env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '/groups/1' : '/home'}
 		on:click={() => chatOpenStore.set(false)}
-		class="md:w-auto flex justify-center md:flex-none"
+		class="hidden md:block md:w-auto md:flex-none"
 		><img
 			src={env.PUBLIC_LOGO === 'REFORUM' ? Reforum : Logo}
 			class="w-32 cursor-pointer"
@@ -155,4 +155,5 @@
 			display: block;
 		}
 	}
+
 </style>
