@@ -62,7 +62,6 @@
 				.map(({ res, json }) => {
 					if (res.ok) return json.results ?? [];
 				})
-				.flat(1);
 			_kanbanEntries.push(response);
 		}
 
@@ -78,11 +77,10 @@
 				.map(({ res, json }) => {
 					if (res.ok) return json.results ?? [];
 				})
-				.flat(1);
 			_kanbanEntries.push(response);
 		}
 
-		kanbanEntries = _kanbanEntries.flat(1);
+		kanbanEntries = _kanbanEntries.flat(2);
 	};
 
 	onMount(async () => {
