@@ -43,7 +43,7 @@
 		/></a
 	>
 	<div class="!flex justify-between md:w-[80%]">
-		<nav class="flex items-center p-6 justify-evenly justify-center gap-[10%] w-full md:w-[70%]">
+		<nav class="flex items-center p-6 justify-center gap-[10%] w-full md:w-[75%]">
 			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
 				<HeaderIcon disableTextOnHover icon={faHouse} text="Home" href="home" bind:selectedHref />
 				<HeaderIcon
