@@ -10,7 +10,7 @@
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import Fa from 'svelte-fa';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
-	import type { kanban, Filter } from './Kanban';
+	import { type kanban, type Filter, workgroupStore } from './Kanban';
 	import { page } from '$app/stores';
 	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 
@@ -55,6 +55,22 @@
 				fetchRequest(
 					'GET',
 					`group/${id}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`
+				)
+			);
+
+			let response = (await Promise.all(apis))
+				.map(({ res, json }) => {
+					if (res.ok) return json.results ?? [];
+				})
+				.flat(1);
+			_kanbanEntries.push(response);
+		}
+
+		if (workgroupIds.length > 0) {
+			let apis = workgroupIds.map((id) =>
+				fetchRequest(
+					'GET',
+					`group/${$workgroupStore.find((g) => g.id === id)?.group_id}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc&work_group_ids=${id}`
 				)
 			);
 
