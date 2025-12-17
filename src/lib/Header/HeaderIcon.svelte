@@ -77,7 +77,7 @@
 							class={`inline ${selectedPage ? 'lightgray' : selectedPage ? '#015BC0' : 'black'}`}
 						/>
 					{/if}
-					<div class={`${textClass} text-xs mt-2 dark:text-darkmodeText`}>
+					<div class={`${textClass} text-xs mt-2 dark:text-darkmodeText hidden md:block`}>
 						{$_(text)}
 					</div>
 				{/each}
