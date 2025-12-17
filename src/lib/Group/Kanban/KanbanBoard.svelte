@@ -100,13 +100,13 @@
 	};
 
 	const getKanbanEntries2 = async () => {
-		let kanbanEntries2 = [];
+		let _kanbanEntries = [];
 
 		if (userChecked) {
 			let api = `user/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
 			const { res, json } = await fetchRequest('GET', api);
 			if (res.ok) {
-				kanbanEntries2.push(json.results ?? []);
+				_kanbanEntries.push(json.results ?? []);
 			}
 		}
 
@@ -117,15 +117,16 @@
 					`group/${id}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`
 				)
 			);
+
 			let response = (await Promise.all(apis))
 				.map(({ res, json }) => {
 					if (res.ok) return json.results ?? [];
 				})
 				.flat(1);
-			kanbanEntries2.push(response);
+			_kanbanEntries.push(response);
 		}
 
-		kanbanEntries = kanbanEntries2.flat(1);
+		kanbanEntries = _kanbanEntries.flat(1);
 	};
 
 	onMount(async () => {
@@ -135,25 +136,13 @@
 		// await getWorkGroupList();
 		// await getGroupUsers();
 
-		// interval = setInterval(async () => {
-		// 	await getKanbanEntries();
-		// }, 20410);
+		interval = setInterval(async () => {
+			await getKanbanEntries2();
+		}, 20410);
 	});
 
 	onDestroy(() => {
 		clearInterval(interval);
-	});
-
-	$effect(() => {
-		// filter.group && getWorkGroupList();
-	});
-
-	$effect(() => {
-		// filter.group && getGroupUsers();
-	});
-
-	$effect(() => {
-		// if (filter.type) getKanbanEntries();
 	});
 
 	$effect(() => {
@@ -188,7 +177,6 @@
 					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
 						{#each kanbanEntries as kanban, j}
 							{#if kanban.lane === i}
-								{kanban.title}
 								<KanbanEntry
 									bind:kanban={kanbanEntries[j]}
 									bind:workGroups

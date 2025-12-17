@@ -1,3 +1,7 @@
+import { writable } from "svelte/store";
+import type { Group } from "../interface";
+import type { WorkGroup } from "../WorkingGroups/interface";
+
 export interface kanban {
 	assignee: { id: number; profile_image: string; username: string } | null;
 
@@ -16,7 +20,7 @@ export interface kanban {
 	group_name: string;
 	priority?: number | null;
 	end_date?: string | null;
-	attachments: { file: string ; file_name: string }[];
+	attachments: { file: string; file_name: string }[];
 }
 
 export interface kanbanEdited {
@@ -37,3 +41,6 @@ export interface Filter {
 	search: string;
 	type: 'home' | 'group'
 }
+
+export let groupStore = writable<Group[]>([]);
+export let workgroupStore = writable<WorkGroup[]>([]);
