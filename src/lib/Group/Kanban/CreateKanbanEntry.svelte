@@ -138,11 +138,6 @@
 	const handleChangePriority = (e: any) => {
 		priority = Number(e.target.value);
 	};
-
-	const handleChangeWorkGroup = (e: any) => {
-		workGroupId =
-			workGroups.find((group) => group.id === Number(e.target.value))?.id || workGroups[0]?.id;
-	};
 </script>
 
 <Modal
@@ -193,7 +188,6 @@
 							labels={$groupStore.map((group) => elipsis(group.name))}
 							values={$groupStore.map((group) => group.id)}
 							bind:value={groupId}
-							onInput={handleChangeWorkGroup}
 							innerLabel={$_('No group assigned')}
 							innerLabelOn={true}
 						/>
@@ -212,7 +206,6 @@
 								.filter((g) => g.group_id === groupId)
 								.map((group) => group.id)}
 							bind:value={workGroupId}
-							onInput={handleChangeWorkGroup}
 							innerLabel={$_('No workgroup assigned')}
 							innerLabelOn={true}
 						/>

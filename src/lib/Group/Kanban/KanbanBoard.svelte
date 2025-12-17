@@ -35,51 +35,11 @@
 		workgroupIds: number[] = $state([]),
 		userChecked = $state(false);
 
-	const getKanbanEntries = async () => {
-		filter.type === 'group' ? await getKanbanEntriesGroup() : getKanbanEntriesHome();
-	};
-
-	const getKanbanEntriesGroup = async () => {
-		if (!filter.group) {
-			kanbanEntries = [];
-			return;
-		}
-
-		let api = `group/${filter.group}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
-		if (filter.assignee) api += `&assignee=${filter.assignee}`;
-		if (filter.search !== '') api += `&title__icontains=${filter.search}`;
-		if (filter.workgroup) api += `&work_group_ids=${filter.workgroup}`;
-
-		const { res, json } = await fetchRequest('GET', api);
-
-		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to fetch kanban tasks', success: false });
-			return;
-		}
-
-		kanbanEntries = json.results;
-	};
-
-	const getKanbanEntriesHome = async () => {
-		let api = `user/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
-		if (filter.search !== '')
-			api += `&title__icontains=${filter.search}&description__icontains=${filter.search}`;
-
-		const { res, json } = await fetchRequest('GET', api);
-
-		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to fetch kanban tasks', success: false });
-			return;
-		}
-
-		kanbanEntries = json.results;
-	};
-
 	const removeKanbanEntry = (id: number) => {
 		kanbanEntries.filter((entry) => entry.id !== id);
 	};
 
-	const getKanbanEntries2 = async () => {
+	const getKanbanEntries = async () => {
 		let _kanbanEntries = [];
 
 		if (userChecked) {
@@ -110,10 +70,10 @@
 	};
 
 	onMount(async () => {
-		await getKanbanEntries2();
+		await getKanbanEntries();
 
 		interval = setInterval(async () => {
-			await getKanbanEntries2();
+			await getKanbanEntries();
 		}, 20410);
 	});
 
@@ -122,7 +82,7 @@
 	});
 
 	$effect(() => {
-		if (groupIds || workgroupIds || userChecked) getKanbanEntries2();
+		if (groupIds || workgroupIds || userChecked) getKanbanEntries();
 	});
 </script>
 
