@@ -10,16 +10,13 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
-	import { groupStore, workgroupStore, type Filter, type kanban } from './Kanban';
+	import { groupStore, workgroupStore, type kanban } from './Kanban';
 	import Select from '$lib/Generic/Select.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import { userStore } from '$lib/User/interfaces';
 	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
 
-	export let filter: Filter,
-		open: boolean = false,
+	export let open: boolean = false,
 		users: GroupUser[] = [],
-		kanbanEntries: kanban[],
 		workGroups: WorkGroup[] = [],
 		lane: number = 1,
 		getKanbanEntries: () => Promise<void>;
@@ -81,42 +78,6 @@
 
 		ErrorHandlerStore.set({ message: 'Successfully created kanban task', success: true });
 
-		const userAssigned = users.find((user) => assignee === user.user.id);
-		const _assignee = assignee
-			? {
-					id: assignee,
-					profile_image: userAssigned?.user.profile_image || '',
-					username: userAssigned?.user.username || ''
-				}
-			: null;
-
-		kanbanEntries.push({
-			assignee: _assignee,
-			// group: { id: 0, image: '', name: '' },
-			description,
-			lane,
-			title,
-			id: json,
-			created_by: {
-				id: $userStore?.id || -1,
-				profile_image: localStorage.getItem('pfp-link') || '',
-				username: $userStore?.username || ''
-			},
-			origin_id: 1,
-			origin_type: filter.type === 'group' ? 'group' : 'user',
-			group_name: '',
-			priority,
-			end_date: end_date ?? null,
-			work_group: workGroupId
-				? {
-						id: workGroupId,
-						name: workGroups.find((group) => group.id === workGroupId)?.name || ''
-					}
-				: undefined,
-			attachments: []
-		});
-
-		kanbanEntries = kanbanEntries;
 		open = false;
 
 		// Reset form
@@ -238,7 +199,7 @@
 						innerLabel=""
 					/>
 
-					{#if filter.type === 'group'}
+					{#if groupSelection}
 						<div class="text-left">
 							<label class="block text-md" for="handle-change-assignee">
 								{$_('Assignee')}
