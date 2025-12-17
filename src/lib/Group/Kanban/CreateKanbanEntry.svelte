@@ -41,7 +41,7 @@
 		images: File[] = [],
 		workGroupId: number | null = null,
 		groupId: number | null = null,
-		groupSelection = 'false';
+		groupSelection = 0;
 
 	const createKanbanEntry = async () => {
 		loading = true;
@@ -66,7 +66,7 @@
 
 		const { res, json } = await fetchRequest(
 			'POST',
-			filter.type === 'group' ? `group/${groupId}/kanban/entry/create` : 'user/kanban/entry/create',
+			groupSelection ? `group/${groupId}/kanban/entry/create` : 'user/kanban/entry/create',
 			formData,
 			true, // Needs authorization
 			false // Formadata doesn't need to be JSON-fied
@@ -178,13 +178,11 @@
 					label="Hello"
 					name="groupSelection"
 					labels={['Group', 'Personal']}
-					values={['true', 'false']}
+					values={[1, 0]}
 					bind:value={groupSelection}
 				/>
 
-				{groupSelection}
-				{typeof groupSelection}
-				{#if groupSelection === 'true'}
+				{#if groupSelection}
 					<div class="text-left">
 						<label class="block text-md" for="work-group">
 							{$_('Groups')}
@@ -246,7 +244,6 @@
 						onInput={handleChangePriority}
 						innerLabel=""
 					/>
-					<div class="flex gap-6 justify-between mt-2 flex-col" />
 
 					{#if filter.type === 'group'}
 						<div class="text-left">

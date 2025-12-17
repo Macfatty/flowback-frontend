@@ -75,26 +75,6 @@
 		kanbanEntries = json.results;
 	};
 
-	const getGroupUsers = async () => {
-		let api = `group/${filter.group}/users?limit=${kanbanLimit}`;
-
-		const { json, res } = await fetchRequest('GET', api);
-		if (!res.ok) return;
-
-		users = json?.results;
-	};
-
-	const getWorkGroupList = async () => {
-		const { res, json } = await fetchRequest('GET', `group/${filter.group}/list`);
-
-		if (!res.ok) return;
-		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
-
-		workGroups.forEach((workgroup) => {
-			workgroup.group_id = Number(filter.group);
-		});
-	};
-
 	const removeKanbanEntry = (id: number) => {
 		kanbanEntries.filter((entry) => entry.id !== id);
 	};
@@ -131,10 +111,6 @@
 
 	onMount(async () => {
 		await getKanbanEntries2();
-		// assignee = $userStore?.id || -1;
-		// await getKanbanEntries();
-		// await getWorkGroupList();
-		// await getGroupUsers();
 
 		interval = setInterval(async () => {
 			await getKanbanEntries2();
