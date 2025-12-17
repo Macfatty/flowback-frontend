@@ -22,6 +22,7 @@
 	import Fa from 'svelte-fa';
 	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 	import { chatOpenStore } from '$lib/Chat/functions';
+	import { isMobile } from '$lib/utils/isMobile'
 
 	let sideHeaderOpen = false,
 		selectedHref = '';
@@ -42,7 +43,7 @@
 		/></a
 	>
 	<div class="!flex justify-between md:w-[80%]">
-		<nav class="flex items-baseline p-6 justify-evenly md:justify-center md:gap-[10%] w-[70%]">
+		<nav class="flex items-center p-6 justify-evenly justify-center gap-[10%] w-full md:w-[70%]">
 			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
 				<HeaderIcon disableTextOnHover icon={faHouse} text="Home" href="home" bind:selectedHref />
 				<HeaderIcon
@@ -106,39 +107,55 @@
 					bind:selectedHref
 				/>
 			{/if}
+
+			{#if $isMobile}
+				<div class="flex flex-shrink-0">
+						<button id="side-header" on:click={() => (sideHeaderOpen = !sideHeaderOpen)}>
+						<img
+							src={$userStore?.profile_image
+								? `${env.PUBLIC_API_URL}${$userStore?.profile_image}`
+								: DefaultPFP}
+							class={`w-8 rounded-full cursor-pointer ${sideHeaderOpen && 'ring-blue-500'}`}
+							alt="default pfp"
+							on:error={(e) => onThumbnailError(e, DefaultPFP)}
+						/>
+					</button>
+				</div>
+			{/if}
 		</nav>
 
-		<div class="flex gap-4 items-center float-right hover:bg-grey-800">
-			<div class="mr-5 flex gap-4 items-center">
-				<button
-					class="dark:text-darkmodeText cursor-pointer pl-2"
-					title={`Enable ${$darkModeStore ? 'lightmode' : 'darkmode'}`}
-					on:click={toggleDarkMode}
-				>
-					{#if $darkModeStore}
-						<Sun />
-					{:else}
-						<Fa icon={faMoon} size={'1.3x'} />
-					{/if}
+		{#if !$isMobile}
+			<div class="flex gap-4 items-center float-right hover:bg-grey-800">
+				<div class="mr-5 flex gap-4 items-center">
+					<button
+						class="dark:text-darkmodeText cursor-pointer pl-2"
+						title={`Enable ${$darkModeStore ? 'lightmode' : 'darkmode'}`}
+						on:click={toggleDarkMode}
+					>
+						{#if $darkModeStore}
+							<Sun />
+						{:else}
+							<Fa icon={faMoon} size={'1.3x'} />
+						{/if}
+					</button>
+					<Notifications />
+				</div>
+				<button id="side-header" on:click={() => (sideHeaderOpen = !sideHeaderOpen)}>
+					<img
+						src={$userStore?.profile_image
+							? `${env.PUBLIC_API_URL}${$userStore?.profile_image}`
+							: DefaultPFP}
+						class={`w-8 rounded-full cursor-pointer ${sideHeaderOpen && 'ring-blue-500 ring-4'}`}
+						alt="default pfp"
+						on:error={(e) => onThumbnailError(e, DefaultPFP)}
+					/>
 				</button>
-				<Notifications />
 			</div>
-			<button id="side-header" on:click={() => (sideHeaderOpen = !sideHeaderOpen)}>
-				<img
-					src={$userStore?.profile_image
-						? `${env.PUBLIC_API_URL}${$userStore?.profile_image}`
-						: DefaultPFP}
-					class={`w-8 h-8 rounded-full cursor-pointer ${sideHeaderOpen && 'ring-blue-500 ring-4'}`}
-					alt="default pfp"
-					on:error={(e) => onThumbnailError(e, DefaultPFP)}
-				/>
-			</button>
-		</div>
+		{/if}
 	</div>
 	<SideHeader bind:sideHeaderOpen />
 </header>
 
-<!-- Kind of an ugly fix for mobile phones. TODO: More elegant solution  -->
 <style>
 	header:nth-child(1) {
 		align-self: stretch;
@@ -149,10 +166,9 @@
 		padding: 0rem 1rem;
 	}
 
-	@media only screen and (max-width: 500px) {
-		header > div:last-child {
-			float: none;
-			display: block;
+	@media only screen and (max-width: 768px) {
+		header {
+			padding: 0.5rem 1.5rem;
 		}
 	}
 
