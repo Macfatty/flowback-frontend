@@ -6,6 +6,7 @@
 	import { page } from '$app/stores';
 	import type { Comment, Phase, poll, proposal } from '$lib/Poll/interface';
 	import Button from '$lib/Generic/Button.svelte';
+	import BackButton from '$lib/Generic/BackButton.svelte';
 	import { _ } from 'svelte-i18n';
 	import Results from '$lib/Poll/Results.svelte';
 	import { checkForLinks } from '$lib/Generic/GenericFunctions';
@@ -20,34 +21,25 @@
 	import Layout from '$lib/Generic/Layout.svelte';
 	import PredictionStatements from '$lib/Poll/PredictionStatements.svelte';
 	import { env } from '$env/dynamic/public';
-	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { formatDate } from '$lib/Generic/DateFormatter';
 	import { predictionStatementsStore } from '$lib/Poll/PredictionMarket/interfaces';
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
-	let poll: poll,
-		pollType = 1,
-		finished: boolean,
-		phase: Phase = 'pre_start',
-		proposals: proposal[],
-		selectedProposal: proposal | null,
-		proposalsToPredictionMarket: proposal[] = [],
-		height = '400',
-		displayForm: boolean,
-		comments: Comment[] = [],
-		loading = true;
-
-	onMount(async () => {
-		await getPollData();
-		phase = getPhase(poll);
-		scrollToSection();
-		checkForLinks(poll?.description, 'poll-description');
-		document.title = poll?.title;
-		getDisplayForm();
-		setUpPredictionStore();
-	});
+	let poll: poll | null = $state(null),
+		pollType = $state(1),
+		finished: boolean = $state(false),
+		phase: Phase = $state('pre_start'),
+		proposals: proposal[] = $state([]),
+		selectedProposal: proposal | null = $state(null),
+		proposalsToPredictionMarket: proposal[] = $state([]),
+		displayForm: boolean = $state(false),
+		comments: Comment[] = $state([]),
+		loading = $state(true),
+		resetScroll = $state(false),
+		showRightFormSlot = $state(false),
+		showRightSlot = $state(false);
 
 	const getPollData = async () => {
 		if (!$page.params) return;
@@ -60,10 +52,7 @@
 
 		loading = false;
 
-		if (!res.ok) {
-			ErrorHandlerStore.set({ message: json.detail[0], success: false });
-			return;
-		}
+		if (!res.ok) return;
 
 		poll = json?.results[0];
 		pollType = json?.results[0]?.poll_type;
@@ -100,13 +89,47 @@
 		predictionStatementsStore.set(json?.results);
 	};
 
+	let setup = async () => {
+		await getPollData();
+		if (!poll) return;
+		phase = getPhase(poll);
+		scrollToSection();
+		// checkForLinks(poll?.description, 'poll-description');
+		document.title = poll?.title;
+		getDisplayForm();
+		setUpPredictionStore();
+	};
+
+	onMount(() => {
+		setup();
+	});
+
+	// Fixes a bug where clicking between polls (because of links or in notification) doesn't update page properly
+	$effect(() => {
+		const { pollId } = $page.params;
+		setup();
+	});
+
 	// When fast forwarding from area phase to proposal phase, get tag info in real time
-	$: if (phase === 'proposal') {
-		const a = setTimeout(() => {
-			getPollData();
-			clearTimeout(a);
-		}, 2000);
-	}
+	$effect(() => {
+		if (phase === 'proposal') {
+			const a = setTimeout(() => {
+				getPollData();
+				clearTimeout(a);
+			}, 2000);
+		}
+	});
+
+	$effect(() => {
+		if (selectedProposal) resetScroll = true;
+	});
+
+	$effect(() => {
+		showRightFormSlot = selectedProposal !== null || displayForm;
+	});
+	$effect(() => {
+		showRightSlot = selectedProposal !== null;
+	});
 </script>
 
 <Layout centered>
@@ -121,35 +144,35 @@
 		{#if pollType === 4}
 			<!-- PHASE 0: PRE-START -->
 			{#if phase === 'pre_start'}
-				<div class="bg-white shadow rounded mt-6 p-6">
+				<div class="bg-white shadow rounded mt-6 p-6 dark:bg-darkobject dark:text-darkmodeText">
 					{$_('This poll will start at')}
 					{formatDate(poll.start_date)}
 				</div>
-				<div class="bg-white p-6 mt-6">
+				<div class="dark:bg-darkobject bg-white p-6 mt-6">
 					<Comments bind:proposals api={'poll'} />
 				</div>
 
 				<!-- PHASE 1: AREA VOTE -->
 			{:else if phase === 'area_vote'}
 				<Structure bind:phase bind:poll>
-					<div slot="left"><AreaVote /></div>
-					<div slot="right" class="!p-0">
+					<div slot="left" class="h-full"><AreaVote /></div>
+					<div slot="bottom" class="!p-0">
 						<Comments bind:proposals api={'poll'} />
 					</div>
 				</Structure>
 
 				<!-- PHASE 2: PROPOSAL CREATION -->
 			{:else if phase === 'proposal'}
-				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-[460px] relative">
+				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightFormSlot}>
+					<div slot="left" class="h-full relative flex flex-col">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
-						<div class="max-h-[80%] overflow-y-auto">
+						<div class="flex-grow overflow-y-auto mb-4">
 							<ProposalScoreVoting bind:selectedProposal bind:proposals bind:comments bind:phase />
 						</div>
 						<Button
-							Class="w-full absolute bottom-0 mb-2"
+							Class="w-full bottom-0 mt-auto"
 							buttonStyle="primary-light"
 							disabled={displayForm && !selectedProposal}
 							onClick={() => {
@@ -158,9 +181,10 @@
 							}}>{$_('Add Proposal')}</Button
 						>
 					</div>
-					<div slot="right" class="relative h-[460px]">
+					<div slot="right" class="relative h-full max-h-full overflow-y-auto">
 						{#if selectedProposal}
-							<div class="flex flex-col space-y-2 p-2">
+							<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
+							<div class="flex flex-col p-2">
 								<span
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
 								>
@@ -171,14 +195,19 @@
 								</span>
 							</div>
 							{#if selectedProposal.attachments}
-								<div>
+								<div class="">
 									{#each selectedProposal.attachments as file}
 										<img alt="attachment" src={`${env.PUBLIC_API_URL}/media/${file.file}`} />
 									{/each}
 								</div>
 							{/if}
 						{:else if displayForm}
-							<ProposalSubmition {poll} bind:proposals bind:displayForm />
+							<ProposalSubmition
+								Class="max-h-full overflow-y-auto"
+								{poll}
+								bind:proposals
+								bind:displayForm
+							/>
 						{/if}
 					</div>
 					<div slot="bottom">
@@ -188,12 +217,12 @@
 
 				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
 			{:else if phase === 'prediction_statement'}
-				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-[460px] relative">
+				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightFormSlot}>
+					<div slot="left" class="relative h-full flex flex-col">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
-						<div class="max-h-[80%] overflow-y-auto">
+						<div class="max-h-full overflow-y-auto mb-5">
 							<ProposalScoreVoting
 								bind:comments
 								bind:proposals
@@ -203,19 +232,22 @@
 							/>
 						</div>
 						<Button
-							Class="w-full absolute bottom-0 mt-2"
+							Class="w-full mt-auto"
 							buttonStyle="primary-light"
-							disabled={displayForm && !selectedProposal}
+							disabled={proposalsToPredictionMarket.length === 0}
 							onClick={() => {
 								selectedProposal = null;
 								displayForm = true;
 							}}>{$_('Create Consequence')}</Button
 						>
 					</div>
-					<div slot="right" class="relative h-[460px]">
+					<div slot="right" class="relative h-full flex flex-col">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
-								<div class="font-semibold text-primary dark:text-secondary text-lg">
+								<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
+								<div
+									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
+								>
 									{selectedProposal.title}
 								</div>
 								<NewDescription
@@ -226,6 +258,7 @@
 								<PredictionStatements bind:selectedProposal bind:phase bind:poll />
 							</div>
 						{:else if proposalsToPredictionMarket.length === 0}
+							<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 							<span class="text-center block text-primary dark:text-secondary font-semibold pt-4">
 								{$_('To make a consequence, please select at least one proposal')}
 							</span>
@@ -240,27 +273,36 @@
 
 				<!-- PHASE 4: PREDICTION BETTING -->
 			{:else if phase === 'prediction_bet'}
-				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-[460px]">
+				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightSlot}>
+					<div slot="left" class="h-full">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
-						<div class="max-h-[460px] overflow-y-auto">
-							<ProposalScoreVoting bind:comments bind:phase bind:proposals bind:selectedProposal />
+						<div class="max-h-[90%] overflow-y-auto">
+							<ProposalScoreVoting
+								{getPollData}
+								bind:comments
+								bind:phase
+								bind:proposals
+								bind:selectedProposal
+							/>
 						</div>
 					</div>
 					<div slot="right">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
-								<div class="font-semibold text-primary dark:text-secondary text-lg">
+								<div
+									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
+								>
 									{selectedProposal.title}
 								</div>
+								<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 								<NewDescription
 									description={selectedProposal.description}
 									limit={2}
 									lengthLimit={130}
 								/>
-								<PredictionStatements bind:selectedProposal bind:phase bind:poll />
+								<PredictionStatements {getPollData} bind:selectedProposal bind:phase bind:poll />
 							</div>
 						{/if}
 					</div>
@@ -271,8 +313,8 @@
 
 				<!-- PHASE 5: DELEGATE VOTING -->
 			{:else if phase === 'delegate_vote'}
-				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-[460px]">
+				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightSlot}>
+					<div slot="left" class="h-full">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
@@ -283,9 +325,12 @@
 					<div slot="right">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
-								<div class="font-semibold text-primary dark:text-secondary text-lg">
+								<div
+									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
+								>
 									{selectedProposal.title}
 								</div>
+								<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 								<NewDescription
 									description={selectedProposal.description}
 									limit={2}
@@ -299,18 +344,19 @@
 						<Comments bind:proposals api={'poll'} />
 					</div>
 				</Structure>
+
 				<!-- PHASE 6: NON-DELEGATE VOTING -->
 			{:else if phase === 'vote'}
-				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-[460px]" id="proposals-section">
+				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightSlot}>
+					<div slot="left" class="h-full" id="proposals-section">
 						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div>
 							{#if $groupUserPermissionStore?.allow_vote === true}
-								{$_('Allowed to vote')}
+								{$_('You are allowed to vote')}
 							{:else}
-								{$_('Not allowed to vote')}
+								{$_('You are not allowed to vote')}
 							{/if}
 						</div>
 						<div class="max-h-[90%] overflow-y-auto">
@@ -320,7 +366,10 @@
 					<div slot="right">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
-								<div class="font-semibold text-primary dark:text-secondary text-lg">
+								<div
+									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
+								>
+									<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
 									{selectedProposal.title}
 								</div>
 								<NewDescription
@@ -336,19 +385,16 @@
 						<Comments bind:proposals api={'poll'} />
 					</div>
 				</Structure>
+
 				<!-- PHASE 7: RESULTS AND EVALUATION -->
 			{:else if phase === 'result' || phase === 'prediction_vote'}
-				<Structure bind:phase bind:poll>
-					<div slot="left" class="h-[460px] overflow-y-auto">
-						{#if proposals}
-							<PredictionStatements
-								bind:phase
-								bind:poll
-								selectedProposal={proposals.sort((_proposal) => _proposal.score)[0]}
-							/>
-						{/if}
+				<Structure bind:phase bind:poll bind:resetScroll showBoth>
+					<div slot="left" class="h-full overflow-y-auto">
+						<PredictionStatements bind:selectedProposal bind:phase bind:poll />
 					</div>
-					<div slot="right"><Results bind:poll {getPollData} {pollType} /></div>
+					<div slot="right">
+						<Results bind:selectedProposal bind:poll {getPollData} {pollType} />
+					</div>
 					<div slot="bottom">
 						<Comments bind:proposals api={'poll'} />
 					</div>
@@ -357,11 +403,11 @@
 
 			<!-- Date Poll -->
 		{:else if pollType === 3}
-			{#if phase === 'area_vote' || phase === 'pre_start'}
+			{#if phase === 'area_vote' || phase === 'pre_start' || phase === 'vote'}
 				<DatePoll />
 			{:else}
-				<Structure bind:phase bind:poll>
-					<div slot="left" class="w-[600px]">
+				<Structure bind:phase bind:poll showBoth>
+					<div slot="left" class="w-full">
 						<Results bind:poll {getPollData} {pollType} />
 					</div>
 

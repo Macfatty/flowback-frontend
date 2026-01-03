@@ -6,7 +6,7 @@
 	import { page } from '$app/stores';
 	import type { Comment } from '../Poll/interface';
 	import type { proposal } from '../Poll/interface';
-	import FileUploads from '$lib/Generic/FileUploads.svelte';
+	import FileUploads from '$lib/Generic/File/FileUploads.svelte';
 	import Fa from 'svelte-fa';
 	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
@@ -32,7 +32,6 @@
 		showMessage = '',
 		recentlyTappedButton = '',
 		darkmode = false,
-		 
 		filteredProposal: proposal | null = null;
 
 	// Reactive subscription to the filtered proposal in the commentsStore
@@ -73,14 +72,36 @@
 		}
 
 		// Calculate the reply_depth based on the parent comment
+
+		const id = json;
+		getNewComment(id);
+	};
+
+	const getNewComment = async (id: number) => {
 		let replyDepth = 0;
 
-		const parentComment = $commentsStore.filteredComments.find(
+		const { res, json } = await fetchRequest('GET', `group/${getId()}/comment/list?id=${id}`);
+
+		if (res.ok) {
+			const newComment = json.results[0];
+			commentsStore.add(newComment);
+			comments = comments;
+			showMessage = 'Successfully posted comment';
+			show = true;
+			message = '';
+			replying = false;
+
+			subscribeToReplies();
+
+			return;
+		}
+
+		const parentComment = $commentsStore.allComments.find(
 			(comment) => comment.id === parent_id
 		);
 
 		if (parentComment) {
-			replyDepth = getCommentDepth(parentComment, $commentsStore.filteredComments) + 1;
+			replyDepth = getCommentDepth(parentComment, $commentsStore.allComments) + 1;
 		}
 
 		const newComment: Comment = {
@@ -181,7 +202,7 @@
 	});
 
 	onDestroy(() => {
-		// document.removeEventListener('keydown', handleKeyDown);
+		document.removeEventListener('keydown', handleKeyDown);
 	});
 </script>
 
@@ -220,6 +241,7 @@
 	</div>
 	<div class="flex">
 		<div class="flex flex-grow">
+			<!-- TODO: Fix so there's dynamic sizing of the number of rows instead of fixed at 6 or 3 -->
 			<TextArea
 				label=""
 				bind:value={message}
@@ -229,6 +251,7 @@
 				placeholder={$_('Write a comment...')}
 				displayMax={false}
 				id="textarea-comment"
+				rows={beingEdited && message.length > 50 ? 6 : 3}
 			/>
 		</div>
 		<div class="flex ml-2 items-start">
@@ -249,5 +272,3 @@
 		</div>
 	</div>
 </form>
-
- 

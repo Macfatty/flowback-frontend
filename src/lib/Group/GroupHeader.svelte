@@ -18,13 +18,21 @@
 	//https://docs.flowback.org/#notification-categories
 	const groupNotificationCategories = [
 		'group',
-		'members',
-		'delegate',
-		//invite,
-		'poll',
+		'group_user',
 		'kanban',
-		'schedule'
+		'poll',
+		'schedule_event',
+		'thread'
 	];
+
+	const groupNotificationCategoriesReadable = [
+		'Group',
+		'Group User',
+		'Kanban',
+		'Polls',
+		'Events',
+		'Threads'
+	]
 </script>
 
 <div id="group-header" class="bg-white dark:bg-darkobject w-full max-w-[120rem]">
@@ -49,16 +57,16 @@
 
 			<Button
 				hoverEffect={false}
-				Class="absolute right-0 top-0 p-3 m-4 transition-all bg-gray-200 dark:bg-darkobject"
+				Class="absolute z-[40] right-0 top-0 p-3 m-4 transition-all bg-gray-200 dark:bg-darkobject"
 			>
 				<NotificationOptions
 					hoverEffect={false}
 					type="group"
-					api={`group/${$page.params.groupId}`}
+					api={`group/${$page.params.groupId}/notification/subscribe`}
 					id={Number($page.params.groupId)}
 					categories={groupNotificationCategories}
-					labels={groupNotificationCategories}
-					Class="text-gray-800 dark:text-gray-200"
+					labels={groupNotificationCategoriesReadable}
+					Class="text-gray-800 dark:text-gray-200 z-100 relative"
 					ClassOpen="-left-[90px]"
 				/>
 			</Button>

@@ -15,7 +15,7 @@
 	import { userStore } from '$lib/User/interfaces';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import {setUserGroupPermissionInfo} from '$lib/Group/functions';
+	import { setUserGroupPermissionInfo } from '$lib/Group/functions';
 
 	let showUI = false,
 		scrolledY = '',
@@ -106,7 +106,7 @@
 
 		if (!res.ok || json?.results.length === 0) {
 			groupUserStore.set(null);
-			history.back();
+			goto('/groups');
 			return;
 		}
 
@@ -130,8 +130,7 @@
 		showUI = shouldShowUI();
 
 		setTimeout(() => {
-			const html = document.getElementById(`poll-thumbnail-${scrolledY}`);
-			html?.scrollIntoView();
+			document.body.scrollIntoView();
 		}, 200);
 
 		checkSessionExpiration();
@@ -153,8 +152,7 @@
 		redirect();
 
 		setTimeout(() => {
-			const html = document.getElementById(`poll-thumbnail-${scrolledY}`);
-			html?.scrollIntoView();
+			document.body.scrollIntoView();
 		}, 200);
 
 		checkSessionExpiration();
@@ -168,6 +166,9 @@
 				success: _errorhandler.success
 			});
 		});
+
+		document.body.classList.remove('invisible');
+		document.body.style.visibility = 'visible';
 	});
 </script>
 
@@ -179,26 +180,7 @@
 
 	<slot />
 </main>
-<div id="mobile-support">
-	{$_('No support for mobile devices yet, try Flowback on a non-mobile device')}
-</div>
 
 <LogBackInModal bind:open={openLoginModal} />
 
 <ErrorHandler bind:this={errorhandler} />
-
-<style>
-	#mobile-support {
-		display: none;
-	}
-
-	@media (max-width: 716px) {
-		main {
-			display: none !important;
-		}
-
-		#mobile-support {
-			display: block !important;
-		}
-	}
-</style>

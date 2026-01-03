@@ -37,28 +37,40 @@ export interface Message1 {
 
 //Taken from the preview API
 export interface PreviewMessage {
-	created_at: string;
-	message: string;
-	profile_image: string;
-	timestamp: string;
-	user_id: number;
-	updated_at?: string;
-	id: number;
-	notified: boolean;
-	//For group/preview
-	group_id?: number;
-	channel_id?: number;
+	recent_message: {
+		channel_title: string;
+		created_at: string;
+		message: string;
+		profile_image: string;
+		user_id: number;
+		updated_at?: string;
+		notified: boolean;
+		//For group/preview
+		group_id?: number;
+		//For direct/preview
+		user: {
+			id: number;
+			username: string;
+			profile_image: string | null;
+			banner_image: string | null;
+		};
+		target_id?: number;
+		target_username?: string;
+		channel_origin_name?: 'user' | 'group' | 'workgroup' | 'user_group';
+	} | null;
 	channel_title?: string;
-	//For direct/preview
-	user: {
-		id: number;
-		username: string;
-		profile_image: string | null;
-		banner_image: string | null;
-	};
-	target_id?: number;
-	target_username?: string;
-	channel_origin_name?: 'user' | 'group' | 'workgroup' | 'user_group';
+	channel_id: number;
+	id: number;
+	timestamp: string;
+	participants: {
+
+		id: number
+		username: string
+		profile_image: string | null
+		banner_image: string | null
+		public_status: "private"
+		chat_status: "private"
+	}[]
 }
 
 export interface Direct {

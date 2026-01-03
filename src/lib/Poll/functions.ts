@@ -39,7 +39,7 @@ export const getPhase = (poll: poll): Phase => {
 
 // Labels for the circles on the timeline
 export const dateLabels = [
-	'Hasn\'t started yet',
+	'Start Date',
 	'Area voting',
 	'Proposals creation',
 	'Prediction statements creation',
@@ -48,6 +48,11 @@ export const dateLabels = [
 	'Voting for non-delegates',
 	'Results and evaluation'
 ];
+
+const dateLabelsDate = [
+	'Date Voting',
+	'Results'
+]
 
 export const dateLabelsDatePoll = ['Hasn\'t started yet',
 	'Schedule', 'Results'];
@@ -77,29 +82,40 @@ export const getPhaseUserFriendlyName = (phase: Phase) => {
 	}
 };
 
-export const getPhaseUserFriendlyNameWithNumber = (phase: Phase) => {
-	switch (phase) {
-		case 'pre_start':
-			return `0. ${dateLabels[0]}`;
-		case 'area_vote':
-			return `1. ${dateLabels[1]}`;
-		case 'proposal':
-			return `2. ${dateLabels[2]}`;
-		case 'prediction_statement':
-			return `3. ${dateLabels[3]}`;
-		case 'prediction_bet':
-			return `4. ${dateLabels[4]}`;
-		case 'delegate_vote':
-			return `5. ${dateLabels[5]}`;
-		case 'vote':
-			return `6. ${dateLabels[6]}`;
-		case 'prediction_vote':
-			return `7. ${dateLabels[7]}`;
-		case 'result':
-			return `8. ${dateLabels[8]}`;
-		default:
-			return "";
-	}
+export const getPhaseUserFriendlyNameWithNumber = (phase: Phase, poll_type: number = 4) => {
+	if (poll_type === 4)
+		switch (phase) {
+			case 'pre_start':
+				return `0. ${dateLabels[0]}`;
+			case 'area_vote':
+				return `1. ${dateLabels[1]}`;
+			case 'proposal':
+				return `2. ${dateLabels[2]}`;
+			case 'prediction_statement':
+				return `3. ${dateLabels[3]}`;
+			case 'prediction_bet':
+				return `4. ${dateLabels[4]}`;
+			case 'delegate_vote':
+				return `5. ${dateLabels[5]}`;
+			case 'vote':
+				return `6. ${dateLabels[6]}`;
+			case 'prediction_vote':
+				return `7. ${dateLabels[7]}`;
+			case 'result':
+				return `8. ${dateLabels[8]}`;
+			default:
+				return "";
+		}
+	else if (poll_type === 3)
+		switch (phase) {
+			case 'area_vote':
+				return `1. ${dateLabelsDate[0]}`;
+			case 'prediction_vote':
+				return `2. ${dateLabelsDate[1]}`;
+			default:
+				return "";
+		}
+	else return ""
 };
 
 //TODO: To prevent many API calls, use svelte stores to transfer information between files about groups
@@ -110,24 +126,30 @@ export const getGroupInfo = async (id: number | string) => {
 };
 
 
-export const nextPhase = async (pollType: number, pollId: string | number, phase: Phase) => {
+export const nextPhase = async (poll: poll, phase: Phase) => {
 
 	if (phase === 'result' || phase === "prediction_vote") return 'prediction_vote';
-	pollId = Number(pollId);
 	let _phase: Phase = 'area_vote';
 
-	if (pollType === 4) {
+	if (poll.poll_type === 4) {
 		if (phase === 'area_vote') _phase = 'proposal';
 		else if (phase === 'proposal') _phase = 'prediction_statement';
 		else if (phase === 'prediction_statement') _phase = 'prediction_bet';
-		else if (phase === 'prediction_bet') _phase = 'delegate_vote';
+		else if (phase === 'prediction_bet') {
+			_phase = 'delegate_vote';
+			poll.status_prediction = 1;
+		}
 		else if (phase === 'delegate_vote') _phase = 'vote';
-		else if (phase === 'vote') _phase = 'prediction_vote';
-	} else if (pollType === 3) _phase = 'result';
+		else if (phase === 'vote') {
+			_phase = 'prediction_vote';
+			poll.status = 2;
+		}
+	} else if (poll.poll_type === 3) _phase = 'result';
+
 
 	const { res, json } = await fetchRequest(
 		'POST',
-		`group/poll/${pollId}/fast_forward`,
+		`group/poll/${poll.id}/fast_forward`,
 		{
 			phase: _phase
 		}
@@ -136,21 +158,6 @@ export const nextPhase = async (pollType: number, pollId: string | number, phase
 
 	return _phase
 };
-
-export const reportThread = async (threadId: number, description: string) => {
-	const { res, json } = await fetchRequest('POST', `report/create`, {
-		title: threadId,
-		description
-	}, true);
-
-	if (!res.ok) {
-		return { message: 'Failed to report thread', success: false };
-		return;
-	}
-
-	return { message: 'Thread has been reported', success: true };
-};
-
 
 export const imacFormatting = (imac: number | string) => {
 	imac = Number(imac)

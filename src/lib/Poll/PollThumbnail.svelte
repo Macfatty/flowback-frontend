@@ -1,4 +1,5 @@
 <script lang="ts">
+	import DefaultBanner from '$lib/assets/default_banner_group.png';
 	import type { Phase, poll } from './interface';
 	import { page } from '$app/stores';
 	import Tag from '$lib/Group/Tag.svelte';
@@ -14,7 +15,7 @@
 		imacFormatting,
 		nextPhase
 	} from './functions';
-	import { getPermissionsFast } from '$lib/Generic/GenericFunctions';
+	import { getPermissionsFast, onThumbnailError } from '$lib/Generic/GenericFunctions';
 	import Select from '$lib/Generic/Select.svelte';
 	import { getTags } from '$lib/Group/functions';
 	import type { Tag as TagType } from '$lib/Group/interface';
@@ -147,27 +148,33 @@
 	<div class="mx-2">
 		{#if showGroupInfo}
 			<div class="flex gap-4 items-center pb-2 w-full justify-between dark:text-secondary">
-				<a
-					href={poll?.group_joined ? `groups/${poll?.group_id}` : ''}
+				<button
+					on:click={() =>
+						poll?.group_joined
+							? goto(`groups/${poll?.group_id}`)
+							: ErrorHandlerStore.set({
+									message: 'You must join the group to access it',
+									success: false
+								})}
 					class:hover:underline={poll?.group_joined}
 					class="text-black dark:text-darkmodeText flex items-center"
 				>
-					<!-- <img
+					<img
 						class="h-6 w-6 mr-1 rounded-full break-word"
 						src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
 						alt={'Poll Thumbnail'}
 						on:error={(e) => onThumbnailError(e, DefaultBanner)}
-					/> -->
+					/>
 					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
 						>{poll?.group_name}</span
 					>
-				</a>
+				</button>
 				<div class="flex gap-4 items-baseline">
 					<NotificationOptions
 						type="poll"
 						id={poll?.id}
-						api={`group/poll/${poll?.id}`}
-						categories={['poll', 'timeline', 'comment_all']}
+						api={`group/poll/${poll?.id}/subscribe`}
+						categories={['poll', 'poll_comment', 'poll_phase']}
 						labels={['Poll', 'Timeline', 'Comments']}
 						Class="text-black dark:text-darkmodeText"
 						ClassOpen="right-0"
@@ -193,7 +200,7 @@
 						functions={[
 							() => ((deletePollModalShow = true), (choicesOpen = false)),
 							() => ((reportPollModalShow = true), (choicesOpen = false)),
-							async () => (phase = await nextPhase(poll?.poll_type, poll?.id, phase))
+							async () => (phase = await nextPhase(poll, phase))
 						]}
 						Class="text-black justify-self-center mt-2"
 					/>
@@ -239,8 +246,8 @@
 					<NotificationOptions
 						type="poll"
 						id={poll?.id}
-						api={`group/poll/${poll?.id}`}
-						categories={['poll', 'timeline', 'comment_all']}
+						api={`group/poll/${poll?.id}/subscribe`}
+						categories={['poll', 'poll_comment', 'poll_phase']}
 						labels={['Poll', 'Timeline', 'Comments']}
 						Class="text-black dark:text-darkmodeText"
 						ClassOpen="right-0"
@@ -266,7 +273,7 @@
 						functions={[
 							() => ((deletePollModalShow = true), (choicesOpen = false)),
 							() => ((reportPollModalShow = true), (choicesOpen = false)),
-							async () => (phase = await nextPhase(poll?.poll_type, poll?.id, phase))
+							async () => (phase = await nextPhase(poll, phase))
 						]}
 						Class="text-black justify-self-center mt-2"
 					/>
@@ -338,13 +345,11 @@
 				{$_('Historical imac value')}: {imacFormatting(poll.interval_mean_absolute_correctness)}
 			{/if}
 
-			{#if poll?.poll_type === 4}
-				<!-- Phase -->
-				<div class="text-sm font-semibold text-primary dark:text-secondary">
-					{$_('Current phase')}
-					{$_(getPhaseUserFriendlyNameWithNumber(phase))}
-				</div>
-			{/if}
+			<!-- Phase -->
+			<div class="text-sm font-semibold text-primary dark:text-secondary">
+				{$_('Current phase')}
+				{$_(getPhaseUserFriendlyNameWithNumber(phase, poll.poll_type))}
+			</div>
 		</div>
 
 		{#if poll?.description?.length > 0}
@@ -356,7 +361,7 @@
 			bind:poll
 			enableDetails
 			displayTimelinePhase={false}
-			Class={'!absolute md:!relative left-4 md:left-0'}
+			Class={'w-full md:!relative'}
 			horizontal
 		/>
 

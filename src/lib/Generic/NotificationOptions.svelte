@@ -5,21 +5,32 @@
 	import { onMount } from 'svelte';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
-	import { page } from '$app/stores';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import { ErrorHandlerStore } from './ErrorHandlerStore';
 
-	export let notificationOpen = false,
-		categories: string[],
-		type: 'poll' | 'group' | 'thread',
-		labels: string[],
-		api: string,
-		id: number,
+	let {
+		notificationOpen = false,
+		categories,
+		labels,
+		type,
+		api,
+		id,
 		Class = '',
 		ClassOpen = '',
-		hoverEffect = true;
+		hoverEffect = true
+	}: {
+		notificationOpen: boolean;
+		categories: string[];
+		labels: string[];
+		type: 'poll' | 'group' | 'thread' | 'delegation' | 'event';
+		api: string;
+		id: number;
+		Class: string;
+		ClassOpen: string;
+		hoverEffect: boolean;
+	} = $props();
 
-	let notifications: NotificationObject[] = [];
+	let notifications: NotificationObject[] = $state([]);
 
 	interface NotificationObject {
 		channel_category: string;
@@ -27,8 +38,15 @@
 		channel_sender_type: string;
 	}
 
-	const groupId = $page.params.groupId;
-	const pollId = $page.params.pollId;
+	interface NotificationSubscriptionResponse {
+		origin_id: number;
+		channel_id: number;
+		channel_name: 'group' | 'poll' | 'thread';
+		tags: {
+			name: string;
+			reminders: null;
+		}[];
+	}
 
 	const closeWindowWhenClickingOutside = () => {
 		window.addEventListener('click', function (e) {
@@ -47,77 +65,93 @@
 
 	const getNotifications = async () => {
 		const { res, json } = await fetchRequest('GET', 'notification/subscription');
-		notifications = json?.results.filter(
-			(notificationObject: any) => notificationObject.channel_sender_id === id
+		if (!res.ok) return;
+
+		const notificationsData = json.results.find(
+			(notification: NotificationSubscriptionResponse) => notification.origin_id === id
 		);
+
+		notifications = notificationsData
+			? notificationsData.tags.map((tag: any) => ({
+					channel_category: tag.name,
+					channel_sender_id: id,
+					channel_sender_type: type
+				}))
+			: [];
 	};
 
-	const getNotificationList = async () => {
-		const { res, json } = await fetchRequest('GET', 'notification/list');
-		// notifications = json?.results.filter(
-		// 	(notificationObject: any) => notificationObject.channel_sender_id === id
-		// );
-	};
+	const notificationSubscription = async (category: string, method: 'add' | 'remove' = 'add') => {
+		method === 'add'
+			? (notifications = [
+					...notifications,
+					{ channel_category: category, channel_sender_id: id, channel_sender_type: type }
+				])
+			: (notifications = notifications.filter((item) => item.channel_category !== category));
 
-	const notificationSubscription = async (category: string) => {
-		const { res, json } = await fetchRequest('POST', `${api}/notification/subscribe`, {
-			tags: [category]
-		});
+		let payload: any = {
+			tags: notifications.map((notification) => notification.channel_category)
+		};
+		if (type === 'event') payload['event_ids'] = id.toString();
+
+		const { res, json } = await fetchRequest('POST', `${api}`, payload);
 		if (!res.ok) {
 			ErrorHandlerStore.set({ message: 'Failed to subscribe', success: false });
 			return;
 		}
 
-		notifications.push({
-			channel_category: category,
-			channel_sender_id: id,
-			channel_sender_type: type
-		});
+		method === 'add'
+			? notifications.push({
+					channel_category: category,
+					channel_sender_id: id,
+					channel_sender_type: type
+				})
+			: (notifications = notifications.filter(
+					(notification) => notification.channel_category !== category
+				));
 
 		ErrorHandlerStore.set({ message: 'Subscribed', success: true });
 
 		notifications = notifications;
 	};
 
-	const notificationUnsubscription = async (category: string) => {
-		const { res, json } = await fetchRequest('POST', `notification/unsubscribe`, {
-			channel_sender_id: id,
-			channel_category: category,
-			channel_sender_type: type
+	const subscribeToAll = async () => {
+		const { res, json } = await fetchRequest('POST', `${api}`, {
+			tags: categories
 		});
+
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to unsubscribe', success: false });
+			ErrorHandlerStore.set({ message: 'Failed to subscribe to all', success: false });
 			return;
 		}
 
-		notifications = notifications.filter((object) => object.channel_category !== category);
-		ErrorHandlerStore.set({ message: 'Subscribed', success: true });
-	};
+		ErrorHandlerStore.set({ message: 'Subscribed to all', success: true });
 
-	const groupSubcribe = async () => {
-		const { res, json } = await fetchRequest('POST', `group/${groupId}/notification/subscribe`, {
-			tags: ['group', 'group_user', 'kanban', 'poll', 'schedule_event', 'thread']
-		});
+		notifications = categories.map((category) => ({
+			channel_category: category,
+			channel_sender_id: id,
+			channel_sender_type: type
+		}));
 	};
 
 	onMount(() => {
-		// closeWindowWhenClickingOutside();
-		// groupSubcribe();
+		closeWindowWhenClickingOutside();
+		// getNotifications();
 	});
 
-	$: if (notificationOpen) {
-		// getNotificationList();
-		// getNotifications();
-	}
+	$effect(() => {
+		if (notificationOpen) {
+			getNotifications();
+		}
+	});
 </script>
 
-<div class={`${Class} notifications-clickable-region`}>
+<div class={`${Class} notifications-clickable-region relative z-100 `}>
 	<button
+		type="button"
 		class={``}
-		on:click={() => {
+		onclick={() => {
 			notificationOpen = !notificationOpen;
 		}}
-		on:keydown
 	>
 		{#key darkModeStore}
 			<Fa
@@ -129,8 +163,15 @@
 	</button>
 
 	{#if notificationOpen && categories}
-		<div class={`z-50 absolute mt-2 bg-white dark:bg-darkobject shadow-xl text-sm ${ClassOpen}`}>
+		<div class={`z-40 absolute mt-2 bg-white dark:bg-darkobject shadow-xl text-sm ${ClassOpen}`}>
 			<div class="text-xs p-2">{$_('Manage Subscriptions')}</div>
+			<button
+				onclick={(e) => {
+					e.preventDefault();
+					subscribeToAll();
+				}}
+				class="text-xs p-2">{$_('Subscribe to All')}</button
+			>
 			{#each categories as category, i}
 				<button
 					class="bg-gray-200 dark:bg-gray-700 w-full p-2 px-5 flex justify-between items-center transition-all"
@@ -146,10 +187,11 @@
 					class:dark:!bg-slate-400={notifications?.find(
 						(notificationObject) => notificationObject.channel_category === category
 					)}
-					on:click={() => {
-						if (notifications.find((object) => object.channel_category === category))
-							notificationUnsubscription(category);
-						else notificationSubscription(category);
+					onclick={(e) => {
+						e.preventDefault();
+						if (!notifications.find((object) => object.channel_category === category))
+							notificationSubscription(category, 'add');
+						else notificationSubscription(category, 'remove');
 					}}
 				>
 					{$_(labels[i])}

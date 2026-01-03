@@ -43,6 +43,7 @@
 			await getVotes();
 		}
 
+		// TODO: Remove "needsReload" while making sure things reload properly
 		needsReload++;
 	});
 
@@ -99,16 +100,14 @@
 				proposal: vote.proposal_id
 			}));
 
-			if (phase === 'delegate_vote')
-				voting = json?.results[0]?.vote.map((vote: any) => ({
-					score: vote.raw_score,
-					proposal: vote.proposal_id
-				}));
+			// Makes it so users vote matches their delegates vote
+			voting = json?.results[0]?.vote.map((vote: any) => ({
+				score: vote.raw_score,
+				proposal: vote.proposal_id
+			}));
 		}
 		voting = voting;
 		delegateVoting = delegateVoting;
-
-		console.log(voting, delegateVoting, 'DELEGATE VOTE');
 	};
 
 	const handleSliderClick = async (pos: any, proposal: proposal) => {
@@ -193,39 +192,37 @@
 		else if (phase === 'vote')
 			return voting?.find((vote) => vote.proposal === proposal.id)?.score ?? 0;
 	};
-
-	$: console.log(voting, delegateVoting, 'VOTE');
 </script>
 
 <div class={`box-border ${Class}`}>
 	<div class="mt-4 h-[100%]">
 		{#if proposals}
 			{#key needsReload}
-				{#each proposals as proposal, i}
+				{#each proposals as proposal}
 					<div class="border-b-2 border-gray-300 select-none">
 						<Proposal
 							bind:proposalsToPredictionMarket
 							bind:commentFilterProposalId
+							bind:proposals
 							bind:selectedProposal
-							bind:filteredComments={comments}
 							bind:phase
+							bind:filteredComments={comments}
 							{proposal}
 						>
 							{#if phase === 'delegate_vote' || phase === 'vote'}
 								{@const score = getScore(proposal)}
+								{@const disabled =
+									(phase === 'delegate_vote' && $groupUserStore?.delegate_pool_id === null) ||
+									(phase === 'vote' && !$groupUserPermissionStore?.allow_vote)}
+
 								{#key voting || delegateVoting}
 									<VotingSlider
 										bind:phase
 										onSelection={(pos) => handleSliderClick(pos, proposal)}
-										disabled={(phase === 'delegate_vote' &&
-											$groupUserStore?.delegate_pool_id === null) ||
-											(phase === 'vote' && !$groupUserPermissionStore?.allow_vote)}
-										{score}
-										style={(() => {
-											if (phase === 'vote' && voting === delegateVoting) return 'gray';
-											else return 'purple';
-										})()}
+										style={disabled ? 'gray' : 'purple'}
 										id={`${idfy(proposal.title)}`}
+										{score}
+										{disabled}
 									/>
 								{/key}
 							{/if}
@@ -236,7 +233,12 @@
 										const dVote = delegateVoting.find((vote) => vote.proposal === proposal.id);
 										if (dVote) changingVote(dVote.score, dVote.proposal);
 										vote();
-									}}>{$_($groupUserStore?.delegate_pool_id ? 'Reset to my delegate delegate votes' : 'Reset to delegate votes')}</Button
+									}}
+									>{$_(
+										$groupUserStore?.delegate_pool_id
+											? 'Reset to my delegate delegate votes'
+											: 'Reset to delegate votes'
+									)}</Button
 								>
 							{/if}
 						</Proposal>

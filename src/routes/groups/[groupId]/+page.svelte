@@ -4,7 +4,6 @@
 	import { type GroupDetails, type SelectablePage } from '$lib/Group/interface';
 	import GroupSidebar from '$lib/Group/GroupSidebar.svelte';
 	import Layout from '$lib/Generic/Layout.svelte';
-	import Documents from '$lib/Group/Documents/Documents.svelte';
 	import About from '$lib/Group/About.svelte';
 	import SendEmail from '$lib/Group/SendEmail.svelte';
 	import Statistics from '$lib/Group/Statistics.svelte';
@@ -19,7 +18,6 @@
 	import WorkGroups from '$lib/Group/WorkingGroups/WorkGroups.svelte';
 	import { env } from '$env/dynamic/public';
 	import PollThreadThumbnails from '$lib/Poll/PollThreadThumbnails.svelte';
-	import Threads from '$lib/Thread/Threads.svelte';
 
 	let selectedPage: SelectablePage = 'flow';
 	let group: GroupDetails = {
@@ -108,8 +106,8 @@
 						/>
 					{:else if selectedPage === 'members'}
 						<Members />
-					{:else if selectedPage === 'documents'}
-						<Documents />
+					<!-- {:else if selectedPage === 'documents'} -->
+						<!-- <Documents /> -->
 					{:else if selectedPage === 'statistics'}
 						<Statistics {memberCount} />
 					{:else if selectedPage === 'email'}
@@ -124,8 +122,6 @@
 						<Permissions />
 					{:else if selectedPage === 'schedule'}
 						<Schedule type="group" />
-					{:else if selectedPage === 'threads'}
-						<Threads />
 					{:else if selectedPage === 'working-groups'}
 						<WorkGroups />
 					{/if}

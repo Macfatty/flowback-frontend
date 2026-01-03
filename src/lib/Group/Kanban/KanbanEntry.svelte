@@ -21,13 +21,11 @@
 	import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 	import Select from '$lib/Generic/Select.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import FileUploads from '$lib/Generic/FileUploads.svelte';
+	import FileUploads from '$lib/Generic/File/FileUploads.svelte';
 
 	export let kanban: kanban,
-		filter: Filter,
 		users: GroupUser[],
 		removeKanbanEntry: (id: number) => void,
-		changeNumberOfOpen: (addOrSub: 'Addition' | 'Subtraction') => void,
 		workGroups: WorkGroup[] = [],
 		getKanbanEntries: () => Promise<void>;
 
@@ -56,6 +54,7 @@
 			work_group: kanban.work_group || null,
 			images: kanban.attachments || []
 		},
+		images: File[],
 		endDate: TimeAgo;
 
 	// Helper function to format date for datetime-local input
@@ -86,7 +85,7 @@
 		};
 	};
 
-	const updateKanbanContent = async () => {
+	const updateKanbanEntry = async () => {
 		const formData = new FormData();
 
 		formData.append('title', kanbanEdited.title);
@@ -111,12 +110,16 @@
 			formData.append('end_date', '');
 		}
 
+		if (images) {
+			images.forEach((image) => {
+				formData.append('attachments', image);
+			});
+		}
+
 		const { res, json } = await fetchRequest(
 			'POST',
-			filter.type === 'group'
-				? `group/${
-						env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : filter.group
-					}/kanban/entry/update`
+			kanban.origin_type === 'group'
+				? `group/${kanban.origin_id}/kanban/entry/update`
 				: 'user/kanban/entry/update',
 			formData,
 			true,
@@ -130,30 +133,51 @@
 			return;
 		}
 
-		kanban.title = kanbanEdited.title;
-		kanban.description = kanbanEdited.description;
-		kanban.priority = kanbanEdited.priority;
-		kanban.end_date = kanbanEdited.end_date;
-		kanban.work_group = kanbanEdited.work_group;
-		kanban.attachments = kanbanEdited.images || [];
+		getNewKanbanEntry();
+	};
 
-		const assignee = users.find((user) => user.user.id === kanbanEdited.assignee_id);
-		kanban.assignee = kanbanEdited.assignee_id
-			? {
-					id: kanbanEdited.assignee_id,
-					username: assignee?.user.username || '',
-					profile_image: assignee?.user.profile_image || ''
-				}
-			: null;
+	// Calls for the new kanban entry from the backend
+	const getNewKanbanEntry = async () => {
+		// const { json, res } = await fetchRequest(
+		// 	'GET',
+		// 	kanban.origin_type === 'group'
+		// 		? `group/${
+		// 				env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : filter.group
+		// 			}/kanban/entry/list?id=${kanban.id}`
+		// 		: `user/kanban/entry/list?id=${kanban.id}`
+		// );
+
+		// if (!res.ok) return;
+		// If all goes well, don't manually change kanban locally
+		// if (res.ok) return;
+
+		// // Else, manually update locally
+		// kanban = json.results[0];
+		// kanban.title = kanbanEdited.title;
+		// kanban.description = kanbanEdited.description;
+		// kanban.priority = kanbanEdited.priority;
+		// kanban.end_date = kanbanEdited.end_date;
+		// kanban.work_group = kanbanEdited.work_group;
+		// kanban.attachments = kanbanEdited.images || [];
+
+		// const assignee = users.find((user) => user.user.id === kanbanEdited.assignee_id);
+		// kanban.assignee = kanbanEdited.assignee_id
+		// 	? {
+		// 			id: kanbanEdited.assignee_id,
+		// 			username: assignee?.user.username || '',
+		// 			profile_image: assignee?.user.profile_image || ''
+		// 		}
+		// 	: null;
 
 		await getKanbanEntries();
 	};
 
+	// Is called when the kanban entry has its arrows clicked on (TODO: Also when click and dragged around)
 	const updateKanbanLane = async (lane: number) => {
 		const { res, json } = await fetchRequest(
 			'POST',
 			kanban.origin_type === 'group'
-				? `group/${filter.group}/kanban/entry/update`
+				? `group/${kanban.origin_id}/kanban/entry/update`
 				: 'user/kanban/entry/update',
 			{
 				lane,
@@ -170,7 +194,7 @@
 		await getKanbanEntries();
 	};
 
-	const changeAssignee = (e: any) => {
+	const editAssignee = (e: any) => {
 		kanbanEdited.assignee_id = Number(e.target.value);
 	};
 
@@ -183,7 +207,7 @@
 		const { res, json } = await fetchRequest(
 			'POST',
 			kanban.origin_type === 'group'
-				? `group/${filter.group}/kanban/entry/delete`
+				? `group/${kanban.origin_id}/kanban/entry/delete`
 				: 'user/kanban/entry/delete',
 			{ entry_id: kanban.id }
 		);
@@ -195,6 +219,7 @@
 			});
 			return;
 		}
+
 		removeKanbanEntry(kanban.id);
 	};
 
@@ -226,11 +251,12 @@
 	$: if (openModal && !isEditing)
 		checkForLinks(kanban.description, `kanban-${kanban.id}-description`);
 
-	$: if (openModal === true) changeNumberOfOpen('Addition');
-	else changeNumberOfOpen('Subtraction');
-
 	$: if (openModal && kanban.id === selectedEntry) {
 		initializeKanbanEdited();
+	}
+
+	$: if (isEditing) {
+		images = kanban.attachments ?? [];
 	}
 </script>
 
@@ -272,10 +298,10 @@
 		</div>
 	{/if}
 	<div
-		class="mt-2 gap-2 items-center text-sm cursor-pointer hover:underline"
+		class="mt-2 gap-2 items-center text-sm hover:underline"
 		on:click={() => {
 			if ($page.params.groupId) goto(`/user?id=${kanban?.assignee?.id}`);
-			else if (kanban.origin_type === 'group') goto(`/groups/${kanban.origin_id}?page=kanban`);
+			else if (kanban.origin_type === 'group') goto(`/groups/${kanban.origin_id}`);
 		}}
 		role="button"
 		tabindex="0"
@@ -290,62 +316,66 @@
 			/>
 			{$_('My own')}
 		{:else}
-			{$_('Group')}: {kanban.group_name}
+			<span class="text-xs dark:text-gray-500 text-gray-400 italic"
+				>{$_('Group')}: {kanban.group_name}</span
+			>
 
-			{#if kanban?.assignee}
-				<ProfilePicture
-					username={filter.type === 'group' ? kanban?.assignee?.username : kanban.group_name}
-					profilePicture={kanban?.assignee?.profile_image}
-					Class=""
-					size={1}
-					displayName
-				/>
-			{/if}
+			<span class="text-xs dark:text-gray-500 text-gray-400 italic">
+				{#if kanban?.assignee}
+					<ProfilePicture
+						username={kanban.origin_type === 'group'
+							? kanban?.assignee?.username
+							: kanban.group_name}
+						profilePicture={kanban?.assignee?.profile_image}
+						Class=""
+						size={1}
+						displayName
+					/>
+				{/if}
+			</span>
 		{/if}
 	</div>
 
 	{#if kanban.work_group && kanban.work_group.name}
-		<div class="text-sm">
+		<div class="text-xs dark:text-gray-500 text-gray-400 italic">
 			{$_('Work Group')}: {elipsis(kanban.work_group.name || '', 20)}
 		</div>
 	{/if}
-	{#if (filter.type === 'group' && kanban.origin_type === 'group') || (filter.type === 'home' && kanban.origin_type === 'user')}
-		<div class="flex justify-between mt-3">
-			<button
-				class="cursor-pointer hover:text-gray-400 py-0.5 transition-all"
-				on:click={(event) => {
-					event.stopPropagation();
-					if (kanban.lane > 1) {
-						updateKanbanLane(kanban.lane - 1);
-					}
-				}}
-			>
-				<Fa icon={faArrowLeft} size="md" />
-			</button>
+	<div class="flex justify-between mt-3">
+		<button
+			class="cursor-pointer hover:text-gray-400 py-0.5 transition-all"
+			on:click={(event) => {
+				event.stopPropagation();
+				if (kanban.lane > 1) {
+					updateKanbanLane(kanban.lane - 1);
+				}
+			}}
+		>
+			<Fa icon={faArrowLeft} size="md" />
+		</button>
 
-			<button
-				class="cursor-pointer hover:dark:text-darkmodeText hover:text-gray-400 py-0.5 transition-all"
-				on:click={(event) => {
-					event.stopPropagation();
-					if (kanban.lane < lanes.length - 1) {
-						updateKanbanLane(kanban.lane + 1);
-					}
-				}}
-			>
-				<Fa icon={faArrowRight} size="md" />
-			</button>
-		</div>
-	{/if}
+		<button
+			class="cursor-pointer hover:dark:text-darkmodeText hover:text-gray-400 py-0.5 transition-all"
+			on:click={(event) => {
+				event.stopPropagation();
+				if (kanban.lane < lanes.length - 1) {
+					updateKanbanLane(kanban.lane + 1);
+				}
+			}}
+		>
+			<Fa icon={faArrowRight} size="md" />
+		</button>
+	</div>
 </div>
 
 {#if kanban.id === selectedEntry}
 	<Modal
 		bind:open={openModal}
 		id="kanban-entry-modal"
-		Class=" min-w-[400px] max-w-[500px] z-50 "
+		Class="cursor-default min-w-[400px] max-w-[500px] z-50"
 		buttons={isEditing
 			? [
-					{ label: 'Update', type: 'primary', onClick: updateKanbanContent },
+					{ label: 'Update', type: 'primary', onClick: updateKanbanEntry },
 					{ label: 'Cancel', type: 'default', onClick: cancelUpdateKanban },
 					{ label: 'Delete', type: 'warning', onClick: deleteKanbanEntry }
 				]
@@ -371,7 +401,7 @@
 					Class="overflow-scroll"
 					id="kanban-edit-description"
 				/>
-				{#if filter.type === 'group'}
+				{#if kanban.origin_type === 'group'}
 					<div class="text-left">
 						<div class="block text-md">
 							{$_('Work Group')}
@@ -395,7 +425,7 @@
 					<input
 						type="datetime-local"
 						bind:value={kanbanEdited.end_date}
-						class="w-full border rounded p-1 border-gray-300 dark:border-gray-600 dark:bg-darkobject
+						class="dark:text-darkmodeText w-full border rounded p-1 border-gray-300 dark:border-gray-600 dark:bg-darkobject
 						   {kanbanEdited.end_date ? 'text-black' : 'text-gray-500'}"
 						placeholder={$_('No end date set')}
 					/>
@@ -425,7 +455,7 @@
 							labels={users.map((user) => user.user.username)}
 							values={users.map((user) => user.user.id)}
 							value={kanban?.assignee?.id || ''}
-							onInput={changeAssignee}
+							onInput={editAssignee}
 							innerLabel={$_('No assignee')}
 							innerLabelOn={true}
 						/>
@@ -434,22 +464,20 @@
 						<div class="block text-md">
 							{$_('Attachments')}
 						</div>
-						<FileUploads bind:files={kanbanEdited.images} disableCropping />
+						<FileUploads bind:files={images} disableCropping />
 					</div>
 				</div>
 				<!-- If not editing, so normal display -->
 			{:else}
 				<div class="text-center">
 					<h2 class="pb-1 font-semibold text-xl w-full">{kanban.title}</h2>
-					{#if filter.type === 'group'}
-						<p class="w-full">{kanban?.work_group?.name || $_('No workgroup assigned')}</p>
-						<button on:click={() => goto(`/groups/${kanban?.origin_id}`)} class="w-full"
-							>{kanban?.group_name}</button
-						>
-					{/if}
 				</div>
 				<div class="flex mt-4 w-full">
 					<div class="flex flex-col mr-4 text-left gap-1 w-full">
+						{#if kanban.origin_type === 'group'}
+							<p class="font-bold">{$_('Group')}</p>
+							<p class="font-bold">{$_('Work Group')}</p>
+						{/if}
 						<p class="font-bold">{$_('End Date')}</p>
 						<p class="font-bold">{$_('Priority')}</p>
 						<p class="font-bold">{$_('Assignee')}</p>
@@ -457,6 +485,13 @@
 					</div>
 
 					<div class="flex flex-col text-right gap-1 w-full">
+						{#if kanban.origin_type === 'group'}
+							<button class="text-right" on:click={() => goto(`/groups/${kanban?.origin_id}`)}
+								>{kanban?.group_name}</button
+							>
+							<p>{kanban?.work_group?.name}</p>
+						{/if}
+
 						<p>
 							{#if kanban?.end_date}
 								{new Intl.DateTimeFormat(navigator?.language, {

@@ -2,7 +2,7 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import FIleUpload from '$lib/Generic/FileUpload.svelte';
+	import FIleUpload from '$lib/Generic/File/FileUpload.svelte';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
@@ -29,7 +29,6 @@
 		publicGroup = true,
 		hiddenGroup = true,
 		loading = false,
-		 
 		oldGroup: any;
 
 	//This page also supports the edit of groups
@@ -62,10 +61,7 @@
 		loading = false;
 		if (!res.ok) {
 			ErrorHandlerStore.set({
-				message:
-					json.detail[0] || json.detail || groupToEdit
-						? 'Could not update group'
-						: 'Could not create group',
+				message: groupToEdit ? 'Could not update group' : 'Could not create group',
 				success: false
 			});
 			return;
@@ -175,8 +171,6 @@
 				/>
 			{/if}
 
-			 
-
 			<div class="flex gap-4">
 				<Button type="submit" disabled={loading} buttonStyle="primary" Class="w-1/2"
 					><div class="flex justify-center gap-3 items-center">
@@ -222,5 +216,3 @@
 		</div>
 	</Loader>
 </form>
-
- 

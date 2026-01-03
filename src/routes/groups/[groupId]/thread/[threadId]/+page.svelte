@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
-	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import type { Thread } from '$lib/Group/interface';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
@@ -16,13 +15,15 @@
 	import DeletePostModal from '$lib/Poll/DeletePostModal.svelte';
 	import Button from '$lib/Generic/Button.svelte';
 	import ThreadVoting from '$lib/Thread/ThreadVoting.svelte';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
-	let thread: Thread,
-		 
-		reportModalShow = false,
-		deleteModalShow = false;
+	let thread: Thread | undefined = $state(undefined),
+		reportModalShow = $state(false),
+		deleteModalShow = $state(false);
 
-	onMount(() => {
+	// Fixes a bug where clicking between threads (because of links or in notification) doesn't update page properly
+	$effect(() => {
+		const { threadId } = $page.params;
 		getThread();
 	});
 
@@ -47,18 +48,15 @@
 		<div
 			class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded shadow w-full poll-header-grid items-center py-4"
 		>
-			<div
+			<button
 				class="cursor-pointer bg-white dark:bg-darkobject dark:text-darkmodeText justify-center m-auto"
-				on:click={() =>
+				onclick={() =>
 					new URLSearchParams(window.location.search).get('source') === 'home'
 						? goto('/home')
 						: goto(`/groups/${$page.params.groupId}?page=flow`)}
-				on:keydown
-				role="button"
-				tabindex="0"
 			>
 				<Fa icon={faArrowLeft} />
-			</div>
+			</button>
 
 			<h1 class="text-left text-2xl text-primary dark:text-secondary font-semibold">
 				{thread?.title}
@@ -67,8 +65,8 @@
 				<NotificationOptions
 					type="thread"
 					id={thread?.id}
-					api={`group/thread/${thread?.id}`}
-					categories={['thread']}
+					api={`group/thread/${thread?.id}/subscribe`}
+					categories={['thread_comment']}
 					labels={['thread']}
 				/>
 				<MultipleChoices
@@ -99,7 +97,9 @@
 			{/if}
 		</div>
 
-		<Comments api={'thread'} Class="w-full max-w-[1000px] bg-white dark:bg-darkobject p-6 mt-6" />
+		{#key thread.id}
+			<Comments api={'thread'} Class="w-full max-w-[1000px] bg-white dark:bg-darkobject p-6 mt-6" />
+		{/key}
 	{:else}
 		<div class="p-4 bg-white dark:bg-darkobject dark:text-darkmodeText mt-4 rounded shadow">
 			<p>{$_('No thread found, it might have been deleted')}</p>
@@ -117,17 +117,13 @@
 	bind:reportModalShow
 />
 
-<DeletePostModal bind:deleteModalShow postId={thread?.id} post_type="thread" />
+<DeletePostModal bind:deleteModalShow postId={thread?.id ?? ''} post_type="thread" />
 
 <style>
 	.poll-header-grid {
 		display: grid;
 		grid-template-columns: 0.3fr 4fr 0.3fr;
 		grid-template-rows: 0.1fr 0.1fr 0.1fr 1fr;
-	}
-
-	.grid-area-items {
-		grid-area: 2 / 2 / 3 / 3;
 	}
 
 	.grid-area-description {

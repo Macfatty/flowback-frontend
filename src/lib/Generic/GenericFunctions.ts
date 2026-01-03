@@ -32,7 +32,8 @@ export const checkForLinks = (text: string | null, id: string) => {
 	});
 
 	const descriptionHtmlElement = document.getElementById(id);
-	if (descriptionHtmlElement !== null) descriptionHtmlElement.innerHTML = linkified;
+	// SECURITY RISK: HTML INJECTION. TODO: Fix this without the security flaw
+	// if (descriptionHtmlElement !== null) descriptionHtmlElement.innerHTML = linkified;
 };
 
 export const blobifyImages = async (profileImagePreview: any) => {
@@ -85,6 +86,8 @@ export const getGroupUserInfo = async (groupId: number | string) => {
 };
 
 export const getPermissions = async (groupId: number | string, permissionId: number | string) => {
+	if (!groupId) return;
+
 	groupId = Number(groupId);
 	permissionId = Number(permissionId);
 
@@ -92,6 +95,8 @@ export const getPermissions = async (groupId: number | string, permissionId: num
 		'GET',
 		`group/${groupId}/permissions?id=${permissionId}`
 	);
+
+	if (!res.ok) return;
 
 	return json?.results[0];
 };
@@ -119,4 +124,26 @@ export const linkToPost = (postId: number, groupId: number, postType: 'poll' | '
 	if (postType === 'thread') _postType = 'thread';
 
 	return `/groups/${groupId}/${_postType}/${postId}`;
+}
+
+export const lazyLoading = (getFunction = () => { }) => {
+	let scrolledToBottom =
+		document.body.scrollHeight - document.body.clientHeight <= document.body.scrollTop + 1;
+
+	if (scrolledToBottom) getFunction();
+};
+
+export const formatDateToLocalTime = (date: Date): string => {
+	try {
+		const offset = date.setTime(date.getTime() - date.getTimezoneOffset() * 60000);
+		return new Date(offset).toISOString();
+	} catch (error) {
+		console.error('Error converting date to string:', error);
+		return date.toString();
+	}
+};
+
+export function arraysEqual(arr1: any[], arr2: any[]) {
+	if (arr1.length !== arr2.length) return false;
+	return arr1.every((value, index) => value === arr2[index]);
 }

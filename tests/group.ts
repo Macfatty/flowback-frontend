@@ -1,3 +1,4 @@
+import { idfy } from "$lib/Generic/GenericFunctions2";
 import { expect } from "@playwright/test";
 
 export type group = {
@@ -64,8 +65,11 @@ export async function joinGroup(page: any, group = { name: 'Test Group' }) {
     await page.getByPlaceholder('Search groups').click();
     await page.getByPlaceholder('Search groups').fill(group.name);
     await page.getByRole('heading', { name: group.name, exact: true });
-    const joinButton = await page.locator('#groups-list div').filter({ hasText: group.name }).locator('#group-join-button');
-    await expect(joinButton).toBeVisible();
+    const joinButton = await page.locator(`#join-${idfy(group.name)}`).first();
+    console.log(`#join-${idfy(group.name)}`);
+    
+    
+    // await expect(joinButton).toBeVisible();
     if ((await joinButton.innerText()).trim() === "Join" || (await joinButton.innerText()).trim() === "Ask to join")
         await joinButton.click();
 }

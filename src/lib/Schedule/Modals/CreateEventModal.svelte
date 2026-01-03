@@ -61,12 +61,20 @@
 					<label for="start_date" class="block mb-1 text-gray-700 dark:text-gray-300"
 						>{$_('Start Date')}</label
 					>
+					<!-- bind:value={selectedEvent.start_date} -->
 					<input
 						id="start_date"
 						type="datetime-local"
-						bind:value={selectedEvent.start_date}
 						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+						value={selectedEvent.start_date}
 						required
+						on:input={(e) => {
+							//@ts-ignore
+							let date: string = e.target.value;
+
+							selectedEvent.start_date = date;
+							if (new Date(date) > new Date(selectedEvent.end_date)) selectedEvent.end_date = date;
+						}}
 					/>
 				</div>
 				<div class="mb-4">
@@ -76,9 +84,19 @@
 					<input
 						id="end_date"
 						type="datetime-local"
-						bind:value={selectedEvent.end_date}
+						value={selectedEvent.end_date}
 						class="w-full p-2 border rounded text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
 						required
+						on:input={(e) => {
+							//@ts-ignore
+							let date: string = e.target.value;
+
+							// End date needs to be after start date to be valid
+							if (new Date(date) >= new Date(selectedEvent.start_date))
+								selectedEvent.end_date = date;
+							//@ts-ignore
+							else e.target.value = selectedEvent.end_date;
+						}}
 					/>
 				</div>
 				<div class="mb-4">
@@ -124,6 +142,7 @@
 						{/each}
 					</select>
 				</div>
+				type: {type}
 				{#if type === 'group'}
 					<div class="mb-4">
 						<label for="work_group" class="block mb-1 text-gray-700 dark:text-gray-300"

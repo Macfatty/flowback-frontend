@@ -15,9 +15,9 @@
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 	import { userStore } from '$lib/User/interfaces';
-	import { setUserGroupPermissionInfo } from '$lib/Group/functions';
 	import type { Permissions } from '$lib/Group/Permissions/interface';
 	import { getPermissionsFast } from '$lib/Generic/GenericFunctions';
+	import TextInput from '$lib/Generic/TextInput.svelte';
 
 	let group: Group,
 		groups: Group[],
@@ -26,10 +26,14 @@
 		loading = false,
 		delegates: Delegate[] = [],
 		selectedPage: 'become-delegate' | 'delegate' | 'none' = 'none',
-		userPermissions: Permissions;
+		userPermissions: Permissions,
+		search = '';
 
 	const getGroups = async () => {
-		const { res, json } = await fetchRequest('GET', `group/list?limit=1000&joined=true`);
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/list?limit=1000&joined=true&name__icontains=${search}`
+		);
 
 		if (!res.ok) {
 			ErrorHandlerStore.set({ message: 'Could not get groups', success: false });
@@ -79,6 +83,7 @@
 			})
 		);
 
+		//TODO Add error handling
 		const results = await Promise.all(promises);
 
 		ErrorHandlerStore.set({ message: 'Removed delegations', success: true });
@@ -142,16 +147,30 @@
 	<div class="flex w-[80%] max-w-[1200px] my-6 gap-6">
 		<Button
 			onClick={() => history.back()}
-			Class="z-10 fixed left-6 p-3 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90"
+			Class="z-10 max-h-[3rem] left-6 p-3 transition-all bg-gray-200 dark:bg-darkobject hover:brightness-95 active:brightness-90"
 		>
 			<div class="text-gray-800 dark:text-gray-200">
 				<Fa icon={faArrowLeft} />
 			</div>
 		</Button>
+
 		<div class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 shadow w-[50%]">
 			{#if env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE'}
-				You are {userPermissions?.allow_vote || groupUser?.is_admin ? '' : 'not'} allowed to vote in
-				this group:
+				{$_('Search for groups')}
+				<div class="w-full flex items-end">
+					<TextInput
+						Class="w-4/5"
+						onInput={() => getGroups()}
+						label=""
+						placeholder={$_('Search groups')}
+						bind:value={search}
+					/>
+				</div>
+
+				{$_('You are')}
+				{$_(userPermissions?.allow_vote || groupUser?.is_admin ? '' : 'not')}
+				{$_('allowed to vote in this group:')}
+
 				<Select
 					classInner="w-full bg-white dark:bg-darkobject dark:text-darkmodeText p-2 border-gray-300 rounded border"
 					labels={groups?.map((group) => group.name)}
@@ -219,11 +238,7 @@
 					>
 				{/if}
 			{:else if selectedPage === 'delegate' && group?.id}
-				{#if groupUser?.delegate_pool_id}
-					{$_('You cannot delegate as a delegate')}
-				{:else}
-					<Delegations bind:group bind:delegates />
-				{/if}
+				<Delegations bind:group bind:delegates />
 			{/if}
 		</div>
 	</div>

@@ -50,14 +50,7 @@
 	onDestroy(() => {
 		if (!browser) return;
 		window.removeEventListener('click', handleOutsideClick);
-		restoreBackgroundScroll();
 	});
-
-	$: if (showEvent || showCreateScheduleEvent || showEditScheduleEvent) {
-		preventBackgroundScroll();
-	} else {
-		restoreBackgroundScroll();
-	}
 
 	const firstDayInMonthWeekday = () => {
 		return new Date(year, month, 0).getDay();
@@ -123,16 +116,6 @@
 		}
 	};
 
-	const preventBackgroundScroll = () => {
-		if (!browser) return;
-		document.body.style.overflow = 'hidden';
-	};
-
-	const restoreBackgroundScroll = () => {
-		if (!browser) return;
-		document.body.style.overflow = '';
-	};
-
 	// Initialize values when opening modals
 	const initializeModalValues = () => {
 		if (showCreateScheduleEvent) {
@@ -184,7 +167,7 @@
 		bind:showCreateScheduleEvent
 		bind:selectedReminders
 		on:submit={handleSubmit}
-		{type}
+		bind:type
 		{workGroups}
 		{members}
 		{reminderOptions}

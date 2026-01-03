@@ -15,7 +15,7 @@
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import Button from '$lib/Generic/Button.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import { elipsis } from '$lib/Generic/GenericFunctions';
+	import { elipsis, formatDateToLocalTime } from '$lib/Generic/GenericFunctions';
 	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
 	import Event from './Event.svelte';
 	import Select from '$lib/Generic/Select.svelte';
@@ -281,33 +281,27 @@
 		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
 	};
 
-	const formatDateToLocalTime = (date: Date): string => {
-		try {
-			const offset = date.setTime(date.getTime() - date.getTimezoneOffset() * 60000);
-			return new Date(offset).toISOString();
-		} catch (error) {
-			console.error('Error converting date to string:', error);
-			return date.toString();
-		}
-	};
-
 	onMount(async () => {
 		deleteSelection = () => {
 			document.getElementById(selectedDatePosition)?.classList.remove('selected');
 		};
 
-		const groupId = $page.url.searchParams.get('groupId') ?? null;
+		const groupId = filter.group;
 		if (groupId) {
 			filter.group = groupId;
 			filter.type = 'group';
+			type = 'group';
 		} else {
 			filter.type = 'home';
+			type = 'user';
 		}
 
 		setUpScheduledPolls();
 		getGroups();
 		getWorkGroupList();
 	});
+
+	$: filter.type === 'group' ? (filter.type = 'group') : (filter.type = 'home');
 
 	$: month && year && deleteSelection();
 	$: month && updateMonth();
@@ -342,7 +336,7 @@
 		<div class="pt-3 pb-3">
 			<button
 				on:click={() => {
-					const dateStr = selectedDate.toISOString().slice(0, 16);
+					const dateStr = formatDateToLocalTime(selectedDate).slice(0, 16);
 					selectedEvent = {
 						start_date: dateStr,
 						end_date: dateStr,
@@ -355,8 +349,6 @@
 						work_group: undefined
 					};
 					showCreateScheduleEvent = true;
-					selectedEvent.start_date = formatDateToLocalTime(selectedDate).slice(0, 16);
-					selectedEvent.end_date = formatDateToLocalTime(selectedDate).slice(0, 16);
 				}}
 			>
 				<Fa
