@@ -1,18 +1,10 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
-	import DefaultPFP from '$lib/assets/abstract-user-flat-4.svg';
-	import DefaultBanner from '$lib/assets/default_banner_group.png';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import Fa from 'svelte-fa';
-	import {
-		faThumbTack,
-		faThumbsUp,
-		faThumbsDown,
-		faGlobe,
-		faLock
-	} from '@fortawesome/free-solid-svg-icons';
+	import { faThumbTack, faGlobe, faLock } from '@fortawesome/free-solid-svg-icons';
 	import { _ } from 'svelte-i18n';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { groupUserStore, type Thread } from '$lib/Group/interface';
@@ -29,7 +21,6 @@
 		reportModalShow = false,
 		deleteModalShow = false,
 		choicesOpen = false,
-		poppup: poppup,
 		darkMode: boolean = false;
 
 	//When adminn presses the pin tack symbol, pin the thread
@@ -53,7 +44,7 @@
 	class:poll-thumbnail-shadow={!darkMode}
 >
 	<div class="flex justify-between items-center">
-		{#if !$page.params.groupId}
+		{#if !page.params.groupId}
 			<a href={`/groups/${thread?.group_id}`} class="text-black flex items-center">
 				<!-- <img
 					class="h-6 w-6 mr-1 rounded-full break-word"
@@ -84,41 +75,45 @@
 			</div>
 		{/if}
 
-		<div class=" inline-flex gap-4 items-baseline">
-			<NotificationOptions
-				type="thread"
-				api={`group/thread/${thread?.id}`}
-				categories={['comment']}
-				id={thread?.id}
-				labels={['comment']}
-			/>
-			{#if $groupUserStore?.is_admin || thread?.pinned}
-				<button class:cursor-pointer={$groupUserStore?.is_admin} on:click={() => pinThread(thread)}>
-					<Fa
-						size="1.2x"
-						icon={faThumbTack}
-						color={thread?.pinned ? '#999' : '#CCC'}
-						rotate={thread?.pinned ? '0' : '45'}
-					/>
-				</button>
-			{/if}
+		{#if thread?.group_joined}
+			<div class="inline-flex gap-4 items-baseline">
+				<NotificationOptions
+					type="thread"
+					api={`group/thread/${thread?.id}`}
+					categories={['comment']}
+					id={thread?.id}
+					labels={['comment']}
+				/>
+				{#if $groupUserStore?.is_admin || thread?.pinned}
+					<button
+						class:cursor-pointer={$groupUserStore?.is_admin}
+						on:click={() => pinThread(thread)}
+					>
+						<Fa
+							size="1.2x"
+							icon={faThumbTack}
+							color={thread?.pinned ? '#999' : '#CCC'}
+							rotate={thread?.pinned ? '0' : '45'}
+						/>
+					</button>
+				{/if}
 
-			<MultipleChoices
-				bind:choicesOpen
-				labels={[$_('Delete Thread'), $_('Report Thread')]}
-				functions={[
-					() => (deleteModalShow = true),
-					() => ((reportModalShow = true), (choicesOpen = false))
-				]}
-				Class="text-black justify-self-center"
-			/>
-		</div>
+				<MultipleChoices
+					bind:choicesOpen
+					labels={[$_('Delete Thread'), $_('Report Thread')]}
+					functions={[
+						() => (deleteModalShow = true),
+						() => ((reportModalShow = true), (choicesOpen = false))
+					]}
+					Class="text-black justify-self-center"
+				/>
+			</div>
+		{/if}
 	</div>
-
 	<a
 		class="break-words cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
 		href={`/groups/${thread?.group_id}/thread/${thread?.id}?source=${
-			$page.params.groupId ? 'group' : 'home'
+			page.params.groupId ? 'group' : 'home'
 		}`}>{thread?.title}</a
 	>
 
@@ -145,23 +140,24 @@
 
 	<hr class="my-3" />
 
-	<div class="flex justify-between align-middle">
-		<div
-			class="hover:bg-gray-100 dark:hover:bg-slate-500 cursor-pointer text-sm text-gray-600 dark:text-darkmodeText"
-		>
-			<a
-				class="text-black dark:text-darkmodeText flex justify-center gap-1"
-				href={`groups/${thread?.group_id}/thread/${thread?.id}?source=${
-					$page.params.groupId ? 'group' : 'home'
-				}`}
+	{#if thread?.group_joined}
+		<div class="flex justify-between align-middle">
+			<div
+				class="hover:bg-gray-100 dark:hover:bg-slate-500 cursor-pointer text-sm text-gray-600 dark:text-darkmodeText"
 			>
-				<img class="w-5" src={ChatIcon} alt="open chat" />
-				<span class="inline">{thread?.total_comments} {'comments'}</span>
-			</a>
+				<a
+					class="text-black dark:text-darkmodeText flex justify-center gap-1"
+					href={`groups/${thread?.group_id}/thread/${thread?.id}?source=${
+						page.params.groupId ? 'group' : 'home'
+					}`}
+				>
+					<img class="w-5" src={ChatIcon} alt="open chat" />
+					<span class="inline">{thread?.total_comments} {'comments'}</span>
+				</a>
+			</div>
+			<ThreadVoting bind:thread />
 		</div>
-
-		<ThreadVoting bind:thread />
-	</div>
+	{/if}
 </div>
 
 <!-- TODO: Fix so group id is correct -->
@@ -179,9 +175,5 @@
 <style>
 	.poll-thumbnail-shadow {
 		box-shadow: 0 0 5px rgb(203, 203, 203);
-	}
-
-	.poll-thumbnail-shadow-dark {
-		box-shadow: 0 0 5px rgb(77, 77, 77);
 	}
 </style>

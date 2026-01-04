@@ -25,8 +25,8 @@
 		type: 'poll' | 'group' | 'thread' | 'delegation' | 'event';
 		api: string;
 		id: number;
-		Class: string;
-		ClassOpen: string;
+		Class?: string;
+		ClassOpen?: string;
 		hoverEffect?: boolean;
 	} = $props();
 
