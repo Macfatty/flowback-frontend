@@ -45,20 +45,19 @@
 	let { poll }: { poll: poll } = $props();
 
 	let onHoverGroup = $state(false),
-		phase: Phase,
+		phase: Phase = $state('pre_start'),
 		// If text poll, have all phases. Date polls have fewer phases to display
-		dates: Date[],
+		dates: Date[] = $state([]),
 		tags: TagType[] = $state([]),
-		tag: TagType,
-		selectedTag: number,
-		darkMode: boolean,
+		tag: TagType = $state({ active: false, id: 0, name: '', imac: 0 }),
+		selectedTag: number = $state(0),
 		voting = $state(true),
 		choicesOpen = $state(false),
 		deletePollModalShow = $state(false),
 		reportPollModalShow = $state(false),
 		hovering = $state(false),
 		showGroupInfo = $state(!(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') && !$page.params.groupId),
-		permissions: Permissions;
+		permissions: Permissions | null = $state(null);
 
 	//When adminn presses the pin tack symbol, pin the poll
 	const pinPoll = async () => {
@@ -122,7 +121,6 @@
 		getTag();
 
 		permissions = await getPermissionsFast(Number(poll.group_id));
-		darkModeStore.subscribe((dark) => (darkMode = dark));
 	});
 
 	$effect(() => {
@@ -144,14 +142,14 @@
 
 <div
 	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded-sm p-4"
-	class:poll-thumbnail-shadow={!darkMode}
+	class:poll-thumbnail-shadow={!$darkModeStore}
 	id={`poll-thumbnail-${poll?.id.toString()}`}
 >
 	<div class="mx-2">
 		{#if showGroupInfo}
 			<div class="flex gap-4 items-center pb-2 w-full justify-between dark:text-secondary">
 				<button
-					on:click={() =>
+					onclick={() =>
 						poll?.group_joined
 							? goto(`groups/${poll?.group_id}`)
 							: ErrorHandlerStore.set({
@@ -165,7 +163,7 @@
 						class="h-6 w-6 mr-1 rounded-full break-word"
 						src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
 						alt={'Poll Thumbnail'}
-						on:error={(e) => onThumbnailError(e, DefaultBanner)}
+						onerror={(e) => onThumbnailError(e, DefaultBanner)}
 					/>
 					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
 						>{poll?.group_name}</span
@@ -182,7 +180,7 @@
 						ClassOpen="right-0"
 					/>
 					{#if $groupUserStore?.is_admin || poll?.pinned}
-						<button class:cursor-pointer={$groupUserStore?.is_admin} on:click={pinPoll}>
+						<button class:cursor-pointer={$groupUserStore?.is_admin} onclick={pinPoll}>
 							<Fa
 								size="1.2x"
 								icon={faThumbtack}
@@ -255,7 +253,7 @@
 						ClassOpen="right-0"
 					/>
 					{#if $groupUserStore?.is_admin || poll?.pinned}
-						<button class:cursor-pointer={$groupUserStore?.is_admin} on:click={pinPoll}>
+						<button class:cursor-pointer={$groupUserStore?.is_admin} onclick={pinPoll}>
 							<Fa
 								size="1.2x"
 								icon={faThumbtack}
@@ -304,10 +302,10 @@
 				<div
 					role="button"
 					tabindex="0"
-					on:mouseover={() => (hovering = true)}
-					on:mouseleave={() => (hovering = false)}
-					on:focus={() => (hovering = true)}
-					on:blur={() => (hovering = false)}
+					onmouseover={() => (hovering = true)}
+					onmouseleave={() => (hovering = false)}
+					onfocus={() => (hovering = true)}
+					onblur={() => (hovering = false)}
 					class="relative w-4 h-4"
 				>
 					<Fa style="position:absolute" icon={faAnglesRight} />
@@ -330,12 +328,7 @@
 							poll?.id
 						}?section=comments&source=${$page.params.groupId ? 'group' : 'home'}`}
 			>
-				<img
-					class="w-5"
-					src={ChatIcon}
-					alt="open chat"
-					style:filter={darkMode ? 'brightness(0) invert(1)' : 'none'}
-				/>
+				<img class="w-5" src={ChatIcon} alt="open chat" />
 				<span class="inline">{poll?.total_comments}</span>
 			</a>
 
@@ -372,7 +365,10 @@
 				<!-- PHASE 1: AREA VOTE -->
 				{#if phase === 'area_vote'}
 					<form
-						on:submit|preventDefault={() => submitTagVote(selectedTag)}
+						onsubmit={(e) => {
+							e.preventDefault();
+							submitTagVote(selectedTag);
+						}}
 						class="flex justify-between"
 					>
 						<Select
@@ -509,9 +505,5 @@
 <style>
 	.poll-thumbnail-shadow {
 		box-shadow: 0 0 5px rgb(203, 203, 203);
-	}
-
-	.poll-thumbnail-shadow-dark {
-		box-shadow: 0 0 5px rgb(77, 77, 77);
 	}
 </style>
