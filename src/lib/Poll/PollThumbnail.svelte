@@ -169,6 +169,7 @@
 						>{poll?.group_name}</span
 					>
 				</button>
+
 				<div class="flex gap-4 items-baseline">
 					<NotificationOptions
 						type="poll"
@@ -179,6 +180,7 @@
 						Class="text-black dark:text-darkmodeText"
 						ClassOpen="right-0"
 					/>
+
 					{#if $groupUserStore?.is_admin || poll?.pinned}
 						<button class:cursor-pointer={$groupUserStore?.is_admin} onclick={pinPoll}>
 							<Fa
@@ -206,27 +208,26 @@
 					/>
 				</div>
 			</div>
-			<a
+			<button
 				class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"
-				href={`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
-					$page.params.groupId ? 'group' : 'home'
-				}`}
+				onclick={() => {
+					poll?.group_joined
+						? goto(
+								`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+									$page.params.groupId ? 'group' : 'home'
+								}`
+							)
+						: ErrorHandlerStore.set({
+								message: 'You must join the group to access the poll',
+								success: false
+							});
+				}}
 			>
 				{poll?.title}
-			</a>
+			</button>
 		{:else}
 			{#if poll?.created_by?.user}
 				<div class="text-black dark:text-darkmodeText flex items-center">
-					<!-- <img
-						class="h-6 w-6 mr-1 rounded-full break-word"
-						src={`${
-							poll?.created_by?.user?.profile_image
-								? env.PUBLIC_API_URL + poll?.created_by?.user?.profile_image
-								: DefaultPFP
-						}`}
-						alt={'poll Thumbnail'}
-						on:error={(e) => onThumbnailError(e, DefaultPFP)}
-					/> -->
 					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
 						>{poll?.created_by?.user?.username}</span
 					>
@@ -361,6 +362,7 @@
 		/>
 
 		<div class="!mt-4">
+			<!-- For text polls -->
 			{#if poll?.poll_type === 4}
 				<!-- PHASE 1: AREA VOTE -->
 				{#if phase === 'area_vote'}
