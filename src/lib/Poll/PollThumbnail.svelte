@@ -42,22 +42,22 @@
 	import { groupUserStore } from '$lib/Group/interface';
 	import DeletePostModal from './DeletePostModal.svelte';
 
-	export let poll: poll;
+	let { poll }: { poll: poll } = $props();
 
-	let onHoverGroup = false,
+	let onHoverGroup = $state(false),
 		phase: Phase,
 		// If text poll, have all phases. Date polls have fewer phases to display
 		dates: Date[],
-		tags: TagType[] = [],
+		tags: TagType[] = $state([]),
 		tag: TagType,
 		selectedTag: number,
 		darkMode: boolean,
-		voting = true,
-		choicesOpen = false,
-		deletePollModalShow = false,
-		reportPollModalShow = false,
-		hovering = false,
-		showGroupInfo = !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') && !$page.params.groupId,
+		voting = $state(true),
+		choicesOpen = $state(false),
+		deletePollModalShow = $state(false),
+		reportPollModalShow = $state(false),
+		hovering = $state(false),
+		showGroupInfo = $state(!(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') && !$page.params.groupId),
 		permissions: Permissions;
 
 	//When adminn presses the pin tack symbol, pin the poll
@@ -125,19 +125,21 @@
 		darkModeStore.subscribe((dark) => (darkMode = dark));
 	});
 
-	$: if (poll)
-		dates =
-			poll?.poll_type === 4
-				? [
-						new Date(poll?.start_date),
-						new Date(poll?.area_vote_end_date),
-						new Date(poll?.proposal_end_date),
-						new Date(poll?.prediction_statement_end_date),
-						new Date(poll?.prediction_bet_end_date),
-						new Date(poll?.delegate_vote_end_date),
-						new Date(poll?.end_date)
-					]
-				: [new Date(poll?.start_date), new Date(poll?.end_date)];
+	$effect(() => {
+		if (poll)
+			dates =
+				poll?.poll_type === 4
+					? [
+							new Date(poll?.start_date),
+							new Date(poll?.area_vote_end_date),
+							new Date(poll?.proposal_end_date),
+							new Date(poll?.prediction_statement_end_date),
+							new Date(poll?.prediction_bet_end_date),
+							new Date(poll?.delegate_vote_end_date),
+							new Date(poll?.end_date)
+						]
+					: [new Date(poll?.start_date), new Date(poll?.end_date)];
+	});
 </script>
 
 <div
