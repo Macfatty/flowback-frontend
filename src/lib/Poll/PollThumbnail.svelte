@@ -146,93 +146,7 @@
 	id={`poll-thumbnail-${poll?.id.toString()}`}
 >
 	<div class="mx-2">
-		{#if showGroupInfo}
-			<div class="flex gap-4 items-center pb-2 w-full justify-between dark:text-secondary">
-				<button
-					onclick={() =>
-						poll?.group_joined
-							? goto(`groups/${poll?.group_id}`)
-							: ErrorHandlerStore.set({
-									message: 'You must join the group to access it',
-									success: false
-								})}
-					class:hover:underline={poll?.group_joined}
-					class="text-black dark:text-darkmodeText flex items-center"
-				>
-					<img
-						class="h-6 w-6 mr-1 rounded-full break-word"
-						src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
-						alt={'Poll Thumbnail'}
-						onerror={(e) => onThumbnailError(e, DefaultBanner)}
-					/>
-					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
-						>{poll?.group_name}</span
-					>
-				</button>
-
-				<div class="flex gap-4 items-baseline">
-					<NotificationOptions
-						type="poll"
-						id={poll?.id}
-						api={`group/poll/${poll?.id}/subscribe`}
-						categories={['poll', 'poll_comment', 'poll_phase']}
-						labels={['Poll', 'Timeline', 'Comments']}
-						Class="text-black dark:text-darkmodeText"
-						ClassOpen="right-0"
-					/>
-
-					{#if $groupUserStore?.is_admin || poll?.pinned}
-						<button class:cursor-pointer={$groupUserStore?.is_admin} onclick={pinPoll}>
-							<Fa
-								size="1.2x"
-								icon={faThumbtack}
-								color={poll?.pinned ? '#999' : '#CCC'}
-								rotate={poll?.pinned ? '0' : '45'}
-							/>
-						</button>
-					{/if}
-
-					<MultipleChoices
-						bind:choicesOpen
-						labels={!(phase === 'result' || phase === 'prediction_vote') ||
-						(poll?.allow_fast_forward &&
-							(permissions?.poll_fast_forward || $groupUserStore?.is_admin))
-							? [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]
-							: [$_('Delete Poll'), $_('Report Poll')]}
-						functions={[
-							() => ((deletePollModalShow = true), (choicesOpen = false)),
-							() => ((reportPollModalShow = true), (choicesOpen = false)),
-							async () => (phase = await nextPhase(poll, phase))
-						]}
-						Class="text-black justify-self-center mt-2"
-					/>
-				</div>
-			</div>
-			<button
-				class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"
-				onclick={() => {
-					poll?.group_joined
-						? goto(
-								`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
-									$page.params.groupId ? 'group' : 'home'
-								}`
-							)
-						: ErrorHandlerStore.set({
-								message: 'You must join the group to access the poll',
-								success: false
-							});
-				}}
-			>
-				{poll?.title}
-			</button>
-		{:else}
-			{#if poll?.created_by?.user}
-				<div class="text-black dark:text-darkmodeText flex items-center">
-					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
-						>{poll?.created_by?.user?.username}</span
-					>
-				</div>
-			{/if}
+		{#if poll?.group_joined}
 			<div class="flex justify-between items-start gap-4 pb-2">
 				<a
 					class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"
@@ -279,6 +193,39 @@
 						Class="text-black justify-self-center mt-2"
 					/>
 				</div>
+			</div>
+		{/if}
+
+		<div class="flex gap-4 items-center pb-2 w-full justify-between dark:text-secondary">
+			<!-- Button for going to the group the poll is from -->
+
+			<button
+				onclick={() =>
+					poll?.group_joined
+						? goto(`groups/${poll?.group_id}`)
+						: ErrorHandlerStore.set({
+								message: 'You must join the group to access it',
+								success: false
+							})}
+				class:hover:underline={poll?.group_joined}
+				class="text-black dark:text-darkmodeText flex items-center"
+			>
+				<img
+					class="h-6 w-6 mr-1 rounded-full break-word"
+					src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
+					alt={'Poll Thumbnail'}
+					onerror={(e) => onThumbnailError(e, DefaultBanner)}
+				/>
+				<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
+					>{poll?.group_name}</span
+				>
+			</button>
+		</div>
+		{#if poll?.created_by?.user}
+			<div class="text-black dark:text-darkmodeText flex items-center">
+				<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
+					>{poll?.created_by?.user?.username}</span
+				>
 			</div>
 		{/if}
 
