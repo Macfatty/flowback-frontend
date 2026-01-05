@@ -82,6 +82,7 @@
 
 			$posts = json.results ?? [];
 			next = json.next ?? null;
+
 			//TODO: Get lazyloading to work again.
 		} else if (next === null) return;
 		else {
