@@ -146,17 +146,27 @@
 	id={`poll-thumbnail-${poll?.id.toString()}`}
 >
 	<div class="mx-2">
-		{#if poll?.group_joined}
-			<div class="flex justify-between items-start gap-4 pb-2">
-				<a
-					class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"
-					href={`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
-						$page.params.groupId ? 'group' : 'home'
-					}`}
-				>
-					{poll?.title}
-				</a>
+		<div class="flex justify-between items-start gap-4 pb-2">
+			<button
+				class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"
+				onclick={() => {
+					if (poll?.group_joined)
+						goto(
+							`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
+								$page.params.groupId ? 'group' : 'home'
+							}`
+						);
+					else
+						ErrorHandlerStore.set({
+							message: 'You must join the group to access the poll',
+							success: false
+						});
+				}}
+			>
+				{poll?.title}
+			</button>
 
+			{#if poll?.group_joined}
 				<div class="flex gap-4 items-baseline">
 					<NotificationOptions
 						type="poll"
@@ -193,8 +203,8 @@
 						Class="text-black justify-self-center mt-2"
 					/>
 				</div>
-			</div>
-		{/if}
+			{/if}
+		</div>
 
 		<div class="flex gap-4 items-center pb-2 w-full justify-between dark:text-secondary">
 			<!-- Button for going to the group the poll is from -->

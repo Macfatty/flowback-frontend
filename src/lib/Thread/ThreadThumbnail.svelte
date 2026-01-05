@@ -15,6 +15,8 @@
 	import ReportPostModal from '$lib/Poll/ReportPostModal.svelte';
 	import DeletePostModal from '$lib/Poll/DeletePostModal.svelte';
 	import ThreadVoting from './ThreadVoting.svelte';
+	import { goto } from '$app/navigation';
+	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 	export let thread: Thread;
 	let threads: Thread[] = [],
@@ -87,7 +89,7 @@
 				{#if $groupUserStore?.is_admin || thread?.pinned}
 					<button
 						class:cursor-pointer={$groupUserStore?.is_admin}
-						on:click={() => pinThread(thread)}
+						onclick={() => pinThread(thread)}
 					>
 						<Fa
 							size="1.2x"
@@ -110,11 +112,21 @@
 			</div>
 		{/if}
 	</div>
-	<a
+	<button
 		class="break-words cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
-		href={`/groups/${thread?.group_id}/thread/${thread?.id}?source=${
-			page.params.groupId ? 'group' : 'home'
-		}`}>{thread?.title}</a
+		onclick={() => {
+			if (thread.group_joined)
+				goto(
+					`/groups/${thread?.group_id}/thread/${thread?.id}?source=${
+						page.params.groupId ? 'group' : 'home'
+					}`
+				);
+			else
+				ErrorHandlerStore.set({
+					message: 'You must join the group to access the thread',
+					success: false
+				});
+		}}>{thread?.title}</button
 	>
 
 	<div>

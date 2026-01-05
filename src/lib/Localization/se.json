@@ -771,5 +771,6 @@
 	"channelJoin": "Användaren {user} har gått med i kanalen",
 	"You must join the group to access it": "Du måste gå med i en grupp för att få åtkomst till den",
 	"Delegations": "Delgering",
-	"You must join the group to access the poll": "Du måste gå med i en grupp för att få åtkomst till pollen"
+	"You must join the group to access the poll": "Du måste gå med i en grupp för att få åtkomst till pollen",
+	"You must join the group to access the thread": "Du måste gå med i en grupp för att få åtkomst till tråden"
 }
