@@ -61,6 +61,7 @@
 		{:else if thread?.created_by?.user}
 			<div class="text-black flex items-center">
 				<!-- TODO: add "if group doesn't hide displaying creators" condition -->
+
 				<!-- <img
 					class="h-6 w-6 mr-1 rounded-full break-word"
 					src={`${
@@ -77,7 +78,26 @@
 			</div>
 		{/if}
 
+<div class="flex w-full justify-between">
+    <!-- Thread Title. It is a button since this allows users to enter the Thread -->
+	<button
+		class="break-words cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
+		onclick={() => {
+			if (thread.group_joined)
+				goto(
+					`/groups/${thread?.group_id}/thread/${thread?.id}?source=${
+						page.params.groupId ? 'group' : 'home'
+					}`
+				);
+			else
+				ErrorHandlerStore.set({
+					message: 'You must join the group to access the thread',
+					success: false
+				});
+		}}>{thread?.title}</button
+	>
 		{#if thread?.group_joined}
+      <!-- Notification Options -->
 			<div class="inline-flex gap-4 items-baseline">
 				<NotificationOptions
 					type="thread"
@@ -86,6 +106,8 @@
 					id={thread?.id}
 					labels={['comment']}
 				/>
+
+          <!-- Pin thread button for admins -->
 				{#if $groupUserStore?.is_admin || thread?.pinned}
 					<button
 						class:cursor-pointer={$groupUserStore?.is_admin}
@@ -112,23 +134,8 @@
 			</div>
 		{/if}
 	</div>
-	<button
-		class="break-words cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
-		onclick={() => {
-			if (thread.group_joined)
-				goto(
-					`/groups/${thread?.group_id}/thread/${thread?.id}?source=${
-						page.params.groupId ? 'group' : 'home'
-					}`
-				);
-			else
-				ErrorHandlerStore.set({
-					message: 'You must join the group to access the thread',
-					success: false
-				});
-		}}>{thread?.title}</button
-	>
 
+</div>
 	<div>
 		{#if thread?.work_group}
 			<span class="text-sm text-gray-500 dark:text-darkmodeText">#{thread.work_group.name}, </span>
