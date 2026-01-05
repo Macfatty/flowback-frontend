@@ -128,7 +128,7 @@
 					</div>
 					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
 						{#each kanbanEntries as kanban, j}
-							{#if kanban.lane === i}
+							{#if kanban?.lane === i}
 								<KanbanEntry
 									bind:kanban={kanbanEntries[j]}
 									bind:workGroups
