@@ -10,18 +10,15 @@
 	import { fetchRequest } from '$lib/FetchRequest';
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
-	import type { Filter, kanban } from './Kanban';
+	import { groupStore, workgroupStore, type kanban } from './Kanban';
 	import Select from '$lib/Generic/Select.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import { userStore } from '$lib/User/interfaces';
+	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
 
-	export let filter: Filter,
-		open: boolean = false,
+	export let open: boolean = false,
 		users: GroupUser[] = [],
-		kanbanEntries: kanban[],
 		workGroups: WorkGroup[] = [],
 		lane: number = 1,
-		groupId: string,
 		getKanbanEntries: () => Promise<void>;
 
 	let description = '',
@@ -39,7 +36,9 @@
 		end_date: string | null = new Date().toISOString().slice(0, 16),
 		loading = false,
 		images: File[] = [],
-		workGroup: number | undefined;
+		workGroupId: number | null = null,
+		groupId: number | null = null,
+		groupSelection = 0;
 
 	const createKanbanEntry = async () => {
 		loading = true;
@@ -52,17 +51,8 @@
 
 		if (assignee) formData.append('assignee_id', assignee.toString());
 		if (priority) formData.append('priority', priority.toString());
-		if (workGroup) formData.append('work_group_id', workGroup.toString());
-
-		if (end_date) {
-			const _endDate = new Date(end_date);
-			const isoDate = _endDate.toISOString();
-			const dateString = `${isoDate.slice(0, 10)}T${_endDate.getHours()}:${_endDate.getMinutes()}`;
-			formData.append('end_date', dateString);
-			console.log('Sending end_date:', dateString); // Debug log
-		} else {
-			formData.append('end_date', '');
-		}
+		if (workGroupId) formData.append('work_group_id', workGroupId.toString());
+		if (end_date) formData.append('end_date', end_date);
 
 		description = description.trim() === '' ? $_('No description provided') : description;
 
@@ -73,10 +63,10 @@
 
 		const { res, json } = await fetchRequest(
 			'POST',
-			filter.type === 'group' ? `group/${groupId}/kanban/entry/create` : 'user/kanban/entry/create',
+			groupSelection ? `group/${groupId}/kanban/entry/create` : 'user/kanban/entry/create',
 			formData,
-			true,
-			false
+			true, // Needs authorization
+			false // Formadata doesn't need to be JSON-fied
 		);
 
 		loading = false;
@@ -88,42 +78,6 @@
 
 		ErrorHandlerStore.set({ message: 'Successfully created kanban task', success: true });
 
-		const userAssigned = users.find((user) => assignee === user.user.id);
-		const _assignee = assignee
-			? {
-					id: assignee,
-					profile_image: userAssigned?.user.profile_image || '',
-					username: userAssigned?.user.username || ''
-				}
-			: null;
-
-		kanbanEntries.push({
-			assignee: _assignee,
-			// group: { id: 0, image: '', name: '' },
-			description,
-			lane,
-			title,
-			id: json,
-			created_by: {
-				id: $userStore?.id || -1,
-				profile_image: localStorage.getItem('pfp-link') || '',
-				username: $userStore?.username || ''
-			},
-			origin_id: 1,
-			origin_type: filter.type === 'group' ? 'group' : 'user',
-			group_name: '',
-			priority,
-			end_date: end_date ?? null,
-			work_group: workGroup
-				? {
-						id: workGroup,
-						name: workGroups.find((group) => group.id === workGroup)?.name || ''
-					}
-				: undefined,
-			attachments: []
-		});
-
-		kanbanEntries = kanbanEntries;
 		open = false;
 
 		// Reset form
@@ -133,7 +87,7 @@
 		priority = 3;
 		end_date = new Date().toISOString().slice(0, 16); // Reset to current date/time
 		images = [];
-		workGroup = workGroups[0]?.id || undefined;
+		workGroupId = workGroups[0]?.id ?? null;
 
 		await getKanbanEntries();
 	};
@@ -144,11 +98,6 @@
 
 	const handleChangePriority = (e: any) => {
 		priority = Number(e.target.value);
-	};
-
-	const handleChangeWorkGroup = (e: any) => {
-		workGroup =
-			workGroups.find((group) => group.id === Number(e.target.value))?.id || workGroups[0]?.id;
 	};
 </script>
 
@@ -181,7 +130,29 @@
 					bind:value={description}
 				/>
 
-				{#if filter.type === 'group' && workGroups?.length > 0}
+				<RadioButtons2
+					label="Hello"
+					name="groupSelection"
+					labels={['Group', 'Personal']}
+					values={[1, 0]}
+					bind:value={groupSelection}
+				/>
+
+				{#if groupSelection}
+					<div class="text-left">
+						<label class="block text-md" for="work-group">
+							{$_('Groups')}
+						</label>
+						<Select
+							Class="w-full"
+							classInner="rounded p-1 border border-gray-300 dark:border-gray-600 dark:bg-darkobject"
+							labels={$groupStore.map((group) => elipsis(group.name))}
+							values={$groupStore.map((group) => group.id)}
+							bind:value={groupId}
+							innerLabel={$_('No group assigned')}
+							innerLabelOn={true}
+						/>
+					</div>
 					<div class="text-left">
 						<label class="block text-md" for="work-group">
 							{$_('Work Group')}
@@ -189,10 +160,13 @@
 						<Select
 							Class="w-full"
 							classInner="rounded p-1 border border-gray-300 dark:border-gray-600 dark:bg-darkobject"
-							labels={workGroups.map((group) => elipsis(group.name))}
-							values={workGroups.map((group) => group.id)}
-							bind:value={workGroup}
-							onInput={handleChangeWorkGroup}
+							labels={$workgroupStore
+								.filter((g) => g.group_id === groupId)
+								.map((g) => elipsis(g.name))}
+							values={$workgroupStore
+								.filter((g) => g.group_id === groupId)
+								.map((group) => group.id)}
+							bind:value={workGroupId}
 							innerLabel={$_('No workgroup assigned')}
 							innerLabelOn={true}
 						/>
@@ -224,9 +198,8 @@
 						onInput={handleChangePriority}
 						innerLabel=""
 					/>
-					<div class="flex gap-6 justify-between mt-2 flex-col" />
 
-					{#if filter.type === 'group'}
+					{#if groupSelection}
 						<div class="text-left">
 							<label class="block text-md" for="handle-change-assignee">
 								{$_('Assignee')}

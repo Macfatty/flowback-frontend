@@ -79,9 +79,9 @@
 	class:invisible={!chatOpen}
 	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-[50] w-[100vw] h-[100vh] flex flex-col items-center"
 >
-	<div class="w-full flex justify-between mr-6">
-		<Button
-			onClick={() => {
+  <div class="w-full flex justify-between mr-6">
+    <Button
+      onClick={() => {
 				chatOpen = false;
 				chatOpenStore.set(false);
 				goto('/user/settings');

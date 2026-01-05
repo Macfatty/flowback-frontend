@@ -24,7 +24,6 @@
 	import FileUploads from '$lib/Generic/File/FileUploads.svelte';
 
 	export let kanban: kanban,
-		filter: Filter,
 		users: GroupUser[],
 		removeKanbanEntry: (id: number) => void,
 		workGroups: WorkGroup[] = [],
@@ -119,10 +118,8 @@
 
 		const { res, json } = await fetchRequest(
 			'POST',
-			filter.type === 'group'
-				? `group/${
-						env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : filter.group
-					}/kanban/entry/update`
+			kanban.origin_type === 'group'
+				? `group/${kanban.origin_id}/kanban/entry/update`
 				: 'user/kanban/entry/update',
 			formData,
 			true,
@@ -141,16 +138,16 @@
 
 	// Calls for the new kanban entry from the backend
 	const getNewKanbanEntry = async () => {
-		const { json, res } = await fetchRequest(
-			'GET',
-			filter.type === 'group'
-				? `group/${
-						env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : filter.group
-					}/kanban/entry/list?id=${kanban.id}`
-				: `user/kanban/entry/list?id=${kanban.id}`
-		);
+		// const { json, res } = await fetchRequest(
+		// 	'GET',
+		// 	kanban.origin_type === 'group'
+		// 		? `group/${
+		// 				env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : filter.group
+		// 			}/kanban/entry/list?id=${kanban.id}`
+		// 		: `user/kanban/entry/list?id=${kanban.id}`
+		// );
 
-		if (!res.ok) return;
+		// if (!res.ok) return;
 		// If all goes well, don't manually change kanban locally
 		// if (res.ok) return;
 
@@ -180,7 +177,7 @@
 		const { res, json } = await fetchRequest(
 			'POST',
 			kanban.origin_type === 'group'
-				? `group/${filter.group}/kanban/entry/update`
+				? `group/${kanban.origin_id}/kanban/entry/update`
 				: 'user/kanban/entry/update',
 			{
 				lane,
@@ -210,7 +207,7 @@
 		const { res, json } = await fetchRequest(
 			'POST',
 			kanban.origin_type === 'group'
-				? `group/${filter.group}/kanban/entry/delete`
+				? `group/${kanban.origin_id}/kanban/entry/delete`
 				: 'user/kanban/entry/delete',
 			{ entry_id: kanban.id }
 		);
@@ -326,7 +323,9 @@
 			<span class="text-xs dark:text-gray-500 text-gray-400 italic">
 				{#if kanban?.assignee}
 					<ProfilePicture
-						username={filter.type === 'group' ? kanban?.assignee?.username : kanban.group_name}
+						username={kanban.origin_type === 'group'
+							? kanban?.assignee?.username
+							: kanban.group_name}
 						profilePicture={kanban?.assignee?.profile_image}
 						Class=""
 						size={1}
@@ -342,33 +341,31 @@
 			{$_('Work Group')}: {elipsis(kanban.work_group.name || '', 20)}
 		</div>
 	{/if}
-	{#if (filter.type === 'group' && kanban.origin_type === 'group') || (filter.type === 'home' && kanban.origin_type === 'user')}
-		<div class="flex justify-between mt-3">
-			<button
-				class="cursor-pointer hover:text-gray-400 py-0.5 transition-all"
-				on:click={(event) => {
-					event.stopPropagation();
-					if (kanban.lane > 1) {
-						updateKanbanLane(kanban.lane - 1);
-					}
-				}}
-			>
-				<Fa icon={faArrowLeft} size="md" />
-			</button>
+	<div class="flex justify-between mt-3">
+		<button
+			class="cursor-pointer hover:text-gray-400 py-0.5 transition-all"
+			on:click={(event) => {
+				event.stopPropagation();
+				if (kanban.lane > 1) {
+					updateKanbanLane(kanban.lane - 1);
+				}
+			}}
+		>
+			<Fa icon={faArrowLeft} size="md" />
+		</button>
 
-			<button
-				class="cursor-pointer hover:dark:text-darkmodeText hover:text-gray-400 py-0.5 transition-all"
-				on:click={(event) => {
-					event.stopPropagation();
-					if (kanban.lane < lanes.length - 1) {
-						updateKanbanLane(kanban.lane + 1);
-					}
-				}}
-			>
-				<Fa icon={faArrowRight} size="md" />
-			</button>
-		</div>
-	{/if}
+		<button
+			class="cursor-pointer hover:dark:text-darkmodeText hover:text-gray-400 py-0.5 transition-all"
+			on:click={(event) => {
+				event.stopPropagation();
+				if (kanban.lane < lanes.length - 1) {
+					updateKanbanLane(kanban.lane + 1);
+				}
+			}}
+		>
+			<Fa icon={faArrowRight} size="md" />
+		</button>
+	</div>
 </div>
 
 {#if kanban.id === selectedEntry}
@@ -404,7 +401,7 @@
 					Class="overflow-scroll"
 					id="kanban-edit-description"
 				/>
-				{#if filter.type === 'group'}
+				{#if kanban.origin_type === 'group'}
 					<div class="text-left">
 						<div class="block text-md">
 							{$_('Work Group')}
@@ -477,7 +474,7 @@
 				</div>
 				<div class="flex mt-4 w-full">
 					<div class="flex flex-col mr-4 text-left gap-1 w-full">
-						{#if filter.type === 'group'}
+						{#if kanban.origin_type === 'group'}
 							<p class="font-bold">{$_('Group')}</p>
 							<p class="font-bold">{$_('Work Group')}</p>
 						{/if}
@@ -488,7 +485,7 @@
 					</div>
 
 					<div class="flex flex-col text-right gap-1 w-full">
-						{#if filter.type === 'group'}
+						{#if kanban.origin_type === 'group'}
 							<button class="text-right" on:click={() => goto(`/groups/${kanban?.origin_id}`)}
 								>{kanban?.group_name}</button
 							>

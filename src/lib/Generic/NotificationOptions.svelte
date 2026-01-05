@@ -19,15 +19,15 @@
 		ClassOpen = '',
 		hoverEffect = true
 	}: {
-		notificationOpen: boolean;
+		notificationOpen?: boolean;
 		categories: string[];
 		labels: string[];
 		type: 'poll' | 'group' | 'thread' | 'delegation' | 'event';
 		api: string;
 		id: number;
-		Class: string;
-		ClassOpen: string;
-		hoverEffect: boolean;
+		Class?: string;
+		ClassOpen?: string;
+		hoverEffect?: boolean;
 	} = $props();
 
 	let notifications: NotificationObject[] = $state([]);

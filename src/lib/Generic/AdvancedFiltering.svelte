@@ -7,6 +7,7 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import { onMount } from 'svelte';
+	import { groupStore, workgroupStore } from '$lib/Group/Kanban/Kanban';
 
 	interface Props {
 		groupIds: number[];
@@ -34,6 +35,7 @@
 		if (!res.ok) return;
 
 		groups = json?.results;
+		groupStore.set(groups);
 	};
 
 	const getWorkgroups = async () => {
@@ -52,6 +54,8 @@
 		// If any of the workgroup fetches failed, we set an error message
 		if (hasError)
 			ErrorHandlerStore.set({ message: 'Failed to fetch atleast some workgroups', success: false });
+
+		workgroupStore.set(workgroups);
 	};
 
 	onMount(async () => {

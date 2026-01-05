@@ -13,14 +13,17 @@
 	import { faCircle, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 	import { userStore } from '$lib/User/interfaces';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
-	import EveryProperty from '$lib/Generic/EveryProperty.svelte';
 
-	let chatSearch = '',
-		openUserSearch = false;
+	let chatSearch = $state(''),
+		openUserSearch = $state(false);
 
-	export let creatingGroup: boolean,
-		inviteList: invite[] = [],
-		groupMembers: GroupMembers[] = [];
+	type Props = {
+		creatingGroup: boolean;
+		inviteList?: invite[];
+		groupMembers?: GroupMembers[];
+	};
+
+	let { creatingGroup, inviteList = [], groupMembers = [] }: Props = $props();
 
 	// Handle chat selection and clear notifications
 	const clickedChatter = async (chatterId: any) => {
@@ -31,9 +34,7 @@
 			timestamp: new Date()
 		});
 
-		if (!res.ok) {
-			return;
-		}
+		if (!res.ok) return;
 
 		// Whenever the user clicks a chatter, remove notification
 		if (preview && preview.recent_message) {
@@ -48,8 +49,7 @@
 			);
 		}
 
-		// $chatPartnerStore = chatterId;
-		chatPartnerStore.set(chatterId);
+		$chatPartnerStore = chatterId;
 	};
 
 	// Fetch chat invites
@@ -123,10 +123,10 @@
 			{$_('+ New Group')}
 		</Button>
 
-		<UserSearch bind:showUsers={openUserSearch} showSelf>
+		<UserSearch bind:showUsers={openUserSearch}>
 			<div slot="action" let:item>
 				<button
-					on:click={async () => {
+					onclick={async () => {
 						const id = await getUserChannelId(item.id);
 						chatPartnerStore.set(id);
 						chatOpenStore.set(true);
@@ -155,7 +155,7 @@
 					class:hover:bg-gray-200={groupChat.rejected === false}
 					class:active:bg-gray-500={groupChat.rejected === false}
 					class:bg-gray-200={$chatPartnerStore === groupChat.message_channel_id}
-					on:click={() => {
+					onclick={() => {
 						if (groupChat.rejected === false) clickedChatter(groupChat.message_channel_id);
 					}}
 					disabled={groupChat.rejected === null}
@@ -179,7 +179,7 @@
 				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
 				class:bg-gray-200={$chatPartnerStore === chatter.channel_id}
 				class:dark:bg-gray-700={$chatPartnerStore === chatter.channel_id}
-				on:click={() => clickedChatter(chatter.channel_id)}
+				onclick={() => clickedChatter(chatter.channel_id)}
 			>
 				<ProfilePicture profilePicture={chatter?.recent_message?.profile_image} />
 				<div class="flex justify-between items-center w-full">

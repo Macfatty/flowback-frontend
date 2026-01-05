@@ -70,6 +70,7 @@
 		created_at__gt=${filter.from}&
 		created_at__lt=${filter.to}
 		`;
+    console.log('API PARAMS:', api_params);
 
 		// if (next === undefined) {
 		if (true) {
@@ -82,6 +83,7 @@
 
 			$posts = json.results ?? [];
 			next = json.next ?? null;
+
 			//TODO: Get lazyloading to work again.
 		} else if (next === null) return;
 		else {

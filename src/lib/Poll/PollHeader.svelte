@@ -48,8 +48,8 @@
 	onMount(() => {
 		getTag();
 	});
-	
- 	$: pictureSize = $isMobile ? 2 : 1;
+
+	$: pictureSize = $isMobile ? 2 : 1;
 	$: poll && getTag();
 </script>
 
@@ -96,7 +96,7 @@
 				() => ((reportPollModalShow = true), (choicesOpen = false)),
 				...($groupUserStore?.is_admin ? [async () => (phase = await nextPhase(poll, phase))] : [])
 			]}
-			Class="justify-self-center mt-2"
+			ClassInner="-translate-x-2/3"
 			id="poll-header-multiple-choices"
 		/>
 	</div>
@@ -108,14 +108,13 @@
 				class:hover:underline={poll?.group_joined}
 				class="text-black dark:text-darkmodeText"
 			>
-				<ProfilePicture 
-					Class={!$isMobile ? '' : 'w-10 h-10'} 
-  				displayName={!$isMobile}
+				<ProfilePicture
+					Class={!$isMobile ? '' : 'w-10 h-10'}
+					displayName={!$isMobile}
 					profilePicture={poll?.group_image}
 					username={poll?.group_name}
 					type="group"
-					size={pictureSize} 
-					
+					size={pictureSize}
 				/>
 			</a>
 
@@ -206,14 +205,14 @@
 		grid-area: 3 / 2 / 4 / 3;
 	}
 
-	 @media (max-width: 768px) {
-    .poll-header-grid {
-      max-width: 100vw;
-    }
+	@media (max-width: 768px) {
+		.poll-header-grid {
+			max-width: 100vw;
+		}
 
-    .grid-area-description {
-      width: 100%;
-      word-break: break-word;
-    }
-  }
+		.grid-area-description {
+			width: 100%;
+			word-break: break-word;
+		}
+	}
 </style>

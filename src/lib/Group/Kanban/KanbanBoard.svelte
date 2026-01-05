@@ -10,9 +10,9 @@
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import Fa from 'svelte-fa';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
-	import type { kanban, Filter } from './Kanban';
-	import { page } from '$app/stores';
+	import { type kanban, type Filter, workgroupStore } from './Kanban';
 	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
+	import TextInput from '$lib/Generic/TextInput.svelte';
 
 	const tags = ['', 'Backlog', 'To do', 'Current', 'Evaluation', 'Done'];
 
@@ -22,122 +22,64 @@
 		users: GroupUser[] = $state([]),
 		interval: any,
 		open = $state(false),
-		filter: Filter = $state({
-			group: $page.url.searchParams.get('groupId'),
-			assignee: null,
-			search: '',
-			workgroup: null,
-			type: $page.url.searchParams.get('groupId') ? 'group' : 'home'
-		}),
+		search = $state(''),
 		workGroups: WorkGroup[] = $state([]),
 		lane: number = $state(1),
 		groupIds: number[] = $state([]),
 		workgroupIds: number[] = $state([]),
 		userChecked = $state(false);
 
-	const getKanbanEntries = async () => {
-		filter.type === 'group' ? await getKanbanEntriesGroup() : getKanbanEntriesHome();
-	};
-
-	const getKanbanEntriesGroup = async () => {
-		if (!filter.group) {
-			kanbanEntries = [];
-			return;
-		}
-
-		let api = `group/${filter.group}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
-		if (filter.assignee) api += `&assignee=${filter.assignee}`;
-		if (filter.search !== '') api += `&title__icontains=${filter.search}`;
-		if (filter.workgroup) api += `&work_group_ids=${filter.workgroup}`;
-
-		const { res, json } = await fetchRequest('GET', api);
-
-		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to fetch kanban tasks', success: false });
-			return;
-		}
-
-		kanbanEntries = json.results;
-	};
-
-	const getKanbanEntriesHome = async () => {
-		let api = `user/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
-		if (filter.search !== '')
-			api += `&title__icontains=${filter.search}&description__icontains=${filter.search}`;
-
-		const { res, json } = await fetchRequest('GET', api);
-
-		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to fetch kanban tasks', success: false });
-			return;
-		}
-
-		kanbanEntries = json.results;
-	};
-
-	const getGroupUsers = async () => {
-		let api = `group/${filter.group}/users?limit=${kanbanLimit}`;
-
-		const { json, res } = await fetchRequest('GET', api);
-		if (!res.ok) return;
-
-		users = json?.results;
-	};
-
-	const getWorkGroupList = async () => {
-		const { res, json } = await fetchRequest('GET', `group/${filter.group}/list`);
-
-		if (!res.ok) return;
-		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
-
-		workGroups.forEach((workgroup) => {
-			workgroup.group_id = Number(filter.group);
-		});
-	};
-
 	const removeKanbanEntry = (id: number) => {
 		kanbanEntries.filter((entry) => entry.id !== id);
 	};
 
-	const getKanbanEntries2 = async () => {
-		let kanbanEntries2 = [];
+	const getKanbanEntries = async () => {
+		let _kanbanEntries = [];
+
+		const filter = `limit=${kanbanLimit}&order_by=priority_desc&title__icontains=${search}`;
 
 		if (userChecked) {
-			let api = `user/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`;
+			let api = `user/kanban/entry/list?${filter}`;
 			const { res, json } = await fetchRequest('GET', api);
 			if (res.ok) {
-				kanbanEntries2.push(json.results ?? []);
+				_kanbanEntries.push(json.results ?? []);
 			}
 		}
 
 		if (groupIds.length > 0) {
 			let apis = groupIds.map((id) =>
-				fetchRequest(
-					'GET',
-					`group/${id}/kanban/entry/list?limit=${kanbanLimit}&order_by=priority_desc`
-				)
+				fetchRequest('GET', `group/${id}/kanban/entry/list?${filter}`)
 			);
-			let response = (await Promise.all(apis))
-				.map(({ res, json }) => {
-					if (res.ok) return json.results ?? [];
-				})
-				.flat(1);
-			kanbanEntries2.push(response);
+
+			let response = (await Promise.all(apis)).map(({ res, json }) => {
+				if (res.ok) return json.results ?? [];
+			});
+			_kanbanEntries.push(response);
 		}
 
-		kanbanEntries = kanbanEntries2.flat(1);
+		if (workgroupIds.length > 0) {
+			let apis = workgroupIds.map((id) =>
+				fetchRequest(
+					'GET',
+					`group/${$workgroupStore.find((g) => g.id === id)?.group_id}/kanban/entry/list?${filter}&work_group_ids=${id}`
+				)
+			);
+
+			let response = (await Promise.all(apis)).map(({ res, json }) => {
+				if (res.ok) return json.results ?? [];
+			});
+			_kanbanEntries.push(response);
+		}
+
+		kanbanEntries = _kanbanEntries.flat(2);
 	};
 
 	onMount(async () => {
-		await getKanbanEntries2();
-		// assignee = $userStore?.id || -1;
-		// await getKanbanEntries();
-		// await getWorkGroupList();
-		// await getGroupUsers();
+		await getKanbanEntries();
 
-		// interval = setInterval(async () => {
-		// 	await getKanbanEntries();
-		// }, 20410);
+		interval = setInterval(async () => {
+			await getKanbanEntries();
+		}, 20410);
 	});
 
 	onDestroy(() => {
@@ -145,19 +87,7 @@
 	});
 
 	$effect(() => {
-		// filter.group && getWorkGroupList();
-	});
-
-	$effect(() => {
-		// filter.group && getGroupUsers();
-	});
-
-	$effect(() => {
-		// if (filter.type) getKanbanEntries();
-	});
-
-	$effect(() => {
-		if (groupIds || workgroupIds || userChecked) getKanbanEntries2();
+		if (groupIds || workgroupIds || userChecked) getKanbanEntries();
 	});
 </script>
 
@@ -167,6 +97,17 @@
 >
 	<AdvancedFiltering bind:groupIds bind:workgroupIds bind:userChecked />
 	<!-- <KanbanFiltering bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" /> -->
+
+	<TextInput
+		Class="flex-1 h-full placeholder-gray-600 rounded text-gray-500 bg-gray-100 dark:bg-darkobject dark:text-darkmodeText"
+		inputClass="placeholder-gray-600 text-gray-500 border-0 bg-gray-100 dark:bg-darkobject dark:text-darkmodeText"
+		placeholder={$_('Search tasks')}
+		on:change={async () => {
+			getKanbanEntries();
+		}}
+		label="Search"
+		bind:value={search}
+	/>
 	<div class="flex overflow-x-auto py-3">
 		{#each tags as _tag, i}
 			{#if i !== 0}
@@ -187,12 +128,10 @@
 					</div>
 					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
 						{#each kanbanEntries as kanban, j}
-							{#if kanban.lane === i}
-								{kanban.title}
+							{#if kanban?.lane === i}
 								<KanbanEntry
 									bind:kanban={kanbanEntries[j]}
 									bind:workGroups
-									bind:filter
 									{users}
 									{removeKanbanEntry}
 									{getKanbanEntries}
@@ -218,10 +157,7 @@
 </div>
 
 <CreateKanbanEntry
-	groupId={filter.group || ''}
 	bind:open
-	bind:filter
-	bind:kanbanEntries
 	bind:users
 	bind:workGroups
 	bind:lane

@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
+
 	// Name is mandatory so as to collect the different radtio button elements into one group,
 	// and distinguish them from other groups.
 	export let name: string,
@@ -55,7 +56,9 @@
 							id={values[i]}
 							checked={values[i] === value}
 						/>{$_(label)}
-						{#if icons} <Fa icon={icons[i]} /> {/if}
+						{#if icons}
+							<Fa icon={icons[i]} />
+						{/if}
 					{:else}
 						{$_(label)}<input
 							type="radio"

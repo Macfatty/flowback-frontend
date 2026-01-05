@@ -1,7 +1,7 @@
 <script lang="ts">
 	import DefaultBanner from '$lib/assets/default_banner_group.png';
 	import type { Phase, poll } from './interface';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Tag from '$lib/Group/Tag.svelte';
 	import HeaderIcon from '$lib/Header/HeaderIcon.svelte';
 	import Fa from 'svelte-fa';
@@ -42,23 +42,21 @@
 	import { groupUserStore } from '$lib/Group/interface';
 	import DeletePostModal from './DeletePostModal.svelte';
 
-	export let poll: poll;
+	let { poll }: { poll: poll } = $props();
 
-	let onHoverGroup = false,
-		phase: Phase,
+	let onHoverGroup = $state(false),
+		phase: Phase = $state('pre_start'),
 		// If text poll, have all phases. Date polls have fewer phases to display
-		dates: Date[],
-		tags: TagType[] = [],
-		tag: TagType,
-		selectedTag: number,
-		darkMode: boolean,
-		voting = true,
-		choicesOpen = false,
-		deletePollModalShow = false,
-		reportPollModalShow = false,
-		hovering = false,
-		showGroupInfo = !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') && !$page.params.groupId,
-		permissions: Permissions;
+		dates: Date[] = $state([]),
+		tags: TagType[] = $state([]),
+		tag: TagType = $state({ active: false, id: 0, name: '', imac: 0 }),
+		selectedTag: number = $state(0),
+		voting = $state(true),
+		choicesOpen = $state(false),
+		deletePollModalShow = $state(false),
+		reportPollModalShow = $state(false),
+		hovering = $state(false),
+		permissions: Permissions | null = $state(null);
 
 	//When adminn presses the pin tack symbol, pin the poll
 	const pinPoll = async () => {
@@ -72,6 +70,7 @@
 		}
 
 		poll.pinned = !poll?.pinned;
+    poll = {...poll  }; 
 	};
 
 	const submitTagVote = async (tag: number) => {
@@ -122,126 +121,52 @@
 		getTag();
 
 		permissions = await getPermissionsFast(Number(poll.group_id));
-		darkModeStore.subscribe((dark) => (darkMode = dark));
 	});
 
-	$: if (poll)
-		dates =
-			poll?.poll_type === 4
-				? [
-						new Date(poll?.start_date),
-						new Date(poll?.area_vote_end_date),
-						new Date(poll?.proposal_end_date),
-						new Date(poll?.prediction_statement_end_date),
-						new Date(poll?.prediction_bet_end_date),
-						new Date(poll?.delegate_vote_end_date),
-						new Date(poll?.end_date)
-					]
-				: [new Date(poll?.start_date), new Date(poll?.end_date)];
+	$effect(() => {
+		if (poll)
+			dates =
+				poll?.poll_type === 4
+					? [
+							new Date(poll?.start_date),
+							new Date(poll?.area_vote_end_date),
+							new Date(poll?.proposal_end_date),
+							new Date(poll?.prediction_statement_end_date),
+							new Date(poll?.prediction_bet_end_date),
+							new Date(poll?.delegate_vote_end_date),
+							new Date(poll?.end_date)
+						]
+					: [new Date(poll?.start_date), new Date(poll?.end_date)];
+	});
 </script>
 
 <div
 	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded-sm p-4"
-	class:poll-thumbnail-shadow={!darkMode}
+	class:poll-thumbnail-shadow={!$darkModeStore}
 	id={`poll-thumbnail-${poll?.id.toString()}`}
 >
 	<div class="mx-2">
-		{#if showGroupInfo}
-			<div class="flex gap-4 items-center pb-2 w-full justify-between dark:text-secondary">
-				<button
-					on:click={() =>
-						poll?.group_joined
-							? goto(`groups/${poll?.group_id}`)
-							: ErrorHandlerStore.set({
-									message: 'You must join the group to access it',
-									success: false
-								})}
-					class:hover:underline={poll?.group_joined}
-					class="text-black dark:text-darkmodeText flex items-center"
-				>
-					<img
-						class="h-6 w-6 mr-1 rounded-full break-word"
-						src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
-						alt={'Poll Thumbnail'}
-						on:error={(e) => onThumbnailError(e, DefaultBanner)}
-					/>
-					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
-						>{poll?.group_name}</span
-					>
-				</button>
-				<div class="flex gap-4 items-baseline">
-					<NotificationOptions
-						type="poll"
-						id={poll?.id}
-						api={`group/poll/${poll?.id}/subscribe`}
-						categories={['poll', 'poll_comment', 'poll_phase']}
-						labels={['Poll', 'Timeline', 'Comments']}
-						Class="text-black dark:text-darkmodeText"
-						ClassOpen="right-0"
-					/>
-					{#if $groupUserStore?.is_admin || poll?.pinned}
-						<button class:cursor-pointer={$groupUserStore?.is_admin} on:click={pinPoll}>
-							<Fa
-								size="1.2x"
-								icon={faThumbtack}
-								color={poll?.pinned ? '#999' : '#CCC'}
-								rotate={poll?.pinned ? '0' : '45'}
-							/>
-						</button>
-					{/if}
-
-					<MultipleChoices
-						bind:choicesOpen
-						labels={!(phase === 'result' || phase === 'prediction_vote') ||
-						(poll?.allow_fast_forward &&
-							(permissions?.poll_fast_forward || $groupUserStore?.is_admin))
-							? [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]
-							: [$_('Delete Poll'), $_('Report Poll')]}
-						functions={[
-							() => ((deletePollModalShow = true), (choicesOpen = false)),
-							() => ((reportPollModalShow = true), (choicesOpen = false)),
-							async () => (phase = await nextPhase(poll, phase))
-						]}
-						Class="text-black justify-self-center mt-2"
-					/>
-				</div>
-			</div>
-			<a
+		<div class="flex justify-between items-start gap-4 pb-2">
+			<button
 				class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"
-				href={`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
-					$page.params.groupId ? 'group' : 'home'
-				}`}
+				onclick={() => {
+					if (poll?.group_joined)
+						goto(
+							`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
+								page.params.groupId ? 'group' : 'home'
+							}`
+						);
+					else
+						ErrorHandlerStore.set({
+							message: 'You must join the group to access the poll',
+							success: false
+						});
+				}}
 			>
 				{poll?.title}
-			</a>
-		{:else}
-			{#if poll?.created_by?.user}
-				<div class="text-black dark:text-darkmodeText flex items-center">
-					<!-- <img
-						class="h-6 w-6 mr-1 rounded-full break-word"
-						src={`${
-							poll?.created_by?.user?.profile_image
-								? env.PUBLIC_API_URL + poll?.created_by?.user?.profile_image
-								: DefaultPFP
-						}`}
-						alt={'poll Thumbnail'}
-						on:error={(e) => onThumbnailError(e, DefaultPFP)}
-					/> -->
-					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
-						>{poll?.created_by?.user?.username}</span
-					>
-				</div>
-			{/if}
-			<div class="flex justify-between items-start gap-4 pb-2">
-				<a
-					class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"
-					href={`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
-						$page.params.groupId ? 'group' : 'home'
-					}`}
-				>
-					{poll?.title}
-				</a>
+			</button>
 
+			{#if poll?.group_joined}
 				<div class="flex gap-4 items-baseline">
 					<NotificationOptions
 						type="poll"
@@ -252,8 +177,10 @@
 						Class="text-black dark:text-darkmodeText"
 						ClassOpen="right-0"
 					/>
+
+          <!-- Pin poll button for admins -->
 					{#if $groupUserStore?.is_admin || poll?.pinned}
-						<button class:cursor-pointer={$groupUserStore?.is_admin} on:click={pinPoll}>
+						<button class:cursor-pointer={$groupUserStore?.is_admin} onclick={pinPoll}>
 							<Fa
 								size="1.2x"
 								icon={faThumbtack}
@@ -263,6 +190,7 @@
 						</button>
 					{/if}
 
+          <!-- Three dot menu for more options -->
 					<MultipleChoices
 						bind:choicesOpen
 						labels={!(phase === 'result' || phase === 'prediction_vote') &&
@@ -275,9 +203,41 @@
 							() => ((reportPollModalShow = true), (choicesOpen = false)),
 							async () => (phase = await nextPhase(poll, phase))
 						]}
-						Class="text-black justify-self-center mt-2"
+						ClassInner="-translate-x-2/3 md:translate-x-0"
 					/>
 				</div>
+			{/if}
+		</div>
+
+		<div class="flex gap-4 items-center pb-2 w-full justify-between dark:text-secondary">
+			<!-- Button for going to the group the poll is from -->
+			<button
+				onclick={() =>
+					poll?.group_joined
+						? goto(`groups/${poll?.group_id}`)
+						: ErrorHandlerStore.set({
+								message: 'You must join the group to access it',
+								success: false
+							})}
+				class:hover:underline={poll?.group_joined}
+				class="text-black dark:text-darkmodeText flex items-center"
+			>
+				<img
+					class="h-6 w-6 mr-1 rounded-full break-word"
+					src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
+					alt={'Poll Thumbnail'}
+					onerror={(e) => onThumbnailError(e, DefaultBanner)}
+				/>
+				<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
+					>{poll?.group_name}</span
+				>
+			</button>
+		</div>
+		{#if poll?.created_by?.user}
+			<div class="text-black dark:text-darkmodeText flex items-center">
+				<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
+					>{poll?.created_by?.user?.username}</span
+				>
 			</div>
 		{/if}
 
@@ -302,10 +262,10 @@
 				<div
 					role="button"
 					tabindex="0"
-					on:mouseover={() => (hovering = true)}
-					on:mouseleave={() => (hovering = false)}
-					on:focus={() => (hovering = true)}
-					on:blur={() => (hovering = false)}
+					onmouseover={() => (hovering = true)}
+					onmouseleave={() => (hovering = false)}
+					onfocus={() => (hovering = true)}
+					onblur={() => (hovering = false)}
 					class="relative w-4 h-4"
 				>
 					<Fa style="position:absolute" icon={faAnglesRight} />
@@ -320,25 +280,22 @@
 			{/if}
 
 			<!-- Comment icon. When user clicks it leads to the comment section on the poll -->
-			<a
-				class="flex gap-1 items-center text-black dark:text-darkmodeText hover:bg-gray-100 dark:hover:bg-slate-500 cursor-pointer text-sm"
-				href={onHoverGroup
-					? '/groups/1'
-					: `/groups/${poll?.group_id || $page.params.groupId}/polls/${
-							poll?.id
-						}?section=comments&source=${$page.params.groupId ? 'group' : 'home'}`}
-			>
-				<img
-					class="w-5"
-					src={ChatIcon}
-					alt="open chat"
-					style:filter={darkMode ? 'brightness(0) invert(1)' : 'none'}
-				/>
-				<span class="inline">{poll?.total_comments}</span>
-			</a>
-
-			{#if poll?.poll_type === 4 && tag}
-				<Tag bind:tag />
+			{#if poll.group_joined}
+				<a
+					class="flex gap-1 items-center text-black dark:text-darkmodeText hover:bg-gray-100 dark:hover:bg-slate-500 cursor-pointer text-sm"
+					href={onHoverGroup
+						? '/groups/1'
+						: `/groups/${poll?.group_id || page.params.groupId}/polls/${
+								poll?.id
+							}?section=comments&source=${page.params.groupId ? 'group' : 'home'}`}
+				>
+					<img class="w-5" src={ChatIcon} alt="open chat" />
+					<span class="inline">{poll?.total_comments}</span>
+				</a>
+			{/if}
+			<!-- Poll tag -->
+			{#if poll?.poll_type === 4 && tag.name !== ''}
+				<Tag Class="cursor-default" bind:tag />
 			{/if}
 
 			{#if poll?.interval_mean_absolute_correctness}
@@ -366,11 +323,15 @@
 		/>
 
 		<div class="!mt-4">
-			{#if poll?.poll_type === 4}
+			<!-- For text polls -->
+			{#if poll?.poll_type === 4 && poll?.group_joined}
 				<!-- PHASE 1: AREA VOTE -->
 				{#if phase === 'area_vote'}
 					<form
-						on:submit|preventDefault={() => submitTagVote(selectedTag)}
+						onsubmit={(e) => {
+							e.preventDefault();
+							submitTagVote(selectedTag);
+						}}
 						class="flex justify-between"
 					>
 						<Select
@@ -399,8 +360,8 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=0&source=${
-										$page.params.groupId ? 'group' : 'home'
+									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=0&source=${
+										page.params.groupId ? 'group' : 'home'
 									}`
 								)}>{$_('See Proposals')} ({poll?.total_proposals})</Button
 						>
@@ -409,8 +370,8 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=1&source=${
-										$page.params.groupId ? 'group' : 'home'
+									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=1&source=${
+										page.params.groupId ? 'group' : 'home'
 									}`
 								)}>{$_('Create a Proposal')}</Button
 						>
@@ -424,8 +385,8 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=0&source=${
-										$page.params.groupId ? 'group' : 'home'
+									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=0&source=${
+										page.params.groupId ? 'group' : 'home'
 									}`
 								)}>{$_('See Consequences')} ({poll?.total_predictions})</Button
 						>
@@ -434,8 +395,8 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=1&source=${
-										$page.params.groupId ? 'group' : 'home'
+									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=1&source=${
+										page.params.groupId ? 'group' : 'home'
 									}`
 								)}>{$_('Create a Consequence')}</Button
 						>
@@ -449,8 +410,8 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
-										$page.params.groupId ? 'group' : 'home'
+									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
+										page.params.groupId ? 'group' : 'home'
 									}`
 								)}>{$_('Manage Probabilities')}</Button
 						>
@@ -465,8 +426,8 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
-										$page.params.groupId ? 'group' : 'home'
+									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
+										page.params.groupId ? 'group' : 'home'
 									}`
 								)}>{$_('Manage votes')}</Button
 						>
@@ -481,8 +442,8 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
-										$page.params.groupId ? 'group' : 'home'
+									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
+										page.params.groupId ? 'group' : 'home'
 									}`
 								)}>{$_('View results & evaluate consequences')}</Button
 						>
@@ -507,9 +468,5 @@
 <style>
 	.poll-thumbnail-shadow {
 		box-shadow: 0 0 5px rgb(203, 203, 203);
-	}
-
-	.poll-thumbnail-shadow-dark {
-		box-shadow: 0 0 5px rgb(77, 77, 77);
 	}
 </style>
