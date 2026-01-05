@@ -134,8 +134,8 @@
 			</div>
 		{/if}
 	</div>
-
 </div>
+
 	<div>
 		{#if thread?.work_group}
 			<span class="text-sm text-gray-500 dark:text-darkmodeText">#{thread.work_group.name}, </span>
