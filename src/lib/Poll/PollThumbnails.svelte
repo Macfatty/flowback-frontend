@@ -23,16 +23,16 @@
 			public: false,
 			order_by: 'start_date_desc',
 			tag: null,
-			workgroup: null
+			workgroup: null,
+      from:"",
+      to:"",
 		},
 		loading = false,
 		next = '',
-		prev = '',
-		errorHandler: any;
+    prev = '';
 
 	const getAPI = async () => {
 		let API = '';
-		// console.log(delegate, {}, delegate === {});
 
 		if (infoToGet === 'home') API += `home/polls?`;
 		else if (infoToGet === 'group') API += `group/${$page.params.groupId}/poll/list?`;
@@ -41,9 +41,9 @@
 		else if (infoToGet === 'user') API += `home/polls?`;
 		//TODO remove public
 		else if (infoToGet === 'public') API += `home/polls?public=true`;
-		
-		if (filter.order_by) API += `&order_by=pinned,${filter.order_by}`;
-		else API += `&order_by=pinned`;
+
+    API += `&order_by=pinned`;
+		if (filter.order_by) API += `,${filter.order_by}`;
 
 		// API += `&limit=${pollThumbnailsLimit}`
 		API += `&limit=${pollThumbnailsLimit}`;
@@ -55,13 +55,9 @@
 				filter.finishedSelection === 'finished' ? '__lt' : '__gt'
 			}=${new Date().toISOString()}`;
 
-		// API += '&pinned=false';
-
 		if (filter.tag) API += `&tag_id=${filter.tag}`;
 
 		if (filter.workgroup) API += `&work_group_ids=${filter.workgroup}`;
-
-		console.log(API, 'API for polls');
 
 		return API;
 	};
@@ -84,40 +80,8 @@
 		prev = json.previous;
 	};
 
-	const sharedThreadPollFixing = async () => {
-		const pollIds = polls
-			//@ts-ignore
-			.map((poll) => (poll.related_model === 'poll' ? poll.id : undefined))
-			.filter((id) => id !== undefined);
-
-		const threadIds = polls
-			//@ts-ignore
-			.map((poll) => (poll.related_model === 'thread' ? poll.id : undefined))
-			.filter((id) => id !== undefined);
-
-		{
-			console.log(pollIds, 'pollz');
-			const { res, json } = await fetchRequest(
-				'GET',
-				`group/${$page.params.groupId}/poll/list?id_list=${pollIds.concat()}`
-			);
-		}
-
-		{
-			console.log(threadIds, 'Threads');
-
-			const { res, json } = await fetchRequest(
-				'GET',
-				`group/thread/list?group_id=${
-					$page.params.groupId
-				}limit=1000&order_by=pinned,created_at_desc&id_list=${threadIds.concat()}`
-			);
-		}
-	};
-
 	onMount(async () => {
 		await getPolls();
-		sharedThreadPollFixing();
 	});
 </script>
 

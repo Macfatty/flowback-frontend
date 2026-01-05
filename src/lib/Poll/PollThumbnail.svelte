@@ -1,7 +1,7 @@
 <script lang="ts">
 	import DefaultBanner from '$lib/assets/default_banner_group.png';
 	import type { Phase, poll } from './interface';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Tag from '$lib/Group/Tag.svelte';
 	import HeaderIcon from '$lib/Header/HeaderIcon.svelte';
 	import Fa from 'svelte-fa';
@@ -56,7 +56,6 @@
 		deletePollModalShow = $state(false),
 		reportPollModalShow = $state(false),
 		hovering = $state(false),
-		showGroupInfo = $state(!(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') && !$page.params.groupId),
 		permissions: Permissions | null = $state(null);
 
 	//When adminn presses the pin tack symbol, pin the poll
@@ -71,6 +70,7 @@
 		}
 
 		poll.pinned = !poll?.pinned;
+    poll = {...poll  }; 
 	};
 
 	const submitTagVote = async (tag: number) => {
@@ -152,8 +152,8 @@
 				onclick={() => {
 					if (poll?.group_joined)
 						goto(
-							`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
-								$page.params.groupId ? 'group' : 'home'
+							`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
+								page.params.groupId ? 'group' : 'home'
 							}`
 						);
 					else
@@ -177,6 +177,8 @@
 						Class="text-black dark:text-darkmodeText"
 						ClassOpen="right-0"
 					/>
+
+          <!-- Pin poll button for admins -->
 					{#if $groupUserStore?.is_admin || poll?.pinned}
 						<button class:cursor-pointer={$groupUserStore?.is_admin} onclick={pinPoll}>
 							<Fa
@@ -188,6 +190,7 @@
 						</button>
 					{/if}
 
+          <!-- Three dot menu for more options -->
 					<MultipleChoices
 						bind:choicesOpen
 						labels={!(phase === 'result' || phase === 'prediction_vote') &&
@@ -282,9 +285,9 @@
 					class="flex gap-1 items-center text-black dark:text-darkmodeText hover:bg-gray-100 dark:hover:bg-slate-500 cursor-pointer text-sm"
 					href={onHoverGroup
 						? '/groups/1'
-						: `/groups/${poll?.group_id || $page.params.groupId}/polls/${
+						: `/groups/${poll?.group_id || page.params.groupId}/polls/${
 								poll?.id
-							}?section=comments&source=${$page.params.groupId ? 'group' : 'home'}`}
+							}?section=comments&source=${page.params.groupId ? 'group' : 'home'}`}
 				>
 					<img class="w-5" src={ChatIcon} alt="open chat" />
 					<span class="inline">{poll?.total_comments}</span>
@@ -357,8 +360,8 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=0&source=${
-										$page.params.groupId ? 'group' : 'home'
+									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=0&source=${
+										page.params.groupId ? 'group' : 'home'
 									}`
 								)}>{$_('See Proposals')} ({poll?.total_proposals})</Button
 						>
@@ -367,8 +370,8 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=1&source=${
-										$page.params.groupId ? 'group' : 'home'
+									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=1&source=${
+										page.params.groupId ? 'group' : 'home'
 									}`
 								)}>{$_('Create a Proposal')}</Button
 						>
@@ -382,8 +385,8 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=0&source=${
-										$page.params.groupId ? 'group' : 'home'
+									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=0&source=${
+										page.params.groupId ? 'group' : 'home'
 									}`
 								)}>{$_('See Consequences')} ({poll?.total_predictions})</Button
 						>
@@ -392,8 +395,8 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?display=1&source=${
-										$page.params.groupId ? 'group' : 'home'
+									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=1&source=${
+										page.params.groupId ? 'group' : 'home'
 									}`
 								)}>{$_('Create a Consequence')}</Button
 						>
@@ -407,8 +410,8 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
-										$page.params.groupId ? 'group' : 'home'
+									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
+										page.params.groupId ? 'group' : 'home'
 									}`
 								)}>{$_('Manage Probabilities')}</Button
 						>
@@ -423,8 +426,8 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
-										$page.params.groupId ? 'group' : 'home'
+									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
+										page.params.groupId ? 'group' : 'home'
 									}`
 								)}>{$_('Manage votes')}</Button
 						>
@@ -439,8 +442,8 @@
 							buttonStyle="primary-light"
 							onClick={() =>
 								goto(
-									`/groups/${poll?.group_id || $page.params.groupId}/polls/${poll?.id}?source=${
-										$page.params.groupId ? 'group' : 'home'
+									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
+										page.params.groupId ? 'group' : 'home'
 									}`
 								)}>{$_('View results & evaluate consequences')}</Button
 						>
