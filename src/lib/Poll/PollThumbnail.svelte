@@ -200,7 +200,7 @@
 							() => ((reportPollModalShow = true), (choicesOpen = false)),
 							async () => (phase = await nextPhase(poll, phase))
 						]}
-						Class="text-black justify-self-center mt-2"
+						ClassInner="-translate-x-2/3 md:translate-x-0"
 					/>
 				</div>
 			{/if}
@@ -208,7 +208,6 @@
 
 		<div class="flex gap-4 items-center pb-2 w-full justify-between dark:text-secondary">
 			<!-- Button for going to the group the poll is from -->
-
 			<button
 				onclick={() =>
 					poll?.group_joined
