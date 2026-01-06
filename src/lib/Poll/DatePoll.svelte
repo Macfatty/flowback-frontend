@@ -3,7 +3,7 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { DateInput } from 'date-picker-svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { _ } from 'svelte-i18n';
 	import DatePollSelection from '$lib/Generic/Schedules/DatePollSelection.svelte';
 	import Comments from '$lib/Comments/Comments.svelte';
@@ -14,7 +14,7 @@
 		date: Date | null = $state(null),
 		proposals: timeProposal[] = $state([]);
 
-	const pollId = $page.params.pollId;
+	const pollId = page.params.pollId;
 
 	async function createProposal(date: Date) {
 		const end_date = new Date(date);
@@ -33,10 +33,10 @@
 </script>
 
 <div
-  class="bg-white dark:bg-darkobject dark:text-darkmodeText shadow rounded my-6
+	class="bg-white dark:bg-darkobject dark:text-darkmodeText shadow rounded my-6
 	{$isMobile ? 'w-full p-0' : 'w-[100%] lg:w-[70%] p-6 max-w-[1000px]'}"
 >
-  <DatePollSelection bind:proposals x={7} y={24} />
+	<DatePollSelection bind:proposals x={7} y={24} />
 </div>
 
 <div
