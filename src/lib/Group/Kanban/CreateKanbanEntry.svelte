@@ -54,16 +54,20 @@
 		if (workGroupId) formData.append('work_group_id', workGroupId.toString());
 		if (end_date) formData.append('end_date', end_date);
 
-		description = description.trim() === '' ? $_('No description provided') : description;
+		description =
+			description.trim() === '' ? $_('No description provided') : description;
 
 		formData.append('description', description);
 		images.forEach((image) => {
 			formData.append('attachments', image);
 		});
 
+		console.log(groupSelection, typeof groupSelection, 'SELECTION');
 		const { res, json } = await fetchRequest(
 			'POST',
-			groupSelection ? `group/${groupId}/kanban/entry/create` : 'user/kanban/entry/create',
+			groupSelection
+				? `group/${groupId}/kanban/entry/create`
+				: 'user/kanban/entry/create',
 			formData,
 			true, // Needs authorization
 			false // Formadata doesn't need to be JSON-fied
@@ -72,11 +76,17 @@
 		loading = false;
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to create kanban task', success: false });
+			ErrorHandlerStore.set({
+				message: 'Failed to create kanban task',
+				success: false
+			});
 			return;
 		}
 
-		ErrorHandlerStore.set({ message: 'Successfully created kanban task', success: true });
+		ErrorHandlerStore.set({
+			message: 'Successfully created kanban task',
+			success: true
+		});
 
 		open = false;
 
@@ -136,6 +146,9 @@
 					labels={['Group', 'Personal']}
 					values={[1, 0]}
 					bind:value={groupSelection}
+					onChange={(e) => {
+						groupSelection = Number(e);
+					}}
 				/>
 
 				{#if groupSelection}
@@ -192,7 +205,9 @@
 					<Select
 						Class="w-full"
 						classInner="rounded p-1 border border-gray-300 dark:border-gray-600 dark:bg-darkobject"
-						labels={priorities.map((i) => $_(priorityText[priorityText.length - i]))}
+						labels={priorities.map((i) =>
+							$_(priorityText[priorityText.length - i])
+						)}
 						values={priorities}
 						bind:value={priority}
 						onInput={handleChangePriority}
@@ -228,8 +243,13 @@
 	</div>
 
 	<div slot="footer" class="flex">
-		<Button Class="py-1 flex-1" buttonStyle="primary" type="submit">{$_('Confirm')}</Button>
-		<Button Class="py-1 flex-1" buttonStyle="warning" onClick={() => (open = false)}
+		<Button Class="py-1 flex-1" buttonStyle="primary" type="submit"
+			>{$_('Confirm')}</Button
+		>
+		<Button
+			Class="py-1 flex-1"
+			buttonStyle="warning"
+			onClick={() => (open = false)}
 			>{$_('kanbanEntry.Cancel', { default: 'Cancel' })}</Button
 		>
 	</div>
