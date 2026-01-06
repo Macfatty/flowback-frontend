@@ -42,9 +42,17 @@
 		/></a
 	>
 	<div class="!flex justify-between md:w-[80%]">
-		<nav class="flex items-baseline p-6 justify-evenly md:justify-center md:gap-[10%] w-[70%]">
+		<nav
+			class="flex items-baseline p-6 justify-evenly md:justify-center md:gap-[10%] w-[70%]"
+		>
 			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
-				<HeaderIcon disableTextOnHover icon={faHouse} text="Home" href="home" bind:selectedHref />
+				<HeaderIcon
+					disableTextOnHover
+					icon={faHouse}
+					text="Home"
+					href="home"
+					bind:selectedHref
+				/>
 				<HeaderIcon
 					disableTextOnHover
 					icon={faPeopleGroup}
@@ -82,7 +90,9 @@
 				<HeaderIcon
 					disableTextOnHover
 					icon={faCoins}
-					text={!(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') ? 'My Ledger' : 'Group Ledger'}
+					text={!(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')
+						? 'My Ledger'
+						: 'Group Ledger'}
 					href="ledger"
 					bind:selectedHref
 				/>
@@ -122,7 +132,10 @@
 				</button>
 				<Notifications />
 			</div>
-			<button id="side-header" on:click={() => (sideHeaderOpen = !sideHeaderOpen)}>
+			<button
+				id="side-header"
+				on:click={() => (sideHeaderOpen = !sideHeaderOpen)}
+			>
 				<img
 					src={$userStore?.profile_image
 						? `${env.PUBLIC_API_URL}${$userStore?.profile_image}`

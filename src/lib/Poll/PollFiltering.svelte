@@ -26,7 +26,8 @@
 	let searched = true,
 		tags: Tag[] = [],
 		workGroups: WorkGroup[] = [],
-		groupId = env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId;
+		groupId =
+			env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId;
 
 	// Initialize content type state from localStorage
 	const initializeContentTypeState = () => {
@@ -97,7 +98,9 @@
 		const { res, json } = await fetchRequest('GET', `group/${groupId}/list`);
 
 		if (!res.ok) return;
-		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
+		workGroups = json?.results.filter(
+			(group: WorkGroup) => group.joined === true
+		);
 	};
 
 	const resetFilter = () => {
@@ -138,7 +141,8 @@
 		getWorkGroupList();
 		initializeContentTypeState();
 
-		groupId = env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId;
+		groupId =
+			env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId;
 	});
 </script>
 
@@ -165,15 +169,17 @@
 			Class="rounded p-1 flex flex-row items-center gap-1"
 			classInner="font-semibold border border-0"
 			onInput={handleSort}
-			values={['start_date_desc', 'start_date_asc']}
-			labels={[$_('Newest first'), $_('Oldest first')]}
+			values={['pinned', 'start_date_desc', 'start_date_asc']}
+			labels={[$_('Pinned'), $_('Newest first'), $_('Oldest first')]}
 			label="{$_('Sort')}:"
 			bind:value={filter.order_by}
 			innerLabel={null}
 		/>
 
-		{$_('From')}: <input type="date" placeholder={filter.from} bind:value={filter.from} />
-		{$_('To')}: <input type="date" placeholder={filter.from} bind:value={filter.to} />
+		{$_('From')}:
+		<input type="date" placeholder={filter.from} bind:value={filter.from} />
+		{$_('To')}:
+		<input type="date" placeholder={filter.from} bind:value={filter.to} />
 
 		<CheckboxButtons
 			label=""
