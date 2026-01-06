@@ -103,7 +103,7 @@
 				infoToGet === 'home'
 					? await ThreadsApi.getHomeThreads(filter.order_by)
 					: await ThreadsApi.getGroupThreads(
-							page.params.groupId,
+							page.params.groupId ?? '-1',
 							threadIds,
 							filter.order_by
 						);

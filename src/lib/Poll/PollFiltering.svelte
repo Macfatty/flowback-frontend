@@ -108,7 +108,7 @@
 			search: '',
 			finishedSelection: 'all',
 			public: false,
-			order_by: 'start_date_desc',
+			order_by: 'pinned',
 			tag: null,
 			workgroup: null,
 			from: new Date(0).toISOString().slice(0, 16),
@@ -169,7 +169,7 @@
 			Class="rounded p-1 flex flex-row items-center gap-1"
 			classInner="font-semibold border border-0"
 			onInput={handleSort}
-			values={['pinned', 'start_date_desc', 'start_date_asc']}
+			values={['pinned', 'created_at_desc', 'created_at_asc']}
 			labels={[$_('Pinned'), $_('Newest first'), $_('Oldest first')]}
 			label="{$_('Sort')}:"
 			bind:value={filter.order_by}
