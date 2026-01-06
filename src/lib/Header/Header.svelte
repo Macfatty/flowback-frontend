@@ -70,7 +70,6 @@
 				href="kanban"
 				bind:selectedHref
 			/>
-
 			<HeaderIcon
 				disableTextOnHover
 				icon={faCalendarDays}
