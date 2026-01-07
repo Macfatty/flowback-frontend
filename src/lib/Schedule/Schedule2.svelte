@@ -151,7 +151,7 @@
 				multiMonthPlugin
 			],
 			initialView: 'dayGridMonth',
-			//TODO: Rework the calculation so these calculations don't need to be rerun at header changes
+			// TODO: Rework the calculation so these calculations don't need to be rerun at header changes
 			height: 'calc(100vh - 2rem - 40px - 28px)',
 			headerToolbar: {
 				left: 'prev,next today',
@@ -247,7 +247,7 @@
 	});
 </script>
 
-<AdvancedFiltering bind:groupIds bind:workgroupIds bind:userChecked />
+<!-- <AdvancedFiltering bind:groupIds bind:workgroupIds bind:userChecked /> -->
 
 <div class="flex justify-center w-full">
 	<div class="w-full bg-white dark:bg-darkbackground" id="calendar-2"></div>
