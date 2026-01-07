@@ -18,7 +18,7 @@
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
-	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
+	// import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
@@ -27,7 +27,7 @@
 		groupId: null | number = $state(null),
 		groupIds: number[] = $state([]),
 		workgroupIds: number[] = $state([]),
-		userChecked = $state(false);
+		userChecked = $state(true);
 
 	const scheduleEventList = async () => {
 		let schedules: Schedule[] = [];
@@ -229,7 +229,7 @@
 		calendar.render();
 	};
 
-	onMount(async () => {
+	onMount(() => {
 		groupId =
 			Number(new URLSearchParams(document.location.search).get('groupId')) ??
 			null;
@@ -281,7 +281,7 @@
 	stopAtPropagation={false}
 >
 	<div slot="body">
-		<form>
+		<div role="form">
 			<TextInput label="Title" bind:value={selectedEvent.title} />
 			<TextArea label="Description" bind:value={selectedEvent.description} />
 			<input type="datetime-local" bind:value={selectedEvent.start_date} />
@@ -297,6 +297,6 @@
 				labels={['subsc']}
 				categories={['subsc']}
 			/>
-		</form>
+		</div>
 	</div>
 </Modal>
