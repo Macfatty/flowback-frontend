@@ -18,7 +18,9 @@
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
-	// import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
+	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
+	import Select from '$lib/Generic/Select.svelte';
+	import { groupStore } from '$lib/Group/Kanban/Kanban';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
@@ -75,19 +77,29 @@
 
 	const scheduleEventCreate = async () => {
 		let api =
-			groupIds.length > 0
-				? `group/${groupIds[0]}/schedule/event/create`
+			// 0 Is currently stand in for user, TODO: Change this so it's not scuffed
+			selectedEvent.origin_id !== 0
+				? `group/${selectedEvent.origin_id}/schedule/event/create`
 				: `user/schedule/event/create`;
 
 		const { res, json } = await fetchRequest('POST', api, selectedEvent);
 
 		if (!res.ok) {
+			if (res.status === 403) {
+				ErrorHandlerStore.set({
+					message: 'You do not have permission to create events for this group',
+					success: false
+				});
+				return;
+			}
+
 			ErrorHandlerStore.set({
 				message: 'Failed to create event',
 				success: false
 			});
 			return;
 		}
+
 		ErrorHandlerStore.set({
 			message: 'Successfully created event',
 			success: true
@@ -247,7 +259,7 @@
 	});
 </script>
 
-<!-- <AdvancedFiltering bind:groupIds bind:workgroupIds bind:userChecked /> -->
+<AdvancedFiltering bind:groupIds bind:workgroupIds bind:userChecked />
 
 <div class="flex justify-center w-full">
 	<div class="w-full bg-white dark:bg-darkbackground" id="calendar-2"></div>
@@ -258,7 +270,7 @@
 		{
 			label: 'Submit',
 			onClick: async () => {
-				selectedEvent.id === 0
+				selectedEvent.schedule_id === 0
 					? await scheduleEventCreate()
 					: await userScheduleEventEdit();
 				scheduleEventList();
@@ -287,6 +299,17 @@
 			<input type="datetime-local" bind:value={selectedEvent.start_date} />
 			<input type="datetime-local" bind:value={selectedEvent.end_date} />
 			<input type="number" bind:value={selectedEvent.repeat_frequency} />
+
+			<Select
+				labels={[
+					'user',
+					...$groupStore.filter((g) => g.joined).map((g) => g.name)
+				]}
+				values={[0, ...$groupStore.filter((g) => g.joined).map((g) => g.id)]}
+				bind:value={selectedEvent.origin_id}
+				label="Group"
+			/>
+
 			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />
 			<TextInput label="Tag" bind:value={selectedEvent.tag_name} />
 			{selectedEvent.id}

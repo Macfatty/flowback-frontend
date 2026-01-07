@@ -29,7 +29,10 @@
 		// let urlFilter = 'joined=true';
 		let urlFilter = '';
 		// loading = true;
-		const { res, json } = await fetchRequest('GET', `group/list?limit=50&${urlFilter}`);
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/list?limit=50&${urlFilter}`
+		);
 		// loading = false;
 
 		if (!res.ok) return;
@@ -40,7 +43,9 @@
 
 	const getWorkgroups = async () => {
 		// Creates a list of promises to fetch workgroups for each groupId
-		const workgroupsPromise = groups.map((g) => fetchRequest('GET', `group/${g.id}/list`));
+		const workgroupsPromise = groups.map((g) =>
+			fetchRequest('GET', `group/${g.id}/list`)
+		);
 		let hasError = false;
 
 		// Fetches all workgroups concurrently and makes sure all events are in one neat array
@@ -53,20 +58,24 @@
 
 		// If any of the workgroup fetches failed, we set an error message
 		if (hasError)
-			ErrorHandlerStore.set({ message: 'Failed to fetch atleast some workgroups', success: false });
+			ErrorHandlerStore.set({
+				message: 'Failed to fetch atleast some workgroups',
+				success: false
+			});
 
 		workgroupStore.set(workgroups);
 	};
 
 	onMount(async () => {
 		await getGroups();
-		await getWorkgroups();
+		// await getWorkgroups();
 	});
 </script>
 
 <Modal bind:open={openFilter}>
 	<div slot="body">
-		<input type="checkbox" bind:checked={userChecked} /> User Schedule <br />
+		<input type="checkbox" bind:checked={userChecked} value={true} />
+		{$_('User Schedule')} <br />
 		{#each groups as group}
 			<input
 				type="checkbox"
