@@ -9,7 +9,11 @@
 	import multiMonthPlugin from '@fullcalendar/multimonth';
 	import interactionPlugin from '@fullcalendar/interaction';
 	import Modal from '$lib/Generic/Modal.svelte';
-	import { ScheduleItem2Default, type Schedule, type ScheduleItem2 } from '$lib/Schedule/interface';
+	import {
+		ScheduleItem2Default,
+		type Schedule,
+		type ScheduleItem2
+	} from '$lib/Schedule/interface';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import TextArea from '$lib/Generic/TextArea.svelte';
@@ -78,36 +82,55 @@
 		const { res, json } = await fetchRequest('POST', api, selectedEvent);
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to create event', success: false });
+			ErrorHandlerStore.set({
+				message: 'Failed to create event',
+				success: false
+			});
 			return;
 		}
-		ErrorHandlerStore.set({ message: 'Successfully created event', success: true });
+		ErrorHandlerStore.set({
+			message: 'Successfully created event',
+			success: true
+		});
 	};
 
 	const userScheduleEventEdit = async () => {
-		let api = groupId ? `group/${groupId}/schedule/event/update` : `user/schedule/event/update`;
+		let api = groupId
+			? `group/${groupId}/schedule/event/update`
+			: `user/schedule/event/update`;
 		const { res, json } = await fetchRequest('POST', api, {
 			...selectedEvent,
 			event_id: selectedEvent.id
 		});
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to edit event', success: false });
+			ErrorHandlerStore.set({
+				message: 'Failed to edit event',
+				success: false
+			});
 			return;
 		}
 
-		ErrorHandlerStore.set({ message: 'Successfully edited event', success: true });
+		ErrorHandlerStore.set({
+			message: 'Successfully edited event',
+			success: true
+		});
 	};
 
 	const userScheduleEventDelete = async (event_id: number) => {
-		let api = groupId ? `group/${groupId}/schedule/event/delete` : `user/schedule/event/delete`;
+		let api = groupId
+			? `group/${groupId}/schedule/event/delete`
+			: `user/schedule/event/delete`;
 
 		const { res, json } = await fetchRequest('POST', api, {
 			event_id
 		});
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to delete event', success: false });
+			ErrorHandlerStore.set({
+				message: 'Failed to delete event',
+				success: false
+			});
 			return;
 		}
 
@@ -120,14 +143,21 @@
 		let calendarEl = document.getElementById('calendar-2');
 		if (!calendarEl) return;
 		let calendar = new Calendar(calendarEl, {
-			plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin, multiMonthPlugin],
+			plugins: [
+				dayGridPlugin,
+				interactionPlugin,
+				timeGridPlugin,
+				listPlugin,
+				multiMonthPlugin
+			],
 			initialView: 'dayGridMonth',
 			//TODO: Rework the calculation so these calculations don't need to be rerun at header changes
 			height: 'calc(100vh - 2rem - 40px - 28px)',
 			headerToolbar: {
 				left: 'prev,next today',
 				center: 'title, addEventButton',
-				right: 'dayGridMonth, timeGridDay, listWeek, multiMonthYear, dayGridYear, timeGridWeek'
+				right:
+					'dayGridMonth, timeGridDay, listWeek, multiMonthYear, dayGridYear, timeGridWeek'
 			},
 
 			selectable: true,
@@ -135,7 +165,9 @@
 			select: (selectionInfo) => {
 				open = true;
 				selectedEvent = ScheduleItem2Default;
-				selectedEvent.start_date = selectionInfo.start.toISOString().slice(0, 16);
+				selectedEvent.start_date = selectionInfo.start
+					.toISOString()
+					.slice(0, 16);
 				selectedEvent.end_date = selectionInfo.end.toISOString().slice(0, 16);
 			},
 			dateClick: (clickInfo) => {
@@ -159,23 +191,31 @@
 			eventClick: (info) => {
 				open = true;
 				selectedEvent = ScheduleItem2Default;
-				let _selectedEvent = events.find((e) => e.id.toString() === info.event.id);
+				let _selectedEvent = events.find(
+					(e) => e.id.toString() === info.event.id
+				);
 				if (_selectedEvent) selectedEvent = _selectedEvent;
-				selectedEvent.start_date = info.event.start?.toLocaleString().slice(0, 16) ?? '';
-				selectedEvent.end_date = info.event.end?.toLocaleString().slice(0, 16) ?? '';
+				selectedEvent.start_date =
+					info.event.start?.toLocaleString().slice(0, 16) ?? '';
+				selectedEvent.end_date =
+					info.event.end?.toLocaleString().slice(0, 16) ?? '';
 			},
 			eventDrop: (info) => {
 				selectedEvent.title = info.event.title;
 				selectedEvent.id = Number(info.event.id);
-				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
-				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
+				selectedEvent.start_date =
+					info.event.start?.toISOString().slice(0, 16) ?? '';
+				selectedEvent.end_date =
+					info.event.end?.toISOString().slice(0, 16) ?? '';
 				userScheduleEventEdit();
 			},
 			eventResize: (info) => {
 				selectedEvent.title = info.event.title;
 				selectedEvent.id = Number(info.event.id);
-				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
-				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
+				selectedEvent.start_date =
+					info.event.start?.toISOString().slice(0, 16) ?? '';
+				selectedEvent.end_date =
+					info.event.end?.toISOString().slice(0, 16) ?? '';
 				userScheduleEventEdit();
 			},
 			dayMaxEventRows: 3,
@@ -190,7 +230,9 @@
 	};
 
 	onMount(async () => {
-		groupId = Number(new URLSearchParams(document.location.search).get('groupId')) ?? null;
+		groupId =
+			Number(new URLSearchParams(document.location.search).get('groupId')) ??
+			null;
 		if (groupId) groupIds.push(groupId);
 
 		scheduleEventList();
@@ -210,14 +252,15 @@
 <div class="flex justify-center w-full">
 	<div class="w-full bg-white dark:bg-darkbackground" id="calendar-2"></div>
 </div>
-
 <Modal
 	bind:open
 	buttons={[
 		{
 			label: 'Submit',
 			onClick: async () => {
-				selectedEvent.id === 0 ? await scheduleEventCreate() : await userScheduleEventEdit();
+				selectedEvent.id === 0
+					? await scheduleEventCreate()
+					: await userScheduleEventEdit();
 				scheduleEventList();
 				selectedEvent = ScheduleItem2Default;
 				open = false;

@@ -15,7 +15,10 @@
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import Button from '$lib/Generic/Button.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import { elipsis, formatDateToLocalTime } from '$lib/Generic/GenericFunctions';
+	import {
+		elipsis,
+		formatDateToLocalTime
+	} from '$lib/Generic/GenericFunctions';
 	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
 	import Event from './Event.svelte';
 	import Select from '$lib/Generic/Select.svelte';
@@ -140,13 +143,15 @@
 
 		if (newEvent.description) payload.description = newEvent.description;
 		if (newEvent.meeting_link) payload.meeting_link = newEvent.meeting_link;
-		if (newEvent.repeat_frequency) payload.repeat_frequency = newEvent.repeat_frequency;
+		if (newEvent.repeat_frequency)
+			payload.repeat_frequency = newEvent.repeat_frequency;
 		if (newEvent.reminders) payload.reminders = [newEvent.reminders];
 
 		if (filter.type === 'group') {
 			payload.group_id = parseInt(filter.group ?? '1');
 			if (newEvent.work_group) payload.work_group_id = newEvent.work_group.id;
-			if (newEvent.assignee_ids?.length) payload.assignee_ids = newEvent.assignee_ids;
+			if (newEvent.assignee_ids?.length)
+				payload.assignee_ids = newEvent.assignee_ids;
 			API = `group/${filter.group}/schedule/create`;
 		} else {
 			API = `user/schedule/create`;
@@ -157,11 +162,17 @@
 		loading = false;
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to create event', success: false });
+			ErrorHandlerStore.set({
+				message: 'Failed to create event',
+				success: false
+			});
 			return;
 		}
 
-		ErrorHandlerStore.set({ message: 'Successfully created event', success: true });
+		ErrorHandlerStore.set({
+			message: 'Successfully created event',
+			success: true
+		});
 		showCreateScheduleEvent = false;
 
 		const createdEvent: scheduledEvent = {
@@ -195,33 +206,47 @@
 			end_date: updatedEvent.end_date
 		};
 
-		if (updatedEvent.description) payload.description = updatedEvent.description;
-		if (updatedEvent.meeting_link) payload.meeting_link = updatedEvent.meeting_link;
-		if (updatedEvent.repeat_frequency) payload.repeat_frequency = updatedEvent.repeat_frequency;
+		if (updatedEvent.description)
+			payload.description = updatedEvent.description;
+		if (updatedEvent.meeting_link)
+			payload.meeting_link = updatedEvent.meeting_link;
+		if (updatedEvent.repeat_frequency)
+			payload.repeat_frequency = updatedEvent.repeat_frequency;
 		if (updatedEvent.reminders) payload.reminders = updatedEvent.reminders;
 
 		if (type === 'group') {
 			if (updatedEvent.work_group) payload.work_group = updatedEvent.work_group;
-			if (updatedEvent.assignee_ids?.length) payload.assignee_ids = updatedEvent.assignee_ids;
+			if (updatedEvent.assignee_ids?.length)
+				payload.assignee_ids = updatedEvent.assignee_ids;
 		}
 
 		const { res, json } = await fetchRequest(
 			'POST',
-			type === 'group' ? `group/${filter.group}/schedule/update` : `user/schedule/update`,
+			type === 'group'
+				? `group/${filter.group}/schedule/update`
+				: `user/schedule/update`,
 			payload
 		);
 
 		loading = false;
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to update event', success: false });
+			ErrorHandlerStore.set({
+				message: 'Failed to update event',
+				success: false
+			});
 			return;
 		}
 
-		ErrorHandlerStore.set({ message: 'Event successfully updated', success: true });
+		ErrorHandlerStore.set({
+			message: 'Event successfully updated',
+			success: true
+		});
 
 		events = events
-			.map((event) => (event.event_id === updatedEvent.event_id ? { ...updatedEvent } : event))
+			.map((event) =>
+				event.event_id === updatedEvent.event_id ? { ...updatedEvent } : event
+			)
 			?.sort((a, b) => {
 				const dateA = new Date(a.start_date).getTime();
 				const dateB = new Date(b.start_date).getTime();
@@ -238,14 +263,19 @@
 
 		const { res, json } = await fetchRequest(
 			'POST',
-			type === 'group' ? `group/${filter.group}/schedule/delete` : `user/schedule/delete`,
+			type === 'group'
+				? `group/${filter.group}/schedule/delete`
+				: `user/schedule/delete`,
 			{ event_id: eventId }
 		);
 
 		loading = false;
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to delete event', success: false });
+			ErrorHandlerStore.set({
+				message: 'Failed to delete event',
+				success: false
+			});
 			return;
 		}
 
@@ -276,14 +306,21 @@
 	};
 
 	const getWorkGroupList = async () => {
-		const { res, json } = await fetchRequest('GET', `group/${filter.group}/list`);
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/${filter.group}/list`
+		);
 		if (!res.ok) return;
-		workGroups = json?.results.filter((group: WorkGroup) => group.joined === true);
+		workGroups = json?.results.filter(
+			(group: WorkGroup) => group.joined === true
+		);
 	};
 
 	onMount(async () => {
 		deleteSelection = () => {
-			document.getElementById(selectedDatePosition)?.classList.remove('selected');
+			document
+				.getElementById(selectedDatePosition)
+				?.classList.remove('selected');
 		};
 
 		const groupId = filter.group;

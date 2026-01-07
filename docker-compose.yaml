@@ -4,10 +4,10 @@ services:
         build: .
         ports:
             - ${PORT:-3000}:${PORT:-3000}
-            - '3010:3010'
-            - '8080:8080'
-            - '5050:5050'
-            - '24678:24678'
+            # - '3010:3010'
+            # - '8080:8080'
+            # - '5050:5050'
+            # - '24678:24678'
         # 5173:5173
         # - ${PORT:-5173}:${PORT:-5173}
         env_file:
@@ -27,12 +27,12 @@ services:
                   target: /usr/src/app
                   action: rebuild
 
-        healthcheck:
-            test: ['CMD', 'curl', '-f', 'http://localhost:${PORT:-3000}/']
-            interval: 4s
-            timeout: 4s
-            retries: 5
-            start_period: 5s
+        # healthcheck:
+        #     test: ['CMD', 'curl', '-f', 'http://localhost:${PORT:-3000}/']
+        #     interval: 4s
+        #     timeout: 4s
+        #     retries: 5
+        #     start_period: 5s
         volumes:
             - ./src:/home/node/app/src
             - ./static:/home/node/app/static

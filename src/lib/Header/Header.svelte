@@ -85,7 +85,6 @@
 				href="schedule"
 				bind:selectedHref
 			/>
-
 			{#if env.PUBLIC_FLOWBACK_LEDGER_MODULE === 'TRUE'}
 				<HeaderIcon
 					disableTextOnHover

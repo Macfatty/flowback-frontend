@@ -12,9 +12,9 @@ COPY . .
 # RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 EXPOSE 3000
-EXPOSE 3333
-EXPOSE 8080
-EXPOSE 24678
+# EXPOSE 3333
+# EXPOSE 8080
+# EXPOSE 24678
 
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3000"]
 
