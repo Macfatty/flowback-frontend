@@ -243,36 +243,30 @@
 				events.forEach((event) => {
 					if (event.repeat_frequency === 1) {
 						for (let i = 1; i < 42; i++) {
+							let date = new Date(
+								new Date(event.start_date).setDate(
+									new Date(event.start_date).getDate() + i
+								)
+							);
 							_events.push({
 								...event,
-								start: new Date(
-									new Date(event.start_date).setDate(
-										new Date(event.start_date).getDate() + i
-									)
-								),
-								end: new Date(
-									new Date(event.end_date ?? event.start_date).setDate(
-										new Date(event.end_date ?? event.start_date).getDate() + i
-									)
-								),
+								start: date,
+								end: date,
 								allDay: true
 							});
 						}
 					} else if (event.repeat_frequency === 2) {
-						for (let i = 1; i < 6; i++) {
+						for (let i = 0; i < 6; i++) {
+							let date = new Date(
+								new Date(event.start_date).setDate(
+									new Date(event.start_date).getDate() + i * 7
+								)
+							);
+
 							_events.push({
 								...event,
-								start: new Date(
-									new Date(event.start_date).setDate(
-										new Date(event.start_date).getDate() + i * 7
-									)
-								),
-								end: new Date(
-									new Date(event.end_date ?? event.start_date).setDate(
-										new Date(event.end_date ?? event.start_date).getDate() +
-											i * 7
-									)
-								),
+								start: date,
+								end: date,
 								allDay: true
 							});
 						}
