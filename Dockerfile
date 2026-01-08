@@ -16,8 +16,9 @@ EXPOSE 3000
 # EXPOSE 8080
 # EXPOSE 24678
 
-# CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3000"]
-CMD ["npm", "run", "dev3000"]
+ARG PORT="3000"
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", ${PORT}]
+# CMD ["npm", "run", "dev3000"]
 
 # RUN npm run build
 # CMD ["npm", "run", "dev3000"]
