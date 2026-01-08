@@ -11,12 +11,12 @@ COPY . .
 # RUN apk --no-cache add curl tzdata
 # RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-EXPOSE 3000
 # EXPOSE 3333
 # EXPOSE 8080
 # EXPOSE 24678
 
 ARG PORT="3000"
+EXPOSE ${PORT}
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", ${PORT}]
 # CMD ["npm", "run", "dev3000"]
 
