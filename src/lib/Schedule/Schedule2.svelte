@@ -71,6 +71,7 @@
 		{
 			let api = `schedule/event/list?limit=50&schedule_ids=0,${schedules.map((s) => s.id).join(',')}`;
 			const { res, json } = await fetchRequest('GET', api);
+
 			events = json.results ?? [];
 			events = events.map((e) =>
 				e.schedule_origin_name === 'workgroup'
@@ -80,6 +81,12 @@
 						}
 					: e
 			);
+
+			events = events.map((e) => ({
+				...e,
+				start_date: e.start_date.slice(0, 16),
+				end_date: e.end_date?.slice(0, 16) ?? null
+			}));
 		}
 	};
 
@@ -153,6 +160,10 @@
 			message: 'Successfully edited event',
 			success: true
 		});
+
+		// Scuffed solution to solve dates going on the wrong places when clicking and dragging
+		// TODO: Find a better solution
+		// scheduleEventList();
 	};
 
 	const ScheduleEventDelete = async (event_id: number) => {
@@ -328,6 +339,7 @@
 		<div role="form">
 			<TextInput label="Title" bind:value={selectedEvent.title} />
 			<TextArea label="Description" bind:value={selectedEvent.description} />
+			{selectedEvent.start_date}
 			<input type="datetime-local" bind:value={selectedEvent.start_date} />
 			<input type="datetime-local" bind:value={selectedEvent.end_date} />
 			<input type="number" bind:value={selectedEvent.repeat_frequency} />
