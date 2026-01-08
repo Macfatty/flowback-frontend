@@ -49,6 +49,9 @@ export interface ScheduleItem2 {
   user_tags: string[] | null;
   locked: boolean | null;
   subscribed: boolean;
+
+  // Doesn't come from the backend, is used for a scuffed solution to issues in the frontend
+  workgroup_id: number
 }
 
 export const ScheduleItem2Default = {
@@ -71,7 +74,8 @@ export const ScheduleItem2Default = {
   reminders: [],
   user_tags: [],
   locked: true,
-  subscribed: false
+  subscribed: false,
+  workgroup_id: 0
 }
 
 export interface WorkGroupScheduledEventCreate {

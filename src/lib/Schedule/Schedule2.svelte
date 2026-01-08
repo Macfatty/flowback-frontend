@@ -29,8 +29,7 @@
 		groupId: null | number = $state(null),
 		groupIds: number[] = $state([]),
 		workgroupIds: number[] = $state([]),
-		userChecked = $state(true),
-		workgroupId = $state(0);
+		userChecked = $state(true);
 
 	const scheduleEventList = async () => {
 		let schedules: Schedule[] = [];
@@ -73,20 +72,40 @@
 			let api = `schedule/event/list?limit=50&schedule_ids=0,${schedules.map((s) => s.id).join(',')}`;
 			const { res, json } = await fetchRequest('GET', api);
 			events = json.results ?? [];
+			events = events.map((e) =>
+				e.schedule_origin_name === 'workgroup'
+					? {
+							...e,
+							workgroup_id: e.schedule_origin_id
+						}
+					: e
+			);
 		}
 	};
 
-	const scheduleEventCreate = async () => {
-		let api = '';
+	const getAPI = (type = '') => {
 		// 0 Is currently stand in for user, TODO: Change this so it's not scuffed
-		//
+		let api = '';
+		if (selectedEvent.origin_id === 0) api += `user/schedule/event/${type}`;
+		else if (selectedEvent.workgroup_id === 0)
+			api += `group/${selectedEvent.origin_id}/schedule/event/${type}`;
+		else
+			api += `group/workgroup/${selectedEvent.workgroup_id}/schedule/event/${type}`;
 
-		if (selectedEvent.origin_id === 0) api += `user/schedule/event/create`;
-		else if (workgroupId === 0)
-			api += `group/${selectedEvent.origin_id}/schedule/event/create`;
-		else api += `group/workgroup/${workgroupId}/schedule/event/create`;
+		return api;
+	};
 
-		const { res, json } = await fetchRequest('POST', api, selectedEvent);
+	const scheduleEventCreate = async () => {
+		let api = getAPI('create');
+
+		const { res, json } = await fetchRequest('POST', api, {
+			title: selectedEvent.title,
+			description: selectedEvent.description,
+			start_date: selectedEvent.start_date,
+			end_date: selectedEvent.end_date,
+			repeat_frequency: selectedEvent.repeat_frequency,
+			meeting_link: selectedEvent.meeting_link
+		});
 
 		if (!res.ok) {
 			if (res.status === 403) {
@@ -110,10 +129,9 @@
 		});
 	};
 
-	const userScheduleEventEdit = async () => {
-		let api = groupId
-			? `group/${groupId}/schedule/event/update`
-			: `user/schedule/event/update`;
+	const scheduleEventUpdate = async () => {
+		let api = getAPI('update');
+
 		const { res, json } = await fetchRequest('POST', api, {
 			...selectedEvent,
 			event_id: selectedEvent.id
@@ -133,10 +151,8 @@
 		});
 	};
 
-	const userScheduleEventDelete = async (event_id: number) => {
-		let api = groupId
-			? `group/${groupId}/schedule/event/delete`
-			: `user/schedule/event/delete`;
+	const ScheduleEventDelete = async (event_id: number) => {
+		let api = getAPI('delete');
 
 		const { res, json } = await fetchRequest('POST', api, {
 			event_id
@@ -178,6 +194,7 @@
 			windowResize: () => {
 				renderCalendar();
 			},
+
 			selectable: true,
 			// selectMirror: true,
 			select: (selectionInfo) => {
@@ -188,9 +205,7 @@
 					.slice(0, 16);
 				selectedEvent.end_date = selectionInfo.end.toISOString().slice(0, 16);
 			},
-			dateClick: (clickInfo) => {
-				console.log(clickInfo);
-			},
+
 			customButtons: {
 				addEventButton: {
 					text: '+',
@@ -199,6 +214,7 @@
 					}
 				}
 			},
+
 			// @ts-ignore
 			events: events.map((e) => ({
 				...e,
@@ -208,25 +224,26 @@
 			})),
 			eventClick: (info) => {
 				open = true;
-				// selectedEvent = ScheduleItem2Default;
-				// let _selectedEvent = events.find(
-				// 	(e) => e.id.toString() === info.event.id
-				// );
-				// if (_selectedEvent) selectedEvent = _selectedEvent;
-				// selectedEvent.start_date =
-				// 	info.event.start?.toLocaleString().slice(0, 16) ?? '';
-				// selectedEvent.end_date =
-				// 	info.event.end?.toLocaleString().slice(0, 16) ?? '';
+				let _selectedEvent = events.find(
+					(e) => e.id.toString() === info.event.id
+				);
+				if (_selectedEvent) selectedEvent = _selectedEvent;
+				selectedEvent.start_date =
+					info.event.start?.toLocaleString().slice(0, 16) ?? '';
+				selectedEvent.end_date =
+					info.event.end?.toLocaleString().slice(0, 16) ?? '';
 			},
-
 			eventDrop: (info) => {
-				selectedEvent.title = info.event.title;
-				selectedEvent.id = Number(info.event.id);
+				selectedEvent =
+					events.find((e) => e.id.toString() === info.event.id) ??
+					selectedEvent;
+
 				selectedEvent.start_date =
 					info.event.start?.toISOString().slice(0, 16) ?? '';
 				selectedEvent.end_date =
 					info.event.end?.toISOString().slice(0, 16) ?? '';
-				userScheduleEventEdit();
+
+				scheduleEventUpdate();
 			},
 			eventResize: (info) => {
 				selectedEvent.title = info.event.title;
@@ -235,8 +252,9 @@
 					info.event.start?.toISOString().slice(0, 16) ?? '';
 				selectedEvent.end_date =
 					info.event.end?.toISOString().slice(0, 16) ?? '';
-				userScheduleEventEdit();
+				scheduleEventUpdate();
 			},
+
 			dayMaxEventRows: 3,
 			eventInteractive: true,
 			eventClassNames: 'cursor-pointer',
@@ -281,7 +299,7 @@
 			onClick: async () => {
 				selectedEvent.schedule_id === 0
 					? await scheduleEventCreate()
-					: await userScheduleEventEdit();
+					: await scheduleEventUpdate();
 				scheduleEventList();
 				selectedEvent = ScheduleItem2Default;
 				open = false;
@@ -291,7 +309,7 @@
 		},
 		{
 			label: 'Delete',
-			onClick: () => userScheduleEventDelete(selectedEvent.id),
+			onClick: () => ScheduleEventDelete(selectedEvent.id),
 			type: 'warning',
 			class: selectedEvent.id ? 'visible' : 'invisible'
 		}
@@ -354,7 +372,7 @@
 						)
 						.map((w) => w.id)
 				]}
-				bind:value={workgroupId}
+				bind:value={selectedEvent.workgroup_id}
 				label="Group"
 			/>
 
