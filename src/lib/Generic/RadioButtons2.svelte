@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" generics="T">
 	import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
 	import Fa from 'svelte-fa';
@@ -10,8 +10,8 @@
 		onChange = (e: any) => {},
 		label: string = '',
 		labels: string[] = [],
-		values: any[] = labels,
-		value: any | null = values[0],
+		values: T[] = [],
+		value: T | null = null,
 		Class = '',
 		centering = false,
 		ClassInner = '',
@@ -23,14 +23,17 @@
 		var elements = document.getElementsByTagName('input');
 
 		for (var i = 0; i < elements.length; i++) {
-			if (elements[i].type == 'radio' && labels.find((label) => label === elements[i].id)) {
+			if (
+				elements[i].type == 'radio' &&
+				labels.find((label) => label === elements[i].id)
+			) {
 				elements[i].checked = false;
 			}
 		}
 	};
 
 	onMount(() => {
-		value = values[0];
+		value = values[0] ?? null;
 	});
 </script>
 
@@ -40,8 +43,7 @@
 		<fieldset
 			class:flex={horizontal}
 			class="gap-4"
-			on:change={(e) => {
-				//@ts-ignore
+			on:change={(e: any) => {
 				value = e?.target?.value;
 				onChange(value);
 			}}
@@ -53,7 +55,7 @@
 							type="radio"
 							{name}
 							value={values[i]}
-							id={values[i]}
+							id={String(values[i])}
 							checked={values[i] === value}
 						/>{$_(label)}
 						{#if icons}
@@ -64,7 +66,7 @@
 							type="radio"
 							{name}
 							value={values[i]}
-							id={values[i]}
+							id={String(values[i])}
 							checked={values[i] === value}
 						/>
 					{/if}

@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { _ } from 'svelte-i18n';
 	import { PollsApi } from '$lib/api/polls';
 	import { pollThumbnails as pollThumbnailsLimit } from '../Generic/APILimits.json';
 	import type { Filter, poll, Post } from './interface';
-	import type { DelegateMinimal, Thread } from '$lib/Group/interface';
+	import type { Thread } from '$lib/Group/interface';
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import { env } from '$env/dynamic/public';
 	import { ThreadsApi } from '$lib/api/threads';
@@ -31,7 +31,7 @@
 			search: '',
 			finishedSelection: 'all',
 			public: false,
-			order_by: 'start_date_desc',
+			order_by: 'pinned',
 			tag: null,
 			workgroup: null,
 			from: new Date(0).toISOString().slice(0, 16),
@@ -40,28 +40,10 @@
 		showThreads = true,
 		showPolls = true;
 
-	// Local sorting as fallback since server sorting isn't working correctly
-	$: {
-		if ($posts.length) {
-			const sortedPosts = [...$posts].sort((a, b) => {
-				switch (filter.order_by) {
-					case 'start_date_desc':
-						return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
-					case 'start_date_asc':
-						return new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime();
-					default:
-						return 0;
-				}
-			});
-			$posts = sortedPosts;
-		}
-	}
-
 	async function fetchPolls() {
-		
 		let api_params = `
-		group_ids=${$page.params.groupId ?? ''}&
-		order_by=${filter.order_by ? `pinned,${filter.order_by}` : 'pinned'}&
+		group_ids=${page.params.groupId ?? ''}&
+		order_by=${filter.order_by}&
 		limit=${pollThumbnailsLimit}&
 		title__icontains=${filter.search ?? ''}&
 		tag_id=${filter.tag ?? ''}&
@@ -69,17 +51,24 @@
 		public=${infoToGet === 'public' ? 'true' : ''}&
 		created_at__gt=${filter.from}&
 		created_at__lt=${filter.to}
-		`;
-    console.log('API PARAMS:', api_params);
+    `;
 
 		// if (next === undefined) {
 		if (true) {
 			loading = true;
 
-			const { res, json } = await fetchRequest('GET', `user/home?${api_params}`);
+			const { res, json } = await fetchRequest(
+				'GET',
+				`user/home?${api_params}`
+			);
 
 			loading = false;
-			if (!res.ok) ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
+			if (!res.ok)
+				ErrorHandlerStore.set({
+					message: 'Could not get polls',
+					success: false
+				});
+			console.log(json.results);
 
 			$posts = json.results ?? [];
 			next = json.next ?? null;
@@ -90,7 +79,10 @@
 			loading = true;
 			const { res, json } = await fetchRequest('GET', next ?? '');
 			if (!res.ok) {
-				ErrorHandlerStore.set({ message: 'Could not get polls', success: false });
+				ErrorHandlerStore.set({
+					message: 'Could not get polls',
+					success: false
+				});
 			}
 			$posts = [...$posts, ...json.results];
 			next = json.next;
@@ -98,7 +90,7 @@
 		loading = false;
 	}
 
-	async function fetchRelatedContent() {
+	const fetchRelatedContent = async () => {
 		const threadIds = $posts
 			.filter((post) => post.related_model === 'thread')
 			.map((post) => post.id);
@@ -110,10 +102,14 @@
 			const response =
 				infoToGet === 'home'
 					? await ThreadsApi.getHomeThreads(filter.order_by)
-					: await ThreadsApi.getGroupThreads($page.params.groupId, threadIds, filter.order_by);
+					: await ThreadsApi.getGroupThreads(
+							page.params.groupId ?? '-1',
+							threadIds,
+							filter.order_by
+						);
 			threads = response.results;
 		}
-	}
+	};
 
 	async function fetchWorkGroups() {
 		const { results } = await PollsApi.getWorkGroups();
@@ -122,11 +118,15 @@
 
 	const matchesFilter = (post: Post): boolean => {
 		// Find the corresponding thread (only needed for workgroup filtering on threads)
-		const thread = post.related_model === 'thread' ? threads.find((t) => t.id === post.id) : null;
+		const thread =
+			post.related_model === 'thread'
+				? threads.find((t) => t.id === post.id)
+				: null;
 
 		// Check search filter (applies to both polls and threads, case-insensitive search on title)
 		const matchesSearch =
-			!filter.search || post.title?.toLowerCase().includes(filter.search.toLowerCase());
+			!filter.search ||
+			post.title?.toLowerCase().includes(filter.search.toLowerCase());
 
 		// Check workgroup filter (only for threads, skipped if both showThreads and showPolls are true)
 		const matchesWorkgroup =
@@ -137,7 +137,7 @@
 
 		// return false;
 		return (matchesSearch && matchesWorkgroup) || false;
-	}
+	};
 
 	onMount(async () => {
 		await fetchPolls();
@@ -150,7 +150,6 @@
 	});
 
 	$: if (filter) {
-		
 		fetchPolls();
 		fetchRelatedContent();
 	}
@@ -176,10 +175,13 @@
 				{#each $posts as post}
 					{#if post?.related_model === 'thread' && showThreads && matchesFilter(post)}
 						<ThreadThumbnail
-							thread={threads?.find((thread) => thread?.id === post?.id) || threads[0]}
+							thread={threads?.find((thread) => thread?.id === post?.id) ||
+								threads[0]}
 						/>
 					{:else if post?.related_model === 'poll' && showPolls && matchesFilter(post)}
-						<PollThumbnail poll={polls?.find((poll) => poll?.id === post?.id) || polls[0]} />
+						<PollThumbnail
+							poll={polls?.find((poll) => poll?.id === post?.id) || polls[0]}
+						/>
 					{/if}
 				{/each}
 			{:else if !loading}

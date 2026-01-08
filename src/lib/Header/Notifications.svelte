@@ -30,7 +30,8 @@
 
 	const closeWindowWhenClickingOutside = () => {
 		window.addEventListener('click', (e) => {
-			const notificationListElement = document.getElementById(`notifications-list`);
+			const notificationListElement =
+				document.getElementById(`notifications-list`);
 			if (
 				notificationsOpen &&
 				//@ts-ignore
@@ -55,12 +56,17 @@
 
 	const markAllAsRead = async () => {
 		const { res, json } = await fetchRequest('POST', 'notification/update', {
-			notification_object_ids: notifications.map((notification) => notification.object_id),
+			notification_object_ids: notifications.map(
+				(notification) => notification.object_id
+			),
 			read: true
 		});
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: "Couldn't mark all notifications as read", success: false });
+			ErrorHandlerStore.set({
+				message: "Couldn't mark all notifications as read",
+				success: false
+			});
 			return;
 		}
 
@@ -70,7 +76,10 @@
 	const gotoNotificationOrigin = async (notification: notification) => {
 		switch (notification.tag) {
 			case 'poll':
-				await goto(`/groups/${notification.data.group_id}/polls/${notification.data.poll_id}`);
+			case 'poll_vote_update':
+				await goto(
+					`/groups/${notification.data.group_id}/polls/${notification.data.poll_id}`
+				);
 				return;
 			case 'poll_comment':
 				await goto(
@@ -78,7 +87,9 @@
 				);
 				return;
 			case 'thread':
-				await goto(`/groups/${notification.data.group_id}/thread/${notification.data.thread_id}`);
+				await goto(
+					`/groups/${notification.data.group_id}/thread/${notification.data.thread_id}`
+				);
 				return;
 			case 'thread_comment':
 				// TODO: Fix scuffed solution with channel_data by changing data in backend probably group models.py
@@ -118,7 +129,8 @@
 >
 	<Fa icon={faBell} color={$darkModeStore ? 'white' : 'black'} size={'1.3x'} />
 	<div
-		class:hidden={!notifications || notifications?.filter((n) => !n.read)?.length === 0}
+		class:hidden={!notifications ||
+			notifications?.filter((n) => !n.read)?.length === 0}
 		class="w-[2em] h-[2em] flex items-center justify-center rounded-full absolute -top-1.5 -right-1.5 text-[10px] text-white bg-secondary"
 	>
 		<span>{Math.min(99, notifications?.filter((n) => !n.read)?.length)}</span>
@@ -153,7 +165,9 @@
 					>
 						<div class="break-words pr-8 text-left pl-4 py-2">
 							<div>{$_(notification.message)}</div>
-							<div class="text-sm">{timeAgo.format(new Date(notification.timestamp))}</div>
+							<div class="text-sm">
+								{timeAgo.format(new Date(notification.timestamp))}
+							</div>
 						</div>
 					</button>
 					<button
@@ -175,7 +189,9 @@
 				</li>
 			{/each}
 		{:else}
-			<div class="pt-3 pb-3 pr-10 pl-6 border-b border-gray-200 border cursor-default">
+			<div
+				class="pt-3 pb-3 pr-10 pl-6 border-b border-gray-200 border cursor-default"
+			>
 				{$_('No notifications')}
 			</div>
 		{/if}

@@ -9,12 +9,18 @@
 	import multiMonthPlugin from '@fullcalendar/multimonth';
 	import interactionPlugin from '@fullcalendar/interaction';
 	import Modal from '$lib/Generic/Modal.svelte';
-	import { ScheduleItem2Default, type Schedule, type ScheduleItem2 } from '$lib/Schedule/interface';
+	import {
+		ScheduleItem2Default,
+		type Schedule,
+		type ScheduleItem2
+	} from '$lib/Schedule/interface';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import TextArea from '$lib/Generic/TextArea.svelte';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
+	import Select from '$lib/Generic/Select.svelte';
+	import { groupStore, workgroupStore } from '$lib/Group/Kanban/Kanban';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
@@ -23,7 +29,7 @@
 		groupId: null | number = $state(null),
 		groupIds: number[] = $state([]),
 		workgroupIds: number[] = $state([]),
-		userChecked = $state(false);
+		userChecked = $state(true);
 
 	const scheduleEventList = async () => {
 		let schedules: Schedule[] = [];
@@ -65,54 +71,124 @@
 		{
 			let api = `schedule/event/list?limit=50&schedule_ids=0,${schedules.map((s) => s.id).join(',')}`;
 			const { res, json } = await fetchRequest('GET', api);
+
 			events = json.results ?? [];
+			events = events.map((e) =>
+				e.schedule_origin_name === 'workgroup'
+					? {
+							...e,
+							workgroup_id: e.schedule_origin_id
+						}
+					: e
+			);
+
+			events = events.map((e) => ({
+				...e,
+				start_date: e.start_date.slice(0, 16),
+				end_date: e.end_date?.slice(0, 16) ?? null
+			}));
 		}
+	};
+
+	const getAPI = (type = '') => {
+		// 0 Is currently stand in for user, TODO: Change this so it's not scuffed
+		let api = '';
+		if (
+			selectedEvent.schedule_id === 0 ||
+			selectedEvent.schedule_origin_name === 'user'
+		)
+			api += `user/schedule/event/${type}`;
+		else if (selectedEvent.workgroup_id === 0 || !selectedEvent.workgroup_id)
+			api += `group/${selectedEvent.schedule_origin_id}/schedule/event/${type}`;
+		else
+			api += `group/workgroup/${selectedEvent.workgroup_id}/schedule/event/${type}`;
+
+		return api;
 	};
 
 	const scheduleEventCreate = async () => {
-		let api =
-			groupIds.length > 0
-				? `group/${groupIds[0]}/schedule/event/create`
-				: `user/schedule/event/create`;
+		let api = getAPI('create');
 
-		const { res, json } = await fetchRequest('POST', api, selectedEvent);
+		const { res, json } = await fetchRequest('POST', api, {
+			title: selectedEvent.title,
+			description: selectedEvent.description,
+			start_date: selectedEvent.start_date,
+			end_date: selectedEvent.end_date,
+			repeat_frequency: selectedEvent.repeat_frequency,
+			meeting_link: selectedEvent.meeting_link
+		});
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to create event', success: false });
+			if (res.status === 403) {
+				ErrorHandlerStore.set({
+					message: 'You do not have permission to create events for this group',
+					success: false
+				});
+				return;
+			}
+
+			ErrorHandlerStore.set({
+				message: 'Failed to create event',
+				success: false
+			});
 			return;
 		}
-		ErrorHandlerStore.set({ message: 'Successfully created event', success: true });
+
+		ErrorHandlerStore.set({
+			message: 'Successfully created event',
+			success: true
+		});
 	};
 
-	const userScheduleEventEdit = async () => {
-		let api = groupId ? `group/${groupId}/schedule/event/update` : `user/schedule/event/update`;
+	const scheduleEventUpdate = async () => {
+		let api = getAPI('update');
+
 		const { res, json } = await fetchRequest('POST', api, {
 			...selectedEvent,
 			event_id: selectedEvent.id
 		});
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to edit event', success: false });
+			ErrorHandlerStore.set({
+				message: 'Failed to edit event',
+				success: false
+			});
 			return;
 		}
 
-		ErrorHandlerStore.set({ message: 'Successfully edited event', success: true });
+		ErrorHandlerStore.set({
+			message: 'Successfully edited event',
+			success: true
+		});
+
+		// Scuffed solution to solve dates going on the wrong places when clicking and dragging
+		// TODO: Find a better solution
+		// scheduleEventList();
 	};
 
-	const userScheduleEventDelete = async (event_id: number) => {
-		let api = groupId ? `group/${groupId}/schedule/event/delete` : `user/schedule/event/delete`;
+	const ScheduleEventDelete = async (event_id: number) => {
+		let api = getAPI('delete');
 
 		const { res, json } = await fetchRequest('POST', api, {
 			event_id
 		});
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to delete event', success: false });
+			ErrorHandlerStore.set({
+				message: 'Failed to delete event',
+				success: false
+			});
 			return;
 		}
 
+		ErrorHandlerStore.set({
+			message: 'Successfully deleted event',
+			success: true
+		});
+
 		events = events.filter((e) => e.id !== event_id);
 		open = false;
+		return;
 	};
 
 	// Read documentation for this calendar module: https://fullcalendar.io/
@@ -120,14 +196,24 @@
 		let calendarEl = document.getElementById('calendar-2');
 		if (!calendarEl) return;
 		let calendar = new Calendar(calendarEl, {
-			plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin, multiMonthPlugin],
+			plugins: [
+				dayGridPlugin,
+				interactionPlugin,
+				timeGridPlugin,
+				listPlugin,
+				multiMonthPlugin
+			],
 			initialView: 'dayGridMonth',
-			//TODO: Rework the calculation so these calculations don't need to be rerun at header changes
+			// TODO: Rework the calculation so these calculations don't need to be rerun at header changes
 			height: 'calc(100vh - 2rem - 40px - 28px)',
 			headerToolbar: {
 				left: 'prev,next today',
 				center: 'title, addEventButton',
-				right: 'dayGridMonth, timeGridDay, listWeek, multiMonthYear, dayGridYear, timeGridWeek'
+				right:
+					'dayGridMonth, timeGridDay, listWeek, multiMonthYear, dayGridYear, timeGridWeek'
+			},
+			windowResize: () => {
+				renderCalendar();
 			},
 
 			selectable: true,
@@ -135,12 +221,12 @@
 			select: (selectionInfo) => {
 				open = true;
 				selectedEvent = ScheduleItem2Default;
-				selectedEvent.start_date = selectionInfo.start.toISOString().slice(0, 16);
+				selectedEvent.start_date = selectionInfo.start
+					.toISOString()
+					.slice(0, 16);
 				selectedEvent.end_date = selectionInfo.end.toISOString().slice(0, 16);
 			},
-			dateClick: (clickInfo) => {
-				console.log(clickInfo);
-			},
+
 			customButtons: {
 				addEventButton: {
 					text: '+',
@@ -149,6 +235,7 @@
 					}
 				}
 			},
+
 			// @ts-ignore
 			events: events.map((e) => ({
 				...e,
@@ -158,26 +245,32 @@
 			})),
 			eventClick: (info) => {
 				open = true;
-				selectedEvent = ScheduleItem2Default;
-				let _selectedEvent = events.find((e) => e.id.toString() === info.event.id);
-				if (_selectedEvent) selectedEvent = _selectedEvent;
-				selectedEvent.start_date = info.event.start?.toLocaleString().slice(0, 16) ?? '';
-				selectedEvent.end_date = info.event.end?.toLocaleString().slice(0, 16) ?? '';
+				selectedEvent =
+					events.find((e) => e.id.toString() === info.event.id) ??
+					selectedEvent;
 			},
 			eventDrop: (info) => {
-				selectedEvent.title = info.event.title;
-				selectedEvent.id = Number(info.event.id);
-				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
-				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
-				userScheduleEventEdit();
+				selectedEvent =
+					events.find((e) => e.id.toString() === info.event.id) ??
+					selectedEvent;
+
+				selectedEvent.start_date =
+					info.event.start?.toISOString().slice(0, 16) ?? '';
+				selectedEvent.end_date =
+					info.event.end?.toISOString().slice(0, 16) ?? '';
+
+				scheduleEventUpdate();
 			},
 			eventResize: (info) => {
 				selectedEvent.title = info.event.title;
 				selectedEvent.id = Number(info.event.id);
-				selectedEvent.start_date = info.event.start?.toISOString().slice(0, 16) ?? '';
-				selectedEvent.end_date = info.event.end?.toISOString().slice(0, 16) ?? '';
-				userScheduleEventEdit();
+				selectedEvent.start_date =
+					info.event.start?.toISOString().slice(0, 16) ?? '';
+				selectedEvent.end_date =
+					info.event.end?.toISOString().slice(0, 16) ?? '';
+				scheduleEventUpdate();
 			},
+
 			dayMaxEventRows: 3,
 			eventInteractive: true,
 			eventClassNames: 'cursor-pointer',
@@ -189,8 +282,10 @@
 		calendar.render();
 	};
 
-	onMount(async () => {
-		groupId = Number(new URLSearchParams(document.location.search).get('groupId')) ?? null;
+	onMount(() => {
+		groupId =
+			Number(new URLSearchParams(document.location.search).get('groupId')) ??
+			null;
 		if (groupId) groupIds.push(groupId);
 
 		scheduleEventList();
@@ -211,13 +306,16 @@
 	<div class="w-full bg-white dark:bg-darkbackground" id="calendar-2"></div>
 </div>
 
+<!-- Modal for displaying and editing schedule events -->
 <Modal
 	bind:open
 	buttons={[
 		{
 			label: 'Submit',
 			onClick: async () => {
-				selectedEvent.id === 0 ? await scheduleEventCreate() : await userScheduleEventEdit();
+				selectedEvent.schedule_id === 0
+					? await scheduleEventCreate()
+					: await scheduleEventUpdate();
 				scheduleEventList();
 				selectedEvent = ScheduleItem2Default;
 				open = false;
@@ -227,7 +325,7 @@
 		},
 		{
 			label: 'Delete',
-			onClick: () => userScheduleEventDelete(selectedEvent.id),
+			onClick: () => ScheduleEventDelete(selectedEvent.id),
 			type: 'warning',
 			class: selectedEvent.id ? 'visible' : 'invisible'
 		}
@@ -238,12 +336,63 @@
 	stopAtPropagation={false}
 >
 	<div slot="body">
-		<form>
+		<div role="form">
 			<TextInput label="Title" bind:value={selectedEvent.title} />
 			<TextArea label="Description" bind:value={selectedEvent.description} />
+			{selectedEvent.start_date}
 			<input type="datetime-local" bind:value={selectedEvent.start_date} />
 			<input type="datetime-local" bind:value={selectedEvent.end_date} />
 			<input type="number" bind:value={selectedEvent.repeat_frequency} />
+
+			<!-- Select Groups -->
+			<Select
+				disableFirstChoice
+				labels={[
+					'user',
+					...$groupStore.filter((g) => g.joined).map((g) => g.name)
+				]}
+				values={[0, ...$groupStore.filter((g) => g.joined).map((g) => g.id)]}
+				bind:value={selectedEvent.origin_id}
+				label="Group"
+			/>
+
+			<!-- Select Workgroups -->
+			<Select
+				disableFirstChoice
+				labels={[
+					'none',
+					...$workgroupStore
+						.filter(
+							(w) =>
+								w.joined &&
+								$groupStore.find(
+									(g) =>
+										g.id === selectedEvent.origin_id &&
+										g.joined &&
+										g.id === w.group_id
+								)
+						)
+						.map((w) => w.name)
+				]}
+				values={[
+					0,
+					...$workgroupStore
+						.filter(
+							(w) =>
+								w.joined &&
+								$groupStore.find(
+									(g) =>
+										g.id === selectedEvent.origin_id &&
+										g.joined &&
+										g.id === w.group_id
+								)
+						)
+						.map((w) => w.id)
+				]}
+				bind:value={selectedEvent.workgroup_id}
+				label="Group"
+			/>
+
 			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />
 			<TextInput label="Tag" bind:value={selectedEvent.tag_name} />
 			{selectedEvent.id}
@@ -254,6 +403,6 @@
 				labels={['subsc']}
 				categories={['subsc']}
 			/>
-		</form>
+		</div>
 	</div>
 </Modal>
