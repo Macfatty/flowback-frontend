@@ -68,7 +68,7 @@
 
 	onMount(async () => {
 		await getGroups();
-		// await getWorkgroups();
+		await getWorkgroups();
 	});
 </script>
 

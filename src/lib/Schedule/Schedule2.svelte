@@ -20,7 +20,7 @@
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 	import Select from '$lib/Generic/Select.svelte';
-	import { groupStore } from '$lib/Group/Kanban/Kanban';
+	import { groupStore, workgroupStore } from '$lib/Group/Kanban/Kanban';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
@@ -29,7 +29,8 @@
 		groupId: null | number = $state(null),
 		groupIds: number[] = $state([]),
 		workgroupIds: number[] = $state([]),
-		userChecked = $state(true);
+		userChecked = $state(true),
+		workgroupId = $state(0);
 
 	const scheduleEventList = async () => {
 		let schedules: Schedule[] = [];
@@ -76,11 +77,14 @@
 	};
 
 	const scheduleEventCreate = async () => {
-		let api =
-			// 0 Is currently stand in for user, TODO: Change this so it's not scuffed
-			selectedEvent.origin_id !== 0
-				? `group/${selectedEvent.origin_id}/schedule/event/create`
-				: `user/schedule/event/create`;
+		let api = '';
+		// 0 Is currently stand in for user, TODO: Change this so it's not scuffed
+		//
+
+		if (selectedEvent.origin_id === 0) api += `user/schedule/event/create`;
+		else if (workgroupId === 0)
+			api += `group/${selectedEvent.origin_id}/schedule/event/create`;
+		else api += `group/workgroup/${workgroupId}/schedule/event/create`;
 
 		const { res, json } = await fetchRequest('POST', api, selectedEvent);
 
@@ -214,6 +218,7 @@
 				// selectedEvent.end_date =
 				// 	info.event.end?.toLocaleString().slice(0, 16) ?? '';
 			},
+
 			eventDrop: (info) => {
 				selectedEvent.title = info.event.title;
 				selectedEvent.id = Number(info.event.id);
@@ -266,6 +271,8 @@
 <div class="flex justify-center w-full">
 	<div class="w-full bg-white dark:bg-darkbackground" id="calendar-2"></div>
 </div>
+
+<!-- Modal for displaying and editing schedule events -->
 <Modal
 	bind:open
 	buttons={[
@@ -302,13 +309,52 @@
 			<input type="datetime-local" bind:value={selectedEvent.end_date} />
 			<input type="number" bind:value={selectedEvent.repeat_frequency} />
 
+			<!-- Select Groups -->
 			<Select
+				disableFirstChoice
 				labels={[
 					'user',
 					...$groupStore.filter((g) => g.joined).map((g) => g.name)
 				]}
 				values={[0, ...$groupStore.filter((g) => g.joined).map((g) => g.id)]}
 				bind:value={selectedEvent.origin_id}
+				label="Group"
+			/>
+
+			<!-- Select Workgroups -->
+			<Select
+				disableFirstChoice
+				labels={[
+					'none',
+					...$workgroupStore
+						.filter(
+							(w) =>
+								w.joined &&
+								$groupStore.find(
+									(g) =>
+										g.id === selectedEvent.origin_id &&
+										g.joined &&
+										g.id === w.group_id
+								)
+						)
+						.map((w) => w.name)
+				]}
+				values={[
+					0,
+					...$workgroupStore
+						.filter(
+							(w) =>
+								w.joined &&
+								$groupStore.find(
+									(g) =>
+										g.id === selectedEvent.origin_id &&
+										g.joined &&
+										g.id === w.group_id
+								)
+						)
+						.map((w) => w.id)
+				]}
+				bind:value={workgroupId}
 				label="Group"
 			/>
 
