@@ -35,3 +35,5 @@ services:
             - ./svelte.config.js:/home/node/app/svelte.config.js
             - ./:/app
             - /app/node_modules
+
+# TODO: Have a production setting (either in Dockerfile or in docker-compose, set in .env)

@@ -236,13 +236,42 @@
 				}
 			},
 
-			// @ts-ignore
-			events: events.map((e) => ({
-				...e,
-				start: e.start_date,
-				end: e.end_date,
-				allDay: true
-			})),
+			//@ts-ignore
+			events: (() => {
+				let _events = [];
+
+				events.forEach((event) => {
+					if (event.repeat_frequency === 1) {
+						for (let i = 1; i < 42; i++) {
+							_events.push({
+								...event,
+								start: new Date(
+									new Date(event.start_date).setDate(
+										new Date(event.start_date).getDate() + i
+									)
+								),
+								end: new Date(
+									new Date(event.end_date ?? event.start_date).setDate(
+										new Date(event.end_date ?? event.start_date).getDate() + i
+									)
+								),
+								allDay: true
+							});
+						}
+					}
+				});
+
+				_events.push(
+					events.map((event) => ({
+						...event,
+						start: event.start_date,
+						end: event.end_date,
+						allDay: true
+					}))
+				);
+
+				return _events;
+			})(),
 			eventClick: (info) => {
 				open = true;
 				selectedEvent =
