@@ -84,7 +84,6 @@
 	};
 
 	const getAPI = (type = '') => {
-		console.log(selectedEvent, 'EFVENT');
 		// 0 Is currently stand in for user, TODO: Change this so it's not scuffed
 		let api = '';
 		if (
@@ -175,9 +174,10 @@
 			message: 'Successfully deleted event',
 			success: true
 		});
-		return;
+
 		events = events.filter((e) => e.id !== event_id);
 		open = false;
+		return;
 	};
 
 	// Read documentation for this calendar module: https://fullcalendar.io/
