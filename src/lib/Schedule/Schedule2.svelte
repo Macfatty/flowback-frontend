@@ -258,6 +258,24 @@
 								allDay: true
 							});
 						}
+					} else if (event.repeat_frequency === 2) {
+						for (let i = 1; i < 6; i++) {
+							_events.push({
+								...event,
+								start: new Date(
+									new Date(event.start_date).setDate(
+										new Date(event.start_date).getDate() + i * 7
+									)
+								),
+								end: new Date(
+									new Date(event.end_date ?? event.start_date).setDate(
+										new Date(event.end_date ?? event.start_date).getDate() +
+											i * 7
+									)
+								),
+								allDay: true
+							});
+						}
 					}
 				});
 
