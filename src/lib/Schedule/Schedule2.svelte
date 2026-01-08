@@ -202,15 +202,15 @@
 			})),
 			eventClick: (info) => {
 				open = true;
-				selectedEvent = ScheduleItem2Default;
-				let _selectedEvent = events.find(
-					(e) => e.id.toString() === info.event.id
-				);
-				if (_selectedEvent) selectedEvent = _selectedEvent;
-				selectedEvent.start_date =
-					info.event.start?.toLocaleString().slice(0, 16) ?? '';
-				selectedEvent.end_date =
-					info.event.end?.toLocaleString().slice(0, 16) ?? '';
+				// selectedEvent = ScheduleItem2Default;
+				// let _selectedEvent = events.find(
+				// 	(e) => e.id.toString() === info.event.id
+				// );
+				// if (_selectedEvent) selectedEvent = _selectedEvent;
+				// selectedEvent.start_date =
+				// 	info.event.start?.toLocaleString().slice(0, 16) ?? '';
+				// selectedEvent.end_date =
+				// 	info.event.end?.toLocaleString().slice(0, 16) ?? '';
 			},
 			eventDrop: (info) => {
 				selectedEvent.title = info.event.title;
