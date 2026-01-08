@@ -84,11 +84,16 @@
 	};
 
 	const getAPI = (type = '') => {
+		console.log(selectedEvent, 'EFVENT');
 		// 0 Is currently stand in for user, TODO: Change this so it's not scuffed
 		let api = '';
-		if (selectedEvent.origin_id === 0) api += `user/schedule/event/${type}`;
-		else if (selectedEvent.workgroup_id === 0)
-			api += `group/${selectedEvent.origin_id}/schedule/event/${type}`;
+		if (
+			selectedEvent.schedule_id === 0 ||
+			selectedEvent.schedule_origin_name === 'user'
+		)
+			api += `user/schedule/event/${type}`;
+		else if (selectedEvent.workgroup_id === 0 || !selectedEvent.workgroup_id)
+			api += `group/${selectedEvent.schedule_origin_id}/schedule/event/${type}`;
 		else
 			api += `group/workgroup/${selectedEvent.workgroup_id}/schedule/event/${type}`;
 
@@ -166,6 +171,11 @@
 			return;
 		}
 
+		ErrorHandlerStore.set({
+			message: 'Successfully deleted event',
+			success: true
+		});
+		return;
 		events = events.filter((e) => e.id !== event_id);
 		open = false;
 	};
@@ -224,14 +234,9 @@
 			})),
 			eventClick: (info) => {
 				open = true;
-				let _selectedEvent = events.find(
-					(e) => e.id.toString() === info.event.id
-				);
-				if (_selectedEvent) selectedEvent = _selectedEvent;
-				selectedEvent.start_date =
-					info.event.start?.toLocaleString().slice(0, 16) ?? '';
-				selectedEvent.end_date =
-					info.event.end?.toLocaleString().slice(0, 16) ?? '';
+				selectedEvent =
+					events.find((e) => e.id.toString() === info.event.id) ??
+					selectedEvent;
 			},
 			eventDrop: (info) => {
 				selectedEvent =
