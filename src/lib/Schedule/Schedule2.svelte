@@ -171,7 +171,9 @@
 				right:
 					'dayGridMonth, timeGridDay, listWeek, multiMonthYear, dayGridYear, timeGridWeek'
 			},
-
+			windowResize: () => {
+				renderCalendar();
+			},
 			selectable: true,
 			// selectMirror: true,
 			select: (selectionInfo) => {
