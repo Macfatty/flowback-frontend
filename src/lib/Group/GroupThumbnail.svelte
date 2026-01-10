@@ -15,9 +15,9 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { idfy } from '$lib/Generic/GenericFunctions2';
 
-	export let group: Group;
+	let { group }: { group: Group } = $props();
 
-	let areYouSureModal = false;
+	let areYouSureModal = $state(false);
 
 	const goToGroup = (e: event) => {
 		if (e.target.id === 'group-join-button') return; // Prevent navigation when clicking the join button
@@ -78,27 +78,27 @@
 	class={`w-4/6 md:w-2/5 max-w-[650px] bg-white relative shadow-md dark:bg-darkobject dark:text-darkmodeText text-center ${
 		group.joined && 'cursor-pointer hover:shadow-xl vote-thumbnail'
 	} transition-shadow rounded-2xl`}
-	on:click={goToGroup}
+	onclick={goToGroup}
 >
 	{#if group.joined}
 		<img
 			src={`${env.PUBLIC_API_URL}${group.cover_image}`}
 			class="cover rounded-t-2xl w-full"
 			alt="cover"
-			on:error={(e) => onThumbnailError(e, DefaultBanner)}
+			onerror={(e) => onThumbnailError(e, DefaultBanner)}
 		/>
 	{:else}
 		<img
 			src={`${env.PUBLIC_API_URL}${group.cover_image}`}
 			class="cover rounded-t-2xl w-full"
 			alt="cover"
-			on:error={(e) => onThumbnailError(e, DefaultBanner)}
+			onerror={(e) => onThumbnailError(e, DefaultBanner)}
 		/>
 	{/if}
 	<img
 		src={`${env.PUBLIC_API_URL}${group.image}`}
 		class="bg-white rounded-full w-[100px] h-[100px] absolute left-1/2 -translate-x-1/2 -translate-y-1/2"
-		on:error={(e) => onThumbnailError(e, DefaultBanner)}
+		onerror={(e) => onThumbnailError(e, DefaultBanner)}
 		alt="profile"
 	/>
 
@@ -119,7 +119,8 @@
 			<Button
 				disabled={group.pending_join}
 				Class="hover:bg-blue-800 bg-blue-600"
-				onClick={() => {
+				onClick={(e) => {
+					e.stopPropagation();
 					if (group.joined) {
 						areYouSureModal = true;
 					} else {
