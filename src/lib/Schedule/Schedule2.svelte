@@ -241,6 +241,7 @@
 				let _events = [];
 
 				events.forEach((event) => {
+					// Daily Frequency
 					if (event.repeat_frequency === 1) {
 						for (let i = 1; i < 42; i++) {
 							let date = new Date(
@@ -248,6 +249,7 @@
 									new Date(event.start_date).getDate() + i
 								)
 							);
+
 							_events.push({
 								...event,
 								start: date,
@@ -255,6 +257,8 @@
 								allDay: true
 							});
 						}
+
+						// Weekly Frequency
 					} else if (event.repeat_frequency === 2) {
 						for (let i = 0; i < 6; i++) {
 							let date = new Date(

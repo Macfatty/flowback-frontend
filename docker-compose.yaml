@@ -20,7 +20,7 @@ services:
                   target: /usr/src/app
                   action: rebuild
 
-        # TODO:;
+          # TODO:: Fix healthcheck
         # healthcheck:
         #     test: ['CMD', 'curl', '-f', 'http://localhost:${PORT:-3000}/']
         #     interval: 4s

@@ -30,7 +30,9 @@
 	};
 
 	const joinGroup = async (directJoin: boolean) => {
-		const { res } = await fetchRequest('POST', `group/${group.id}/join`, { to: group.id });
+		const { res } = await fetchRequest('POST', `group/${group.id}/join`, {
+			to: group.id
+		});
 
 		if (!res.ok) {
 			ErrorHandlerStore.set({
@@ -45,7 +47,8 @@
 			ErrorHandlerStore.set({ message: 'Pending invite', success: true });
 		} else group.joined = !group.joined;
 
-		if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') becomeMemberOfGroup(group.blockchain_id);
+		if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE')
+			becomeMemberOfGroup(group.blockchain_id);
 	};
 
 	const leaveGroup = async () => {
@@ -53,13 +56,17 @@
 
 		if (!res.ok) {
 			ErrorHandlerStore.set({
-				message: json.detail[0] || json.detail || 'An error occurred while leaving the group',
+				message:
+					json.detail[0] ||
+					json.detail ||
+					'An error occurred while leaving the group',
 				success: false
 			});
 			return;
 		}
 
-		if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE') removeGroupMembership(group.id);
+		if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE')
+			removeGroupMembership(group.id);
 		areYouSureModal = false;
 		group.joined = false;
 		group.pending_join = false;
@@ -95,14 +102,14 @@
 		alt="profile"
 	/>
 
-	<div on:click={goToGroup}>
-		<h1 class="text-2xl p-4 mt-10 text-center break-words">
-			{group.name}
-		</h1>
-	</div>
+	<h1 class="text-2xl p-4 mt-10 text-center break-words">
+		{group.name}
+	</h1>
 
 	{#if group.description.length > 0}
-		<div class="my-2 mx-auto w-[85%] min-w-72 grid-area-description break-words">
+		<div
+			class="my-2 mx-auto w-[85%] min-w-72 grid-area-description break-words"
+		>
 			<p class="line-clamp-2">{group.description}</p>
 		</div>
 	{/if}
@@ -121,7 +128,9 @@
 				}}
 				id={`join-${idfy(group.name)}`}
 			>
-				{$_(group.joined ? 'Leave' : group.direct_join ? 'Join' : 'Ask to join')}
+				{$_(
+					group.joined ? 'Leave' : group.direct_join ? 'Join' : 'Ask to join'
+				)}
 			</Button>
 		{:else}
 			{$_('Request sent')}
