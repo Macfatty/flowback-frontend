@@ -51,8 +51,10 @@
 		// Fetches all workgroups concurrently and makes sure all events are in one neat array
 		workgroups = (await Promise.all(workgroupsPromise))
 			.map(({ res, json }) => {
-				if (!res.ok) hasError = true;
-				return json.results;
+				if (!res.ok) {
+					hasError = true;
+					return [];
+				} else return json.results;
 			})
 			.flat(1);
 
@@ -63,13 +65,15 @@
 				success: false
 			});
 
-		workgroupStore.set(workgroups);
+		$workgroupStore = workgroups;
 	};
 
 	onMount(async () => {
 		await getGroups();
 		await getWorkgroups();
 	});
+
+	$inspect(workgroups);
 </script>
 
 <Modal bind:open={openFilter}>
@@ -90,7 +94,7 @@
 			/>
 			{group.name} <br />
 
-			{#each workgroups.filter((wg) => wg.group_id === group.id) as workgroup}
+			{#each workgroups as workgroup}
 				<input
 					type="checkbox"
 					onchange={() => {
