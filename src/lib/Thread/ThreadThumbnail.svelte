@@ -4,7 +4,11 @@
 	import { page } from '$app/state';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import Fa from 'svelte-fa';
-	import { faThumbTack, faGlobe, faLock } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faThumbTack,
+		faGlobe,
+		faLock
+	} from '@fortawesome/free-solid-svg-icons';
 	import { _ } from 'svelte-i18n';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { groupUserStore, type Thread } from '$lib/Group/interface';
@@ -17,6 +21,9 @@
 	import ThreadVoting from './ThreadVoting.svelte';
 	import { goto } from '$app/navigation';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import DefaultBanner from '$lib/assets/default_banner_group.png';
+	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
+	import { env } from '$env/dynamic/public';
 
 	export let thread: Thread;
 	let threads: Thread[] = [],
@@ -27,9 +34,13 @@
 
 	//When adminn presses the pin tack symbol, pin the thread
 	const pinThread = async (thread: Thread) => {
-		const { json, res } = await fetchRequest('POST', `group/thread/${thread?.id}/update`, {
-			pinned: !thread?.pinned
-		});
+		const { json, res } = await fetchRequest(
+			'POST',
+			`group/thread/${thread?.id}/update`,
+			{
+				pinned: !thread?.pinned
+			}
+		);
 		if (!res.ok) return;
 
 		thread.pinned = !thread?.pinned;
@@ -46,23 +57,86 @@
 	class:poll-thumbnail-shadow={!darkMode}
 >
 	<div class="flex justify-between items-center">
-		{#if !page.params.groupId}
-			<a href={`/groups/${thread?.group_id}`} class="text-black flex items-center">
-				<!-- <img
-					class="h-6 w-6 mr-1 rounded-full break-word"
-					src={`${
-						thread?.group_image ? `${env.PUBLIC_API_URL}${thread?.group_image}` : DefaultBanner
-					}`}
-					alt={'thread Thumbnail'}
-					on:error={(e) => onThumbnailError(e, DefaultBanner)}
-				/> -->
-				<span class="break-word text-sm text-gray-700">{thread?.group_name}</span>
-			</a>
-		{:else if thread?.created_by?.user}
-			<div class="text-black flex items-center">
-				<!-- TODO: add "if group doesn't hide displaying creators" condition -->
+		<div class="flex w-full justify-between">
+			<!-- Thread Title. It is a button since this allows users to enter the Thread -->
+			<button
+				class="break-words cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
+				onclick={() => {
+					if (thread.group_joined)
+						goto(
+							`/groups/${thread?.group_id}/thread/${thread?.id}?source=${
+								page.params.groupId ? 'group' : 'home'
+							}`
+						);
+					else
+						ErrorHandlerStore.set({
+							message: 'You must join the group to access the thread',
+							success: false
+						});
+				}}>{thread?.title}</button
+			>
+			{#if thread?.group_joined}
+				<!-- Notification Options -->
+				<div class="inline-flex gap-4 items-baseline">
+					<NotificationOptions
+						type="thread"
+						api={`group/thread/${thread?.id}`}
+						categories={['comment']}
+						id={thread?.id}
+						labels={['comment']}
+					/>
 
-				<!-- <img
+					<!-- Pin thread button for admins -->
+					{#if $groupUserStore?.is_admin || thread?.pinned}
+						<button
+							class:cursor-pointer={$groupUserStore?.is_admin}
+							onclick={() => pinThread(thread)}
+						>
+							<Fa
+								size="1.2x"
+								icon={faThumbTack}
+								color={thread?.pinned ? '#999' : '#CCC'}
+								rotate={thread?.pinned ? '0' : '45'}
+							/>
+						</button>
+					{/if}
+
+					<MultipleChoices
+						bind:choicesOpen
+						labels={[$_('Delete Thread'), $_('Report Thread')]}
+						functions={[
+							() => (deleteModalShow = true),
+							() => ((reportModalShow = true), (choicesOpen = false))
+						]}
+						Class="text-black justify-self-center"
+					/>
+				</div>
+			{/if}
+		</div>
+	</div>
+
+	{#if !page.params.groupId}
+		<a
+			href={`/groups/${thread?.group_id}`}
+			class="text-black flex items-center"
+		>
+			<img
+				class="h-6 w-6 mr-1 rounded-full break-word"
+				src={`${
+					thread?.group_image
+						? `${env.PUBLIC_API_URL}${thread?.group_image}`
+						: DefaultBanner
+				}`}
+				alt={'thread Thumbnail'}
+				onerror={(e) => onThumbnailError(e, DefaultBanner)}
+			/>
+			<span class="break-word text-sm text-gray-700">{thread?.group_name}</span>
+		</a>
+	{:else if thread?.created_by?.user}
+		<div class="text-black flex items-center">
+			<!-- TODO: add "if group doesn't hide displaying creators" condition -->
+
+			<!-- <img
 					class="h-6 w-6 mr-1 rounded-full break-word"
 					src={`${
 						thread?.created_by?.user?.profile_image
@@ -72,89 +146,48 @@
 					alt={'thread Thumbnail'}
 					on:error={(e) => onThumbnailError(e, DefaultPFP)}
 				/> -->
-				<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
-					>{thread?.created_by?.user?.username}</span
-				>
-			</div>
-		{/if}
-
-<div class="flex w-full justify-between">
-    <!-- Thread Title. It is a button since this allows users to enter the Thread -->
-	<button
-		class="break-words cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
-		onclick={() => {
-			if (thread.group_joined)
-				goto(
-					`/groups/${thread?.group_id}/thread/${thread?.id}?source=${
-						page.params.groupId ? 'group' : 'home'
-					}`
-				);
-			else
-				ErrorHandlerStore.set({
-					message: 'You must join the group to access the thread',
-					success: false
-				});
-		}}>{thread?.title}</button
-	>
-		{#if thread?.group_joined}
-      <!-- Notification Options -->
-			<div class="inline-flex gap-4 items-baseline">
-				<NotificationOptions
-					type="thread"
-					api={`group/thread/${thread?.id}`}
-					categories={['comment']}
-					id={thread?.id}
-					labels={['comment']}
-				/>
-
-          <!-- Pin thread button for admins -->
-				{#if $groupUserStore?.is_admin || thread?.pinned}
-					<button
-						class:cursor-pointer={$groupUserStore?.is_admin}
-						onclick={() => pinThread(thread)}
-					>
-						<Fa
-							size="1.2x"
-							icon={faThumbTack}
-							color={thread?.pinned ? '#999' : '#CCC'}
-							rotate={thread?.pinned ? '0' : '45'}
-						/>
-					</button>
-				{/if}
-
-				<MultipleChoices
-					bind:choicesOpen
-					labels={[$_('Delete Thread'), $_('Report Thread')]}
-					functions={[
-						() => (deleteModalShow = true),
-						() => ((reportModalShow = true), (choicesOpen = false))
-					]}
-					Class="text-black justify-self-center"
-				/>
-			</div>
-		{/if}
-	</div>
-</div>
+			<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
+				>{thread?.created_by?.user?.username}</span
+			>
+		</div>
+	{/if}
 
 	<div>
 		{#if thread?.work_group}
-			<span class="text-sm text-gray-500 dark:text-darkmodeText">#{thread.work_group.name}, </span>
+			<span class="text-sm text-gray-500 dark:text-darkmodeText"
+				>#{thread.work_group.name},
+			</span>
 		{/if}
 		{#if thread?.created_at}
 			<span class="text-sm text-gray-500 dark:text-darkmodeText">
-				{new Date(thread.created_at).toISOString().split('T')[0].replace(/-/g, '.')}
+				{new Date(thread.created_at)
+					.toISOString()
+					.split('T')[0]
+					.replace(/-/g, '.')}
 			</span>
 		{/if}
 	</div>
 
 	{#if thread?.public}
-		<HeaderIcon Class="!p-0 !cursor-default" icon={faGlobe} text={'Public Poll'} />
+		<HeaderIcon
+			Class="!p-0 !cursor-default"
+			icon={faGlobe}
+			text={'Public Poll'}
+		/>
 	{:else}
-		<HeaderIcon Class="!p-0 !cursor-default" icon={faLock} text={'Private Poll'} />
+		<HeaderIcon
+			Class="!p-0 !cursor-default"
+			icon={faLock}
+			text={'Private Poll'}
+		/>
 	{/if}
 
 	{#if thread?.description}
-		<NewDescription limit={2} lengthLimit={700} description={thread?.description} />
+		<NewDescription
+			limit={2}
+			lengthLimit={700}
+			description={thread?.description}
+		/>
 	{/if}
 
 	<hr class="my-3" />
