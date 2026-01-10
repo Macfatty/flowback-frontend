@@ -15,7 +15,7 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { idfy } from '$lib/Generic/GenericFunctions2';
 
-	let { group }: { group: Group } = $props();
+	let { group = $bindable() }: { group: Group } = $props();
 
 	let areYouSureModal = $state(false);
 
@@ -120,7 +120,9 @@
 				disabled={group.pending_join}
 				Class="hover:bg-blue-800 bg-blue-600"
 				onClick={(e) => {
+					// Prevents the button click from triggering the goToGroup function
 					e.stopPropagation();
+
 					if (group.joined) {
 						areYouSureModal = true;
 					} else {
