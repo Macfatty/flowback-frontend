@@ -31,7 +31,7 @@
 		// loading = true;
 		const { res, json } = await fetchRequest(
 			'GET',
-			`group/list?limit=50&${urlFilter}`
+			`group/list?limit=50&${urlFilter}&joined=true`
 		);
 		// loading = false;
 
