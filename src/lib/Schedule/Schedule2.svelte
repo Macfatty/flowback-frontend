@@ -271,7 +271,13 @@
 								allDay: true
 							});
 						}
-					}
+					} else
+						_events.push({
+							...event,
+							start: event.start_date,
+							end: event.end_date,
+							allDay: true
+						});
 				});
 
 				_events.push(
@@ -393,7 +399,7 @@
 					'user',
 					...$groupStore.filter((g) => g.joined).map((g) => g.name)
 				]}
-				values={[0, ...$groupStore.filter((g) => g.joined).map((g) => g.id)]}
+				values={[null, ...$groupStore.filter((g) => g.joined).map((g) => g.id)]}
 				bind:value={selectedGroupId}
 				label="Group"
 			/>
@@ -415,7 +421,7 @@
 						.map((w) => w.name)
 				]}
 				values={[
-					0,
+					null,
 					...$workgroupStore
 						.filter(
 							(w) =>
