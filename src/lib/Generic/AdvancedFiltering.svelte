@@ -94,7 +94,7 @@
 			/>
 			{group.name} <br />
 
-			{#each workgroups as workgroup}
+			{#each workgroups.filter((w) => w.group_id === group.id) as workgroup}
 				<input
 					type="checkbox"
 					onchange={() => {
