@@ -29,13 +29,14 @@
 		groupId: null | number = $state(null),
 		groupIds: number[] = $state([]),
 		workgroupIds: number[] = $state([]),
-		userChecked = $state(true);
+		userChecked = $state(true),
+		selectedWorkgroupId: number | null = $state(null),
+		selectedGroupId: number | null = $state(null);
 
 	const scheduleEventList = async () => {
 		let schedules: Schedule[] = [];
-
 		// Before getting events, we need to get all schedules for the user, groups and workgroups
-		// because events are tied to schedules
+		// because events are tied to schedules.
 
 		// Get user schedule
 		if (userChecked) {
@@ -48,7 +49,7 @@
 		// Get group schedules
 		if (groupIds.length > 0) {
 			let api = `schedule/list?limit=50&`;
-			api += `origin_ids=0,${groupIds.join(',')}&origin_name=group`;
+			api += `origin_ids=${groupIds.join(',')}&origin_name=group`;
 
 			const { res, json } = await fetchRequest('GET', api);
 			schedules.push(json.results ?? []);
@@ -56,7 +57,7 @@
 
 		// Get workgroup schedules
 		if (workgroupIds.length > 0) {
-			let api = `schedule/list?limit=50&origin_ids=0,${workgroupIds.join(',')}&origin_name=workgroup`;
+			let api = `schedule/list?limit=50&origin_ids=${workgroupIds.join(',')}&origin_name=workgroup`;
 			const { res, json } = await fetchRequest('GET', api);
 			schedules.push(json.results ?? []);
 		}
@@ -69,7 +70,7 @@
 
 		// Finally, get the events from every schedule
 		{
-			let api = `schedule/event/list?limit=50&schedule_ids=0,${schedules.map((s) => s.id).join(',')}`;
+			let api = `schedule/event/list?limit=50&schedule_ids=${schedules.map((s) => s.id).join(',')}`;
 			const { res, json } = await fetchRequest('GET', api);
 
 			events = json.results ?? [];
@@ -91,13 +92,12 @@
 	};
 
 	const getAPI = (type = '') => {
-		console.log(selectedEvent);
 		let api = '';
-		if (selectedEvent.origin_id === 0) api += `user/schedule/event/${type}`;
-		else if (selectedEvent.workgroup_id === 0 || !selectedEvent.workgroup_id)
-			api += `group/${selectedEvent.origin_id}/schedule/event/${type}`;
-		else
-			api += `group/workgroup/${selectedEvent.workgroup_id}/schedule/event/${type}`;
+		if (selectedWorkgroupId !== null)
+			api += `group/workgroup/${selectedWorkgroupId}/schedule/event/${type}`;
+		else if (selectedGroupId !== null)
+			api += `group/${selectedGroupId}/schedule/event/${type}`;
+		else api += `user/schedule/event/${type}`;
 
 		return api;
 	};
@@ -394,7 +394,7 @@
 					...$groupStore.filter((g) => g.joined).map((g) => g.name)
 				]}
 				values={[0, ...$groupStore.filter((g) => g.joined).map((g) => g.id)]}
-				bind:value={selectedEvent.origin_id}
+				bind:value={selectedGroupId}
 				label="Group"
 			/>
 
@@ -409,9 +409,7 @@
 								w.joined &&
 								$groupStore.find(
 									(g) =>
-										g.id === selectedEvent.origin_id &&
-										g.joined &&
-										g.id === w.group_id
+										g.id === selectedGroupId && g.joined && g.id === w.group_id
 								)
 						)
 						.map((w) => w.name)
@@ -424,15 +422,13 @@
 								w.joined &&
 								$groupStore.find(
 									(g) =>
-										g.id === selectedEvent.origin_id &&
-										g.joined &&
-										g.id === w.group_id
+										g.id === selectedGroupId && g.joined && g.id === w.group_id
 								)
 						)
 						.map((w) => w.id)
 				]}
-				bind:value={selectedEvent.workgroup_id}
-				label="Group"
+				bind:value={selectedWorkgroupId}
+				label="WorkGroup"
 			/>
 
 			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />
