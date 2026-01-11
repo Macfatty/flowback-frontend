@@ -373,6 +373,8 @@
 	});
 
 	$effect(() => {
+		// Somehow this console log fixes an issue with group filtering??? TODO: Fix that
+		console.log(groupIds, workgroupIds, 'CHANGE');
 		if (groupIds || workgroupIds || userChecked) scheduleEventList();
 	});
 </script>
