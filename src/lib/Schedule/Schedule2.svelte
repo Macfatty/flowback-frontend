@@ -220,10 +220,8 @@
 			select: (selectionInfo) => {
 				open = true;
 				selectedEvent = ScheduleItem2Default;
-				selectedEvent.start_date = selectionInfo.start
-					.toISOString()
-					.slice(0, 16);
-				selectedEvent.end_date = selectionInfo.end.toISOString().slice(0, 16);
+				selectedEvent.start_date = selectionInfo.start.toISOString();
+				selectedEvent.end_date = selectionInfo.end.toISOString();
 			},
 
 			customButtons: {
@@ -250,20 +248,16 @@
 					events.find((e) => e.id.toString() === info.event.id) ??
 					selectedEvent;
 
-				selectedEvent.start_date =
-					info.event.start?.toISOString().slice(0, 16) ?? '';
-				selectedEvent.end_date =
-					info.event.end?.toISOString().slice(0, 16) ?? '';
+				selectedEvent.start_date = info.event.start?.toISOString() ?? '';
+				selectedEvent.end_date = info.event.end?.toISOString() ?? '';
 
 				scheduleEventUpdate();
 			},
 			eventResize: (info) => {
 				selectedEvent.title = info.event.title;
 				selectedEvent.id = Number(info.event.id);
-				selectedEvent.start_date =
-					info.event.start?.toISOString().slice(0, 16) ?? '';
-				selectedEvent.end_date =
-					info.event.end?.toISOString().slice(0, 16) ?? '';
+				selectedEvent.start_date = info.event.start?.toISOString() ?? '';
+				selectedEvent.end_date = info.event.end?.toISOString() ?? '';
 				scheduleEventUpdate();
 			},
 
