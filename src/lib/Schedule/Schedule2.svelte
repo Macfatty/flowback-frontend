@@ -29,7 +29,7 @@
 		groupId: null | number = $state(null),
 		groupIds: number[] = $state([]),
 		workgroupIds: number[] = $state([]),
-		userChecked = $state(true),
+		userChecked = $state(false),
 		selectedWorkgroupId: number | null = $state(null),
 		selectedGroupId: number | null = $state(null),
 		calendar: Calendar,
@@ -138,10 +138,19 @@
 			message: 'Successfully created event',
 			success: true
 		});
+
+		selectedEvent = ScheduleItem2Default;
+		open = false;
 	};
 
 	const scheduleEventUpdate = async () => {
 		let api = getAPI('update');
+		console.log(
+			selectedEvent,
+			selectedStartDate,
+			selectedEndDate,
+			'updating event'
+		);
 
 		const { res, json } = await fetchRequest('POST', api, {
 			...selectedEvent,
@@ -162,6 +171,9 @@
 			message: 'Successfully edited event',
 			success: true
 		});
+
+		selectedEvent = ScheduleItem2Default;
+		open = false;
 
 		// Scuffed solution to solve dates going on the wrong places when clicking and dragging
 		// TODO: Find a better solution
@@ -225,8 +237,8 @@
 			select: (selectionInfo) => {
 				open = true;
 				selectedEvent = ScheduleItem2Default;
-				selectedEvent.start_date = selectionInfo.start.toISOString();
-				selectedEvent.end_date = selectionInfo.end.toISOString();
+				selectedStartDate = selectionInfo.start.toISOString().slice(0, 16);
+				selectedEndDate = selectionInfo.end.toISOString().slice(0, 16);
 			},
 
 			customButtons: {
@@ -256,16 +268,19 @@
 					events.find((e) => e.id.toString() === info.event.id) ??
 					selectedEvent;
 
-				selectedEvent.start_date = info.event.start?.toISOString() ?? '';
-				selectedEvent.end_date = info.event.end?.toISOString() ?? '';
+				selectedStartDate = info.event.start?.toISOString() ?? '';
+				selectedEndDate =
+					selectedEvent.end_date?.slice(0, 16) ??
+					selectedEvent.start_date.slice(0, 16) ??
+					'';
 
 				scheduleEventUpdate();
 			},
 			eventResize: (info) => {
 				selectedEvent.title = info.event.title;
 				selectedEvent.id = Number(info.event.id);
-				selectedEvent.start_date = info.event.start?.toISOString() ?? '';
-				selectedEvent.end_date = info.event.end?.toISOString() ?? '';
+				selectedStartDate = info.event.start?.toISOString() ?? '';
+				selectedEndDate = info.event.end?.toISOString() ?? '';
 				scheduleEventUpdate();
 			},
 
@@ -343,6 +358,7 @@
 			Number(new URLSearchParams(document.location.search).get('groupId')) ??
 			null;
 		if (groupId) groupIds.push(groupId);
+		if (!groupId) userChecked = true;
 
 		await scheduleEventList();
 		renderCalendar();
@@ -378,8 +394,6 @@
 					? await scheduleEventCreate()
 					: await scheduleEventUpdate();
 				scheduleEventList();
-				selectedEvent = ScheduleItem2Default;
-				open = false;
 			},
 			type: 'default',
 			submit: true
