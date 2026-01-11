@@ -91,15 +91,11 @@
 	};
 
 	const getAPI = (type = '') => {
-		// 0 Is currently stand in for user, TODO: Change this so it's not scuffed
+		console.log(selectedEvent);
 		let api = '';
-		if (
-			selectedEvent.schedule_id === 0 ||
-			selectedEvent.schedule_origin_name === 'user'
-		)
-			api += `user/schedule/event/${type}`;
+		if (selectedEvent.origin_id === 0) api += `user/schedule/event/${type}`;
 		else if (selectedEvent.workgroup_id === 0 || !selectedEvent.workgroup_id)
-			api += `group/${selectedEvent.schedule_origin_id}/schedule/event/${type}`;
+			api += `group/${selectedEvent.origin_id}/schedule/event/${type}`;
 		else
 			api += `group/workgroup/${selectedEvent.workgroup_id}/schedule/event/${type}`;
 
@@ -352,7 +348,7 @@
 	<div class="w-full bg-white dark:bg-darkbackground" id="calendar-2"></div>
 </div>
 
-<!-- Modal for displaying and editing schedule events -->
+<!-- Modal for displaying, creating and editing schedule events -->
 <Modal
 	bind:open
 	buttons={[
