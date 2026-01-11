@@ -207,12 +207,13 @@
 			height: 'calc(100vh - 2rem - 40px - 28px)',
 			headerToolbar: {
 				left: 'prev,next today',
-				center: 'title, addEventButton',
-				right:
-					'dayGridMonth, timeGridDay, listWeek, multiMonthYear, dayGridYear, timeGridWeek'
+				center: 'title',
+				right: 'addEventButton'
+				// 'dayGridMonth, timeGridDay, listWeek, multiMonthYear, dayGridYear, timeGridWeek'
 			},
 			windowResize: () => {
 				renderCalendar();
+				calendar?.addEventSource(distributeEvents());
 			},
 
 			selectable: true,
@@ -392,7 +393,6 @@
 		<div role="form">
 			<TextInput label="Title" bind:value={selectedEvent.title} />
 			<TextArea label="Description" bind:value={selectedEvent.description} />
-			{selectedEvent.start_date}
 			<input type="datetime-local" bind:value={selectedEvent.start_date} />
 			<input type="datetime-local" bind:value={selectedEvent.end_date} />
 			<input type="number" bind:value={selectedEvent.repeat_frequency} />
