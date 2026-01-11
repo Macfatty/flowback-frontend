@@ -32,7 +32,9 @@
 		userChecked = $state(true),
 		selectedWorkgroupId: number | null = $state(null),
 		selectedGroupId: number | null = $state(null),
-		calendar: Calendar;
+		calendar: Calendar,
+		selectedStartDate: string = $state(''),
+		selectedEndDate: string = $state('');
 
 	const scheduleEventList = async () => {
 		let schedules: Schedule[] = [];
@@ -109,8 +111,8 @@
 		const { res, json } = await fetchRequest('POST', api, {
 			title: selectedEvent.title,
 			description: selectedEvent.description,
-			start_date: selectedEvent.start_date,
-			end_date: selectedEvent.end_date,
+			start_date: selectedStartDate,
+			end_date: selectedEndDate,
 			repeat_frequency: selectedEvent.repeat_frequency,
 			meeting_link: selectedEvent.meeting_link
 		});
@@ -143,7 +145,9 @@
 
 		const { res, json } = await fetchRequest('POST', api, {
 			...selectedEvent,
-			event_id: selectedEvent.id
+			event_id: selectedEvent.id,
+			start_date: selectedStartDate,
+			end_date: selectedEndDate
 		});
 
 		if (!res.ok) {
@@ -243,6 +247,9 @@
 				selectedEvent =
 					events.find((e) => e.id.toString() === info.event.id) ??
 					selectedEvent;
+
+				selectedStartDate = selectedEvent.start_date.slice(0, 16) ?? '';
+				selectedEndDate = selectedEvent.end_date?.slice(0, 16) ?? '';
 			},
 			eventDrop: (info) => {
 				selectedEvent =
@@ -393,8 +400,8 @@
 		<div role="form">
 			<TextInput label="Title" bind:value={selectedEvent.title} />
 			<TextArea label="Description" bind:value={selectedEvent.description} />
-			<input type="datetime-local" bind:value={selectedEvent.start_date} />
-			<input type="datetime-local" bind:value={selectedEvent.end_date} />
+			<input type="datetime-local" bind:value={selectedStartDate} />
+			<input type="datetime-local" bind:value={selectedEndDate} />
 			<input type="number" bind:value={selectedEvent.repeat_frequency} />
 
 			<!-- Select Groups -->
