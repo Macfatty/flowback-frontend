@@ -31,7 +31,8 @@
 		workgroupIds: number[] = $state([]),
 		userChecked = $state(true),
 		selectedWorkgroupId: number | null = $state(null),
-		selectedGroupId: number | null = $state(null);
+		selectedGroupId: number | null = $state(null),
+		calendar: Calendar;
 
 	const scheduleEventList = async () => {
 		let schedules: Schedule[] = [];
@@ -192,7 +193,8 @@
 	const renderCalendar = () => {
 		let calendarEl = document.getElementById('calendar-2');
 		if (!calendarEl) return;
-		let calendar = new Calendar(calendarEl, {
+
+		calendar = new Calendar(calendarEl, {
 			plugins: [
 				dayGridPlugin,
 				interactionPlugin,
@@ -235,61 +237,7 @@
 
 			//@ts-ignore
 			events: (() => {
-				let _events = [];
-
-				events.forEach((event) => {
-					// Daily Frequency
-					if (event.repeat_frequency === 1) {
-						for (let i = 1; i < 42; i++) {
-							let date = new Date(
-								new Date(event.start_date).setDate(
-									new Date(event.start_date).getDate() + i
-								)
-							);
-
-							_events.push({
-								...event,
-								start: date,
-								end: date,
-								allDay: true
-							});
-						}
-
-						// Weekly Frequency
-					} else if (event.repeat_frequency === 2) {
-						for (let i = 0; i < 6; i++) {
-							let date = new Date(
-								new Date(event.start_date).setDate(
-									new Date(event.start_date).getDate() + i * 7
-								)
-							);
-
-							_events.push({
-								...event,
-								start: date,
-								end: date,
-								allDay: true
-							});
-						}
-					} else
-						_events.push({
-							...event,
-							start: event.start_date,
-							end: event.end_date,
-							allDay: true
-						});
-				});
-
-				_events.push(
-					events.map((event) => ({
-						...event,
-						start: event.start_date,
-						end: event.end_date,
-						allDay: true
-					}))
-				);
-
-				return _events;
+				distributeEvents();
 			})(),
 			eventClick: (info) => {
 				open = true;
@@ -330,17 +278,80 @@
 		calendar.render();
 	};
 
-	onMount(() => {
+	const distributeEvents = () => {
+		let _events = [];
+
+		events.forEach((event) => {
+			// Daily Frequency
+			if (event.repeat_frequency === 1) {
+				for (let i = 1; i < 42; i++) {
+					let date = new Date(
+						new Date(event.start_date).setDate(
+							new Date(event.start_date).getDate() + i
+						)
+					);
+
+					_events.push({
+						...event,
+						start: date,
+						end: date,
+						allDay: true
+					});
+				}
+
+				// Weekly Frequency
+			} else if (event.repeat_frequency === 2) {
+				for (let i = 0; i < 6; i++) {
+					let date = new Date(
+						new Date(event.start_date).setDate(
+							new Date(event.start_date).getDate() + i * 7
+						)
+					);
+
+					_events.push({
+						...event,
+						start: date,
+						end: date,
+						allDay: true
+					});
+				}
+			} else
+				_events.push({
+					...event,
+					start: event.start_date,
+					end: event.end_date,
+					allDay: true
+				});
+		});
+
+		_events.push(
+			events.map((event) => ({
+				...event,
+				start: event.start_date,
+				end: event.end_date,
+				allDay: true
+			}))
+		);
+
+		return _events;
+	};
+
+	onMount(async () => {
 		groupId =
 			Number(new URLSearchParams(document.location.search).get('groupId')) ??
 			null;
 		if (groupId) groupIds.push(groupId);
 
-		scheduleEventList();
+		await scheduleEventList();
+		renderCalendar();
 	});
 
 	$effect(() => {
-		if (events) renderCalendar();
+		// Rerendering the calendar leads to issues with event changes changing the month one is one, instead we do this
+		if (events) {
+			calendar?.removeAllEvents();
+			calendar?.addEventSource(distributeEvents());
+		}
 	});
 
 	$effect(() => {
