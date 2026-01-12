@@ -20,7 +20,7 @@ services:
                   target: /usr/src/app
                   action: rebuild
 
-        # TODO:;
+          # TODO:: Fix healthcheck
         # healthcheck:
         #     test: ['CMD', 'curl', '-f', 'http://localhost:${PORT:-3000}/']
         #     interval: 4s
@@ -35,3 +35,5 @@ services:
             - ./svelte.config.js:/home/node/app/svelte.config.js
             - ./:/app
             - /app/node_modules
+
+# TODO: Have a production setting (either in Dockerfile or in docker-compose, set in .env)

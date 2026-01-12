@@ -29,13 +29,17 @@
 		groupId: null | number = $state(null),
 		groupIds: number[] = $state([]),
 		workgroupIds: number[] = $state([]),
-		userChecked = $state(true);
+		userChecked = $state(false),
+		selectedWorkgroupId: number | null = $state(null),
+		selectedGroupId: number | null = $state(null),
+		calendar: Calendar,
+		selectedStartDate: string = $state(''),
+		selectedEndDate: string = $state('');
 
 	const scheduleEventList = async () => {
 		let schedules: Schedule[] = [];
-
 		// Before getting events, we need to get all schedules for the user, groups and workgroups
-		// because events are tied to schedules
+		// because events are tied to schedules.
 
 		// Get user schedule
 		if (userChecked) {
@@ -48,7 +52,7 @@
 		// Get group schedules
 		if (groupIds.length > 0) {
 			let api = `schedule/list?limit=50&`;
-			api += `origin_ids=0,${groupIds.join(',')}&origin_name=group`;
+			api += `origin_ids=${groupIds.join(',')}&origin_name=group`;
 
 			const { res, json } = await fetchRequest('GET', api);
 			schedules.push(json.results ?? []);
@@ -56,7 +60,7 @@
 
 		// Get workgroup schedules
 		if (workgroupIds.length > 0) {
-			let api = `schedule/list?limit=50&origin_ids=0,${workgroupIds.join(',')}&origin_name=workgroup`;
+			let api = `schedule/list?limit=50&origin_ids=${workgroupIds.join(',')}&origin_name=workgroup`;
 			const { res, json } = await fetchRequest('GET', api);
 			schedules.push(json.results ?? []);
 		}
@@ -69,7 +73,7 @@
 
 		// Finally, get the events from every schedule
 		{
-			let api = `schedule/event/list?limit=50&schedule_ids=0,${schedules.map((s) => s.id).join(',')}`;
+			let api = `schedule/event/list?limit=50&schedule_ids=${schedules.map((s) => s.id).join(',')}`;
 			const { res, json } = await fetchRequest('GET', api);
 
 			events = json.results ?? [];
@@ -82,26 +86,21 @@
 					: e
 			);
 
-			events = events.map((e) => ({
-				...e,
-				start_date: e.start_date.slice(0, 16),
-				end_date: e.end_date?.slice(0, 16) ?? null
-			}));
+			// events = events.map((e) => ({
+			// 	...e,
+			// 	start_date: e.start_date.slice(0, 16),
+			// 	end_date: e.end_date?.slice(0, 16)
+			// }));
 		}
 	};
 
 	const getAPI = (type = '') => {
-		// 0 Is currently stand in for user, TODO: Change this so it's not scuffed
 		let api = '';
-		if (
-			selectedEvent.schedule_id === 0 ||
-			selectedEvent.schedule_origin_name === 'user'
-		)
-			api += `user/schedule/event/${type}`;
-		else if (selectedEvent.workgroup_id === 0 || !selectedEvent.workgroup_id)
-			api += `group/${selectedEvent.schedule_origin_id}/schedule/event/${type}`;
-		else
-			api += `group/workgroup/${selectedEvent.workgroup_id}/schedule/event/${type}`;
+		if (selectedWorkgroupId !== null)
+			api += `group/workgroup/${selectedWorkgroupId}/schedule/event/${type}`;
+		else if (selectedGroupId !== null)
+			api += `group/${selectedGroupId}/schedule/event/${type}`;
+		else api += `user/schedule/event/${type}`;
 
 		return api;
 	};
@@ -112,13 +111,14 @@
 		const { res, json } = await fetchRequest('POST', api, {
 			title: selectedEvent.title,
 			description: selectedEvent.description,
-			start_date: selectedEvent.start_date,
-			end_date: selectedEvent.end_date,
+			start_date: selectedStartDate,
+			end_date: selectedEndDate,
 			repeat_frequency: selectedEvent.repeat_frequency,
 			meeting_link: selectedEvent.meeting_link
 		});
 
 		if (!res.ok) {
+			//@ts-ignore
 			if (res.status === 403) {
 				ErrorHandlerStore.set({
 					message: 'You do not have permission to create events for this group',
@@ -138,14 +138,25 @@
 			message: 'Successfully created event',
 			success: true
 		});
+
+		selectedEvent = ScheduleItem2Default;
+		open = false;
 	};
 
 	const scheduleEventUpdate = async () => {
 		let api = getAPI('update');
+		console.log(
+			selectedEvent,
+			selectedStartDate,
+			selectedEndDate,
+			'updating event'
+		);
 
 		const { res, json } = await fetchRequest('POST', api, {
 			...selectedEvent,
-			event_id: selectedEvent.id
+			event_id: selectedEvent.id,
+			start_date: selectedStartDate,
+			end_date: selectedEndDate
 		});
 
 		if (!res.ok) {
@@ -160,6 +171,9 @@
 			message: 'Successfully edited event',
 			success: true
 		});
+
+		selectedEvent = ScheduleItem2Default;
+		open = false;
 
 		// Scuffed solution to solve dates going on the wrong places when clicking and dragging
 		// TODO: Find a better solution
@@ -195,7 +209,8 @@
 	const renderCalendar = () => {
 		let calendarEl = document.getElementById('calendar-2');
 		if (!calendarEl) return;
-		let calendar = new Calendar(calendarEl, {
+
+		calendar = new Calendar(calendarEl, {
 			plugins: [
 				dayGridPlugin,
 				interactionPlugin,
@@ -208,12 +223,13 @@
 			height: 'calc(100vh - 2rem - 40px - 28px)',
 			headerToolbar: {
 				left: 'prev,next today',
-				center: 'title, addEventButton',
-				right:
-					'dayGridMonth, timeGridDay, listWeek, multiMonthYear, dayGridYear, timeGridWeek'
+				center: 'title',
+				right: 'addEventButton'
+				// 'dayGridMonth, timeGridDay, listWeek, multiMonthYear, dayGridYear, timeGridWeek'
 			},
 			windowResize: () => {
 				renderCalendar();
+				calendar?.addEventSource(distributeEvents());
 			},
 
 			selectable: true,
@@ -221,10 +237,8 @@
 			select: (selectionInfo) => {
 				open = true;
 				selectedEvent = ScheduleItem2Default;
-				selectedEvent.start_date = selectionInfo.start
-					.toISOString()
-					.slice(0, 16);
-				selectedEvent.end_date = selectionInfo.end.toISOString().slice(0, 16);
+				selectedStartDate = selectionInfo.start.toISOString().slice(0, 16);
+				selectedEndDate = selectionInfo.end.toISOString().slice(0, 16);
 			},
 
 			customButtons: {
@@ -236,38 +250,37 @@
 				}
 			},
 
-			// @ts-ignore
-			events: events.map((e) => ({
-				...e,
-				start: e.start_date,
-				end: e.end_date,
-				allDay: true
-			})),
+			//@ts-ignore
+			events: (() => {
+				distributeEvents();
+			})(),
 			eventClick: (info) => {
 				open = true;
 				selectedEvent =
 					events.find((e) => e.id.toString() === info.event.id) ??
 					selectedEvent;
+
+				selectedStartDate = selectedEvent.start_date.slice(0, 16) ?? '';
+				selectedEndDate = selectedEvent.end_date?.slice(0, 16) ?? '';
 			},
 			eventDrop: (info) => {
 				selectedEvent =
 					events.find((e) => e.id.toString() === info.event.id) ??
 					selectedEvent;
 
-				selectedEvent.start_date =
-					info.event.start?.toISOString().slice(0, 16) ?? '';
-				selectedEvent.end_date =
-					info.event.end?.toISOString().slice(0, 16) ?? '';
+				selectedStartDate = info.event.start?.toISOString() ?? '';
+				selectedEndDate =
+					selectedEvent.end_date?.slice(0, 16) ??
+					selectedEvent.start_date.slice(0, 16) ??
+					'';
 
 				scheduleEventUpdate();
 			},
 			eventResize: (info) => {
 				selectedEvent.title = info.event.title;
 				selectedEvent.id = Number(info.event.id);
-				selectedEvent.start_date =
-					info.event.start?.toISOString().slice(0, 16) ?? '';
-				selectedEvent.end_date =
-					info.event.end?.toISOString().slice(0, 16) ?? '';
+				selectedStartDate = info.event.start?.toISOString() ?? '';
+				selectedEndDate = info.event.end?.toISOString() ?? '';
 				scheduleEventUpdate();
 			},
 
@@ -282,21 +295,87 @@
 		calendar.render();
 	};
 
-	onMount(() => {
+	const distributeEvents = () => {
+		let _events = [];
+
+		events.forEach((event) => {
+			// Daily Frequency
+			if (event.repeat_frequency === 1) {
+				for (let i = 1; i < 42; i++) {
+					let date = new Date(
+						new Date(event.start_date).setDate(
+							new Date(event.start_date).getDate() + i
+						)
+					);
+
+					_events.push({
+						...event,
+						start: date,
+						end: date,
+						allDay: true
+					});
+				}
+
+				// Weekly Frequency
+			} else if (event.repeat_frequency === 2) {
+				for (let i = 0; i < 6; i++) {
+					let date = new Date(
+						new Date(event.start_date).setDate(
+							new Date(event.start_date).getDate() + i * 7
+						)
+					);
+
+					_events.push({
+						...event,
+						start: date,
+						end: date,
+						allDay: true
+					});
+				}
+			} else
+				_events.push({
+					...event,
+					start: event.start_date,
+					end: event.end_date,
+					allDay: true
+				});
+		});
+
+		_events.push(
+			events.map((event) => ({
+				...event,
+				start: event.start_date,
+				end: event.end_date,
+				allDay: true
+			}))
+		);
+
+		return _events;
+	};
+
+	onMount(async () => {
 		groupId =
 			Number(new URLSearchParams(document.location.search).get('groupId')) ??
 			null;
 		if (groupId) groupIds.push(groupId);
+		if (!groupId) userChecked = true;
 
+		await scheduleEventList();
+		renderCalendar();
+	});
+
+	$effect(() => {
+		// Rerendering the calendar leads to issues with event changes changing the month one is one, instead we do this
+		if (events) {
+			calendar?.removeAllEvents();
+			calendar?.addEventSource(distributeEvents());
+		}
+	});
+
+	$effect(() => {
+		// Somehow this console log fixes an issue with group filtering??? TODO: Fix this
+		console.log(groupIds, workgroupIds, userChecked);
 		scheduleEventList();
-	});
-
-	$effect(() => {
-		if (events) renderCalendar();
-	});
-
-	$effect(() => {
-		if (groupIds || workgroupIds || userChecked) scheduleEventList();
 	});
 </script>
 
@@ -306,7 +385,7 @@
 	<div class="w-full bg-white dark:bg-darkbackground" id="calendar-2"></div>
 </div>
 
-<!-- Modal for displaying and editing schedule events -->
+<!-- Modal for displaying, creating and editing schedule events -->
 <Modal
 	bind:open
 	buttons={[
@@ -317,8 +396,6 @@
 					? await scheduleEventCreate()
 					: await scheduleEventUpdate();
 				scheduleEventList();
-				selectedEvent = ScheduleItem2Default;
-				open = false;
 			},
 			type: 'default',
 			submit: true
@@ -339,9 +416,8 @@
 		<div role="form">
 			<TextInput label="Title" bind:value={selectedEvent.title} />
 			<TextArea label="Description" bind:value={selectedEvent.description} />
-			{selectedEvent.start_date}
-			<input type="datetime-local" bind:value={selectedEvent.start_date} />
-			<input type="datetime-local" bind:value={selectedEvent.end_date} />
+			<input type="datetime-local" bind:value={selectedStartDate} />
+			<input type="datetime-local" bind:value={selectedEndDate} />
 			<input type="number" bind:value={selectedEvent.repeat_frequency} />
 
 			<!-- Select Groups -->
@@ -351,8 +427,8 @@
 					'user',
 					...$groupStore.filter((g) => g.joined).map((g) => g.name)
 				]}
-				values={[0, ...$groupStore.filter((g) => g.joined).map((g) => g.id)]}
-				bind:value={selectedEvent.origin_id}
+				values={[null, ...$groupStore.filter((g) => g.joined).map((g) => g.id)]}
+				bind:value={selectedGroupId}
 				label="Group"
 			/>
 
@@ -367,30 +443,26 @@
 								w.joined &&
 								$groupStore.find(
 									(g) =>
-										g.id === selectedEvent.origin_id &&
-										g.joined &&
-										g.id === w.group_id
+										g.id === selectedGroupId && g.joined && g.id === w.group_id
 								)
 						)
 						.map((w) => w.name)
 				]}
 				values={[
-					0,
+					null,
 					...$workgroupStore
 						.filter(
 							(w) =>
 								w.joined &&
 								$groupStore.find(
 									(g) =>
-										g.id === selectedEvent.origin_id &&
-										g.joined &&
-										g.id === w.group_id
+										g.id === selectedGroupId && g.joined && g.id === w.group_id
 								)
 						)
 						.map((w) => w.id)
 				]}
-				bind:value={selectedEvent.workgroup_id}
-				label="Group"
+				bind:value={selectedWorkgroupId}
+				label="WorkGroup"
 			/>
 
 			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />

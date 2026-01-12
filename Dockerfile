@@ -12,4 +12,4 @@ COPY . .
 ARG PORT="3000"
 EXPOSE ${PORT}
 
-# TODO: Have a production setting
+# TODO: Have a production setting (either in Dockerfile or in docker-compose, set in .env)

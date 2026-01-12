@@ -93,10 +93,10 @@
 
 <div
 	id="kanban-board"
-	class={'dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words' + Class}
+	class={'dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words' +
+		Class}
 >
 	<AdvancedFiltering bind:groupIds bind:workgroupIds bind:userChecked />
-	<!-- <KanbanFiltering bind:workGroups bind:filter handleSearch={getKanbanEntries} Class="" /> -->
 
 	<TextInput
 		Class="flex-1 h-full placeholder-gray-600 rounded text-gray-500 bg-gray-100 dark:bg-darkobject dark:text-darkmodeText"
@@ -116,7 +116,8 @@
 					class="bg-white w-[15vw] max-w-[250px] p-2 m-1 dark:bg-darkbackground dark:text-darkmodeText border-gray-200 rounded shadow flex flex-col"
 				>
 					<div class="flex justify-between pb-3">
-						<span class="xl:text-md md:text-sm p-1 font-medium">{$_(_tag)}</span>
+						<span class="xl:text-md md:text-sm p-1 font-medium">{$_(_tag)}</span
+						>
 						<button
 							id={`${_tag}-add`}
 							class="text-sm p-1"
@@ -147,7 +148,9 @@
 								lane = i;
 							}}
 						>
-							<span class="text-gray-600 dark:text-darkmodeText">+ {$_('Add a task')}</span>
+							<span class="text-gray-600 dark:text-darkmodeText"
+								>+ {$_('Add a task')}</span
+							>
 						</button>
 					</div>
 				</div>

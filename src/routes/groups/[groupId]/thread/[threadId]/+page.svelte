@@ -34,7 +34,10 @@
 		);
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Could not get Thread', success: false });
+			ErrorHandlerStore.set({
+				message: 'Could not get Thread',
+				success: false
+			});
 			return;
 		}
 
@@ -46,7 +49,7 @@
 <Layout centered>
 	{#if thread}
 		<div
-			class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded shadow w-full poll-header-grid items-center py-4"
+			class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded shadow poll-header-grid py-8 w-full max-w-[1200px]"
 		>
 			<button
 				class="cursor-pointer bg-white dark:bg-darkobject dark:text-darkmodeText justify-center m-auto"
@@ -58,7 +61,9 @@
 				<Fa icon={faArrowLeft} />
 			</button>
 
-			<h1 class="text-left text-2xl text-primary dark:text-secondary font-semibold">
+			<h1
+				class="text-left text-2xl text-primary dark:text-secondary font-semibold"
+			>
 				{thread?.title}
 			</h1>
 			<div class="inline-flex gap-4 items-baseline">
@@ -69,10 +74,16 @@
 					categories={['thread_comment']}
 					labels={['thread']}
 				/>
+
 				<MultipleChoices
 					labels={[$_('Delete Thread'), $_('Report Thread')]}
 					Class="text-black justify-self-center"
-					functions={[() => (deleteModalShow = true), () => (reportModalShow = true)]}
+					functions={[
+						() => (deleteModalShow = true),
+						() => (reportModalShow = true)
+					]}
+					ClassInner="-translate-x-2/3"
+					id="poll-header-multiple-choices"
 				/>
 			</div>
 
@@ -84,7 +95,10 @@
 				{/if}
 				{#if thread?.created_at}
 					<span class="text-sm text-gray-500 dark:text-darkmodeText">
-						{new Date(thread?.created_at).toISOString().split('T')[0].replace(/-/g, '.')}
+						{new Date(thread?.created_at)
+							.toISOString()
+							.split('T')[0]
+							.replace(/-/g, '.')}
 					</span>
 				{/if}
 				<ThreadVoting bind:thread />
@@ -92,16 +106,25 @@
 
 			{#if thread?.description.length > 0}
 				<div class="grid-area-description py-2">
-					<NewDescription bind:description={thread.description} limit={3} lengthLimit={300} />
+					<NewDescription
+						bind:description={thread.description}
+						limit={3}
+						lengthLimit={300}
+					/>
 				</div>
 			{/if}
 		</div>
 
 		{#key thread.id}
-			<Comments api={'thread'} Class="w-full max-w-[1000px] bg-white dark:bg-darkobject p-6 mt-6" />
+			<Comments
+				api={'thread'}
+				Class="w-full max-w-[1000px] bg-white dark:bg-darkobject p-6 mt-6"
+			/>
 		{/key}
 	{:else}
-		<div class="p-4 bg-white dark:bg-darkobject dark:text-darkmodeText mt-4 rounded shadow">
+		<div
+			class="p-4 bg-white dark:bg-darkobject dark:text-darkmodeText mt-4 rounded shadow"
+		>
 			<p>{$_('No thread found, it might have been deleted')}</p>
 			<Button onClick={() => history.back()}><Fa icon={faArrowLeft} /></Button>
 		</div>
@@ -117,7 +140,11 @@
 	bind:reportModalShow
 />
 
-<DeletePostModal bind:deleteModalShow postId={thread?.id ?? ''} post_type="thread" />
+<DeletePostModal
+	bind:deleteModalShow
+	postId={thread?.id ?? ''}
+	post_type="thread"
+/>
 
 <style>
 	.poll-header-grid {
