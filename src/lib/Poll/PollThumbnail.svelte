@@ -325,17 +325,18 @@
 			<!-- Comment icon. When user clicks it leads to the comment section on the poll -->
 			{#if poll.group_joined}
 				<a
-					class="flex gap-1 items-center text-black dark:text-darkmodeText hover:bg-gray-100 dark:hover:bg-slate-500 cursor-pointer text-sm"
+					class="flex gap-1 items-center dark:text-darkmodeText hover:bg-gray-100 dark:hover:bg-slate-500 cursor-pointer text-sm"
 					href={onHoverGroup
 						? '/groups/1'
 						: `/groups/${poll?.group_id || page.params.groupId}/polls/${
 								poll?.id
 							}?section=comments&source=${page.params.groupId ? 'group' : 'home'}`}
 				>
-					<img class="w-5" src={ChatIcon} alt="open chat" />
+					<img class="w-5 dark:invert" src={ChatIcon} alt="open chat" />
 					<span class="inline">{poll?.total_comments}</span>
 				</a>
 			{/if}
+
 			<!-- Poll tag -->
 			{#if poll?.poll_type === 4 && tag.name !== ''}
 				<Tag Class="cursor-default" bind:tag />
