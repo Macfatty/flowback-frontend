@@ -174,10 +174,6 @@
 
 		selectedEvent = ScheduleItem2Default;
 		open = false;
-
-		// Scuffed solution to solve dates going on the wrong places when clicking and dragging
-		// TODO: Find a better solution
-		// scheduleEventList();
 	};
 
 	const ScheduleEventDelete = async (event_id: number) => {
@@ -358,7 +354,7 @@
 			Number(new URLSearchParams(document.location.search).get('groupId')) ??
 			null;
 		if (groupId) groupIds.push(groupId);
-		if (!groupId) userChecked = true;
+		else userChecked = true;
 
 		await scheduleEventList();
 		renderCalendar();
@@ -416,6 +412,7 @@
 		<div role="form">
 			<TextInput label="Title" bind:value={selectedEvent.title} />
 			<TextArea label="Description" bind:value={selectedEvent.description} />
+
 			<input type="datetime-local" bind:value={selectedStartDate} />
 			<input type="datetime-local" bind:value={selectedEndDate} />
 			<input type="number" bind:value={selectedEvent.repeat_frequency} />
