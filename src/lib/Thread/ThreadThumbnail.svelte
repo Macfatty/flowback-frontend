@@ -116,8 +116,15 @@
 	</div>
 
 	{#if !page.params.groupId}
-		<a
-			href={`/groups/${thread?.group_id}`}
+		<button
+			onclick={() => {
+				if (thread.group_joined) goto(`/groups/${thread?.group_id}`);
+				else
+					ErrorHandlerStore.set({
+						message: 'You must join the group to access the group',
+						success: false
+					});
+			}}
 			class="text-black flex items-center"
 		>
 			<img
@@ -130,8 +137,10 @@
 				alt={'thread Thumbnail'}
 				onerror={(e) => onThumbnailError(e, DefaultBanner)}
 			/>
-			<span class="break-word text-sm text-gray-700">{thread?.group_name}</span>
-		</a>
+			<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
+				>{thread?.group_name}</span
+			>
+		</button>
 	{:else if thread?.created_by?.user}
 		<div class="text-black flex items-center">
 			<!-- TODO: add "if group doesn't hide displaying creators" condition -->
