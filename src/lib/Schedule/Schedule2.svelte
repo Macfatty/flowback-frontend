@@ -233,8 +233,8 @@
 			select: (selectionInfo) => {
 				open = true;
 				selectedEvent = ScheduleItem2Default;
-				selectedStartDate = selectionInfo.start.toISOString().slice(0, 16);
-				selectedEndDate = selectionInfo.end.toISOString().slice(0, 16);
+				selectedStartDate = selectionInfo.start.toISOString();
+				selectedEndDate = selectionInfo.end.toISOString();
 			},
 
 			customButtons: {
@@ -256,8 +256,8 @@
 					events.find((e) => e.id.toString() === info.event.id) ??
 					selectedEvent;
 
-				selectedStartDate = selectedEvent.start_date.slice(0, 16) ?? '';
-				selectedEndDate = selectedEvent.end_date?.slice(0, 16) ?? '';
+				selectedStartDate = selectedEvent.start_date ?? '';
+				selectedEndDate = selectedEvent.end_date ?? '';
 			},
 			eventDrop: (info) => {
 				selectedEvent =
@@ -265,10 +265,9 @@
 					selectedEvent;
 
 				selectedStartDate = info.event.start?.toISOString() ?? '';
-				selectedEndDate =
-					selectedEvent.end_date?.slice(0, 16) ??
-					selectedEvent.start_date.slice(0, 16) ??
-					'';
+				selectedEndDate = info.event.end?.toISOString() ?? '';
+				// selectedEndDate =
+				// 	selectedEvent.end_date ?? selectedEvent.start_date ?? '';
 
 				scheduleEventUpdate();
 			},
@@ -413,13 +412,13 @@
 			<TextInput label="Title" bind:value={selectedEvent.title} />
 			<TextArea label="Description" bind:value={selectedEvent.description} />
 
-			<input type="datetime-local" bind:value={selectedStartDate} />
-			<input type="datetime-local" bind:value={selectedEndDate} />
+			<input type="datetime" bind:value={selectedStartDate} />
+			<input type="datetime" bind:value={selectedEndDate} />
 
 			<Select
 				disableFirstChoice
 				labels={['One off', 'Daily', 'Weekly', 'Monthly', 'Yearly']}
-				values={[0, 1, 2, 3, 4]}
+				values={[null, 1, 2, 3, 4]}
 				bind:value={selectedEvent.repeat_frequency}
 			/>
 
@@ -469,14 +468,14 @@
 			/>
 
 			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />
-			<TextInput label="Tag" bind:value={selectedEvent.tag_name} />
-			<NotificationOptions
-				type="event"
-				id={selectedEvent.id}
-				api={`schedule/${selectedEvent.schedule_id}/event/subscribe`}
-				labels={['subsc']}
-				categories={['subsc']}
-			/>
+			<!-- <TextInput label="Tag" bind:value={selectedEvent.tag_name} /> -->
+			<!-- <NotificationOptions -->
+			<!-- 	type="event" -->
+			<!-- 	id={selectedEvent.id} -->
+			<!-- 	api={`schedule/${selectedEvent.schedule_id}/event/subscribe`} -->
+			<!-- 	labels={['subsc']} -->
+			<!-- 	categories={['subsc']} -->
+			<!-- /> -->
 		</div>
 	</div>
 </Modal>
