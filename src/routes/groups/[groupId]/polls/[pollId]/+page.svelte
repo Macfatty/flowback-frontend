@@ -9,7 +9,6 @@
 	import BackButton from '$lib/Generic/BackButton.svelte';
 	import { _ } from 'svelte-i18n';
 	import Results from '$lib/Poll/Results.svelte';
-	import { checkForLinks } from '$lib/Generic/GenericFunctions';
 	import ProposalSubmition from '$lib/Poll/ProposalSubmition.svelte';
 	import Predictions from '$lib/Poll/PredictionMarket/CreatePrediction.svelte';
 	import PollHeader from '$lib/Poll/PollHeader.svelte';
@@ -64,7 +63,11 @@
 		if (!section) return;
 		setTimeout(() => {
 			const scrollTo = document.getElementById(section);
-			scrollTo?.scrollIntoView({ behavior: 'instant', block: 'start', inline: 'nearest' });
+			scrollTo?.scrollIntoView({
+				behavior: 'instant',
+				block: 'start',
+				inline: 'nearest'
+			});
 		}, 200);
 	};
 
@@ -72,7 +75,8 @@
 		const display = $page.url.searchParams.get('display');
 		console.log(display, 'IDS');
 
-		if (display === null || display === undefined || display === '0') displayForm = false;
+		if (display === null || display === undefined || display === '0')
+			displayForm = false;
 		if (display === '1') displayForm = true;
 	};
 
@@ -135,7 +139,11 @@
 <Layout centered>
 	{#if poll}
 		{#if pollType === 4}
-			<PollHeader {poll} bind:phase displayTag={phase !== 'area_vote' && phase !== 'pre_start'} />
+			<PollHeader
+				{poll}
+				bind:phase
+				displayTag={phase !== 'area_vote' && phase !== 'pre_start'}
+			/>
 		{:else}
 			<PollHeader {poll} bind:phase displayTag={false} />
 		{/if}
@@ -144,7 +152,9 @@
 		{#if pollType === 4}
 			<!-- PHASE 0: PRE-START -->
 			{#if phase === 'pre_start'}
-				<div class="bg-white shadow rounded mt-6 p-6 dark:bg-darkobject dark:text-darkmodeText">
+				<div
+					class="bg-white shadow rounded mt-6 p-6 dark:bg-darkobject dark:text-darkmodeText"
+				>
 					{$_('This poll will start at')}
 					{formatDate(poll.start_date)}
 				</div>
@@ -163,13 +173,24 @@
 
 				<!-- PHASE 2: PROPOSAL CREATION -->
 			{:else if phase === 'proposal'}
-				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightFormSlot}>
+				<Structure
+					bind:phase
+					bind:poll
+					bind:resetScroll
+					showRight={showRightFormSlot}
+				>
 					<div slot="left" class="h-full relative flex flex-col">
-						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
+						<span
+							class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="flex-grow overflow-y-auto mb-4">
-							<ProposalScoreVoting bind:selectedProposal bind:proposals bind:comments bind:phase />
+							<ProposalScoreVoting
+								bind:selectedProposal
+								bind:proposals
+								bind:comments
+								bind:phase
+							/>
 						</div>
 						<Button
 							Class="w-full bottom-0 mt-auto"
@@ -183,7 +204,11 @@
 					</div>
 					<div slot="right" class="relative h-full max-h-full overflow-y-auto">
 						{#if selectedProposal}
-							<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
+							<BackButton
+								bind:displayForm
+								bind:selectedProposal
+								bind:resetScroll
+							/>
 							<div class="flex flex-col p-2">
 								<span
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
@@ -197,7 +222,10 @@
 							{#if selectedProposal.attachments}
 								<div class="">
 									{#each selectedProposal.attachments as file}
-										<img alt="attachment" src={`${env.PUBLIC_API_URL}/media/${file.file}`} />
+										<img
+											alt="attachment"
+											src={`${env.PUBLIC_API_URL}/media/${file.file}`}
+										/>
 									{/each}
 								</div>
 							{/if}
@@ -217,9 +245,15 @@
 
 				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
 			{:else if phase === 'prediction_statement'}
-				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightFormSlot}>
+				<Structure
+					bind:phase
+					bind:poll
+					bind:resetScroll
+					showRight={showRightFormSlot}
+				>
 					<div slot="left" class="relative h-full flex flex-col">
-						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
+						<span
+							class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-full overflow-y-auto mb-5">
@@ -244,7 +278,11 @@
 					<div slot="right" class="relative h-full flex flex-col">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
-								<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
+								<BackButton
+									bind:displayForm
+									bind:selectedProposal
+									bind:resetScroll
+								/>
 								<div
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
 								>
@@ -255,15 +293,31 @@
 									limit={2}
 									lengthLimit={130}
 								/>
-								<PredictionStatements bind:selectedProposal bind:phase bind:poll />
+								<PredictionStatements
+									bind:selectedProposal
+									bind:phase
+									bind:poll
+								/>
 							</div>
 						{:else if proposalsToPredictionMarket.length === 0}
-							<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
-							<span class="text-center block text-primary dark:text-secondary font-semibold pt-4">
-								{$_('To make a consequence, please select at least one proposal')}
+							<BackButton
+								bind:displayForm
+								bind:selectedProposal
+								bind:resetScroll
+							/>
+							<span
+								class="text-center block text-primary dark:text-secondary font-semibold pt-4"
+							>
+								{$_(
+									'To make a consequence, please select at least one proposal'
+								)}
 							</span>
 						{:else if displayForm}
-							<Predictions bind:proposals bind:poll bind:proposalsToPredictionMarket />
+							<Predictions
+								bind:proposals
+								bind:poll
+								bind:proposalsToPredictionMarket
+							/>
 						{/if}
 					</div>
 					<div slot="bottom">
@@ -273,9 +327,15 @@
 
 				<!-- PHASE 4: PREDICTION BETTING -->
 			{:else if phase === 'prediction_bet'}
-				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightSlot}>
+				<Structure
+					bind:phase
+					bind:poll
+					bind:resetScroll
+					showRight={showRightSlot}
+				>
 					<div slot="left" class="h-full">
-						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
+						<span
+							class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-[90%] overflow-y-auto">
@@ -296,13 +356,22 @@
 								>
 									{selectedProposal.title}
 								</div>
-								<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
+								<BackButton
+									bind:displayForm
+									bind:selectedProposal
+									bind:resetScroll
+								/>
 								<NewDescription
 									description={selectedProposal.description}
 									limit={2}
 									lengthLimit={130}
 								/>
-								<PredictionStatements {getPollData} bind:selectedProposal bind:phase bind:poll />
+								<PredictionStatements
+									{getPollData}
+									bind:selectedProposal
+									bind:phase
+									bind:poll
+								/>
 							</div>
 						{/if}
 					</div>
@@ -313,13 +382,24 @@
 
 				<!-- PHASE 5: DELEGATE VOTING -->
 			{:else if phase === 'delegate_vote'}
-				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightSlot}>
+				<Structure
+					bind:phase
+					bind:poll
+					bind:resetScroll
+					showRight={showRightSlot}
+				>
 					<div slot="left" class="h-full">
-						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
+						<span
+							class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-[90%] overflow-y-auto">
-							<ProposalScoreVoting bind:comments bind:proposals bind:phase bind:selectedProposal />
+							<ProposalScoreVoting
+								bind:comments
+								bind:proposals
+								bind:phase
+								bind:selectedProposal
+							/>
 						</div>
 					</div>
 					<div slot="right">
@@ -330,13 +410,21 @@
 								>
 									{selectedProposal.title}
 								</div>
-								<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
+								<BackButton
+									bind:displayForm
+									bind:selectedProposal
+									bind:resetScroll
+								/>
 								<NewDescription
 									description={selectedProposal.description}
 									limit={2}
 									lengthLimit={130}
 								/>
-								<PredictionStatements bind:selectedProposal bind:phase bind:poll />
+								<PredictionStatements
+									bind:selectedProposal
+									bind:phase
+									bind:poll
+								/>
 							</div>
 						{/if}
 					</div>
@@ -347,9 +435,15 @@
 
 				<!-- PHASE 6: NON-DELEGATE VOTING -->
 			{:else if phase === 'vote'}
-				<Structure bind:phase bind:poll bind:resetScroll showRight={showRightSlot}>
+				<Structure
+					bind:phase
+					bind:poll
+					bind:resetScroll
+					showRight={showRightSlot}
+				>
 					<div slot="left" class="h-full" id="proposals-section">
-						<span class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
+						<span
+							class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div>
@@ -360,7 +454,12 @@
 							{/if}
 						</div>
 						<div class="max-h-[90%] overflow-y-auto">
-							<ProposalScoreVoting bind:comments bind:proposals bind:selectedProposal bind:phase />
+							<ProposalScoreVoting
+								bind:comments
+								bind:proposals
+								bind:selectedProposal
+								bind:phase
+							/>
 						</div>
 					</div>
 					<div slot="right">
@@ -369,7 +468,11 @@
 								<div
 									class="text-primary text-lg dark:text-secondary font-semibold block break-words"
 								>
-									<BackButton bind:displayForm bind:selectedProposal bind:resetScroll />
+									<BackButton
+										bind:displayForm
+										bind:selectedProposal
+										bind:resetScroll
+									/>
 									{selectedProposal.title}
 								</div>
 								<NewDescription
@@ -377,7 +480,11 @@
 									limit={2}
 									lengthLimit={130}
 								/>
-								<PredictionStatements bind:selectedProposal bind:phase bind:poll />
+								<PredictionStatements
+									bind:selectedProposal
+									bind:phase
+									bind:poll
+								/>
 							</div>
 						{/if}
 					</div>
@@ -416,7 +523,9 @@
 			{/if}
 		{/if}
 	{:else if !loading}
-		<div class="p-4 bg-white dark:bg-darkobject dark:text-darkmodeText mt-4 rounded shadow">
+		<div
+			class="p-4 bg-white dark:bg-darkobject dark:text-darkmodeText mt-4 rounded shadow"
+		>
 			<p>{$_('No poll found, it might have been deleted')}</p>
 			<Button onClick={() => history.back()}><Fa icon={faArrowLeft} /></Button>
 		</div>

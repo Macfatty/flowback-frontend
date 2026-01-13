@@ -62,10 +62,9 @@
 			formData.append('attachments', image);
 		});
 
-		console.log(groupSelection, typeof groupSelection, 'SELECTION');
 		const { res, json } = await fetchRequest(
 			'POST',
-			groupSelection
+			groupSelection && groupId
 				? `group/${groupId}/kanban/entry/create`
 				: 'user/kanban/entry/create',
 			formData,
@@ -141,7 +140,7 @@
 				/>
 
 				<RadioButtons2
-					label="Hello"
+					label=""
 					name="groupSelection"
 					labels={['Group', 'Personal']}
 					values={[1, 0]}

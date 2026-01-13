@@ -75,6 +75,12 @@
 	};
 
 	onMount(async () => {
+		let groupId =
+			Number(new URLSearchParams(document.location.search).get('groupId')) ??
+			null;
+		if (groupId) groupIds.push(groupId);
+		else userChecked = true;
+
 		await getKanbanEntries();
 
 		interval = setInterval(async () => {

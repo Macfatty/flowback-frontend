@@ -21,6 +21,8 @@
 		reportModalShow = $state(false),
 		deleteModalShow = $state(false);
 
+	const source = new URLSearchParams(window.location.search).get('source');
+
 	// Fixes a bug where clicking between threads (because of links or in notification) doesn't update page properly
 	$effect(() => {
 		const { threadId } = $page.params;
@@ -53,10 +55,17 @@
 		>
 			<button
 				class="cursor-pointer bg-white dark:bg-darkobject dark:text-darkmodeText justify-center m-auto"
-				onclick={() =>
-					new URLSearchParams(window.location.search).get('source') === 'home'
-						? goto('/home')
-						: goto(`/groups/${$page.params.groupId}?page=flow`)}
+				onclick={() => {
+					if (source === 'home') goto('/home');
+					else if (source === 'group')
+						goto(`/groups/${$page.params.groupId}?page=flow`);
+					else if (
+						source === 'delegate-history' ||
+						source === 'notification' ||
+						source === 'create'
+					)
+						history.back();
+				}}
 			>
 				<Fa icon={faArrowLeft} />
 			</button>
@@ -126,7 +135,7 @@
 			class="p-4 bg-white dark:bg-darkobject dark:text-darkmodeText mt-4 rounded shadow"
 		>
 			<p>{$_('No thread found, it might have been deleted')}</p>
-			<Button onClick={() => history.back()}><Fa icon={faArrowLeft} /></Button>
+			<Button onClick={() => goto('groups')}><Fa icon={faArrowLeft} /></Button>
 		</div>
 	{/if}
 </Layout>

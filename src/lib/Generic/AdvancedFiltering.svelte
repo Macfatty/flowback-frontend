@@ -76,37 +76,43 @@
 	$inspect(workgroups);
 </script>
 
-<Modal bind:open={openFilter}>
-	<div slot="body">
-		<input type="checkbox" bind:checked={userChecked} value={true} />
-		{$_('User Schedule')} <br />
+<Modal bind:open={openFilter} Class="max-w-[600px]">
+	<div slot="body" class="flex flex-col items-start">
+		<div class="flex">
+			<input type="checkbox" bind:checked={userChecked} value />
+			<span class="ml-2">{$_('User Schedule')}</span>
+		</div>
 		{#each groups as group}
-			<input
-				type="checkbox"
-				onchange={() => {
-					if (groupIds.includes(group.id)) {
-						groupIds = groupIds.filter((id) => id !== group.id);
-					} else {
-						groupIds = [...groupIds, group.id];
-					}
-				}}
-				checked={groupIds.includes(group.id)}
-			/>
-			{group.name} <br />
-
-			{#each workgroups.filter((w) => w.group_id === group.id) as workgroup}
+			<div class="flex">
 				<input
 					type="checkbox"
 					onchange={() => {
-						if (workgroupIds.includes(workgroup.id)) {
-							workgroupIds = workgroupIds.filter((id) => id !== workgroup.id);
+						if (groupIds.includes(group.id)) {
+							groupIds = groupIds.filter((id) => id !== group.id);
 						} else {
-							workgroupIds = [...workgroupIds, workgroup.id];
+							groupIds = [...groupIds, group.id];
 						}
 					}}
-					checked={workgroupIds.includes(workgroup.id)}
+					checked={groupIds.includes(group.id)}
 				/>
-				{workgroup.name} <br />
+				<span class="ml-2 break-all">{group.name}</span>
+			</div>
+
+			{#each workgroups.filter((w) => w.group_id === group.id) as workgroup}
+				<div class="flex ml-8">
+					<input
+						type="checkbox"
+						onchange={() => {
+							if (workgroupIds.includes(workgroup.id)) {
+								workgroupIds = workgroupIds.filter((id) => id !== workgroup.id);
+							} else {
+								workgroupIds = [...workgroupIds, workgroup.id];
+							}
+						}}
+						checked={workgroupIds.includes(workgroup.id)}
+					/>
+					<span class="ml-2">{workgroup.name}</span>
+				</div>
 			{/each}
 		{/each}
 	</div>

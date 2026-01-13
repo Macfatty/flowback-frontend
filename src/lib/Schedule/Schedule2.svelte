@@ -174,10 +174,6 @@
 
 		selectedEvent = ScheduleItem2Default;
 		open = false;
-
-		// Scuffed solution to solve dates going on the wrong places when clicking and dragging
-		// TODO: Find a better solution
-		// scheduleEventList();
 	};
 
 	const ScheduleEventDelete = async (event_id: number) => {
@@ -237,8 +233,8 @@
 			select: (selectionInfo) => {
 				open = true;
 				selectedEvent = ScheduleItem2Default;
-				selectedStartDate = selectionInfo.start.toISOString().slice(0, 16);
-				selectedEndDate = selectionInfo.end.toISOString().slice(0, 16);
+				selectedStartDate = selectionInfo.start.toISOString();
+				selectedEndDate = selectionInfo.end.toISOString();
 			},
 
 			customButtons: {
@@ -260,8 +256,8 @@
 					events.find((e) => e.id.toString() === info.event.id) ??
 					selectedEvent;
 
-				selectedStartDate = selectedEvent.start_date.slice(0, 16) ?? '';
-				selectedEndDate = selectedEvent.end_date?.slice(0, 16) ?? '';
+				selectedStartDate = selectedEvent.start_date ?? '';
+				selectedEndDate = selectedEvent.end_date ?? '';
 			},
 			eventDrop: (info) => {
 				selectedEvent =
@@ -269,10 +265,9 @@
 					selectedEvent;
 
 				selectedStartDate = info.event.start?.toISOString() ?? '';
-				selectedEndDate =
-					selectedEvent.end_date?.slice(0, 16) ??
-					selectedEvent.start_date.slice(0, 16) ??
-					'';
+				selectedEndDate = info.event.end?.toISOString() ?? '';
+				// selectedEndDate =
+				// 	selectedEvent.end_date ?? selectedEvent.start_date ?? '';
 
 				scheduleEventUpdate();
 			},
@@ -358,7 +353,7 @@
 			Number(new URLSearchParams(document.location.search).get('groupId')) ??
 			null;
 		if (groupId) groupIds.push(groupId);
-		if (!groupId) userChecked = true;
+		else userChecked = true;
 
 		await scheduleEventList();
 		renderCalendar();
@@ -409,6 +404,8 @@
 	]}
 	onClose={() => {
 		selectedEvent = ScheduleItem2Default;
+		console.log('HERER?');
+		scheduleEventList();
 	}}
 	stopAtPropagation={false}
 >
@@ -416,9 +413,16 @@
 		<div role="form">
 			<TextInput label="Title" bind:value={selectedEvent.title} />
 			<TextArea label="Description" bind:value={selectedEvent.description} />
-			<input type="datetime-local" bind:value={selectedStartDate} />
-			<input type="datetime-local" bind:value={selectedEndDate} />
-			<input type="number" bind:value={selectedEvent.repeat_frequency} />
+
+			<input type="datetime" bind:value={selectedStartDate} />
+			<input type="datetime" bind:value={selectedEndDate} />
+
+			<Select
+				disableFirstChoice
+				labels={['One off', 'Daily', 'Weekly', 'Monthly', 'Yearly']}
+				values={[null, 1, 2, 3, 4]}
+				bind:value={selectedEvent.repeat_frequency}
+			/>
 
 			<!-- Select Groups -->
 			<Select
@@ -466,8 +470,7 @@
 			/>
 
 			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />
-			<TextInput label="Tag" bind:value={selectedEvent.tag_name} />
-			{selectedEvent.id}
+			<!-- <TextInput label="Tag" bind:value={selectedEvent.tag_name} /> -->
 			<NotificationOptions
 				type="event"
 				id={selectedEvent.id}

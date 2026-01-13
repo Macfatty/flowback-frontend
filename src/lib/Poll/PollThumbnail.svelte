@@ -234,27 +234,29 @@
 			class="flex gap-4 items-center pb-2 w-full justify-between dark:text-secondary"
 		>
 			<!-- Button for going to the group the poll is from -->
-			<button
-				onclick={() =>
-					poll?.group_joined
-						? goto(`groups/${poll?.group_id}`)
-						: ErrorHandlerStore.set({
-								message: 'You must join the group to access it',
-								success: false
-							})}
-				class:hover:underline={poll?.group_joined}
-				class="text-black dark:text-darkmodeText flex items-center"
-			>
-				<img
-					class="h-6 w-6 mr-1 rounded-full break-word"
-					src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
-					alt={'Poll Thumbnail'}
-					onerror={(e) => onThumbnailError(e, DefaultBanner)}
-				/>
-				<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
-					>{poll?.group_name}</span
+			{#if !page.params.groupId}
+				<button
+					onclick={() =>
+						poll?.group_joined
+							? goto(`groups/${poll?.group_id}`)
+							: ErrorHandlerStore.set({
+									message: 'You must join the group to access the group',
+									success: false
+								})}
+					class:hover:underline={poll?.group_joined}
+					class="text-black dark:text-darkmodeText flex items-center"
 				>
-			</button>
+					<img
+						class="h-6 w-6 mr-1 rounded-full break-word"
+						src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
+						alt={'Poll Thumbnail'}
+						onerror={(e) => onThumbnailError(e, DefaultBanner)}
+					/>
+					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
+						>{poll?.group_name}</span
+					>
+				</button>
+			{/if}
 		</div>
 		{#if poll?.created_by?.user}
 			<div class="text-black dark:text-darkmodeText flex items-center">

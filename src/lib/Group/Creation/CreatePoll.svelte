@@ -14,7 +14,11 @@
 	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
 	import Tab from '$lib/Generic/Tab.svelte';
 	import { env } from '$env/dynamic/public';
-	import { faAlignLeft, faArrowLeft, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faAlignLeft,
+		faArrowLeft,
+		faCalendarAlt
+	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { onDestroy, onMount } from 'svelte';
 	import Select from '$lib/Generic/Select.svelte';
@@ -60,7 +64,8 @@
 
 		if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE' && pushToBlockchain) {
 			blockchain_id = await createPollBlockchain(Number(groupId), title);
-			if (blockchain_id) formData.append('blockchain_id', blockchain_id.toString());
+			if (blockchain_id)
+				formData.append('blockchain_id', blockchain_id.toString());
 		}
 
 		formData.append('title', title);
@@ -78,7 +83,10 @@
 			formData.append('end_date', times[1].toISOString());
 		}
 		formData.append('allow_fast_forward', isFF.toString());
-		formData.append('poll_type', (selectedPoll === 'Text Poll' ? 4 : 3).toString());
+		formData.append(
+			'poll_type',
+			(selectedPoll === 'Text Poll' ? 4 : 3).toString()
+		);
 		formData.append('dynamic', selectedPoll === 'Text Poll' ? 'false' : 'true');
 		formData.append('public', isPublic.toString());
 		formData.append('pinned', 'false');
@@ -145,7 +153,9 @@
 			return;
 		}
 
-		goto(`groups/${$page.url.searchParams.get('id')}/thread/${json}`);
+		goto(
+			`groups/${$page.url.searchParams.get('id')}/thread/${json}?source=create`
+		);
 	};
 
 	const getWorkGroupList = async () => {
@@ -175,7 +185,9 @@
 
 	$effect(() => {
 		times =
-			selectedPoll === 'Text Poll' ? new Array(8).fill(new Date()) : new Array(2).fill(new Date());
+			selectedPoll === 'Text Poll'
+				? new Array(8).fill(new Date())
+				: new Array(2).fill(new Date());
 	});
 </script>
 
@@ -195,8 +207,14 @@
 		<Fa icon={faArrowLeft} />
 	</button>
 	<Loader {loading}>
-		<div class="bg-white dark:bg-darkobject p-6 shadow-xl flex flex-col gap-3 rounded">
-			<Tab displayNames={['Poll', 'Thread']} tabs={['poll', 'thread']} bind:selectedPage />
+		<div
+			class="bg-white dark:bg-darkobject p-6 shadow-xl flex flex-col gap-3 rounded"
+		>
+			<Tab
+				displayNames={['Poll', 'Thread']}
+				tabs={['poll', 'thread']}
+				bind:selectedPage
+			/>
 
 			{#if selectedPage === 'poll'}
 				<RadioButtons2
@@ -211,8 +229,17 @@
 				/>
 			{/if}
 
-			<TextInput inputClass="bg-white" required label="Title" bind:value={title} />
-			<TextArea label="Description" bind:value={description} inputClass="whitespace-pre-wrap" />
+			<TextInput
+				inputClass="bg-white"
+				required
+				label="Title"
+				bind:value={title}
+			/>
+			<TextArea
+				label="Description"
+				bind:value={description}
+				inputClass="whitespace-pre-wrap"
+			/>
 			<FileUploads bind:files={images} disableCropping />
 
 			{#if selectedPage === 'poll'}
@@ -236,7 +263,8 @@
 			{/if}
 
 			<Select
-				disabled={(selectedPage !== 'thread' && selectedPoll !== 'Date Poll') || isPublic}
+				disabled={(selectedPage !== 'thread' && selectedPoll !== 'Date Poll') ||
+					isPublic}
 				classInner="border border-gray-300"
 				label={$_('Work Group')}
 				labels={workGroups.map((workGroup) => workGroup.name)}
@@ -246,7 +274,9 @@
 				innerLabel={$_('No workgroup assigned')}
 			/>
 
-			<Button type="submit" disabled={loading} Class={'bg-primary p-3 mt-3'}>{$_('Post')}</Button>
+			<Button type="submit" disabled={loading} Class={'bg-primary p-3 mt-3'}
+				>{$_('Post')}</Button
+			>
 		</div>
 	</Loader>
 </form>

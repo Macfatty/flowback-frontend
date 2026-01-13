@@ -109,6 +109,7 @@
 							() => ((reportModalShow = true), (choicesOpen = false))
 						]}
 						Class="text-black justify-self-center"
+						ClassInner="-translate-x-2/3 md:translate-x-0"
 					/>
 				</div>
 			{/if}
