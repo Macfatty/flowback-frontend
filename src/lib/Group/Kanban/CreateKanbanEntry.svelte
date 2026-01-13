@@ -141,7 +141,7 @@
 				/>
 
 				<RadioButtons2
-					label="Hello"
+					label=""
 					name="groupSelection"
 					labels={['Group', 'Personal']}
 					values={[1, 0]}
