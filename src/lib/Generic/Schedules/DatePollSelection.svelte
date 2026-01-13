@@ -3,7 +3,11 @@
 -->
 
 <script lang="ts">
-	import { faCheck, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faCheck,
+		faChevronLeft,
+		faChevronRight
+	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
 	import { page } from '$app/stores';
@@ -65,7 +69,10 @@
 		// Saved dates are meant to match tbe backend, while selected dates matches what the user has selected in the frontend
 		savedDates = json.results.map((vote: any) => ({
 			id: vote.proposal,
-			date: new Date(proposals.find((proposal) => proposal.id === vote.proposal)?.start_date ?? '')
+			date: new Date(
+				proposals.find((proposal) => proposal.id === vote.proposal)
+					?.start_date ?? ''
+			)
 		}));
 
 		selectedDates = savedDates;
@@ -88,13 +95,20 @@
 			} else {
 				const end_date = new Date(selectedDate.date.getTime() + 60 * 60 * 1000);
 
-				const { res, json } = await fetchRequest('POST', `group/poll/${pollId}/proposal/create`, {
-					start_date: selectedDate.date,
-					end_date
-				});
+				const { res, json } = await fetchRequest(
+					'POST',
+					`group/poll/${pollId}/proposal/create`,
+					{
+						start_date: selectedDate.date,
+						end_date
+					}
+				);
 
 				if (!res.ok) {
-					ErrorHandlerStore.set({ message: "Couldn't save some dates", success: false });
+					ErrorHandlerStore.set({
+						message: "Couldn't save some dates",
+						success: false
+					});
 					continue;
 				}
 
@@ -108,7 +122,10 @@
 			const { results } = await ProposalsApi.getProposals(pollId);
 			proposals = results;
 		} catch (error) {
-			ErrorHandlerStore.set({ message: "Couldn't save selections", success: false });
+			ErrorHandlerStore.set({
+				message: "Couldn't save selections",
+				success: false
+			});
 			loading = false;
 			return;
 		}
@@ -116,7 +133,10 @@
 		savedDates = selectedDates;
 		noChanges = true;
 		loading = false;
-		ErrorHandlerStore.set({ message: 'Successfully saved selections', success: true });
+		ErrorHandlerStore.set({
+			message: 'Successfully saved selections',
+			success: true
+		});
 	}
 
 	// Triggers when user clicks "Clear" button
@@ -134,12 +154,17 @@
 		// If date is already selected, remove it; otherwise add it
 
 		if (cellPreviouslySelected) {
-			selectedDates = selectedDates.filter((d) => d.date.getTime() !== date.getTime());
+			selectedDates = selectedDates.filter(
+				(d) => d.date.getTime() !== date.getTime()
+			);
 		} else {
 			selectedDates = [
 				...selectedDates,
 				{
-					id: proposals.find((p) => new Date(p.start_date).getTime() === date.getTime())?.id ?? 0,
+					id:
+						proposals.find(
+							(p) => new Date(p.start_date).getTime() === date.getTime()
+						)?.id ?? 0,
 					date,
 					numOfVotes: 1
 				}
@@ -197,7 +222,13 @@
 	$: gridDates = Array.from({ length: y }, (_, j) =>
 		Array.from(
 			{ length: x },
-			(_, i) => new Date(monday?.getFullYear(), monday?.getMonth(), monday?.getDate() + i, j)
+			(_, i) =>
+				new Date(
+					monday?.getFullYear(),
+					monday?.getMonth(),
+					monday?.getDate() + i,
+					j
+				)
 		)
 	);
 
@@ -238,16 +269,27 @@
 		id="weekView"
 	>
 		{#each gridDates as row, j}
-			<div class="bg-primary text-white flex justify-center items-center px-0.5 
-				{$isMobile ? 'text-xs' : ''}">{j}:00</div>
+			<div
+				class="bg-primary text-white flex justify-center items-center px-0.5
+				{$isMobile ? 'text-xs' : ''}"
+			>
+				{j}:00
+			</div>
 			{#each row as date, i}
+				{@const proposal = proposals.find(
+					(p) => new Date(p.start_date).getTime() === date.getTime()
+				)}
+
 				<button
 					class="bg-white dark:bg-darkobject border h-12 w-full"
 					on:click={() => toggleDate(date)}
 				>
+					{proposal?.preliminary_score}
 					{#if selectedDates.find((_date) => _date.date.getTime() === date?.getTime())}
-						<div class="bg-green-600 w-full flex items-center justify-center h-full">
-							<Fa icon={faCheck} color="white" size="2x" />
+						<div
+							class="bg-green-600 w-full flex items-center justify-center h-full"
+						>
+							<!-- <Fa icon={faCheck} color="white" size="2x" /> -->
 						</div>
 					{:else}
 						<slot {i} {j} />
