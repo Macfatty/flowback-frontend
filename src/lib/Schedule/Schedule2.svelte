@@ -469,13 +469,13 @@
 
 			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />
 			<!-- <TextInput label="Tag" bind:value={selectedEvent.tag_name} /> -->
-			<!-- <NotificationOptions -->
-			<!-- 	type="event" -->
-			<!-- 	id={selectedEvent.id} -->
-			<!-- 	api={`schedule/${selectedEvent.schedule_id}/event/subscribe`} -->
-			<!-- 	labels={['subsc']} -->
-			<!-- 	categories={['subsc']} -->
-			<!-- /> -->
+			<NotificationOptions
+				type="event"
+				id={selectedEvent.id}
+				api={`schedule/${selectedEvent.schedule_id}/event/subscribe`}
+				labels={['subsc']}
+				categories={['subsc']}
+			/>
 		</div>
 	</div>
 </Modal>
