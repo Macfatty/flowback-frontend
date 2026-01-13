@@ -404,6 +404,8 @@
 	]}
 	onClose={() => {
 		selectedEvent = ScheduleItem2Default;
+		console.log('HERER?');
+		scheduleEventList();
 	}}
 	stopAtPropagation={false}
 >
