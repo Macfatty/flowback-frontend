@@ -415,7 +415,13 @@
 
 			<input type="datetime-local" bind:value={selectedStartDate} />
 			<input type="datetime-local" bind:value={selectedEndDate} />
-			<input type="number" bind:value={selectedEvent.repeat_frequency} />
+
+			<Select
+				disableFirstChoice
+				labels={['One off', 'Daily', 'Weekly', 'Monthly', 'Yearly']}
+				values={[0, 1, 2, 3, 4]}
+				bind:value={selectedEvent.repeat_frequency}
+			/>
 
 			<!-- Select Groups -->
 			<Select
@@ -464,7 +470,6 @@
 
 			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />
 			<TextInput label="Tag" bind:value={selectedEvent.tag_name} />
-			{selectedEvent.id}
 			<NotificationOptions
 				type="event"
 				id={selectedEvent.id}

@@ -63,7 +63,7 @@ export const ScheduleItem2Default = {
   end_date: new Date().toISOString().slice(0, 16),
   active: true,
   meeting_link: '',
-  repeat_frequency: null,
+  repeat_frequency: 0,
   tag_id: 0,
   tag_name: '',
   origin_name: '',
