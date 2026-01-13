@@ -239,7 +239,7 @@
 					poll?.group_joined
 						? goto(`groups/${poll?.group_id}`)
 						: ErrorHandlerStore.set({
-								message: 'You must join the group to access it',
+								message: 'You must join the group to access the group',
 								success: false
 							})}
 				class:hover:underline={poll?.group_joined}
