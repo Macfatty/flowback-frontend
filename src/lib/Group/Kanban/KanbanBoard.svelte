@@ -99,6 +99,7 @@
 	});
 
 	$effect(() => {
+		// A little ugly, but the or operator doesn't work
 		if (workgroupIds) getKanbanEntries();
 		if (groupIds) getKanbanEntries();
 		if (userChecked) getKanbanEntries();

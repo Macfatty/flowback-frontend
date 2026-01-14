@@ -372,9 +372,10 @@
 	});
 
 	$effect(() => {
-		// Somehow this console log fixes an issue with group filtering??? TODO: Fix this
-		console.log(groupIds, workgroupIds, userChecked);
-		scheduleEventList();
+		// A little ugly, but the or operator doesn't work
+		if (workgroupIds) scheduleEventList();
+		if (groupIds) scheduleEventList();
+		if (userChecked) scheduleEventList();
 	});
 </script>
 
