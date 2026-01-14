@@ -161,7 +161,7 @@
 							labels={$groupStore.map((group) => elipsis(group.name))}
 							values={$groupStore.map((group) => group.id)}
 							bind:value={groupId}
-							innerLabel={$_('No group assigned')}
+							innerLabel={$_('No group')}
 							innerLabelValue={null}
 							innerLabelOn={true}
 						/>
@@ -180,7 +180,7 @@
 								.filter((g) => g.group_id === groupId)
 								.map((group) => group.id)}
 							bind:value={workGroupId}
-							innerLabel={$_('No workgroup assigned')}
+							innerLabel={$_('No workgroup')}
 							innerLabelValue={null}
 							innerLabelOn={true}
 						/>

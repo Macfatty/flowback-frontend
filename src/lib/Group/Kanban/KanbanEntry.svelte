@@ -392,7 +392,7 @@
 							values={workGroups.map((group) => group.id)}
 							value={kanbanEdited.work_group?.id || ''}
 							onInput={handleChangeWorkGroup}
-							innerLabel={$_('No workgroup assigned')}
+							innerLabel={$_('No workgroup')}
 							innerLabelOn={true}
 						/>
 					</div>

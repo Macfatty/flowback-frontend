@@ -99,7 +99,9 @@
 	});
 
 	$effect(() => {
-		if (groupIds || workgroupIds || userChecked) getKanbanEntries();
+		if (workgroupIds) getKanbanEntries();
+		if (groupIds) getKanbanEntries();
+		if (userChecked) getKanbanEntries();
 	});
 </script>
 
