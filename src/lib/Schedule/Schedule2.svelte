@@ -419,7 +419,7 @@
 
 			<Select
 				disableFirstChoice
-				labels={['One off', 'Daily', 'Weekly', 'Monthly', 'Yearly']}
+				labels={['One-off', 'Daily', 'Weekly', 'Monthly', 'Yearly']}
 				values={[null, 1, 2, 3, 4]}
 				bind:value={selectedEvent.repeat_frequency}
 			/>
