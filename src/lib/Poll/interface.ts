@@ -22,6 +22,7 @@ export interface timeProposal {
   score: null | number;
   start_date: string;
   title: null | string;
+  preliminary_score: number;
 }
 
 export interface poll {

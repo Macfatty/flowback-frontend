@@ -87,7 +87,7 @@
 		{poll?.title}
 	</h1>
 
-	<div class="flex gap-3 justify-center m-auto pr-4">
+	<div class="inline-flex gap-4 items-baseline">
 		<NotificationOptions
 			type="poll"
 			id={poll?.id}
@@ -114,7 +114,7 @@
 					? [async () => (phase = await nextPhase(poll, phase))]
 					: [])
 			]}
-			ClassInner="-translate-x-full"
+			ClassInner="-translate-x-3/4"
 			id="poll-header-multiple-choices"
 		/>
 	</div>

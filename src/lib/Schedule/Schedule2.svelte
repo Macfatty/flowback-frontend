@@ -21,6 +21,7 @@
 	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 	import Select from '$lib/Generic/Select.svelte';
 	import { groupStore, workgroupStore } from '$lib/Group/Kanban/Kanban';
+	import { toDatetimeLocal } from '$lib/Generic/GenericFunctions';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
@@ -111,8 +112,8 @@
 		const { res, json } = await fetchRequest('POST', api, {
 			title: selectedEvent.title,
 			description: selectedEvent.description,
-			start_date: selectedStartDate,
-			end_date: selectedEndDate,
+			start_date: new Date(selectedStartDate).toISOString(),
+			end_date: new Date(selectedEndDate).toISOString(),
 			repeat_frequency: selectedEvent.repeat_frequency,
 			meeting_link: selectedEvent.meeting_link
 		});
@@ -145,12 +146,6 @@
 
 	const scheduleEventUpdate = async () => {
 		let api = getAPI('update');
-		console.log(
-			selectedEvent,
-			selectedStartDate,
-			selectedEndDate,
-			'updating event'
-		);
 
 		const { res, json } = await fetchRequest('POST', api, {
 			...selectedEvent,
@@ -233,8 +228,8 @@
 			select: (selectionInfo) => {
 				open = true;
 				selectedEvent = ScheduleItem2Default;
-				selectedStartDate = selectionInfo.start.toISOString();
-				selectedEndDate = selectionInfo.end.toISOString();
+				selectedStartDate = toDatetimeLocal(selectionInfo.start);
+				selectedEndDate = toDatetimeLocal(selectionInfo.end);
 			},
 
 			customButtons: {
@@ -256,26 +251,35 @@
 					events.find((e) => e.id.toString() === info.event.id) ??
 					selectedEvent;
 
-				selectedStartDate = selectedEvent.start_date ?? '';
-				selectedEndDate = selectedEvent.end_date ?? '';
+				//@ts-ignore
+				selectedStartDate = toDatetimeLocal(info.event.start);
+
+				//@ts-ignore
+				selectedEndDate = toDatetimeLocal(info.event.end);
 			},
 			eventDrop: (info) => {
 				selectedEvent =
 					events.find((e) => e.id.toString() === info.event.id) ??
 					selectedEvent;
 
-				selectedStartDate = info.event.start?.toISOString() ?? '';
-				selectedEndDate = info.event.end?.toISOString() ?? '';
-				// selectedEndDate =
-				// 	selectedEvent.end_date ?? selectedEvent.start_date ?? '';
+				//@ts-ignore
+				selectedStartDate = toDatetimeLocal(info.event.start);
+
+				//@ts-ignore
+				selectedEndDate = toDatetimeLocal(info.event.end);
 
 				scheduleEventUpdate();
 			},
 			eventResize: (info) => {
 				selectedEvent.title = info.event.title;
 				selectedEvent.id = Number(info.event.id);
-				selectedStartDate = info.event.start?.toISOString() ?? '';
-				selectedEndDate = info.event.end?.toISOString() ?? '';
+
+				//@ts-ignore
+				selectedStartDate = toDatetimeLocal(info.event.start);
+
+				//@ts-ignore
+				selectedEndDate = toDatetimeLocal(info.event.end);
+
 				scheduleEventUpdate();
 			},
 
@@ -404,7 +408,6 @@
 	]}
 	onClose={() => {
 		selectedEvent = ScheduleItem2Default;
-		console.log('HERER?');
 		scheduleEventList();
 	}}
 	stopAtPropagation={false}
@@ -414,12 +417,12 @@
 			<TextInput label="Title" bind:value={selectedEvent.title} />
 			<TextArea label="Description" bind:value={selectedEvent.description} />
 
-			<input type="datetime" bind:value={selectedStartDate} />
-			<input type="datetime" bind:value={selectedEndDate} />
+			<input type="datetime-local" bind:value={selectedStartDate} />
+			<input type="datetime-local" bind:value={selectedEndDate} />
 
 			<Select
 				disableFirstChoice
-				labels={['One off', 'Daily', 'Weekly', 'Monthly', 'Yearly']}
+				labels={['One-off', 'Daily', 'Weekly', 'Monthly', 'Yearly']}
 				values={[null, 1, 2, 3, 4]}
 				bind:value={selectedEvent.repeat_frequency}
 			/>

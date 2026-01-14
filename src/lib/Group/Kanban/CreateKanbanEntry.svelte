@@ -162,6 +162,7 @@
 							values={$groupStore.map((group) => group.id)}
 							bind:value={groupId}
 							innerLabel={$_('No group assigned')}
+							innerLabelValue={null}
 							innerLabelOn={true}
 						/>
 					</div>
@@ -180,6 +181,7 @@
 								.map((group) => group.id)}
 							bind:value={workGroupId}
 							innerLabel={$_('No workgroup assigned')}
+							innerLabelValue={null}
 							innerLabelOn={true}
 						/>
 					</div>

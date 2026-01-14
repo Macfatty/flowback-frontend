@@ -5,7 +5,6 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import { page } from '$app/stores';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { checkForLinks, elipsis } from '$lib/Generic/GenericFunctions';
 	import type { GroupUser } from '../interface';
@@ -27,7 +26,8 @@
 		users: GroupUser[],
 		removeKanbanEntry: (id: number) => void,
 		workGroups: WorkGroup[] = [],
-		getKanbanEntries: () => Promise<void>;
+		getKanbanEntries: () => Promise<void>,
+		toRemove: number[] = [];
 
 	const lanes = ['', 'Backlog', 'To do', 'In progress', 'Evaluation', 'Done'];
 
@@ -113,6 +113,10 @@
 			formData.append('end_date', '');
 		}
 
+		console.log(toRemove, toRemove.toString(), 'TOREM');
+		if (toRemove.toString() && toRemove.toString() !== '')
+			formData.append('attachments_remove', toRemove.toString());
+
 		if (images) {
 			images.forEach((image) => {
 				if (image instanceof File) formData.append('attachments_add', image);
@@ -173,7 +177,6 @@
 
 	const handleChangePriority = (e: any) => {
 		kanbanEdited.priority = Number(e.target.value);
-		console.log('Selected priority:', kanbanEdited.priority);
 	};
 
 	const deleteKanbanEntry = async () => {
@@ -278,22 +281,16 @@
 	<div
 		class="mt-2 gap-2 items-center text-sm hover:underline"
 		on:click={() => {
-			if ($page.params.groupId) goto(`/user?id=${kanban?.assignee?.id}`);
-			else if (kanban.origin_type === 'group')
-				goto(`/groups/${kanban.origin_id}`);
+			if (kanban.origin_type === 'group') goto(`/groups/${kanban.origin_id}`);
 		}}
 		role="button"
 		tabindex="0"
 		on:keydown
 	>
 		{#if kanban.origin_type === 'user'}
-			<ProfilePicture
-				username={kanban.created_by.username}
-				profilePicture={kanban.created_by.profile_image}
-				Class=""
-				size={1}
-			/>
-			{$_('My own')}
+			<span Class="text-xs dark:text-gray-500 text-gray-400 italic">
+				{$_('My own')}
+			</span>
 		{:else}
 			<span class="text-xs dark:text-gray-500 text-gray-400 italic"
 				>{$_('Group')}: {kanban.group_name}</span
@@ -389,7 +386,6 @@
 						<div class="block text-md">
 							{$_('Work Group')}
 						</div>
-
 						<Select
 							Class="rounded border border-gray-300 dark:border-gray-600 dark:bg-darkobject"
 							labels={workGroups.map((group) => elipsis(group.name))}
@@ -447,7 +443,7 @@
 						<div class="block text-md">
 							{$_('Attachments')}
 						</div>
-						<FileUploads bind:files={images} disableCropping />
+						<FileUploads bind:files={images} bind:toRemove disableCropping />
 					</div>
 				</div>
 				<!-- If not editing, so normal display -->
@@ -472,9 +468,9 @@
 							<button
 								class="text-right"
 								on:click={() => goto(`/groups/${kanban?.origin_id}`)}
-								>{kanban?.group_name}</button
+								>{kanban?.group_name ?? 'No Group'}</button
 							>
-							<p>{kanban?.work_group?.name}</p>
+							<p>{kanban?.work_group?.name ?? 'No Work Group'}</p>
 						{/if}
 
 						<p>
