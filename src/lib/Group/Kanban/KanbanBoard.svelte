@@ -36,10 +36,10 @@
 	const getKanbanEntries = async () => {
 		let _kanbanEntries = [];
 
-		const filter = `limit=${kanbanLimit}&order_by=priority_desc&title__icontains=${search}`;
+		const filter = `&limit=${kanbanLimit}&order_by=priority_desc&title__icontains=${search}`;
 
 		if (userChecked) {
-			let api = `user/kanban/entry/list?origin_type=user&${filter}`;
+			let api = `user/kanban/entry/list?origin_type=user${filter}`;
 			const { res, json } = await fetchRequest('GET', api);
 			if (res.ok) {
 				_kanbanEntries.push(json.results ?? []);
@@ -50,7 +50,7 @@
 			let apis = groupIds.map((id) =>
 				fetchRequest(
 					'GET',
-					`user/kanban/entry/list?origin_type=group&${filter}`
+					`user/kanban/entry/list?origin_type=group&${filter}&origin_ids=${id}`
 				)
 			);
 
@@ -61,16 +61,16 @@
 		}
 
 		if (workgroupIds.length > 0) {
-			// let apis = workgroupIds.map((id) =>
-			// 	fetchRequest(
-			// 		'GET',
-			// 		`group/${$workgroupStore.find((g) => g.id === id)?.group_id}/kanban/entry/list?${filter}&work_group_ids=${id}`
-			// 	)
-			// );
-			// let response = (await Promise.all(apis)).map(({ res, json }) => {
-			// 	if (res.ok) return json.results ?? [];
-			// });
-			// _kanbanEntries.push(response);
+			let apis = workgroupIds.map((id) =>
+				fetchRequest(
+					'GET',
+					`user/kanban/entry/list?${filter}&work_group_ids=${id}`
+				)
+			);
+			let response = (await Promise.all(apis)).map(({ res, json }) => {
+				if (res.ok) return json.results ?? [];
+			});
+			_kanbanEntries.push(response);
 		}
 
 		kanbanEntries = _kanbanEntries.flat(2);
