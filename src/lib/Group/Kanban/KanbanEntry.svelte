@@ -287,13 +287,9 @@
 		on:keydown
 	>
 		{#if kanban.origin_type === 'user'}
-			<ProfilePicture
-				username={kanban.created_by.username}
-				profilePicture={kanban.created_by.profile_image}
-				Class=""
-				size={1}
-			/>
-			{$_('My own')}
+			<span Class="text-xs dark:text-gray-500 text-gray-400 italic">
+				{$_('My own')}
+			</span>
 		{:else}
 			<span class="text-xs dark:text-gray-500 text-gray-400 italic"
 				>{$_('Group')}: {kanban.group_name}</span
