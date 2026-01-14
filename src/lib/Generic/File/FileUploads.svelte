@@ -9,14 +9,17 @@
 	export let files: (File | _File)[] = [],
 		minimalist = false,
 		Class = '',
-		disableCropping = false;
+		disableCropping = false,
+		toRemove: number[] = [];
 
 	// TODO: Refactor this
 	let file: File | _File | null = null;
 
-	const removeFile = (index: number) => {
+	const removeFile = (index: number, file: _File | File) => {
 		files.splice(index, 1);
 		files = files;
+		//@ts-ignore
+		toRemove.push(file.id);
 	};
 </script>
 
@@ -30,7 +33,7 @@
 
 				<button
 					class="ml-2 text-red-500 hover:text-red-700"
-					on:click={() => removeFile(i)}
+					on:click={() => removeFile(i, file)}
 					type="button"
 				>
 					<Fa icon={faTimes} />

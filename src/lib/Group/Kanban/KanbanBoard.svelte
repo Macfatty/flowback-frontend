@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { userStore } from '$lib/User/interfaces';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import KanbanEntry from './KanbanEntry.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
@@ -13,6 +14,7 @@
 	import { type kanban, type Filter, workgroupStore } from './Kanban';
 	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
+	import Button from '$lib/Generic/Button.svelte';
 
 	const tags = ['', 'Backlog', 'To do', 'Current', 'Evaluation', 'Done'];
 
@@ -27,7 +29,8 @@
 		lane: number = $state(1),
 		groupIds: number[] = $state([]),
 		workgroupIds: number[] = $state([]),
-		userChecked = $state(false);
+		userChecked = $state(false),
+		assignee_filter = $state(false);
 
 	const removeKanbanEntry = (id: number) => {
 		kanbanEntries.filter((entry) => entry.id !== id);
@@ -36,7 +39,8 @@
 	const getKanbanEntries = async () => {
 		let _kanbanEntries = [];
 
-		const filter = `&limit=${kanbanLimit}&order_by=priority_desc&title__icontains=${search}`;
+		let filter = `&limit=${kanbanLimit}&order_by=priority_desc&title__icontains=${search}`;
+		if (assignee_filter) filter += `&assignee_id=${$userStore?.id}`;
 
 		if (userChecked) {
 			let api = `user/kanban/entry/list?origin_type=user${filter}`;
@@ -50,7 +54,7 @@
 			let apis = groupIds.map((id) =>
 				fetchRequest(
 					'GET',
-					`user/kanban/entry/list?origin_type=group&${filter}&origin_ids=${id}`
+					`user/kanban/entry/list?origin_type=group&${filter}&origin_id=${id}`
 				)
 			);
 
@@ -105,6 +109,9 @@
 		Class}
 >
 	<AdvancedFiltering bind:groupIds bind:workgroupIds bind:userChecked />
+	<Button onClick={() => (assignee_filter = !assignee_filter)}
+		>Filter assignee you</Button
+	>
 
 	<TextInput
 		Class="flex-1 h-full placeholder-gray-600 rounded text-gray-500 bg-gray-100 dark:bg-darkobject dark:text-darkmodeText"
