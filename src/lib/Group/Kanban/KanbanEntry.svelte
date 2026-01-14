@@ -260,7 +260,7 @@
 			{kanban.title}
 		</div>
 
-		<div class="cursor-pointer hover:underline p-1">
+		<div class="cursor-pointer p-1">
 			{#if kanban.priority}
 				<KanbanIcons Class="text-sm" bind:priority={kanban.priority} />
 			{/if}
@@ -279,7 +279,7 @@
 		</div>
 	{/if}
 	<div
-		class="mt-2 gap-2 items-center text-sm hover:underline"
+		class="mt-2 gap-2 items-center text-sm"
 		on:click={() => {
 			if (kanban.origin_type === 'group') goto(`/groups/${kanban.origin_id}`);
 		}}
@@ -288,11 +288,14 @@
 		on:keydown
 	>
 		{#if kanban.origin_type === 'user'}
-			<span Class="text-xs dark:text-gray-500 text-gray-400 italic">
+			<span
+				class="hover:no-underline text-xs dark:text-gray-500 text-gray-400 italic"
+			>
 				{$_('My own')}
 			</span>
 		{:else}
-			<span class="text-xs dark:text-gray-500 text-gray-400 italic"
+			<span
+				class="hover:no-underline text-xs dark:text-gray-500 text-gray-400 italic"
 				>{$_('Group')}: {kanban.group_name}</span
 			>
 
@@ -319,7 +322,7 @@
 	{/if}
 	<div class="flex justify-between mt-3">
 		<button
-			class="cursor-pointer hover:text-gray-400 py-0.5 transition-all"
+			class="cursor-pointer py-0.5 transition-all"
 			on:click={(event) => {
 				event.stopPropagation();
 				if (kanban.lane > 1) {

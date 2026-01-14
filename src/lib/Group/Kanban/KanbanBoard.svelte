@@ -89,8 +89,8 @@
 
 		await getKanbanEntries();
 
-		interval = setInterval(async () => {
-			await getKanbanEntries();
+		interval = setInterval(() => {
+			getKanbanEntries();
 		}, 20000);
 	});
 
