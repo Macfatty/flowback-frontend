@@ -274,6 +274,7 @@
 				else selectedEndDate = selectedStartDate;
 
 				scheduleEventUpdate();
+				scheduleEventList();
 			},
 			eventResize: (info) => {
 				selectedEvent.title = info.event.title;
@@ -289,7 +290,6 @@
 
 				scheduleEventUpdate();
 			},
-
 			dayMaxEventRows: 3,
 			eventInteractive: true,
 			eventClassNames: 'cursor-pointer',
