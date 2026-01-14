@@ -251,29 +251,35 @@
 					events.find((e) => e.id.toString() === info.event.id) ??
 					selectedEvent;
 
-				selectedStartDate =
-					toDatetimeLocal(new Date(selectedEvent.start_date)) ?? '';
+				//@ts-ignore
+				selectedStartDate = toDatetimeLocal(info.event.start);
 
-				selectedEndDate =
-					toDatetimeLocal(new Date(selectedEvent?.end_date ?? '')) ?? '';
+				//@ts-ignore
+				selectedEndDate = toDatetimeLocal(info.event.end);
 			},
 			eventDrop: (info) => {
 				selectedEvent =
 					events.find((e) => e.id.toString() === info.event.id) ??
 					selectedEvent;
 
-				selectedStartDate = info.event.start?.toISOString() ?? '';
-				selectedEndDate = info.event.end?.toISOString() ?? '';
-				// selectedEndDate =
-				// 	selectedEvent.end_date ?? selectedEvent.start_date ?? '';
+				//@ts-ignore
+				selectedStartDate = toDatetimeLocal(info.event.start);
+
+				//@ts-ignore
+				selectedEndDate = toDatetimeLocal(info.event.end);
 
 				scheduleEventUpdate();
 			},
 			eventResize: (info) => {
 				selectedEvent.title = info.event.title;
 				selectedEvent.id = Number(info.event.id);
-				selectedStartDate = info.event.start?.toISOString() ?? '';
-				selectedEndDate = info.event.end?.toISOString() ?? '';
+
+				//@ts-ignore
+				selectedStartDate = toDatetimeLocal(info.event.start);
+
+				//@ts-ignore
+				selectedEndDate = toDatetimeLocal(info.event.end);
+
 				scheduleEventUpdate();
 			},
 
