@@ -389,7 +389,6 @@
 						<div class="block text-md">
 							{$_('Work Group')}
 						</div>
-
 						<Select
 							Class="rounded border border-gray-300 dark:border-gray-600 dark:bg-darkobject"
 							labels={workGroups.map((group) => elipsis(group.name))}
@@ -472,9 +471,9 @@
 							<button
 								class="text-right"
 								on:click={() => goto(`/groups/${kanban?.origin_id}`)}
-								>{kanban?.group_name}</button
+								>{kanban?.group_name ?? 'No Group'}</button
 							>
-							<p>{kanban?.work_group?.name}</p>
+							<p>{kanban?.work_group?.name ?? 'No Work Group'}</p>
 						{/if}
 
 						<p>
