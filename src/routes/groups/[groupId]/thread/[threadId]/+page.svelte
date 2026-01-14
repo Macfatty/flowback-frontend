@@ -91,7 +91,7 @@
 						() => (deleteModalShow = true),
 						() => (reportModalShow = true)
 					]}
-					ClassInner="-translate-x-2/3"
+					ClassInner="-translate-x-3/4"
 					id="poll-header-multiple-choices"
 				/>
 			</div>
