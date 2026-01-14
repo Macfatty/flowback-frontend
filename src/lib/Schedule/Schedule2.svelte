@@ -254,8 +254,11 @@
 				//@ts-ignore
 				selectedStartDate = toDatetimeLocal(info.event.start);
 
-				//@ts-ignore
-				selectedEndDate = toDatetimeLocal(info.event.end);
+				console.log(info.event, 'EVENT');
+				if (info.event.end)
+					//@ts-ignore
+					selectedEndDate = toDatetimeLocal(info.event.end);
+				else selectedEndDate = selectedStartDate;
 			},
 			eventDrop: (info) => {
 				selectedEvent =
@@ -265,8 +268,10 @@
 				//@ts-ignore
 				selectedStartDate = toDatetimeLocal(info.event.start);
 
-				//@ts-ignore
-				selectedEndDate = toDatetimeLocal(info.event.end);
+				if (info.event.end)
+					//@ts-ignore
+					selectedEndDate = toDatetimeLocal(info.event.end);
+				else selectedEndDate = selectedStartDate;
 
 				scheduleEventUpdate();
 			},
@@ -277,8 +282,10 @@
 				//@ts-ignore
 				selectedStartDate = toDatetimeLocal(info.event.start);
 
-				//@ts-ignore
-				selectedEndDate = toDatetimeLocal(info.event.end);
+				if (info.event.end)
+					//@ts-ignore
+					selectedEndDate = toDatetimeLocal(info.event.end);
+				else selectedEndDate = selectedStartDate;
 
 				scheduleEventUpdate();
 			},
