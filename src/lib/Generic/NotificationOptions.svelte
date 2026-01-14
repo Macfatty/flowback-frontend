@@ -110,7 +110,11 @@
 
 		const { res, json } = await fetchRequest('POST', `${api}`, payload);
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to subscribe', success: false });
+			ErrorHandlerStore.set({
+				message:
+					method === 'add' ? 'Failed to subscribe' : 'Failed to Unsubscribe',
+				success: false
+			});
 			return;
 		}
 

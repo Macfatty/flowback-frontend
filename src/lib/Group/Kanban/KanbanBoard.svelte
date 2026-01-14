@@ -91,7 +91,7 @@
 
 		interval = setInterval(async () => {
 			await getKanbanEntries();
-		}, 20410);
+		}, 20000);
 	});
 
 	onDestroy(() => {
