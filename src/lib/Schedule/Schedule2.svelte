@@ -21,6 +21,7 @@
 	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 	import Select from '$lib/Generic/Select.svelte';
 	import { groupStore, workgroupStore } from '$lib/Group/Kanban/Kanban';
+	import { toDatetimeLocal } from '$lib/Generic/GenericFunctions';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
@@ -145,12 +146,6 @@
 
 	const scheduleEventUpdate = async () => {
 		let api = getAPI('update');
-		console.log(
-			selectedEvent,
-			selectedStartDate,
-			selectedEndDate,
-			'updating event'
-		);
 
 		const { res, json } = await fetchRequest('POST', api, {
 			...selectedEvent,
@@ -233,7 +228,7 @@
 			select: (selectionInfo) => {
 				open = true;
 				selectedEvent = ScheduleItem2Default;
-				selectedStartDate = selectionInfo.start.toISOString();
+				selectedStartDate = selectionInfo.start.toDateTime;
 				selectedEndDate = selectionInfo.end.toISOString();
 			},
 
@@ -256,7 +251,8 @@
 					events.find((e) => e.id.toString() === info.event.id) ??
 					selectedEvent;
 
-				selectedStartDate = selectedEvent.start_date ?? '';
+				selectedStartDate =
+					toDatetimeLocal(new Date(selectedEvent.start_date)) ?? '';
 				selectedEndDate = selectedEvent.end_date ?? '';
 			},
 			eventDrop: (info) => {
@@ -404,7 +400,6 @@
 	]}
 	onClose={() => {
 		selectedEvent = ScheduleItem2Default;
-		console.log('HERER?');
 		scheduleEventList();
 	}}
 	stopAtPropagation={false}
@@ -414,7 +409,7 @@
 			<TextInput label="Title" bind:value={selectedEvent.title} />
 			<TextArea label="Description" bind:value={selectedEvent.description} />
 
-			<input type="datetime" bind:value={selectedStartDate} />
+			<input type="datetime-local" bind:value={selectedStartDate} />
 			<input type="datetime" bind:value={selectedEndDate} />
 
 			<Select

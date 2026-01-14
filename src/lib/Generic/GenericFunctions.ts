@@ -149,3 +149,34 @@ export function arraysEqual(arr1: any[], arr2: any[]) {
   if (arr1.length !== arr2.length) return false;
   return arr1.every((value, index) => value === arr2[index]);
 }
+
+// https://webreflection.medium.com/using-the-input-datetime-local-9503e7efdce
+export function toDatetimeLocal(date: Date) {
+  var
+    ten = function (i: any) {
+      return (i < 10 ? '0' : '') + i;
+    },
+    YYYY = date.getFullYear(),
+    MM = ten(date.getMonth() + 1),
+    DD = ten(date.getDate()),
+    HH = ten(date.getHours()),
+    II = ten(date.getMinutes()),
+    SS = ten(date.getSeconds())
+    ;
+  return YYYY + '-' + MM + '-' + DD + 'T' +
+    HH + ':' + II + ':' + SS;
+};
+
+// export function bst(BST:string) {
+//   // BST should not be present as UTC time
+//   return new Date(BST).toISOString().slice(0, 16) === BST ?
+//     // if it is, it needs to be removed
+//     function () {
+//       return new Date(
+//         this.getTime() +
+//         (this.getTimezoneOffset() * 60000)
+//       ).toISOString();
+//     } :
+//     // otherwise can just be equivalent of toISOString
+//     Date.prototype.toISOString;
+// } ('2006-06-06T06:06'));
