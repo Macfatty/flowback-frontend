@@ -5,7 +5,6 @@
 	import ProfilePicture from '$lib/Generic/ProfilePicture.svelte';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
-	import { page } from '$app/stores';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { checkForLinks, elipsis } from '$lib/Generic/GenericFunctions';
 	import type { GroupUser } from '../interface';
@@ -278,9 +277,7 @@
 	<div
 		class="mt-2 gap-2 items-center text-sm hover:underline"
 		on:click={() => {
-			if ($page.params.groupId) goto(`/user?id=${kanban?.assignee?.id}`);
-			else if (kanban.origin_type === 'group')
-				goto(`/groups/${kanban.origin_id}`);
+			if (kanban.origin_type === 'group') goto(`/groups/${kanban.origin_id}`);
 		}}
 		role="button"
 		tabindex="0"
