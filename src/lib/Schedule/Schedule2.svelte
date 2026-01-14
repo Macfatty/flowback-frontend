@@ -112,8 +112,8 @@
 		const { res, json } = await fetchRequest('POST', api, {
 			title: selectedEvent.title,
 			description: selectedEvent.description,
-			start_date: selectedStartDate,
-			end_date: selectedEndDate,
+			start_date: new Date(selectedStartDate).toISOString(),
+			end_date: new Date(selectedEndDate).toISOString(),
 			repeat_frequency: selectedEvent.repeat_frequency,
 			meeting_link: selectedEvent.meeting_link
 		});
@@ -228,8 +228,8 @@
 			select: (selectionInfo) => {
 				open = true;
 				selectedEvent = ScheduleItem2Default;
-				selectedStartDate = selectionInfo.start.toDateTime;
-				selectedEndDate = selectionInfo.end.toISOString();
+				selectedStartDate = toDatetimeLocal(selectionInfo.start);
+				selectedEndDate = toDatetimeLocal(selectionInfo.end);
 			},
 
 			customButtons: {
@@ -253,7 +253,9 @@
 
 				selectedStartDate =
 					toDatetimeLocal(new Date(selectedEvent.start_date)) ?? '';
-				selectedEndDate = selectedEvent.end_date ?? '';
+
+				selectedEndDate =
+					toDatetimeLocal(new Date(selectedEvent?.end_date ?? '')) ?? '';
 			},
 			eventDrop: (info) => {
 				selectedEvent =
@@ -410,7 +412,7 @@
 			<TextArea label="Description" bind:value={selectedEvent.description} />
 
 			<input type="datetime-local" bind:value={selectedStartDate} />
-			<input type="datetime" bind:value={selectedEndDate} />
+			<input type="datetime-local" bind:value={selectedEndDate} />
 
 			<Select
 				disableFirstChoice
