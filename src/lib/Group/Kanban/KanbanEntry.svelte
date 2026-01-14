@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { groupStore } from '$lib/Group/Kanban/Kanban';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
 	import { fade } from 'svelte/transition';
@@ -199,14 +200,6 @@
 		removeKanbanEntry(kanban.id);
 	};
 
-	const getGroupKanbanIsFrom = async () => {
-		const { res, json } = await fetchRequest(
-			'GET',
-			`group/${kanban.origin_id}/detail`
-		);
-		kanban.group_name = json.name;
-	};
-
 	const formatEndDate = async () => {
 		const en = (await import('javascript-time-ago/locale/en')).default;
 		endDate = new TimeAgo('en');
@@ -223,7 +216,6 @@
 	};
 
 	onMount(async () => {
-		if (kanban?.origin_type === 'group') await getGroupKanbanIsFrom();
 		if (kanban.end_date !== null) await formatEndDate();
 	});
 
@@ -296,7 +288,8 @@
 		{:else}
 			<span
 				class="hover:no-underline text-xs dark:text-gray-500 text-gray-400 italic"
-				>{$_('Group')}: {kanban.group_name}</span
+				>{$_('Group')}: {$groupStore.find((g) => g.id === kanban.origin_id)
+					?.name}</span
 			>
 
 			<span class="text-xs dark:text-gray-500 text-gray-400 italic">
