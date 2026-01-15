@@ -77,7 +77,10 @@
 			_kanbanEntries.push(response);
 		}
 
-		kanbanEntries = _kanbanEntries.flat(2);
+		kanbanEntries = _kanbanEntries
+			.flat(2)
+			//@ts-ignore
+			.sort((a, b) => a.priority < b.priority);
 	};
 
 	onMount(async () => {
