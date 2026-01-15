@@ -53,8 +53,8 @@
 		created_at__lt=${filter.to}
     `;
 
-		// if (next === undefined) {
-		if (true) {
+		if (next === undefined) {
+			// if (true) {
 			loading = true;
 
 			const { res, json } = await fetchRequest(
@@ -68,19 +68,18 @@
 					message: 'Could not get polls',
 					success: false
 				});
-			console.log(json.results);
 
 			$posts = json.results ?? [];
 			next = json.next ?? null;
 
-			//TODO: Get lazyloading to work again.
+			// Next is null whenever one has reached the last next-page for the api
 		} else if (next === null) return;
 		else {
 			loading = true;
-			const { res, json } = await fetchRequest('GET', next ?? '');
+			const { res, json } = await fetchRequest('GET', next);
 			if (!res.ok) {
 				ErrorHandlerStore.set({
-					message: 'Could not get polls',
+					message: 'Could not load more polls',
 					success: false
 				});
 			}
@@ -155,7 +154,7 @@
 	}
 </script>
 
-<svelte:body onscroll={() => lazyLoading(fetchPolls)} />
+<svelte:window onscroll={() => lazyLoading(fetchPolls)} />
 
 <div class={`${Class} dark:text-darkmodeText`}>
 	<Loader bind:loading>
