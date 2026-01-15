@@ -254,8 +254,11 @@
 				//@ts-ignore
 				selectedStartDate = toDatetimeLocal(info.event.start);
 
-				//@ts-ignore
-				selectedEndDate = toDatetimeLocal(info.event.end);
+				console.log(info.event, 'EVENT');
+				if (info.event.end)
+					//@ts-ignore
+					selectedEndDate = toDatetimeLocal(info.event.end);
+				else selectedEndDate = selectedStartDate;
 			},
 			eventDrop: (info) => {
 				selectedEvent =
@@ -265,10 +268,13 @@
 				//@ts-ignore
 				selectedStartDate = toDatetimeLocal(info.event.start);
 
-				//@ts-ignore
-				selectedEndDate = toDatetimeLocal(info.event.end);
+				if (info.event.end)
+					//@ts-ignore
+					selectedEndDate = toDatetimeLocal(info.event.end);
+				else selectedEndDate = selectedStartDate;
 
 				scheduleEventUpdate();
+				scheduleEventList();
 			},
 			eventResize: (info) => {
 				selectedEvent.title = info.event.title;
@@ -277,12 +283,13 @@
 				//@ts-ignore
 				selectedStartDate = toDatetimeLocal(info.event.start);
 
-				//@ts-ignore
-				selectedEndDate = toDatetimeLocal(info.event.end);
+				if (info.event.end)
+					//@ts-ignore
+					selectedEndDate = toDatetimeLocal(info.event.end);
+				else selectedEndDate = selectedStartDate;
 
 				scheduleEventUpdate();
 			},
-
 			dayMaxEventRows: 3,
 			eventInteractive: true,
 			eventClassNames: 'cursor-pointer',
@@ -372,9 +379,10 @@
 	});
 
 	$effect(() => {
-		// Somehow this console log fixes an issue with group filtering??? TODO: Fix this
-		console.log(groupIds, workgroupIds, userChecked);
-		scheduleEventList();
+		// A little ugly, but the or operator doesn't work
+		if (workgroupIds) scheduleEventList();
+		if (groupIds) scheduleEventList();
+		if (userChecked) scheduleEventList();
 	});
 </script>
 

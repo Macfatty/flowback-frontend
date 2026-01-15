@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { groupStore } from '$lib/Group/Kanban/Kanban';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
 	import { fade } from 'svelte/transition';
@@ -199,14 +200,6 @@
 		removeKanbanEntry(kanban.id);
 	};
 
-	const getGroupKanbanIsFrom = async () => {
-		const { res, json } = await fetchRequest(
-			'GET',
-			`group/${kanban.origin_id}/detail`
-		);
-		kanban.group_name = json.name;
-	};
-
 	const formatEndDate = async () => {
 		const en = (await import('javascript-time-ago/locale/en')).default;
 		endDate = new TimeAgo('en');
@@ -223,7 +216,6 @@
 	};
 
 	onMount(async () => {
-		if (kanban?.origin_type === 'group') await getGroupKanbanIsFrom();
 		if (kanban.end_date !== null) await formatEndDate();
 	});
 
@@ -260,7 +252,7 @@
 			{kanban.title}
 		</div>
 
-		<div class="cursor-pointer hover:underline p-1">
+		<div class="cursor-pointer p-1">
 			{#if kanban.priority}
 				<KanbanIcons Class="text-sm" bind:priority={kanban.priority} />
 			{/if}
@@ -279,7 +271,7 @@
 		</div>
 	{/if}
 	<div
-		class="mt-2 gap-2 items-center text-sm hover:underline"
+		class="mt-2 gap-2 items-center text-sm"
 		on:click={() => {
 			if (kanban.origin_type === 'group') goto(`/groups/${kanban.origin_id}`);
 		}}
@@ -288,12 +280,16 @@
 		on:keydown
 	>
 		{#if kanban.origin_type === 'user'}
-			<span Class="text-xs dark:text-gray-500 text-gray-400 italic">
+			<span
+				class="hover:no-underline text-xs dark:text-gray-500 text-gray-400 italic"
+			>
 				{$_('My own')}
 			</span>
 		{:else}
-			<span class="text-xs dark:text-gray-500 text-gray-400 italic"
-				>{$_('Group')}: {kanban.group_name}</span
+			<span
+				class="hover:no-underline text-xs dark:text-gray-500 text-gray-400 italic"
+				>{$_('Group')}: {$groupStore.find((g) => g.id === kanban.origin_id)
+					?.name}</span
 			>
 
 			<span class="text-xs dark:text-gray-500 text-gray-400 italic">
@@ -319,7 +315,7 @@
 	{/if}
 	<div class="flex justify-between mt-3">
 		<button
-			class="cursor-pointer hover:text-gray-400 py-0.5 transition-all"
+			class="cursor-pointer py-0.5 transition-all"
 			on:click={(event) => {
 				event.stopPropagation();
 				if (kanban.lane > 1) {
@@ -392,7 +388,7 @@
 							values={workGroups.map((group) => group.id)}
 							value={kanbanEdited.work_group?.id || ''}
 							onInput={handleChangeWorkGroup}
-							innerLabel={$_('No workgroup assigned')}
+							innerLabel={$_('No workgroup')}
 							innerLabelOn={true}
 						/>
 					</div>

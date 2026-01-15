@@ -284,13 +284,13 @@
 					class="bg-white dark:bg-darkobject border h-12 w-full"
 					on:click={() => toggleDate(date)}
 				>
-					{proposal?.preliminary_score}
+					{#if proposal?.preliminary_score && proposal?.preliminary_score > 0}
+						{proposal?.preliminary_score}
+					{/if}
 					{#if selectedDates.find((_date) => _date.date.getTime() === date?.getTime())}
 						<div
 							class="bg-green-600 w-full flex items-center justify-center h-full"
-						>
-							<!-- <Fa icon={faCheck} color="white" size="2x" /> -->
-						</div>
+						></div>
 					{:else}
 						<slot {i} {j} />
 					{/if}

@@ -77,7 +77,10 @@
 			_kanbanEntries.push(response);
 		}
 
-		kanbanEntries = _kanbanEntries.flat(2);
+		kanbanEntries = _kanbanEntries
+			.flat(2)
+			//@ts-ignore
+			.sort((a, b) => a.priority < b.priority);
 	};
 
 	onMount(async () => {
@@ -89,9 +92,9 @@
 
 		await getKanbanEntries();
 
-		interval = setInterval(async () => {
-			await getKanbanEntries();
-		}, 20410);
+		interval = setInterval(() => {
+			getKanbanEntries();
+		}, 20000);
 	});
 
 	onDestroy(() => {
@@ -99,7 +102,10 @@
 	});
 
 	$effect(() => {
-		if (groupIds || workgroupIds || userChecked) getKanbanEntries();
+		// A little ugly, but the or operator doesn't work
+		if (workgroupIds) getKanbanEntries();
+		if (groupIds) getKanbanEntries();
+		if (userChecked) getKanbanEntries();
 	});
 </script>
 
