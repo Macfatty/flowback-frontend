@@ -109,14 +109,20 @@
 	const setUserGroupInfo = async () => {
 		if (!$userStore?.id) return;
 
-		if (!$page.params.groupId) {
+		if (
+			!$page.params.groupId &&
+			!(window.location.pathname === '/createpoll')
+		) {
 			groupUserStore.set(null);
 			return;
 		}
 
+		// Fix for /createpoll page
+		let search = new URLSearchParams(window.location.search).get('id');
+
 		const { res, json } = await fetchRequest(
 			'GET',
-			`group/${$page.params.groupId}/users?user_id=${$userStore?.id}`
+			`group/${$page.params.groupId ?? search}/users?user_id=${$userStore?.id}`
 		);
 
 		if (!res.ok || json?.results.length === 0) {
