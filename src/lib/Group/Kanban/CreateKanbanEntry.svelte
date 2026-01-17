@@ -35,8 +35,7 @@
 		loading = false,
 		images: File[] = [],
 		selectedWorkgroupId: number | null = null,
-		selectedGroupId = 0,
-		groupId: number | null = null;
+		selectedGroupId = 0;
 
 	const createKanbanEntry = async () => {
 		loading = true;
@@ -63,8 +62,8 @@
 
 		const { res, json } = await fetchRequest(
 			'POST',
-			selectedGroupId && groupId
-				? `group/${groupId}/kanban/entry/create`
+			selectedGroupId
+				? `group/${selectedGroupId}/kanban/entry/create`
 				: 'user/kanban/entry/create',
 			formData,
 			true, // Needs authorization
