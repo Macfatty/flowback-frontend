@@ -33,18 +33,18 @@
 		darkMode: boolean = false;
 
 	//When adminn presses the pin tack symbol, pin the thread
-	const pinThread = async (thread: Thread) => {
+	const pinThread = async (_thread: Thread) => {
 		const { json, res } = await fetchRequest(
 			'POST',
-			`group/thread/${thread?.id}/update`,
+			`group/thread/${_thread?.id}/update`,
 			{
-				pinned: !thread?.pinned
+				pinned: !_thread?.pinned
 			}
 		);
 		if (!res.ok) return;
 
-		thread.pinned = !thread?.pinned;
-		threads = threads;
+		_thread.pinned = !_thread?.pinned;
+		thread = { ..._thread };
 	};
 
 	onMount(() => {
