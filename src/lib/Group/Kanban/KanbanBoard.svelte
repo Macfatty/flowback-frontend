@@ -4,7 +4,6 @@
 	import KanbanEntry from './KanbanEntry.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { _ } from 'svelte-i18n';
-	import type { GroupUser } from '../interface';
 	import { onDestroy, onMount } from 'svelte';
 	import { kanban as kanbanLimit } from '../../Generic/APILimits.json';
 	import CreateKanbanEntry from './CreateKanbanEntry.svelte';
@@ -21,7 +20,6 @@
 	let { Class = '' } = $props();
 
 	let kanbanEntries: kanban[] = $state([]),
-		users: GroupUser[] = $state([]),
 		interval: any,
 		open = $state(false),
 		search = $state(''),
@@ -148,19 +146,20 @@
 							}}><Fa icon={faPlus} size="12px" /></button
 						>
 					</div>
+
 					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
 						{#each kanbanEntries as kanban, j}
 							{#if kanban?.lane === i}
 								<KanbanEntry
 									bind:kanban={kanbanEntries[j]}
 									bind:workGroups
-									{users}
 									{removeKanbanEntry}
 									{getKanbanEntries}
 								/>
 							{/if}
 						{/each}
 					</ul>
+
 					<div class="flex justify-between pt-4">
 						<button
 							class="text-sm flex items-center gap-2"
@@ -182,7 +181,6 @@
 
 <CreateKanbanEntry
 	bind:open
-	bind:users
 	bind:workGroups
 	bind:lane
 	{getKanbanEntries}

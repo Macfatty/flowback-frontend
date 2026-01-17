@@ -12,14 +12,15 @@
 	import Select from '$lib/Generic/Select.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import GroupSelection from '$lib/Generic/GroupSelection.svelte';
+	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
 
 	export let open: boolean = false,
-		users: GroupUser[] = [],
 		workGroups: WorkGroup[] = [],
 		lane: number = 1,
 		getKanbanEntries: () => Promise<void>;
 
-	let description = '',
+	let users: GroupUser[] = [],
+		description = '',
 		title = '',
 		assignee: number | null = null,
 		priorities = [5, 4, 3, 2, 1],
@@ -106,6 +107,22 @@
 	const handleChangePriority = (e: any) => {
 		priority = Number(e.target.value);
 	};
+
+	const getUsers = async () => {
+		if (!selectedGroupId) {
+			users = [];
+			return;
+		}
+
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/${selectedGroupId}/users?limit=${groupMembersLimit}`
+		);
+
+		if (res.ok) users = json?.results ?? [];
+	};
+
+	$: selectedGroupId, getUsers();
 </script>
 
 <Modal
@@ -172,6 +189,7 @@
 						<label class="block text-md" for="handle-change-assignee">
 							{$_('Assignee')}
 						</label>
+
 						<Select
 							Class="w-full"
 							classInner="rounded p-1 border border-gray-300 dark:border-gray-600 dark:bg-darkobject"

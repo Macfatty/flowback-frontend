@@ -26,8 +26,8 @@
 	import { env } from '$env/dynamic/public';
 
 	export let thread: Thread;
-	let threads: Thread[] = [],
-		reportModalShow = false,
+
+	let reportModalShow = false,
 		deleteModalShow = false,
 		choicesOpen = false,
 		darkMode: boolean = false;

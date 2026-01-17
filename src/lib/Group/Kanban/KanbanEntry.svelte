@@ -23,13 +23,15 @@
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import FileUploads from '$lib/Generic/File/FileUploads.svelte';
 	import GroupSelection from '$lib/Generic/GroupSelection.svelte';
+	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
 
 	export let kanban: kanban,
-		users: GroupUser[],
 		removeKanbanEntry: (id: number) => void,
 		workGroups: WorkGroup[] = [],
 		getKanbanEntries: () => Promise<void>,
 		toRemove: number[] = [];
+
+	let users: GroupUser[] = [];
 
 	const lanes = ['', 'Backlog', 'To do', 'In progress', 'Evaluation', 'Done'];
 
@@ -215,6 +217,20 @@
 		isEditing = false;
 	};
 
+	const getUsers = async () => {
+		if (kanban.origin_type !== 'group' || !kanban.origin_id) {
+			users = [];
+			return;
+		}
+
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/${kanban.origin_id}/users?limit=${groupMembersLimit}`
+		);
+
+		if (res.ok) users = json?.results ?? [];
+	};
+
 	onMount(async () => {
 		if (kanban.end_date !== null) await formatEndDate();
 	});
@@ -228,6 +244,7 @@
 
 	$: if (isEditing) {
 		images = kanban.attachments ?? [];
+		getUsers();
 	}
 </script>
 
@@ -415,6 +432,7 @@
 						<div class="block text-md">
 							{$_('Assignee')}
 						</div>
+
 						<Select
 							Class="w-full"
 							classInner="border bg-white border-gray-300 dark:border-gray-600 dark:bg-darkobject"
