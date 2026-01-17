@@ -378,7 +378,11 @@
 					id="kanban-edit-description"
 				/>
 
-				<GroupSelection bind:selectedWorkgroupId bind:selectedGroupId />
+				<GroupSelection
+					selectedGroupId={kanban.origin_id}
+					bind:selectedWorkgroupId
+					disableGroup
+				/>
 
 				<div class="text-left w-[300px]">
 					<div class="block text-md pt-2">
