@@ -185,6 +185,7 @@
 		ErrorHandlerStore.subscribe((_errorhandler) => {
 			if (!_errorhandler) return;
 			if (_errorhandler.message === '') return;
+			if (!errorhandler) return;
 
 			errorhandler.addPopup({
 				message: _errorhandler.message,
