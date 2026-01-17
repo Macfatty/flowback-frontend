@@ -20,8 +20,8 @@
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 	import Select from '$lib/Generic/Select.svelte';
-	import { groupStore, workgroupStore } from '$lib/Group/Kanban/Kanban';
 	import { toDatetimeLocal } from '$lib/Generic/GenericFunctions';
+	import GroupSelection from '$lib/Generic/GroupSelection.svelte';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
@@ -435,50 +435,7 @@
 				bind:value={selectedEvent.repeat_frequency}
 			/>
 
-			<!-- Select Groups -->
-			<Select
-				disableFirstChoice
-				labels={[
-					'user',
-					...$groupStore.filter((g) => g.joined).map((g) => g.name)
-				]}
-				values={[null, ...$groupStore.filter((g) => g.joined).map((g) => g.id)]}
-				bind:value={selectedGroupId}
-				label="Group"
-			/>
-
-			<!-- Select Workgroups -->
-			<Select
-				disableFirstChoice
-				labels={[
-					'none',
-					...$workgroupStore
-						.filter(
-							(w) =>
-								w.joined &&
-								$groupStore.find(
-									(g) =>
-										g.id === selectedGroupId && g.joined && g.id === w.group_id
-								)
-						)
-						.map((w) => w.name)
-				]}
-				values={[
-					null,
-					...$workgroupStore
-						.filter(
-							(w) =>
-								w.joined &&
-								$groupStore.find(
-									(g) =>
-										g.id === selectedGroupId && g.joined && g.id === w.group_id
-								)
-						)
-						.map((w) => w.id)
-				]}
-				bind:value={selectedWorkgroupId}
-				label="WorkGroup"
-			/>
+			<GroupSelection bind:selectedGroupId bind:selectedWorkgroupId />
 
 			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />
 			<!-- <TextInput label="Tag" bind:value={selectedEvent.tag_name} /> -->

@@ -22,13 +22,16 @@
 	import Select from '$lib/Generic/Select.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import FileUploads from '$lib/Generic/File/FileUploads.svelte';
+	import GroupSelection from '$lib/Generic/GroupSelection.svelte';
+	import { groupMembers as groupMembersLimit } from '$lib/Generic/APILimits.json';
 
 	export let kanban: kanban,
-		users: GroupUser[],
 		removeKanbanEntry: (id: number) => void,
 		workGroups: WorkGroup[] = [],
 		getKanbanEntries: () => Promise<void>,
 		toRemove: number[] = [];
+
+	let users: GroupUser[] = [];
 
 	const lanes = ['', 'Backlog', 'To do', 'In progress', 'Evaluation', 'Done'];
 
@@ -56,7 +59,9 @@
 			attachments: kanban.attachments || []
 		},
 		images: File[],
-		endDate: TimeAgo;
+		endDate: TimeAgo,
+		selectedWorkgroupId: null | Number = null,
+		selectedGroupId: null | Number = null;
 
 	// Helper function to format date for datetime-local input
 	function formatDateForInput(
@@ -102,8 +107,11 @@
 		if (kanbanEdited.priority)
 			formData.append('priority', kanbanEdited.priority.toString());
 
-		if (kanbanEdited.work_group?.id)
-			formData.append('work_group_id', kanbanEdited.work_group.id.toString());
+		if (selectedWorkgroupId)
+			formData.append('work_group_id', selectedWorkgroupId?.toString() ?? '');
+
+		if (selectedGroupId)
+			formData.append('group_id', selectedGroupId?.toString() ?? '');
 
 		if (kanbanEdited.end_date) {
 			const _endDate = new Date(kanbanEdited.end_date);
@@ -114,7 +122,6 @@
 			formData.append('end_date', '');
 		}
 
-		console.log(toRemove, toRemove.toString(), 'TOREM');
 		if (toRemove.toString() && toRemove.toString() !== '')
 			formData.append('attachments_remove', toRemove.toString());
 
@@ -205,14 +212,23 @@
 		endDate = new TimeAgo('en');
 	};
 
-	const handleChangeWorkGroup = (e: any) => {
-		kanbanEdited.work_group =
-			workGroups.find((group) => group.id === Number(e.target.value)) || null;
-	};
-
 	const cancelUpdateKanban = () => {
 		initializeKanbanEdited();
 		isEditing = false;
+	};
+
+	const getUsers = async () => {
+		if (kanban.origin_type !== 'group' || !kanban.origin_id) {
+			users = [];
+			return;
+		}
+
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/${kanban.origin_id}/users?limit=${groupMembersLimit}`
+		);
+
+		if (res.ok) users = json?.results ?? [];
 	};
 
 	onMount(async () => {
@@ -228,6 +244,7 @@
 
 	$: if (isEditing) {
 		images = kanban.attachments ?? [];
+		getUsers();
 	}
 </script>
 
@@ -377,22 +394,13 @@
 					Class="overflow-scroll"
 					id="kanban-edit-description"
 				/>
-				{#if kanban.origin_type === 'group'}
-					<div class="text-left">
-						<div class="block text-md">
-							{$_('Work Group')}
-						</div>
-						<Select
-							Class="rounded border border-gray-300 dark:border-gray-600 dark:bg-darkobject"
-							labels={workGroups.map((group) => elipsis(group.name))}
-							values={workGroups.map((group) => group.id)}
-							value={kanbanEdited.work_group?.id || ''}
-							onInput={handleChangeWorkGroup}
-							innerLabel={$_('No workgroup')}
-							innerLabelOn={true}
-						/>
-					</div>
-				{/if}
+
+				<GroupSelection
+					selectedGroupId={kanban.origin_id}
+					bind:selectedWorkgroupId
+					disableGroup
+				/>
+
 				<div class="text-left w-[300px]">
 					<div class="block text-md pt-2">
 						{$_('End date')}
@@ -424,6 +432,7 @@
 						<div class="block text-md">
 							{$_('Assignee')}
 						</div>
+
 						<Select
 							Class="w-full"
 							classInner="border bg-white border-gray-300 dark:border-gray-600 dark:bg-darkobject"
@@ -460,14 +469,13 @@
 					</div>
 
 					<div class="flex flex-col text-right gap-1 w-full">
-						{#if kanban.origin_type === 'group'}
-							<button
-								class="text-right"
-								on:click={() => goto(`/groups/${kanban?.origin_id}`)}
-								>{kanban?.group_name ?? 'No Group'}</button
-							>
-							<p>{kanban?.work_group?.name ?? 'No Work Group'}</p>
-						{/if}
+						<button
+							class="text-right"
+							on:click={() => goto(`/groups/${kanban?.origin_id}`)}
+							>{$groupStore.find((g) => g.id === kanban.origin_id)
+								?.name}</button
+						>
+						<p>{kanban?.work_group?.name ?? 'No Work Group'}</p>
 
 						<p>
 							{#if kanban?.end_date}

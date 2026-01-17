@@ -285,8 +285,27 @@
 					on:click={() => toggleDate(date)}
 				>
 					{#if proposal?.preliminary_score && proposal?.preliminary_score > 0}
-						{proposal?.preliminary_score}
+						{@const score = (() => {
+							// This function allows for real-time updating
+							// as the user is clicking on the dates.
+							let s = proposal?.preliminary_score;
+
+							if (
+								savedDates.find((s) => s.date.valueOf() === date.valueOf()) &&
+								!selectedDates.find((s) => s.date.valueOf() === date.valueOf())
+							)
+								s -= 1;
+							else if (
+								!savedDates.find((s) => s.date.valueOf() === date.valueOf()) &&
+								selectedDates.find((s) => s.date.valueOf() === date.valueOf())
+							)
+								s += 1;
+
+							return s;
+						})()}
+						{score}
 					{/if}
+
 					{#if selectedDates.find((_date) => _date.date.getTime() === date?.getTime())}
 						<div
 							class="bg-green-600 w-full flex items-center justify-center h-full"
