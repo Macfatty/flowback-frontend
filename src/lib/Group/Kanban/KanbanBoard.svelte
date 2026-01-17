@@ -100,7 +100,7 @@
 	});
 
 	$effect(() => {
-		// A little ugly, but the or operator doesn't work
+		// A little ugly, but the "or" operator doesn't work
 		if (workgroupIds) getKanbanEntries();
 		if (groupIds) getKanbanEntries();
 		if (userChecked) getKanbanEntries();
@@ -179,9 +179,4 @@
 	</div>
 </div>
 
-<CreateKanbanEntry
-	bind:open
-	bind:workGroups
-	bind:lane
-	{getKanbanEntries}
-/>
+<CreateKanbanEntry bind:open bind:workGroups bind:lane {getKanbanEntries} />

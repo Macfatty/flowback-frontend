@@ -8,7 +8,7 @@
 	import FileUploads from '$lib/Generic/File/FileUploads.svelte';
 	import type { GroupUser } from '../interface';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import type { WorkGroup } from '../WorkingGroups/interface';
+	import type { WorkGroup, WorkGroupUser } from '../WorkingGroups/interface';
 	import Select from '$lib/Generic/Select.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import GroupSelection from '$lib/Generic/GroupSelection.svelte';
@@ -20,6 +20,7 @@
 		getKanbanEntries: () => Promise<void>;
 
 	let users: GroupUser[] = [],
+		workgroupUsers: GroupUser[] = [],
 		description = '',
 		title = '',
 		assignee: number | null = null,
@@ -122,7 +123,27 @@
 		if (res.ok) users = json?.results ?? [];
 	};
 
+	const getWorkgroupUsers = async () => {
+		if (!selectedWorkgroupId || !selectedGroupId) {
+			workgroupUsers = [];
+			return;
+		}
+
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/workgroup/${selectedWorkgroupId}/list?limit=${groupMembersLimit}`
+		);
+
+		if (res.ok) {
+			workgroupUsers = json?.results?.map((u: WorkGroupUser) => u.group_user) ?? [];
+			users = users.filter((u: GroupUser) =>
+				workgroupUsers.find((k) => k.id === u.id)
+			);
+		}
+	};
+
 	$: selectedGroupId, getUsers();
+	$: selectedWorkgroupId, getWorkgroupUsers();
 </script>
 
 <Modal
