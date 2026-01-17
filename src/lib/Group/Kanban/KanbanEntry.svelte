@@ -120,7 +120,6 @@
 			formData.append('end_date', '');
 		}
 
-		console.log(toRemove, toRemove.toString(), 'TOREM');
 		if (toRemove.toString() && toRemove.toString() !== '')
 			formData.append('attachments_remove', toRemove.toString());
 
@@ -451,7 +450,8 @@
 						<button
 							class="text-right"
 							on:click={() => goto(`/groups/${kanban?.origin_id}`)}
-							>{kanban?.group_name ?? 'No Group'}</button
+							>{$groupStore.find((g) => g.id === kanban.origin_id)
+								?.name}</button
 						>
 						<p>{kanban?.work_group?.name ?? 'No Work Group'}</p>
 
