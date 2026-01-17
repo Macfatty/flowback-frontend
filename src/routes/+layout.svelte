@@ -5,7 +5,10 @@
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { groupUserPermissionStore, groupUserStore } from '$lib/Group/interface';
+	import {
+		groupUserPermissionStore,
+		groupUserStore
+	} from '$lib/Group/interface';
 	import Chat from '$lib/Chat/Chat.svelte';
 	import { _ } from 'svelte-i18n';
 	import { env } from '$env/dynamic/public';
@@ -36,7 +39,6 @@
 	//TODO: Avoid code duplication and introduce group stores for storing group data.
 	const getGrouplist = async () => {
 		const { res, json } = await fetchRequest('GET', 'group/list');
-		console.log(res, 'Group-List');
 
 		if (!res.ok) return;
 		else return json?.results;
@@ -49,7 +51,9 @@
 
 		let pathname = window?.location?.pathname;
 
-		const sessionExpirationTime = window.localStorage.getItem('sessionExpirationTime');
+		const sessionExpirationTime = window.localStorage.getItem(
+			'sessionExpirationTime'
+		);
 		if (
 			sessionExpirationTime &&
 			!relativePath.includes('/login') &&
@@ -57,7 +61,10 @@
 		) {
 			localStorage.removeItem('token');
 			goto('/login');
-		} else if (!window.localStorage.getItem('token') && !relativePath.includes('/login'))
+		} else if (
+			!window.localStorage.getItem('token') &&
+			!relativePath.includes('/login')
+		)
 			goto('/login');
 		else if (
 			//For one group flowback, if no group has been setup, redirect to create group.
@@ -82,22 +89,30 @@
 	};
 
 	const checkSessionExpiration = () => {
-		const sessionExpiration = window.localStorage.getItem('sessionExpirationTime');
+		const sessionExpiration = window.localStorage.getItem(
+			'sessionExpirationTime'
+		);
 		if (!sessionExpiration) return;
 
 		const expirationTime = Number(sessionExpiration);
 		const currentTime = new Date().getTime();
 
 		// Check if it will expire within next hour
-		if (expirationTime > currentTime && expirationTime - currentTime < 3600000) {
+		if (
+			expirationTime > currentTime &&
+			expirationTime - currentTime < 3600000
+		) {
 			openLoginModal = true;
 		}
 	};
 
 	const setUserGroupInfo = async () => {
-		if (!$page.params.groupId) return;
-
 		if (!$userStore?.id) return;
+
+		if (!$page.params.groupId) {
+			groupUserStore.set(null);
+			return;
+		}
 
 		const { res, json } = await fetchRequest(
 			'GET',
@@ -136,7 +151,9 @@
 		checkSessionExpiration();
 		await setUserInfo();
 		await setUserGroupInfo();
-		groupUserPermissionStore.set(await setUserGroupPermissionInfo($groupUserStore));
+		groupUserPermissionStore.set(
+			await setUserGroupPermissionInfo($groupUserStore)
+		);
 	};
 
 	//Initialize Translation, which should happen before any lifecycle hooks.
@@ -145,7 +162,9 @@
 	onMount(async () => {
 		await setUserInfo();
 		await setUserGroupInfo();
-		groupUserPermissionStore.set(await setUserGroupPermissionInfo($groupUserStore));
+		groupUserPermissionStore.set(
+			await setUserGroupPermissionInfo($groupUserStore)
+		);
 		isBrowser = true;
 		getWorkingGroupList();
 		showUI = shouldShowUI();
