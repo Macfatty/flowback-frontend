@@ -151,9 +151,9 @@
 	});
 
 	$: if (filter) {
+		next = undefined;
 		fetchPolls();
 		fetchRelatedContent();
-		next = undefined;
 	}
 </script>
 
