@@ -197,7 +197,7 @@
 					/>
 
 					<!-- Pin poll button for admins -->
-					{#if $groupUserStore?.is_admin || poll?.pinned}
+					{#if page.params.groupId && ($groupUserStore?.is_admin || poll?.pinned)}
 						<button
 							class:cursor-pointer={$groupUserStore?.is_admin}
 							onclick={pinPoll}

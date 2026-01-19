@@ -4,26 +4,31 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import type { Group } from '$lib/Group/interface';
+	import type { User } from '$lib/User/interfaces';
 	import Button from '$lib/Generic/Button.svelte';
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import { onMount } from 'svelte';
 	import { groupStore, workgroupStore } from '$lib/Group/Kanban/Kanban';
+	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
 
 	interface Props {
 		groupIds: number[];
 		workgroupIds: number[];
 		userChecked: boolean;
+		assigneeId: number;
 	}
 
 	let {
 		groupIds = $bindable(),
 		workgroupIds = $bindable(),
-		userChecked = $bindable()
+		userChecked = $bindable(),
+		assigneeId = $bindable()
 	}: Props = $props();
 
 	let openFilter = $state(false),
 		groups: Group[] = $state([]),
-		workgroups: WorkGroup[] = $state([]);
+		workgroups: WorkGroup[] = $state([]),
+		users: User[] = $state([]);
 
 	const getGroups = async () => {
 		// let urlFilter = 'joined=true';
@@ -68,9 +73,24 @@
 		$workgroupStore = workgroups;
 	};
 
+	const getUsers = async () => {
+		const { res, json } = await fetchRequest('GET', 'users?limit=1000');
+
+		if (!res.ok) {
+			ErrorHandlerStore.set({
+				message: 'Failed to fetch users',
+				success: false
+			});
+			return;
+		}
+
+		users = json?.results ?? [];
+	};
+
 	onMount(async () => {
 		await getGroups();
 		await getWorkgroups();
+		await getUsers();
 	});
 
 	$inspect(workgroups);
@@ -115,6 +135,17 @@
 				</div>
 			{/each}
 		{/each}
+
+		<div class="mt-4 w-full">
+			<RadioButtons2
+				name="assignee"
+				label="Assignee"
+				labels={['None', ...users.map((u) => u.username)]}
+				values={[0, ...users.map((u) => u.id)]}
+				bind:value={assigneeId}
+				onChange={(v: String) => (assigneeId = Number(v))}
+			/>
+		</div>
 	</div>
 </Modal>
 
