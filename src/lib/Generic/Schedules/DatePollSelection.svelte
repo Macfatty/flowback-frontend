@@ -152,7 +152,6 @@
 		);
 
 		// If date is already selected, remove it; otherwise add it
-
 		if (cellPreviouslySelected) {
 			selectedDates = selectedDates.filter(
 				(d) => d.date.getTime() !== date.getTime()
