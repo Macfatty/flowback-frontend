@@ -419,6 +419,19 @@
 	}}
 	stopAtPropagation={false}
 >
+	<div slot="header">
+		<span>Create an Event</span>
+		{#if selectedEvent.schedule_id !== 0}
+			<NotificationOptions
+				type="event"
+				id={selectedEvent.id}
+				api={`schedule/${selectedEvent.schedule_id}/event/subscribe`}
+				labels={['subsc']}
+				categories={['subsc']}
+			/>
+		{/if}
+	</div>
+
 	<div slot="body">
 		<div role="form">
 			<TextInput label="Title" bind:value={selectedEvent.title} />
@@ -438,13 +451,6 @@
 
 			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />
 			<!-- <TextInput label="Tag" bind:value={selectedEvent.tag_name} /> -->
-			<NotificationOptions
-				type="event"
-				id={selectedEvent.id}
-				api={`schedule/${selectedEvent.schedule_id}/event/subscribe`}
-				labels={['subsc']}
-				categories={['subsc']}
-			/>
 		</div>
 	</div>
 </Modal>
