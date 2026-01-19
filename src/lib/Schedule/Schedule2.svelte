@@ -242,9 +242,7 @@
 			},
 
 			//@ts-ignore
-			events: (() => {
-				distributeEvents();
-			})(),
+			events: distributeEvents(),
 			eventClick: (info) => {
 				open = true;
 				selectedEvent =
@@ -363,7 +361,7 @@
 		groupId =
 			Number(new URLSearchParams(document.location.search).get('groupId')) ??
 			null;
-		if (groupId) groupIds.push(groupId);
+		if (groupId) groupIds = [...groupIds, groupId];
 		else userChecked = true;
 
 		await scheduleEventList();
@@ -379,10 +377,11 @@
 	});
 
 	$effect(() => {
-		// A little ugly, but the or operator doesn't work
-		if (workgroupIds) scheduleEventList();
-		if (groupIds) scheduleEventList();
-		if (userChecked) scheduleEventList();
+		// Track all filter dependencies, but only call scheduleEventList once
+		workgroupIds;
+		groupIds;
+		userChecked;
+		scheduleEventList();
 	});
 </script>
 
