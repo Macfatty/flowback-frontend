@@ -8,7 +8,6 @@
 	import DatePollSelection from '$lib/Generic/Schedules/DatePollSelection.svelte';
 	import Comments from '$lib/Comments/Comments.svelte';
 	import type { timeProposal } from './interface';
-	import { isMobile } from '$lib/utils/isMobile';
 
 	let open = $state(false),
 		date: Date | null = $state(null),

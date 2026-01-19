@@ -302,7 +302,9 @@
 
 							return s;
 						})()}
-						{score}
+						{#if score > 0}
+							{score}
+						{/if}
 					{/if}
 
 					{#if selectedDates.find((_date) => _date.date.getTime() === date?.getTime())}
