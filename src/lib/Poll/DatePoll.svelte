@@ -14,6 +14,8 @@
 		date: Date | null = $state(null),
 		proposals: timeProposal[] = $state([]);
 
+	let { Class = '' } = $props();
+
 	const pollId = page.params.pollId;
 
 	async function createProposal(date: Date) {
@@ -33,8 +35,7 @@
 </script>
 
 <div
-	class="bg-white dark:bg-darkobject dark:text-darkmodeText shadow rounded my-6
-	{$isMobile ? 'w-full p-0' : 'w-[100%] lg:w-[70%] p-6 max-w-[1000px]'}"
+	class={`bg-white dark:bg-darkobject dark:text-darkmodeText shadow rounded my-6 ${Class}`}
 >
 	<DatePollSelection bind:proposals x={7} y={24} />
 </div>
