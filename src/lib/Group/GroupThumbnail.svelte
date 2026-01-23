@@ -70,6 +70,7 @@
 		areYouSureModal = false;
 		group.joined = false;
 		group.pending_join = false;
+		groupStore.set($groupStore.filter((g) => g.id !== group.id));
 	};
 </script>
 
