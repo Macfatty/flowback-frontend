@@ -87,7 +87,7 @@
 					/>
 
 					<!-- Pin thread button for admins -->
-					{#if $groupUserStore?.is_admin || thread?.pinned}
+					{#if page.params.groupId && ($groupUserStore?.is_admin || thread?.pinned)}
 						<button
 							class:cursor-pointer={$groupUserStore?.is_admin}
 							onclick={() => pinThread(thread)}

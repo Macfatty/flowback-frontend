@@ -152,7 +152,6 @@
 		);
 
 		// If date is already selected, remove it; otherwise add it
-
 		if (cellPreviouslySelected) {
 			selectedDates = selectedDates.filter(
 				(d) => d.date.getTime() !== date.getTime()
@@ -303,7 +302,9 @@
 
 							return s;
 						})()}
-						{score}
+						{#if score > 0}
+							{score}
+						{/if}
 					{/if}
 
 					{#if selectedDates.find((_date) => _date.date.getTime() === date?.getTime())}

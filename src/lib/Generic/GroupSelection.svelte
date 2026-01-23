@@ -18,7 +18,10 @@
 {#if !disableGroup}
 	<Select
 		disableFirstChoice
-		labels={['user', ...$groupStore.filter((g) => g.joined).map((g) => g.name)]}
+		labels={[
+			'No Group',
+			...$groupStore.filter((g) => g.joined).map((g) => g.name)
+		]}
 		values={[null, ...$groupStore.filter((g) => g.joined).map((g) => g.id)]}
 		bind:value={selectedGroupId}
 		label="Group"
@@ -29,7 +32,7 @@
 <Select
 	disableFirstChoice
 	labels={[
-		'none',
+		'No Workgroup',
 		...$workgroupStore
 			.filter(
 				(w) =>

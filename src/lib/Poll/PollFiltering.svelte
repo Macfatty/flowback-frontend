@@ -74,7 +74,7 @@
 	};
 
 	const handleSort = (e: any) => {
-		filter.order_by = e.target.value;
+		filter = { ...filter, order_by: e.target.value };
 		handleSearch();
 	};
 
@@ -114,6 +114,7 @@
 			from: new Date(0).toISOString().slice(0, 16),
 			to: new Date(99999999999999).toISOString().slice(0, 16)
 		};
+
 		// Reset content type checkboxes
 		showThreads = true;
 		showPolls = true;

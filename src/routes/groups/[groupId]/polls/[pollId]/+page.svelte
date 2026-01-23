@@ -510,16 +510,17 @@
 
 			<!-- Date Poll -->
 		{:else if pollType === 3}
-			{#if phase === 'area_vote' || phase === 'pre_start' || phase === 'vote'}
-				<DatePoll />
-			{:else}
+			{#if phase === 'result' || phase === 'prediction_vote'}
 				<Structure bind:phase bind:poll showBoth>
 					<div slot="left" class="w-full">
 						<Results bind:poll {getPollData} {pollType} />
 					</div>
 
 					<div slot="right"><Comments api="poll" /></div>
+					<DatePoll slot="bottom" Class="w-full" />
 				</Structure>
+			{:else}
+				<DatePoll Class="w-[100%] lg:w-[70%] md:p-6 max-w-[1000px]" />
 			{/if}
 		{/if}
 	{:else if !loading}

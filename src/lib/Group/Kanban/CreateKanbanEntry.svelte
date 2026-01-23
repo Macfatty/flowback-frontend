@@ -37,7 +37,7 @@
 		loading = false,
 		images: File[] = [],
 		selectedWorkgroupId: number | null = null,
-		selectedGroupId = 0;
+		selectedGroupId: number | null = null;
 
 	const createKanbanEntry = async () => {
 		loading = true;
@@ -135,7 +135,8 @@
 		);
 
 		if (res.ok) {
-			workgroupUsers = json?.results?.map((u: WorkGroupUser) => u.group_user) ?? [];
+			workgroupUsers =
+				json?.results?.map((u: WorkGroupUser) => u.group_user) ?? [];
 			users = users.filter((u: GroupUser) =>
 				workgroupUsers.find((k) => k.id === u.id)
 			);

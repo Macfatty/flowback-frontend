@@ -31,7 +31,7 @@
 			search: '',
 			finishedSelection: 'all',
 			public: false,
-			order_by: 'pinned',
+			order_by: page.params.groupId ? 'pinned' : 'start_date_desc',
 			tag: null,
 			workgroup: null,
 			from: new Date(0).toISOString().slice(0, 16),
@@ -53,6 +53,8 @@
 		created_at__lt=${filter.to}
     `;
 
+		// When first time loading, or when first time changing the filter, next is undefined.
+		// The starting point for the pollthread thumbnails list.
 		if (next === undefined) {
 			// if (true) {
 			loading = true;
@@ -149,6 +151,7 @@
 	});
 
 	$: if (filter) {
+		next = undefined;
 		fetchPolls();
 		fetchRelatedContent();
 	}
