@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { groupStore, workgroupStore } from '$lib/Group/Kanban/Kanban';
 	import ChatWindow from './ChatWindow.svelte';
 	import Preview from './Preview.svelte';
 	import { onMount } from 'svelte';
@@ -9,7 +10,11 @@
 	import { faCog } from '@fortawesome/free-solid-svg-icons';
 	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import { darkModeStore, getIconFilter } from '$lib/Generic/DarkMode';
-	import { chatOpenStore, fixDirectMessageChannelName, previewStore } from './functions';
+	import {
+		chatOpenStore,
+		fixDirectMessageChannelName,
+		previewStore
+	} from './functions';
 	import { goto } from '$app/navigation';
 	import CreateChatGroup from '$lib/Chat/CreateChatGroup.svelte';
 	import CrossButton from '$lib/Generic/CrossButton.svelte';
@@ -26,7 +31,10 @@
 
 	// Fetch preview messages and set notified based on localStorage timestamps
 	const getPreview = async () => {
-		const { res, json } = await fetchRequest('GET', `chat/message/channel/preview/list`);
+		const { res, json } = await fetchRequest(
+			'GET',
+			`chat/message/channel/preview/list`
+		);
 		if (!res.ok) return [];
 
 		let previews = json?.results.map((preview: PreviewMessage) => {
@@ -37,9 +45,10 @@
 					notified:
 						// Makes sure that messages are notified whenever most recent message is before last click
 						// @ts-ignore
-						preview.recent_message === null  || (
-						new Date(preview.timestamp) > new Date(preview.recent_message?.created_at) ||
-						preview.recent_message?.user.id === $userStore?.id)
+						preview.recent_message === null ||
+						new Date(preview.timestamp) >
+							new Date(preview.recent_message?.created_at) ||
+						preview.recent_message?.user.id === $userStore?.id
 				}
 			};
 		});
@@ -52,16 +61,22 @@
 	// Adjust chat window based on the header
 	const correctMarginRelativeToHeader = () => {
 		const _headerHeight = document.querySelector('#header')?.clientHeight;
-		if (_headerHeight && chatDiv) chatDiv.style.marginTop = `${_headerHeight.toString()}px`;
+		if (_headerHeight && chatDiv)
+			chatDiv.style.marginTop = `${_headerHeight.toString()}px`;
 	};
 
 	onMount(async () => {
 		// Adjust chat window margin based on header height
+		// TODO: Make better (CSS Only perhaps)
 		correctMarginRelativeToHeader();
 		window.addEventListener('resize', correctMarginRelativeToHeader);
+
 		// Subscribe to chat open state
 		chatOpenStore.subscribe((open) => (chatOpen = open));
 		getPreview();
+
+		groupStore.subscribe(() => getPreview());
+		workgroupStore.subscribe(() => getPreview());
 	});
 
 	// Display purple notification circle whenever there is a message that hasn't been seen.
@@ -79,9 +94,9 @@
 	class:invisible={!chatOpen}
 	class="bg-background dark:bg-darkbackground dark:text-darkmodeText fixed z-[50] w-[100vw] h-[100vh] flex flex-col items-center"
 >
-  <div class="w-full flex justify-between mr-6">
-    <Button
-      onClick={() => {
+	<div class="w-full flex justify-between mr-6">
+		<Button
+			onClick={() => {
 				chatOpen = false;
 				chatOpenStore.set(false);
 				goto('/user/settings');
@@ -93,7 +108,9 @@
 			</div>
 		</Button>
 
-		<Button Class="px-6 my-3 dark:bg-darkbackground hover:brightness-95 active:brightness-90" />
+		<Button
+			Class="px-6 my-3 dark:bg-darkbackground hover:brightness-95 active:brightness-90"
+		/>
 		<CrossButton
 			action={() => {
 				chatOpen = false;
@@ -102,7 +119,9 @@
 		/>
 	</div>
 	<div class="flex w-full gap-6 max-w-[1200px] h-[80vh]">
-		<div class="bg-white w-[40%] overflow-y-auto flex-grow ml-6 dark:bg-darkobject p-2">
+		<div
+			class="bg-white w-[40%] overflow-y-auto flex-grow ml-6 dark:bg-darkobject p-2"
+		>
 			{#key creatingGroup}
 				<Preview bind:creatingGroup bind:groupMembers />
 			{/key}

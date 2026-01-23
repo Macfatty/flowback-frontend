@@ -242,24 +242,24 @@
 				</div>
 			</button>
 			<!-- Button for creating group user chat -->
-			{#if creatingGroup}
-				<div id={`chat-${idfy(chatter.channel_title ?? '')}`}>
-					<Button
-						onClick={() => {
-							if (groupMembers.some((member) => member.id === chatter.id)) {
-								return;
-							}
-							const newMember = chatter.participants.find(
-								(user) => user.id !== $userStore?.id
-							);
-							// @ts-ignore
-							groupMembers = [...groupMembers, newMember];
-						}}
-					>
-						{$_('Add User')}
-					</Button>
-				</div>
-			{/if}
+			<!-- {#if creatingGroup} -->
+			<!-- 	<div id={`chat-${idfy(chatter.channel_title ?? '')}`}> -->
+			<!-- 		<Button -->
+			<!-- 			onClick={() => { -->
+			<!-- 				if (groupMembers.some((member) => member.id === chatter.id)) { -->
+			<!-- 					return; -->
+			<!-- 				} -->
+			<!-- 				const newMember = chatter.participants.find( -->
+			<!-- 					(user) => user.id !== $userStore?.id -->
+			<!-- 				); -->
+			<!-- 				// @ts-ignore -->
+			<!-- 				groupMembers = [...groupMembers, newMember]; -->
+			<!-- 			}} -->
+			<!-- 		> -->
+			<!-- 			{$_('Add User')} -->
+			<!-- 		</Button> -->
+			<!-- 	</div> -->
+			<!-- {/if} -->
 		{/if}
 	{/each}
 </div>
