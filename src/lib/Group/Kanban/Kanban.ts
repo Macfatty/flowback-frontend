@@ -42,5 +42,6 @@ export interface Filter {
   type: 'home' | 'group'
 }
 
+// TODO: Move to more appropriate location
 export let groupStore = writable<Group[]>([]);
 export let workgroupStore = writable<WorkGroup[]>([]);

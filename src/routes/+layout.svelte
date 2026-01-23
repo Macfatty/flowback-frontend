@@ -13,12 +13,12 @@
 	import { _ } from 'svelte-i18n';
 	import { env } from '$env/dynamic/public';
 	import { fetchRequest } from '$lib/FetchRequest';
-	import { workGroupsStore } from '$lib/Group/WorkingGroups/interface';
 	import LogBackInModal from '$lib/Generic/LogBackInModal.svelte';
 	import { userStore } from '$lib/User/interfaces';
 	import ErrorHandler from '$lib/Generic/ErrorHandler.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import { setUserGroupPermissionInfo } from '$lib/Group/functions';
+	import { workgroupStore } from '$lib/Group/Kanban/Kanban';
 
 	let showUI = false,
 		scrolledY = '',
@@ -85,7 +85,7 @@
 
 		if (!res.ok) return;
 
-		workGroupsStore.set(json?.results);
+		workgroupStore.set(json?.results);
 	};
 
 	const checkSessionExpiration = () => {

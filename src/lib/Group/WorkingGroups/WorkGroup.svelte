@@ -1,9 +1,5 @@
 <script lang="ts">
-	import {
-		workGroupsStore,
-		type WorkGroup,
-		type WorkGroupUser
-	} from './interface';
+	import { type WorkGroup, type WorkGroupUser } from './interface';
 	import Button from '$lib/Generic/Button.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
