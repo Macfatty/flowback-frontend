@@ -139,3 +139,5 @@ export interface Post {
 }
 
 export interface CommentEdited { }
+
+export enum InfoToGet { 'group', 'home', 'public', 'delegate', 'user' }
