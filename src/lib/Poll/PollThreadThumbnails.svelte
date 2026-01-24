@@ -21,7 +21,6 @@
 	// Props
 	export let Class = '',
 		infoToGet: InfoToGet;
-
 	let polls: poll[] = [],
 		threads: Thread[] = [],
 		workGroups: WorkGroup[] = [],

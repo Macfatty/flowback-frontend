@@ -2,6 +2,7 @@
 	import { _ } from 'svelte-i18n';
 	import Select from '$lib/Generic/Select.svelte';
 	import { groupStore, workgroupStore } from '$lib/Group/Kanban/Kanban';
+	import { onMount } from 'svelte';
 
 	let {
 		selectedWorkgroupId = $bindable(null),
@@ -10,8 +11,13 @@
 	}: {
 		selectedWorkgroupId: Number | null;
 		selectedGroupId: Number | null;
-		disableGroup: boolean;
+		disableGroup?: boolean;
 	} = $props();
+
+	onMount(() => {
+		const groupId = Number(new URLSearchParams(location.search).get('groupId'));
+		if (groupId !== 0) selectedGroupId = groupId;
+	});
 </script>
 
 <!-- Select Groups -->
