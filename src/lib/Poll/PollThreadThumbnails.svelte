@@ -31,7 +31,7 @@
 			search: '',
 			finishedSelection: 'all',
 			public: false,
-			order_by: page.params.groupId ? 'pinned' : 'start_date_desc',
+			order_by: page.params.groupId ? 'pinned' : 'created_at_desc',
 			tag: null,
 			workgroup: null,
 			from: new Date(0).toISOString().slice(0, 16),

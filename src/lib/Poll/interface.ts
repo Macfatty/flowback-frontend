@@ -84,7 +84,7 @@ export interface Filter {
   public: boolean;
   finishedSelection: 'all' | 'unfinished' | 'finished';
   search: string;
-  order_by: 'pinned' | 'start_date_asc' | 'start_date_desc';
+  order_by: 'pinned' | 'created_at_asc' | 'created_at_desc';
   tag: number | null;
   workgroup: number | null;
   from: string;
