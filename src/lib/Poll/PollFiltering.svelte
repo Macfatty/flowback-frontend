@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { env } from '$env/dynamic/public';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
@@ -35,7 +35,7 @@
 		tags: Tag[] = [],
 		workGroups: WorkGroup[] = [],
 		groupId =
-			env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId;
+			env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : page.params.groupId;
 
 	// Initialize content type state from localStorage
 	const initializeContentTypeState = () => {
@@ -77,26 +77,17 @@
 		}
 	};
 
-	const handleFinishedSelection = (e: any) => {
-		filter.finishedSelection = e.target.value;
-	};
-
 	const handleSort = (e: any) => {
 		filter = { ...filter, order_by: e.target.value };
 		handleSearch();
 	};
 
-	const handleTags = (e: any) => {
-		if (e.target.value === 'null') filter.tag = null;
-		else filter.tag = e.target.value;
-	};
-
 	const getTags = async () => {
-		if (!$page.params.groupId) return;
+		if (!page.params.groupId) return;
 
 		const { res, json } = await fetchRequest(
 			'GET',
-			`group/${$page.params.groupId}/tags?limit=${homePollsLimit}`
+			`group/${page.params.groupId}/tags?limit=${homePollsLimit}`
 		);
 		if (!res.ok) return;
 		tags = json?.results;
@@ -150,8 +141,9 @@
 		getWorkGroupList();
 		initializeContentTypeState();
 
+		// TODO: Don't hardcode that the one group in onegroupflowback always has groupId 1
 		groupId =
-			env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId;
+			env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : page.params.groupId;
 	});
 </script>
 
