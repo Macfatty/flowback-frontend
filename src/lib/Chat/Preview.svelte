@@ -187,6 +187,7 @@
 					disabled={groupChat.rejected === null}
 				>
 					<ProfilePicture
+						Class="shrink-0"
 						username={groupChat.message_channel_name}
 						profilePicture={null}
 					/>
@@ -215,6 +216,7 @@
 				onclick={() => clickedChatter(chatter.channel_id)}
 			>
 				<ProfilePicture
+					Class="shrink-0"
 					profilePicture={chatter?.recent_message?.profile_image}
 				/>
 				<div class="flex justify-between items-center w-full">
