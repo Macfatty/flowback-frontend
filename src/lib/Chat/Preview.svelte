@@ -111,7 +111,7 @@
 
 		// Clear chatPartnerStore if the user is currently in the left group
 		if ($chatPartnerStore === id) {
-			chatPartnerStore.set(-1);
+			chatPartnerStore.set(0);
 		}
 	};
 
