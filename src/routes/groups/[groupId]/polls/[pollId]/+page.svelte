@@ -517,7 +517,7 @@
 					</div>
 
 					<div slot="right"><Comments api="poll" /></div>
-					<DatePoll slot="bottom" Class="w-full" />
+					<DatePoll slot="bottom" Class="w-full" results />
 				</Structure>
 			{:else}
 				<DatePoll Class="w-[100%] lg:w-[70%] md:p-6 max-w-[1000px]" />

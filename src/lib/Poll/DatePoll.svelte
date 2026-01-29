@@ -13,7 +13,7 @@
 		date: Date | null = $state(null),
 		proposals: timeProposal[] = $state([]);
 
-	let { Class = '' } = $props();
+	let { Class = '', results = false } = $props();
 
 	const pollId = page.params.pollId;
 
@@ -36,7 +36,7 @@
 <div
 	class={`bg-white dark:bg-darkobject dark:text-darkmodeText shadow rounded my-6 ${Class}`}
 >
-	<DatePollSelection bind:proposals x={7} y={24} />
+	<DatePollSelection bind:proposals x={7} y={24} {results} />
 </div>
 
 <div

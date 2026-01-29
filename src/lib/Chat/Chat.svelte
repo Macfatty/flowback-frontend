@@ -13,7 +13,8 @@
 	import {
 		chatOpenStore,
 		fixDirectMessageChannelName,
-		previewStore
+		previewStore,
+		chatPartnerStore
 	} from './functions';
 	import { goto } from '$app/navigation';
 	import CreateChatGroup from '$lib/Chat/CreateChatGroup.svelte';

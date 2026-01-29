@@ -4,7 +4,6 @@
 
 <script lang="ts">
 	import {
-		faCheck,
 		faChevronLeft,
 		faChevronRight
 	} from '@fortawesome/free-solid-svg-icons';
@@ -23,7 +22,8 @@
 
 	export let x = 10,
 		y = 10,
-		proposals: timeProposal[];
+		proposals: timeProposal[],
+		results = false;
 
 	let weekOffset = 0,
 		initialMonday: Date,
@@ -281,7 +281,9 @@
 
 				<button
 					class="bg-white dark:bg-darkobject border h-12 w-full"
-					on:click={() => toggleDate(date)}
+					on:click={() => {
+						if (!results) toggleDate(date);
+					}}
 				>
 					{#if proposal?.preliminary_score && proposal?.preliminary_score > 0}
 						{@const score = (() => {
