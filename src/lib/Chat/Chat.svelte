@@ -119,6 +119,7 @@
 			}}
 		/>
 	</div>
+
 	<div class="flex w-full gap-6 max-w-[1200px] h-[80vh]">
 		<div
 			class="bg-white w-[40%] overflow-y-auto flex-grow ml-6 dark:bg-darkobject p-2"

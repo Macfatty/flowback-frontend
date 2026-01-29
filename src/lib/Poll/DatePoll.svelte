@@ -39,11 +39,13 @@
 	<DatePollSelection bind:proposals x={7} y={24} {results} />
 </div>
 
-<div
-	class="h-full overflow-y-auto bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md my-6 max-w-[1000px] w-[95%] lg:w-[70%]"
->
-	<Comments api="poll" />
-</div>
+{#if !results}
+	<div
+		class="h-full overflow-y-auto bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md my-6 max-w-[1000px] w-[95%] lg:w-[70%]"
+	>
+		<Comments api="poll" />
+	</div>
+{/if}
 
 <Modal bind:open onSubmit={handleProposalSubmit}>
 	<div slot="body" class="">
