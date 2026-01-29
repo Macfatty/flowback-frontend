@@ -420,8 +420,10 @@
 	stopAtPropagation={false}
 >
 	<div slot="header">
-		<span>Create an Event</span>
-		{#if selectedEvent.schedule_id !== 0}
+		{#if selectedEvent.schedule_id === 0}
+			<span>Create an Event</span>
+		{:else if selectedEvent.schedule_id !== 0}
+			<span>Edit Event {selectedEvent.title}</span>
 			<NotificationOptions
 				type="event"
 				id={selectedEvent.id}

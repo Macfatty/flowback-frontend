@@ -4,7 +4,7 @@
 	import { _ } from 'svelte-i18n';
 	import { PollsApi } from '$lib/api/polls';
 	import { pollThumbnails as pollThumbnailsLimit } from '../Generic/APILimits.json';
-	import type { Filter, poll, Post } from './interface';
+	import { InfoToGet, type Filter, type poll, type Post } from './interface';
 	import type { Thread } from '$lib/Group/interface';
 	import type { WorkGroup } from '$lib/Group/WorkingGroups/interface';
 	import { env } from '$env/dynamic/public';
@@ -20,8 +20,7 @@
 
 	// Props
 	export let Class = '',
-		infoToGet: 'group' | 'home' | 'public' | 'delegate' | 'user';
-
+		infoToGet: InfoToGet;
 	let polls: poll[] = [],
 		threads: Thread[] = [],
 		workGroups: WorkGroup[] = [],
@@ -31,7 +30,7 @@
 			search: '',
 			finishedSelection: 'all',
 			public: false,
-			order_by: page.params.groupId ? 'pinned' : 'start_date_desc',
+			order_by: page.params.groupId ? 'pinned' : 'created_at_desc',
 			tag: null,
 			workgroup: null,
 			from: new Date(0).toISOString().slice(0, 16),
@@ -48,7 +47,7 @@
 		title__icontains=${filter.search ?? ''}&
 		tag_id=${filter.tag ?? ''}&
 		work_group_ids=${filter.workgroup}&
-		public=${infoToGet === 'public' ? 'true' : ''}&
+		public=${infoToGet === InfoToGet.public ? 'true' : ''}&
 		created_at__gt=${filter.from}&
 		created_at__lt=${filter.to}
     `;
@@ -101,7 +100,7 @@
 
 		if (threadIds.length) {
 			const response =
-				infoToGet === 'home'
+				infoToGet === InfoToGet.home
 					? await ThreadsApi.getHomeThreads(filter.order_by)
 					: await ThreadsApi.getGroupThreads(
 							page.params.groupId ?? '-1',
@@ -162,12 +161,7 @@
 <div class={`${Class} dark:text-darkmodeText`}>
 	<Loader bind:loading>
 		<div class={`flex flex-col gap-6 w-full`} id="thumbnails">
-			<PollFiltering
-				tagFiltering={infoToGet === 'group'}
-				bind:filter
-				bind:showThreads
-				bind:showPolls
-			/>
+			<PollFiltering {infoToGet} bind:filter bind:showThreads bind:showPolls />
 
 			{#if $posts?.length === 0 && !loading}
 				<div class="bg-white dark:bg-darkobject rounded shadow p-8 mt-6">

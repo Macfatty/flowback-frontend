@@ -15,6 +15,7 @@
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { idfy } from '$lib/Generic/GenericFunctions2';
 	import { groupStore } from './Kanban/Kanban';
+	import { chatPartnerStore } from '$lib/Chat/functions';
 
 	let { group = $bindable() }: { group: Group } = $props();
 
@@ -71,6 +72,7 @@
 		group.joined = false;
 		group.pending_join = false;
 		groupStore.set($groupStore.filter((g) => g.id !== group.id));
+		chatPartnerStore.set(0);
 	};
 </script>
 

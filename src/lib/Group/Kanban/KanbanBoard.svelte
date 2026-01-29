@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { userStore } from '$lib/User/interfaces';
 	import KanbanEntry from './KanbanEntry.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { _ } from 'svelte-i18n';
@@ -35,15 +36,15 @@
 		let _kanbanEntries = [];
 
 		let filter = `&limit=${kanbanLimit}&order_by=priority_desc&title__icontains=${search}`;
-		if (assigneeId) filter += `&assignee=${assigneeId}`;
 
-		if (userChecked) {
+		if (userChecked || assigneeId === $userStore?.id) {
 			let api = `user/kanban/entry/list?origin_type=user${filter}`;
 			const { res, json } = await fetchRequest('GET', api);
 			if (res.ok) {
 				_kanbanEntries.push(json.results ?? []);
 			}
 		}
+		if (assigneeId) filter += `&assignee=${assigneeId}`;
 
 		if (groupIds.length > 0) {
 			let apis = groupIds.map((id) =>

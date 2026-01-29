@@ -206,7 +206,6 @@
 						innerLabel=""
 					/>
 
-					<!-- {#if groupSelection} -->
 					<div class="text-left">
 						<label class="block text-md" for="handle-change-assignee">
 							{$_('Assignee')}

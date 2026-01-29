@@ -4,7 +4,6 @@
 
 <script lang="ts">
 	import {
-		faCheck,
 		faChevronLeft,
 		faChevronRight
 	} from '@fortawesome/free-solid-svg-icons';
@@ -23,7 +22,8 @@
 
 	export let x = 10,
 		y = 10,
-		proposals: timeProposal[];
+		proposals: timeProposal[],
+		results = false;
 
 	let weekOffset = 0,
 		initialMonday: Date,
@@ -244,23 +244,27 @@
 
 <Loader bind:loading>
 	<div
-		class="sticky top-[7.6rem] md:top-[5.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between mt-4 py-5 px-6 md:py-1 md:px-4"
+		class={`sticky top-[7.6rem] ${!results ? 'md:top-[5.5rem]' : 'top-[-1rem]'}`}
 	>
-		<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>
-		{currentMonth}
-		{currentYear}
-		<button on:click={nextWeek}><Fa icon={faChevronRight} /></button>
-	</div>
-	<div
-		class="sticky top-[11.5rem] md:top-[7.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white grid grid-cols-8 text-center border-b border-gray-300 py-1"
-	>
-		<br />
-		{#each weekDates as date, i}
-			<div class="flex flex-col items-center {$isMobile ? 'text-xs' : ''}">
-				<div class="font-semibold pt-2">{date.getDate()}</div>
-				<div class="text-gray-600">{$_(weekdays[i])}</div>
-			</div>
-		{/each}
+		<div
+			class="dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between mt-4 py-5 px-6 md:py-1 md:px-4"
+		>
+			<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>
+			{currentMonth}
+			{currentYear}
+			<button on:click={nextWeek}><Fa icon={faChevronRight} /></button>
+		</div>
+		<div
+			class="dark:bg-darkobject dark:text-darkmodeText bg-white grid grid-cols-8 text-center border-b border-gray-300 py-1"
+		>
+			<br />
+			{#each weekDates as date, i}
+				<div class="flex flex-col items-center {$isMobile ? 'text-xs' : ''}">
+					<div class="font-semibold pt-2">{date.getDate()}</div>
+					<div class="text-gray-600">{$_(weekdays[i])}</div>
+				</div>
+			{/each}
+		</div>
 	</div>
 	<div
 		class="grid w-full text-sm text-center"
@@ -281,7 +285,9 @@
 
 				<button
 					class="bg-white dark:bg-darkobject border h-12 w-full"
-					on:click={() => toggleDate(date)}
+					on:click={() => {
+						if (!results) toggleDate(date);
+					}}
 				>
 					{#if proposal?.preliminary_score && proposal?.preliminary_score > 0}
 						{@const score = (() => {

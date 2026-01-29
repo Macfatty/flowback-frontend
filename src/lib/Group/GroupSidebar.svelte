@@ -31,6 +31,7 @@
 		groupUserPermissionStore
 	} from '$lib/Group/interface';
 	import { groupStore } from '$lib/Group/Kanban/Kanban';
+	import { chatPartnerStore } from '$lib/Chat/functions';
 
 	export let selectedPage: SelectablePage = 'flow',
 		group: GroupDetails,
@@ -61,6 +62,7 @@
 			removeGroupMembership(Number($page.params.groupId));
 
 		groupStore.set($groupStore.filter((g) => g.id !== group.id));
+		chatPartnerStore.set(0);
 		goto('/home');
 	};
 

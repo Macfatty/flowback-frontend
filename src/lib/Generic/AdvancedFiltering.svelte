@@ -15,7 +15,7 @@
 		groupIds: number[];
 		workgroupIds: number[];
 		userChecked: boolean;
-		assigneeId: number;
+		assigneeId?: number;
 	}
 
 	let {

@@ -13,7 +13,7 @@
 		date: Date | null = $state(null),
 		proposals: timeProposal[] = $state([]);
 
-	let { Class = '' } = $props();
+	let { Class = '', results = false } = $props();
 
 	const pollId = page.params.pollId;
 
@@ -36,14 +36,16 @@
 <div
 	class={`bg-white dark:bg-darkobject dark:text-darkmodeText shadow rounded my-6 ${Class}`}
 >
-	<DatePollSelection bind:proposals x={7} y={24} />
+	<DatePollSelection bind:proposals x={7} y={24} {results} />
 </div>
 
-<div
-	class="h-full overflow-y-auto bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md my-6 max-w-[1000px] w-[95%] lg:w-[70%]"
->
-	<Comments api="poll" />
-</div>
+{#if !results}
+	<div
+		class="h-full overflow-y-auto bg-white dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md my-6 max-w-[1000px] w-[95%] lg:w-[70%]"
+	>
+		<Comments api="poll" />
+	</div>
+{/if}
 
 <Modal bind:open onSubmit={handleProposalSubmit}>
 	<div slot="body" class="">
