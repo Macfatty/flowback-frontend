@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { env } from '$env/dynamic/public';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import Button from '$lib/Generic/Button.svelte';
@@ -13,21 +13,29 @@
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import { homePolls as homePollsLimit } from '../Generic/APILimits.json';
-	import type { Filter } from './interface';
+	import { InfoToGet, type Filter } from './interface';
 
 	export let filter: Filter,
 		handleSearch: () => void = () => {},
-		tagFiltering = false,
+		infoToGet: InfoToGet,
 		// Add new export for content type filtering
 		showThreads = true,
-		showPolls = true;
+		showPolls = true,
+		filter_by =
+			infoToGet === InfoToGet.home
+				? ['created_at_desc', 'created_at_asc']
+				: ['pinned', 'created_at_desc', 'created_at_asc'],
+		filter_by_readable =
+			infoToGet === InfoToGet.home
+				? [$_('Newest first'), $_('Oldest first')]
+				: [$_('Pinned'), $_('Newest first'), $_('Oldest first')];
 
 	//Aesthethics only, changes the UI when searching would lead to different results.
 	let searched = true,
 		tags: Tag[] = [],
 		workGroups: WorkGroup[] = [],
 		groupId =
-			env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId;
+			env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : page.params.groupId;
 
 	// Initialize content type state from localStorage
 	const initializeContentTypeState = () => {
@@ -69,26 +77,17 @@
 		}
 	};
 
-	const handleFinishedSelection = (e: any) => {
-		filter.finishedSelection = e.target.value;
-	};
-
 	const handleSort = (e: any) => {
-		filter.order_by = e.target.value;
+		filter = { ...filter, order_by: e.target.value };
 		handleSearch();
 	};
 
-	const handleTags = (e: any) => {
-		if (e.target.value === 'null') filter.tag = null;
-		else filter.tag = e.target.value;
-	};
-
 	const getTags = async () => {
-		if (!$page.params.groupId) return;
+		if (!page.params.groupId) return;
 
 		const { res, json } = await fetchRequest(
 			'GET',
-			`group/${$page.params.groupId}/tags?limit=${homePollsLimit}`
+			`group/${page.params.groupId}/tags?limit=${homePollsLimit}`
 		);
 		if (!res.ok) return;
 		tags = json?.results;
@@ -108,12 +107,13 @@
 			search: '',
 			finishedSelection: 'all',
 			public: false,
-			order_by: 'pinned',
+			order_by: 'start_date_desc',
 			tag: null,
 			workgroup: null,
 			from: new Date(0).toISOString().slice(0, 16),
 			to: new Date(99999999999999).toISOString().slice(0, 16)
 		};
+
 		// Reset content type checkboxes
 		showThreads = true;
 		showPolls = true;
@@ -141,8 +141,9 @@
 		getWorkGroupList();
 		initializeContentTypeState();
 
+		// TODO: Don't hardcode that the one group in onegroupflowback always has groupId 1
 		groupId =
-			env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : $page.params.groupId;
+			env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '1' : page.params.groupId;
 	});
 </script>
 
@@ -169,8 +170,8 @@
 			Class="rounded p-1 flex flex-row items-center gap-1"
 			classInner="font-semibold border border-0"
 			onInput={handleSort}
-			values={['pinned', 'created_at_desc', 'created_at_asc']}
-			labels={[$_('Pinned'), $_('Newest first'), $_('Oldest first')]}
+			values={filter_by}
+			labels={filter_by_readable}
 			label="{$_('Sort')}:"
 			bind:value={filter.order_by}
 			innerLabel={null}

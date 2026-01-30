@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
+	import { userStore } from '$lib/User/interfaces';
 	import KanbanEntry from './KanbanEntry.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { _ } from 'svelte-i18n';
-	import type { GroupUser } from '../interface';
 	import { onDestroy, onMount } from 'svelte';
 	import { kanban as kanbanLimit } from '../../Generic/APILimits.json';
 	import CreateKanbanEntry from './CreateKanbanEntry.svelte';
@@ -19,7 +18,6 @@
 	let { Class = '' } = $props();
 
 	let kanbanEntries: kanban[] = $state([]),
-		users: GroupUser[] = $state([]),
 		interval: any,
 		open = $state(false),
 		search = $state(''),
@@ -27,7 +25,8 @@
 		lane: number = $state(1),
 		groupIds: number[] = $state([]),
 		workgroupIds: number[] = $state([]),
-		userChecked = $state(false);
+		userChecked = $state(false),
+		assigneeId: number = $state(0);
 
 	const removeKanbanEntry = (id: number) => {
 		kanbanEntries.filter((entry) => entry.id !== id);
@@ -36,19 +35,23 @@
 	const getKanbanEntries = async () => {
 		let _kanbanEntries = [];
 
-		const filter = `limit=${kanbanLimit}&order_by=priority_desc&title__icontains=${search}`;
+		let filter = `&limit=${kanbanLimit}&order_by=priority_desc&title__icontains=${search}`;
 
-		if (userChecked) {
-			let api = `user/kanban/entry/list?${filter}`;
+		if (userChecked || assigneeId === $userStore?.id) {
+			let api = `user/kanban/entry/list?origin_type=user${filter}`;
 			const { res, json } = await fetchRequest('GET', api);
 			if (res.ok) {
 				_kanbanEntries.push(json.results ?? []);
 			}
 		}
+		if (assigneeId) filter += `&assignee=${assigneeId}`;
 
 		if (groupIds.length > 0) {
 			let apis = groupIds.map((id) =>
-				fetchRequest('GET', `group/${id}/kanban/entry/list?${filter}`)
+				fetchRequest(
+					'GET',
+					`user/kanban/entry/list?origin_type=group&${filter}&origin_id=${id}`
+				)
 			);
 
 			let response = (await Promise.all(apis)).map(({ res, json }) => {
@@ -61,25 +64,33 @@
 			let apis = workgroupIds.map((id) =>
 				fetchRequest(
 					'GET',
-					`group/${$workgroupStore.find((g) => g.id === id)?.group_id}/kanban/entry/list?${filter}&work_group_ids=${id}`
+					`user/kanban/entry/list?${filter}&work_group_ids=${id}`
 				)
 			);
-
 			let response = (await Promise.all(apis)).map(({ res, json }) => {
 				if (res.ok) return json.results ?? [];
 			});
 			_kanbanEntries.push(response);
 		}
 
-		kanbanEntries = _kanbanEntries.flat(2);
+		kanbanEntries = _kanbanEntries
+			.flat(2)
+			//@ts-ignore
+			.sort((a, b) => a.priority < b.priority);
 	};
 
 	onMount(async () => {
+		let groupId =
+			Number(new URLSearchParams(document.location.search).get('groupId')) ??
+			null;
+		if (groupId) groupIds.push(groupId);
+		else userChecked = true;
+
 		await getKanbanEntries();
 
-		interval = setInterval(async () => {
-			await getKanbanEntries();
-		}, 20410);
+		interval = setInterval(() => {
+			getKanbanEntries();
+		}, 20000);
 	});
 
 	onDestroy(() => {
@@ -87,7 +98,11 @@
 	});
 
 	$effect(() => {
-		if (groupIds || workgroupIds || userChecked) getKanbanEntries();
+		// A little ugly, but the "or" operator doesn't work
+		if (workgroupIds) getKanbanEntries();
+		if (groupIds) getKanbanEntries();
+		if (userChecked) getKanbanEntries();
+		if (assigneeId) getKanbanEntries();
 	});
 </script>
 
@@ -96,7 +111,12 @@
 	class={'dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words' +
 		Class}
 >
-	<AdvancedFiltering bind:groupIds bind:workgroupIds bind:userChecked />
+	<AdvancedFiltering
+		bind:assigneeId
+		bind:groupIds
+		bind:workgroupIds
+		bind:userChecked
+	/>
 
 	<TextInput
 		Class="flex-1 h-full placeholder-gray-600 rounded text-gray-500 bg-gray-100 dark:bg-darkobject dark:text-darkmodeText"
@@ -127,19 +147,20 @@
 							}}><Fa icon={faPlus} size="12px" /></button
 						>
 					</div>
+
 					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
 						{#each kanbanEntries as kanban, j}
 							{#if kanban?.lane === i}
 								<KanbanEntry
 									bind:kanban={kanbanEntries[j]}
 									bind:workGroups
-									{users}
 									{removeKanbanEntry}
 									{getKanbanEntries}
 								/>
 							{/if}
 						{/each}
 					</ul>
+
 					<div class="flex justify-between pt-4">
 						<button
 							class="text-sm flex items-center gap-2"
@@ -159,10 +180,4 @@
 	</div>
 </div>
 
-<CreateKanbanEntry
-	bind:open
-	bind:users
-	bind:workGroups
-	bind:lane
-	{getKanbanEntries}
-/>
+<CreateKanbanEntry bind:open bind:workGroups bind:lane {getKanbanEntries} />

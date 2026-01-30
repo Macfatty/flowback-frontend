@@ -11,7 +11,6 @@
 	import Select from '$lib/Generic/Select.svelte';
 	import { userStore } from '$lib/User/interfaces';
 	import Structure from '$lib/Poll/NewDesign/Structure.svelte';
-	import Tag from '$lib/Group/Tag.svelte';
 
 	export let history: null | number,
 		groupId = 0;
@@ -35,7 +34,6 @@
 
 		votingHistory = json?.results;
 		filteredVotingHistory = [...json?.results];
-		sortVoteHistory();
 	};
 
 	const getDelegateInfo = async () => {
@@ -47,21 +45,8 @@
 		delegatePool = json?.results[0];
 	};
 
-	const sortVoteHistory = () => {
-		if (sortOrder === 'a-z') {
-			filteredVotingHistory = [...filteredVotingHistory].sort((a, b) =>
-				a.poll_title.toLowerCase().localeCompare(b.poll_title.toLowerCase())
-			);
-		} else if (sortOrder === 'z-a') {
-			filteredVotingHistory = [...filteredVotingHistory].sort((a, b) =>
-				b.poll_title.toLowerCase().localeCompare(a.poll_title.toLowerCase())
-			);
-		}
-	};
-
 	$: {
 		if (filteredVotingHistory.length > 0) {
-			sortVoteHistory();
 		}
 	}
 
@@ -70,13 +55,7 @@
 
 		if (query === '') {
 			filteredVotingHistory = [...votingHistory];
-		} else {
-			filteredVotingHistory = votingHistory.filter((vote) =>
-				vote.poll_title.toLowerCase().includes(query.toLowerCase())
-			);
 		}
-
-		sortVoteHistory();
 	};
 
 	const resetFilter = () => {
@@ -84,7 +63,6 @@
 		sortOrder = 'a-z';
 		filteredVotingHistory = [...votingHistory];
 		searched = false;
-		sortVoteHistory();
 	};
 
 	onMount(async () => {
@@ -95,8 +73,12 @@
 
 <Loader bind:loading>
 	<div class="w-screen bg-[#faf5ff] dark:bg-darkbackground pt-4 p-4">
-		<div class="w-full max-w-screen-md mx-auto p-4 bg-white dark:bg-darkobject rounded shadow mb-4">
-			<span class="font-semibold text-sm text-gray-700 dark:text-darkmodeText pb-2">
+		<div
+			class="w-full max-w-screen-md mx-auto p-4 bg-white dark:bg-darkobject rounded shadow mb-4"
+		>
+			<span
+				class="font-semibold text-sm text-gray-700 dark:text-darkmodeText pb-2"
+			>
 				{$_('Delegate history for')}
 				{$userStore?.username}
 			</span>
@@ -122,7 +104,6 @@
 							labels={[$_('A - Z'), $_('Z - A')]}
 							values={['a-z', 'z-a']}
 							bind:value={sortOrder}
-							onInput={sortVoteHistory}
 						/>
 
 						<div class="rounded-md p-1 ml-auto">
@@ -153,16 +134,20 @@
 								<div class="flex flex-col gap-2">
 									<a
 										class="w-full break-words text-left text-xl p-1 pl-0 text-gray-900 dark:text-gray-300 cursor-pointer hover:underline"
-										href={`groups/${new URLSearchParams(window.location.search).get(
+										href={`groups/${new URLSearchParams(
+											window.location.search
+										).get(
 											'group_id'
-										)}/polls/${voteHistory?.poll_id}?source=delegate-history`}
+										)}/polls/${voteHistory?.poll.id}?source=delegate-history`}
 									>
 										{voteHistory?.poll.title || $_('No title')}
 									</a>
 
 									{#if voteHistory?.poll.description}
 										<div class="text-sm text-gray-600 dark:text-gray-400 pl-1">
-											<p class="line-clamp-2">{voteHistory?.poll.description}</p>
+											<p class="line-clamp-2">
+												{voteHistory?.poll.description}
+											</p>
 										</div>
 									{/if}
 

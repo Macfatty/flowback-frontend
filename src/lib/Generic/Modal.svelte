@@ -47,6 +47,8 @@
 	};
 
 	$: if (open) onOpenModal();
+
+	$: if (!open) onClose();
 </script>
 
 <div

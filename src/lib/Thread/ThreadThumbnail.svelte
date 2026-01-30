@@ -26,25 +26,25 @@
 	import { env } from '$env/dynamic/public';
 
 	export let thread: Thread;
-	let threads: Thread[] = [],
-		reportModalShow = false,
+
+	let reportModalShow = false,
 		deleteModalShow = false,
 		choicesOpen = false,
 		darkMode: boolean = false;
 
 	//When adminn presses the pin tack symbol, pin the thread
-	const pinThread = async (thread: Thread) => {
+	const pinThread = async (_thread: Thread) => {
 		const { json, res } = await fetchRequest(
 			'POST',
-			`group/thread/${thread?.id}/update`,
+			`group/thread/${_thread?.id}/update`,
 			{
-				pinned: !thread?.pinned
+				pinned: !_thread?.pinned
 			}
 		);
 		if (!res.ok) return;
 
-		thread.pinned = !thread?.pinned;
-		threads = threads;
+		_thread.pinned = !_thread?.pinned;
+		thread = { ..._thread };
 	};
 
 	onMount(() => {
@@ -87,7 +87,7 @@
 					/>
 
 					<!-- Pin thread button for admins -->
-					{#if $groupUserStore?.is_admin || thread?.pinned}
+					{#if page.params.groupId && ($groupUserStore?.is_admin || thread?.pinned)}
 						<button
 							class:cursor-pointer={$groupUserStore?.is_admin}
 							onclick={() => pinThread(thread)}
@@ -109,6 +109,7 @@
 							() => ((reportModalShow = true), (choicesOpen = false))
 						]}
 						Class="text-black justify-self-center"
+						ClassInner="-translate-x-2/3 md:translate-x-0"
 					/>
 				</div>
 			{/if}
@@ -116,8 +117,15 @@
 	</div>
 
 	{#if !page.params.groupId}
-		<a
-			href={`/groups/${thread?.group_id}`}
+		<button
+			onclick={() => {
+				if (thread.group_joined) goto(`/groups/${thread?.group_id}`);
+				else
+					ErrorHandlerStore.set({
+						message: 'You must join the group to access the group',
+						success: false
+					});
+			}}
 			class="text-black flex items-center"
 		>
 			<img
@@ -130,8 +138,10 @@
 				alt={'thread Thumbnail'}
 				onerror={(e) => onThumbnailError(e, DefaultBanner)}
 			/>
-			<span class="break-word text-sm text-gray-700">{thread?.group_name}</span>
-		</a>
+			<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
+				>{thread?.group_name}</span
+			>
+		</button>
 	{:else if thread?.created_by?.user}
 		<div class="text-black flex items-center">
 			<!-- TODO: add "if group doesn't hide displaying creators" condition -->

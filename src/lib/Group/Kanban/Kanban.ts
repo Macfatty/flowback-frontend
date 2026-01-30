@@ -20,7 +20,7 @@ export interface kanban {
   group_name: string;
   priority?: number | null;
   end_date?: string | null;
-  attachments: { file: string; file_name: string }[];
+  attachments: { id: number; file: string; file_name: string }[];
 }
 
 export interface kanbanEdited {
@@ -30,7 +30,7 @@ export interface kanbanEdited {
   assignee_id?: number | null;
   priority?: number | null;
   end_date?: string | null;
-  attachments?: { file: string; file_name: string }[];
+  attachments?: { id: number; file: string; file_name: string }[];
   work_group?: { name: string; id: number } | null;
 }
 
@@ -42,5 +42,6 @@ export interface Filter {
   type: 'home' | 'group'
 }
 
+// TODO: Move to more appropriate location
 export let groupStore = writable<Group[]>([]);
 export let workgroupStore = writable<WorkGroup[]>([]);

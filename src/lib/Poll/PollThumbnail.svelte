@@ -15,7 +15,10 @@
 		imacFormatting,
 		nextPhase
 	} from './functions';
-	import { getPermissionsFast, onThumbnailError } from '$lib/Generic/GenericFunctions';
+	import {
+		getPermissionsFast,
+		onThumbnailError
+	} from '$lib/Generic/GenericFunctions';
 	import Select from '$lib/Generic/Select.svelte';
 	import { getTags } from '$lib/Group/functions';
 	import type { Tag as TagType } from '$lib/Group/interface';
@@ -60,9 +63,13 @@
 
 	//When adminn presses the pin tack symbol, pin the poll
 	const pinPoll = async () => {
-		const { json, res } = await fetchRequest('POST', `group/poll/${poll?.id}/update`, {
-			pinned: !poll?.pinned
-		});
+		const { json, res } = await fetchRequest(
+			'POST',
+			`group/poll/${poll?.id}/update`,
+			{
+				pinned: !poll?.pinned
+			}
+		);
 
 		if (!res.ok) {
 			ErrorHandlerStore.set({ message: 'Could not pin poll', success: false });
@@ -70,17 +77,24 @@
 		}
 
 		poll.pinned = !poll?.pinned;
-    poll = {...poll  }; 
+		poll = { ...poll };
 	};
 
 	const submitTagVote = async (tag: number) => {
-		const { json, res } = await fetchRequest('POST', `group/poll/${poll?.id}/area/update`, {
-			tag,
-			vote: true
-		});
+		const { json, res } = await fetchRequest(
+			'POST',
+			`group/poll/${poll?.id}/area/update`,
+			{
+				tag,
+				vote: true
+			}
+		);
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Could not submit tag vote', success: false });
+			ErrorHandlerStore.set({
+				message: 'Could not submit tag vote',
+				success: false
+			});
 			return;
 		}
 
@@ -88,12 +102,16 @@
 	};
 
 	const getAreaVote = async () => {
-		const { json, res } = await fetchRequest('GET', `group/poll/${poll?.id}/area/list`);
+		const { json, res } = await fetchRequest(
+			'GET',
+			`group/poll/${poll?.id}/area/list`
+		);
 
 		if (!res.ok) return;
 
-		let selectedTagName = json?.results.find((tag: Tag) => tag.user_vote === true)?.tags[0]
-			.tag_name;
+		let selectedTagName = json?.results.find(
+			(tag: Tag) => tag.user_vote === true
+		)?.tags[0].tag_name;
 
 		if (selectedTagName) {
 			selectedTag = tags?.find((tag) => tag.name === selectedTagName)?.id || 0;
@@ -178,9 +196,12 @@
 						ClassOpen="right-0"
 					/>
 
-          <!-- Pin poll button for admins -->
-					{#if $groupUserStore?.is_admin || poll?.pinned}
-						<button class:cursor-pointer={$groupUserStore?.is_admin} onclick={pinPoll}>
+					<!-- Pin poll button for admins -->
+					{#if page.params.groupId && ($groupUserStore?.is_admin || poll?.pinned)}
+						<button
+							class:cursor-pointer={$groupUserStore?.is_admin}
+							onclick={pinPoll}
+						>
 							<Fa
 								size="1.2x"
 								icon={faThumbtack}
@@ -190,7 +211,7 @@
 						</button>
 					{/if}
 
-          <!-- Three dot menu for more options -->
+					<!-- Three dot menu for more options -->
 					<MultipleChoices
 						bind:choicesOpen
 						labels={!(phase === 'result' || phase === 'prediction_vote') &&
@@ -209,29 +230,33 @@
 			{/if}
 		</div>
 
-		<div class="flex gap-4 items-center pb-2 w-full justify-between dark:text-secondary">
+		<div
+			class="flex gap-4 items-center pb-2 w-full justify-between dark:text-secondary"
+		>
 			<!-- Button for going to the group the poll is from -->
-			<button
-				onclick={() =>
-					poll?.group_joined
-						? goto(`groups/${poll?.group_id}`)
-						: ErrorHandlerStore.set({
-								message: 'You must join the group to access it',
-								success: false
-							})}
-				class:hover:underline={poll?.group_joined}
-				class="text-black dark:text-darkmodeText flex items-center"
-			>
-				<img
-					class="h-6 w-6 mr-1 rounded-full break-word"
-					src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
-					alt={'Poll Thumbnail'}
-					onerror={(e) => onThumbnailError(e, DefaultBanner)}
-				/>
-				<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
-					>{poll?.group_name}</span
+			{#if !page.params.groupId}
+				<button
+					onclick={() =>
+						poll?.group_joined
+							? goto(`groups/${poll?.group_id}`)
+							: ErrorHandlerStore.set({
+									message: 'You must join the group to access the group',
+									success: false
+								})}
+					class:hover:underline={poll?.group_joined}
+					class="text-black dark:text-darkmodeText flex items-center"
 				>
-			</button>
+					<img
+						class="h-6 w-6 mr-1 rounded-full break-word"
+						src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
+						alt={'Poll Thumbnail'}
+						onerror={(e) => onThumbnailError(e, DefaultBanner)}
+					/>
+					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
+						>{poll?.group_name}</span
+					>
+				</button>
+			{/if}
 		</div>
 		{#if poll?.created_by?.user}
 			<div class="text-black dark:text-darkmodeText flex items-center">
@@ -244,20 +269,40 @@
 		<div class="flex gap-4 my-2 items-center">
 			<!-- Poll Type Icons -->
 			{#if poll?.poll_type === 4}
-				<HeaderIcon Class="!p-0 !cursor-default" icon={faAlignLeft} text={'Text Poll'} />
+				<HeaderIcon
+					Class="!p-0 !cursor-default"
+					icon={faAlignLeft}
+					text={'Text Poll'}
+				/>
 			{:else if poll?.poll_type === 3}
-				<HeaderIcon Class="!p-0 !cursor-default" icon={faCalendarAlt} text={'Date Poll'} />
+				<HeaderIcon
+					Class="!p-0 !cursor-default"
+					icon={faCalendarAlt}
+					text={'Date Poll'}
+				/>
 			{/if}
 
 			{#if poll.public}
-				<HeaderIcon Class="!p-0 !cursor-default" icon={faGlobe} text={'Public Poll'} />
+				<HeaderIcon
+					Class="!p-0 !cursor-default"
+					icon={faGlobe}
+					text={'Public Poll'}
+				/>
 			{:else}
-				<HeaderIcon Class="!p-0 !cursor-default" icon={faLock} text={'Private Poll'} />
+				<HeaderIcon
+					Class="!p-0 !cursor-default"
+					icon={faLock}
+					text={'Private Poll'}
+				/>
 			{/if}
 
 			<!-- Fast Forward Icon -->
 			{#if poll?.allow_fast_forward}
-				<HeaderIcon Class="!p-0 !cursor-default" icon={faAnglesRight} text={'Fast Forward'} />
+				<HeaderIcon
+					Class="!p-0 !cursor-default"
+					icon={faAnglesRight}
+					text={'Fast Forward'}
+				/>
 			{:else}
 				<div
 					role="button"
@@ -282,24 +327,27 @@
 			<!-- Comment icon. When user clicks it leads to the comment section on the poll -->
 			{#if poll.group_joined}
 				<a
-					class="flex gap-1 items-center text-black dark:text-darkmodeText hover:bg-gray-100 dark:hover:bg-slate-500 cursor-pointer text-sm"
+					class="flex gap-1 items-center dark:text-darkmodeText hover:bg-gray-100 dark:hover:bg-slate-500 cursor-pointer text-sm"
 					href={onHoverGroup
 						? '/groups/1'
 						: `/groups/${poll?.group_id || page.params.groupId}/polls/${
 								poll?.id
 							}?section=comments&source=${page.params.groupId ? 'group' : 'home'}`}
 				>
-					<img class="w-5" src={ChatIcon} alt="open chat" />
+					<img class="w-5 dark:invert" src={ChatIcon} alt="open chat" />
 					<span class="inline">{poll?.total_comments}</span>
 				</a>
 			{/if}
+
 			<!-- Poll tag -->
 			{#if poll?.poll_type === 4 && tag.name !== ''}
 				<Tag Class="cursor-default" bind:tag />
 			{/if}
 
 			{#if poll?.interval_mean_absolute_correctness}
-				{$_('Historical imac value')}: {imacFormatting(poll.interval_mean_absolute_correctness)}
+				{$_('Historical imac value')}: {imacFormatting(
+					poll.interval_mean_absolute_correctness
+				)}
 			{/if}
 
 			<!-- Phase -->
@@ -310,7 +358,12 @@
 		</div>
 
 		{#if poll?.description?.length > 0}
-			<NewDescription limit={2} lengthLimit={700} description={poll?.description} Class="mt-2" />
+			<NewDescription
+				limit={2}
+				lengthLimit={700}
+				description={poll?.description}
+				Class="mt-2"
+			/>
 		{/if}
 
 		<Timeline
@@ -348,7 +401,9 @@
 								>{$_('Save Vote')}</Button
 							>
 						{:else}
-							<p class="w-[47%] text-center">{$_('Successfully saved voting!')}</p>
+							<p class="w-[47%] text-center">
+								{$_('Successfully saved voting!')}
+							</p>
 						{/if}
 					</form>
 

@@ -72,7 +72,7 @@
 	};
 </script>
 
-<svelte:body onscroll={() => lazyLoading(getGroups)} />
+<svelte:window onscroll={() => lazyLoading(getGroups)} />
 
 <svelte:head>
 	<title>Groups</title>

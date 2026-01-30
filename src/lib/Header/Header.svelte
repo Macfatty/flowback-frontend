@@ -22,9 +22,14 @@
 	import Fa from 'svelte-fa';
 	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 	import { chatOpenStore } from '$lib/Chat/functions';
+	import { onNavigate } from '$app/navigation';
 
 	let sideHeaderOpen = false,
 		selectedHref = '';
+
+	onNavigate(() => {
+		selectedHref = window.location.pathname.slice(1);
+	});
 </script>
 
 <header

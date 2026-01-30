@@ -78,23 +78,23 @@
 			case 'poll':
 			case 'poll_vote_update':
 				await goto(
-					`/groups/${notification.data.group_id}/polls/${notification.data.poll_id}`
+					`/groups/${notification.data.group_id}/polls/${notification.data.poll_id}?source=notification`
 				);
 				return;
 			case 'poll_comment':
 				await goto(
-					`/groups/${notification.data.group_id}/thread/${notification.data.thread_id}?section=comments`
+					`/groups/${notification.data.group_id}/thread/${notification.data.thread_id}?section=comments&source=notification`
 				);
 				return;
 			case 'thread':
 				await goto(
-					`/groups/${notification.data.group_id}/thread/${notification.data.thread_id}`
+					`/groups/${notification.data.group_id}/thread/${notification.data.thread_id}?source=notification`
 				);
 				return;
 			case 'thread_comment':
 				// TODO: Fix scuffed solution with channel_data by changing data in backend probably group models.py
 				await goto(
-					`/groups/${notification.data.group_id}/thread/${notification.channel_data.thread_id}?section=comments`
+					`/groups/${notification.data.group_id}/thread/${notification.channel_data.thread_id}?section=comments&source=notification`
 				);
 				return;
 			case 'group_user':

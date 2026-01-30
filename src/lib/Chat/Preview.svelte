@@ -12,11 +12,9 @@
 	} from './functions';
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
-	import { idfy } from '$lib/Generic/GenericFunctions2';
 	import UserSearch from '$lib/Generic/UserSearch.svelte';
 	import Fa from 'svelte-fa';
 	import { faCircle, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-	import { userStore } from '$lib/User/interfaces';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
 
 	let chatSearch = $state(''),
@@ -113,7 +111,7 @@
 
 		// Clear chatPartnerStore if the user is currently in the left group
 		if ($chatPartnerStore === id) {
-			chatPartnerStore.set(-1);
+			chatPartnerStore.set(0);
 		}
 	};
 
@@ -242,24 +240,24 @@
 				</div>
 			</button>
 			<!-- Button for creating group user chat -->
-			{#if creatingGroup}
-				<div id={`chat-${idfy(chatter.channel_title ?? '')}`}>
-					<Button
-						onClick={() => {
-							if (groupMembers.some((member) => member.id === chatter.id)) {
-								return;
-							}
-							const newMember = chatter.participants.find(
-								(user) => user.id !== $userStore?.id
-							);
-							// @ts-ignore
-							groupMembers = [...groupMembers, newMember];
-						}}
-					>
-						{$_('Add User')}
-					</Button>
-				</div>
-			{/if}
+			<!-- {#if creatingGroup} -->
+			<!-- 	<div id={`chat-${idfy(chatter.channel_title ?? '')}`}> -->
+			<!-- 		<Button -->
+			<!-- 			onClick={() => { -->
+			<!-- 				if (groupMembers.some((member) => member.id === chatter.id)) { -->
+			<!-- 					return; -->
+			<!-- 				} -->
+			<!-- 				const newMember = chatter.participants.find( -->
+			<!-- 					(user) => user.id !== $userStore?.id -->
+			<!-- 				); -->
+			<!-- 				// @ts-ignore -->
+			<!-- 				groupMembers = [...groupMembers, newMember]; -->
+			<!-- 			}} -->
+			<!-- 		> -->
+			<!-- 			{$_('Add User')} -->
+			<!-- 		</Button> -->
+			<!-- 	</div> -->
+			<!-- {/if} -->
 		{/if}
 	{/each}
 </div>

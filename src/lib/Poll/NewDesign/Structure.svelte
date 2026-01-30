@@ -9,7 +9,7 @@
 		phase: Phase = 'area_vote',
 		resetScroll = false,
 		showRight = false,
-    showBoth = false;
+		showBoth = false;
 
 	// 'bg-white h-[490px] max-h-[490px] dark:bg-darkobject dark:text-darkmodeText p-4 rounded shadow-md',
 	let genericStyle =
@@ -29,11 +29,10 @@
 		${$isMobile ? 'flex flex-col' : 'grid'}
 	`;
 
-	$: showLeftSlot = $$slots.left && 
-		(!$isMobile || !showRight || showBoth);
+	$: showLeftSlot = $$slots.left && (!$isMobile || !showRight || showBoth);
 
-	$: showRightSlot = $$slots.right && 
-		($isMobile ? (showRight || showBoth) : true);
+	$: showRightSlot =
+		$$slots.right && ($isMobile ? showRight || showBoth : true);
 
 	$: showBottomSlot = $$slots.bottom;
 </script>
@@ -44,7 +43,9 @@
 			bind:phase
 			bind:poll
 			enableDetails={false}
-			Class={$isMobile ? 'w-full mobile-timeline' : 'desktop-timeline h-[490px]'}
+			Class={$isMobile
+				? 'w-full mobile-timeline'
+				: 'desktop-timeline h-[490px]'}
 			horizontal={$isMobile}
 		/>
 	{/if}
@@ -72,7 +73,7 @@
 	@media (min-width: 768px) {
 		.poll-grid {
 			grid-template-columns: 0.1fr repeat(2, minmax(0, 1fr));
-			grid-template-rows: repeat(3, minmax(0, 55vh));
+			grid-template-rows: repeat(2, minmax(0, 55vh));
 			display: grid;
 			max-height: 2000px;
 		}

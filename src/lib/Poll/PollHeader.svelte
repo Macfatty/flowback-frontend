@@ -69,7 +69,12 @@
 			if (source === 'home') goto('/home');
 			else if (source === 'group')
 				goto(`/groups/${$page.params.groupId}?page=flow`);
-			else if (source === 'delegate-history') history.back();
+			else if (
+				source === 'delegate-history' ||
+				source === 'notification' ||
+				source === 'create'
+			)
+				history.back();
 		}}
 	>
 		<!-- NOTE: In +layout, rote folder, there are URL related behaviours which are affected by this. -->
@@ -82,7 +87,7 @@
 		{poll?.title}
 	</h1>
 
-	<div class="flex gap-3 justify-center m-auto pr-4">
+	<div class="inline-flex gap-4 items-baseline">
 		<NotificationOptions
 			type="poll"
 			id={poll?.id}
@@ -109,7 +114,7 @@
 					? [async () => (phase = await nextPhase(poll, phase))]
 					: [])
 			]}
-			ClassInner="-translate-x-2/3"
+			ClassInner="-translate-x-3/4"
 			id="poll-header-multiple-choices"
 		/>
 	</div>

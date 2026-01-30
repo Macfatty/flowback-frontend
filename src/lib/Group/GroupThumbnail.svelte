@@ -14,6 +14,8 @@
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import Modal from '$lib/Generic/Modal.svelte';
 	import { idfy } from '$lib/Generic/GenericFunctions2';
+	import { groupStore } from './Kanban/Kanban';
+	import { chatPartnerStore } from '$lib/Chat/functions';
 
 	let { group = $bindable() }: { group: Group } = $props();
 
@@ -23,10 +25,6 @@
 		if (e.target.id === 'group-join-button') return; // Prevent navigation when clicking the join button
 
 		if (group.joined) goto(`/groups/${group.id}`);
-	};
-
-	const subscribeToGroup = async () => {
-		const { res, json } = await fetchRequest('POST', 'notification/group');
 	};
 
 	const joinGroup = async (directJoin: boolean) => {
@@ -49,6 +47,9 @@
 
 		if (env.PUBLIC_BLOCKCHAIN_INTEGRATION === 'TRUE')
 			becomeMemberOfGroup(group.blockchain_id);
+
+		//TODO: Edit groupStore instead of appending dupliucate groups
+		groupStore.set([...$groupStore, group]);
 	};
 
 	const leaveGroup = async () => {
@@ -70,6 +71,8 @@
 		areYouSureModal = false;
 		group.joined = false;
 		group.pending_join = false;
+		groupStore.set($groupStore.filter((g) => g.id !== group.id));
+		chatPartnerStore.set(0);
 	};
 </script>
 
