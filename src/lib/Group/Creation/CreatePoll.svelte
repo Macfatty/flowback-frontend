@@ -267,11 +267,13 @@
 					isPublic}
 				classInner="border border-gray-300"
 				label={$_('Work Group')}
-				labels={workGroups.map((workGroup) => workGroup.name)}
-				values={workGroups.map((workGroup) => workGroup.id)}
+				labels={[
+					'No workgroup selected',
+					...workGroups.map((workGroup) => workGroup.name)
+				]}
+				values={[null, ...workGroups.map((workGroup) => workGroup.id)]}
 				bind:value={workGroup}
-				innerLabelOn={true}
-				innerLabel={$_('No workgroup assigned')}
+				disableFirstChoice
 			/>
 
 			<Button type="submit" disabled={loading} Class={'bg-primary p-3 mt-3'}

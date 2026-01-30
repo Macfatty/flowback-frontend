@@ -111,8 +111,13 @@
 		const { res, json } = await fetchRequest('POST', `${api}`, payload);
 		if (!res.ok) {
 			ErrorHandlerStore.set({
-				message:
-					method === 'add' ? 'Failed to subscribe' : 'Failed to Unsubscribe',
+				message: (() => {
+					if (method === 'add') {
+						const msg = json.detail[0];
+						if (msg === 'Event is not active or has already ended.') return msg;
+						else return 'Failed to subscribe';
+					} else return 'Failed to unsubscribe';
+				})(),
 				success: false
 			});
 			return;
@@ -191,13 +196,14 @@
 			class={`z-40 absolute mt-2 bg-white dark:bg-darkobject shadow-xl text-sm ${ClassOpen}`}
 		>
 			<div class="text-xs p-2">{$_('Manage Subscriptions')}</div>
-			<button
-				onclick={(e) => {
-					e.preventDefault();
-					subscribeToAll();
-				}}
-				class="text-xs p-2">{$_('Subscribe to All')}</button
-			>
+			{#if type !== 'event'}
+				<button
+					onclick={(e) => {
+						e.preventDefault();
+						subscribeToAll();
+					}}
+					class="text-xs p-2">{$_('Subscribe to All')}</button
+				>{/if}
 			{#each categories as category, i}
 				<button
 					class="bg-gray-200 dark:bg-gray-700 w-full p-2 px-5 flex justify-between items-center transition-all"
