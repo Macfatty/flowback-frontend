@@ -120,7 +120,6 @@
 				/>
 			{/if}
 		</nav>
-
 		<div class="flex gap-4 items-center float-right hover:bg-grey-800">
 			<div class="mr-5 flex gap-4 items-center">
 				<button
