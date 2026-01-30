@@ -421,9 +421,9 @@
 >
 	<div slot="header">
 		{#if selectedEvent.schedule_id === 0}
-			<span>Create an Event</span>
+			<span>{$_('Create an Event')}</span>
 		{:else if selectedEvent.schedule_id !== 0}
-			<span>Edit Event {selectedEvent.title}</span>
+			<span>{$_('Edit Event ')}{selectedEvent.title}</span>
 			<NotificationOptions
 				type="event"
 				id={selectedEvent.id}
