@@ -244,7 +244,7 @@
 
 <Loader bind:loading>
 	<div
-		class={`sticky top-[7.6rem] ${!results ? 'md:top-[5.5rem]' : 'top-[-1rem]'}`}
+		class={`sticky top-[7.6rem] ${results ? '-top-[1rem]' : 'md:top-[5.5rem]'}`}
 	>
 		<div
 			class="dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between mt-4 py-5 px-6 md:py-1 md:px-4"
@@ -325,20 +325,22 @@
 		{/each}
 	</div>
 	<div class="p-4 border-t flex gap-4 bg-white dark:bg-darkobject">
-		<Button
-			disabled={arraysEqual(
-				selectedDates.map((d) => d.date.getTime()).sort(),
-				savedDates.map((d) => d.date.getTime()).sort()
-			)}
-			onClick={saveSelection}
-			buttonStyle="primary-light"
-			Class="flex-1">{$_('Submit')}</Button
-		>
-		<Button
-			onClick={clearSelection}
-			buttonStyle="warning-light"
-			disabled={selectedDates.length === 0}
-			Class="flex-1 disabled:!text-gray-300">{$_('Clear')}</Button
-		>
+		{#if !results}
+			<Button
+				disabled={arraysEqual(
+					selectedDates.map((d) => d.date.getTime()).sort(),
+					savedDates.map((d) => d.date.getTime()).sort()
+				)}
+				onClick={saveSelection}
+				buttonStyle="primary-light"
+				Class="flex-1">{$_('Submit')}</Button
+			>
+			<Button
+				onClick={clearSelection}
+				buttonStyle="warning-light"
+				disabled={selectedDates.length === 0}
+				Class="flex-1 disabled:!text-gray-300">{$_('Clear')}</Button
+			>
+		{/if}
 	</div>
 </Loader>
