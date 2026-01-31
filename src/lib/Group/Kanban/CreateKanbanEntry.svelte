@@ -220,9 +220,10 @@
 							onInput={handleChangeAssignee}
 							innerLabel={$_('No assignee')}
 							innerLabelOn={true}
+							innerLabelValue={null}
 						/>
 					</div>
-					<!-- {/if} -->
+
 					<div class="text-left">
 						<span class="block text-md">
 							{$_('Attachments')}

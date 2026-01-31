@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { userStore } from '$lib/User/interfaces';
 	import { groupStore } from '$lib/Group/Kanban/Kanban';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
@@ -300,7 +301,7 @@
 			<span
 				class="hover:no-underline text-xs dark:text-gray-500 text-gray-400 italic"
 			>
-				{$_('My own')}
+				{$userStore?.username}
 			</span>
 		{:else}
 			<span
