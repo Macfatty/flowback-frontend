@@ -9,7 +9,7 @@
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import Fa from 'svelte-fa';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
-	import { type kanban, type Filter, workgroupStore } from './Kanban';
+	import { type kanban } from './Kanban';
 	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 
@@ -37,7 +37,7 @@
 
 		let filter = `&limit=${kanbanLimit}&order_by=priority_desc&title__icontains=${search}`;
 
-		if (userChecked || assigneeId === $userStore?.id) {
+		if (userChecked && (assigneeId === $userStore?.id || assigneeId === 0)) {
 			let api = `user/kanban/entry/list?origin_type=user${filter}`;
 			const { res, json } = await fetchRequest('GET', api);
 			if (res.ok) {
