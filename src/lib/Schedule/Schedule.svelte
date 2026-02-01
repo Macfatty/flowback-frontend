@@ -20,12 +20,13 @@
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 	import Select from '$lib/Generic/Select.svelte';
-	import { toDatetimeLocal } from '$lib/Generic/GenericFunctions';
+	import { deepCopy, toDatetimeLocal } from '$lib/Generic/GenericFunctions';
 	import GroupSelection from '$lib/Generic/GroupSelection.svelte';
 
 	let open = $state(false),
 		events: ScheduleItem2[] = $state([]),
 		selectedEvent: ScheduleItem2 = $state(ScheduleItem2Default),
+		editingEvent: ScheduleItem2 = $state(ScheduleItem2Default),
 		//TODO get rid of groupid and use groupIds only
 		groupId: null | number = $state(null),
 		groupIds: number[] = $state([]),
@@ -86,12 +87,6 @@
 						}
 					: e
 			);
-
-			// events = events.map((e) => ({
-			// 	...e,
-			// 	start_date: e.start_date.slice(0, 16),
-			// 	end_date: e.end_date?.slice(0, 16)
-			// }));
 		}
 	};
 
@@ -110,12 +105,12 @@
 		let api = getAPI('create');
 
 		const { res, json } = await fetchRequest('POST', api, {
-			title: selectedEvent.title,
-			description: selectedEvent.description,
+			title: editingEvent.title,
+			description: editingEvent.description,
 			start_date: new Date(selectedStartDate).toISOString(),
 			end_date: new Date(selectedEndDate).toISOString(),
-			repeat_frequency: selectedEvent.repeat_frequency,
-			meeting_link: selectedEvent.meeting_link
+			repeat_frequency: editingEvent.repeat_frequency,
+			meeting_link: editingEvent.meeting_link
 		});
 
 		if (!res.ok) {
@@ -148,7 +143,7 @@
 		let api = getAPI('update');
 
 		const { res, json } = await fetchRequest('POST', api, {
-			...selectedEvent,
+			...editingEvent,
 			event_id: selectedEvent.id,
 			start_date: selectedStartDate,
 			end_date: selectedEndDate
@@ -248,11 +243,11 @@
 				selectedEvent =
 					events.find((e) => e.id.toString() === info.event.id) ??
 					selectedEvent;
+				editingEvent = deepCopy(selectedEvent);
 
 				//@ts-ignore
 				selectedStartDate = toDatetimeLocal(info.event.start);
 
-				console.log(info.event, 'EVENT');
 				if (info.event.end)
 					//@ts-ignore
 					selectedEndDate = toDatetimeLocal(info.event.end);
@@ -420,14 +415,14 @@
 	stopAtPropagation={false}
 >
 	<div slot="header">
-		{#if selectedEvent.schedule_id === 0}
+		{#if editingEvent.schedule_id === 0}
 			<span>{$_('Create an Event')}</span>
-		{:else if selectedEvent.schedule_id !== 0}
-			<span>{$_('Edit Event ')}{selectedEvent.title}</span>
+		{:else if editingEvent.schedule_id !== 0}
+			<span>{$_('Edit Event ')}{editingEvent.title}</span>
 			<NotificationOptions
 				type="event"
-				id={selectedEvent.id}
-				api={`schedule/${selectedEvent.schedule_id}/event/subscribe`}
+				id={editingEvent.id}
+				api={`schedule/${editingEvent.schedule_id}/event/subscribe`}
 				labels={['subsc']}
 				categories={['subsc']}
 			/>
@@ -436,8 +431,8 @@
 
 	<div slot="body">
 		<div role="form">
-			<TextInput label="Title" bind:value={selectedEvent.title} />
-			<TextArea label="Description" bind:value={selectedEvent.description} />
+			<TextInput label="Title" bind:value={editingEvent.title} />
+			<TextArea label="Description" bind:value={editingEvent.description} />
 
 			<input type="datetime-local" bind:value={selectedStartDate} />
 			<input type="datetime-local" bind:value={selectedEndDate} />
@@ -446,12 +441,12 @@
 				disableFirstChoice
 				labels={['One-off', 'Daily', 'Weekly', 'Monthly', 'Yearly']}
 				values={[null, 1, 2, 3, 4]}
-				bind:value={selectedEvent.repeat_frequency}
+				bind:value={editingEvent.repeat_frequency}
 			/>
 
 			<GroupSelection bind:selectedGroupId bind:selectedWorkgroupId />
 
-			<TextInput label="Meeting Link" bind:value={selectedEvent.meeting_link} />
+			<TextInput label="Meeting Link" bind:value={editingEvent.meeting_link} />
 			<!-- <TextInput label="Tag" bind:value={selectedEvent.tag_name} /> -->
 		</div>
 	</div>
