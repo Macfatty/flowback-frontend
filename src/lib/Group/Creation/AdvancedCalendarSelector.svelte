@@ -126,3 +126,15 @@
 <div class="flex justify-center h-[100vh] w-full">
 	<div class="w-full" id="calendar-2"></div>
 </div>
+
+<style>
+	:global(#calendar-2 .fc-event) {
+		padding: 0.5rem 0.25rem;
+		font-size: 1.1rem;
+		min-height: 2rem;
+	}
+
+	:global(#calendar-2 .fc-daygrid-event) {
+		white-space: normal;
+	}
+</style>
