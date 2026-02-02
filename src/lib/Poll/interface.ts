@@ -89,6 +89,7 @@ export interface Filter {
   workgroup: number | null;
   from: string;
   to: string;
+  status: -1 | 0 | 1 | null;
 }
 
 export type Phase =
