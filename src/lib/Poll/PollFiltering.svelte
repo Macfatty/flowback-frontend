@@ -107,11 +107,12 @@
 			search: '',
 			finishedSelection: 'all',
 			public: false,
-			order_by: 'start_date_desc',
+			order_by: 'created_at_desc',
 			tag: null,
 			workgroup: null,
 			from: new Date(0).toISOString().slice(0, 16),
-			to: new Date(99999999999999).toISOString().slice(0, 16)
+			to: new Date(99999999999999).toISOString().slice(0, 16),
+			status: null
 		};
 
 		// Reset content type checkboxes
@@ -176,6 +177,12 @@
 			bind:value={filter.order_by}
 			innerLabel={null}
 		/>
+
+		<Select
+			labels={['Ongoing', 'Failed', 'Finished']}
+			values={[0, -1, 1]}
+			bind:value={filter.status}
+		></Select>
 
 		{$_('From')}:
 		<input type="date" placeholder={filter.from} bind:value={filter.from} />

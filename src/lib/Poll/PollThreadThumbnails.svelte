@@ -34,7 +34,8 @@
 			tag: null,
 			workgroup: null,
 			from: new Date(0).toISOString().slice(0, 16),
-			to: new Date(99999999999999).toISOString().slice(0, 16)
+			to: new Date(99999999999999).toISOString().slice(0, 16),
+			status: null
 		},
 		showThreads = true,
 		showPolls = true;
@@ -49,7 +50,7 @@
 		work_group_ids=${filter.workgroup}&
 		public=${infoToGet === InfoToGet.public ? 'true' : ''}&
 		created_at__gt=${filter.from}&
-		created_at__lt=${filter.to}
+		created_at__lt=${filter.to}&status=${filter.status}
     `;
 
 		// When first time loading, or when first time changing the filter, next is undefined.

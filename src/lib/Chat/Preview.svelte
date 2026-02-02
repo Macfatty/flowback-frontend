@@ -14,11 +14,18 @@
 	import { _ } from 'svelte-i18n';
 	import UserSearch from '$lib/Generic/UserSearch.svelte';
 	import Fa from 'svelte-fa';
-	import { faCircle, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faArrowRightFromBracket,
+		faCircle,
+		faPaperPlane
+	} from '@fortawesome/free-solid-svg-icons';
 	import { elipsis } from '$lib/Generic/GenericFunctions';
+	import Modal from '$lib/Generic/Modal.svelte';
 
 	let chatSearch = $state(''),
-		openUserSearch = $state(false);
+		openUserSearch = $state(false),
+		leaveGroupModal = $state(false),
+		leaveGroupChannelId: number | null = $state(null);
 
 	type Props = {
 		creatingGroup: boolean;
@@ -201,13 +208,9 @@
 			{/if}
 		{/each}
 	{/if}
+
 	{#each $previewStore as chatter}
 		{#if chatter.channel_title?.includes(chatSearch) && ((chatter?.channel_origin_name === 'user' && creatingGroup) || !creatingGroup)}
-			{#if chatter?.channel_origin_name === 'user_group'}
-				<Button onClick={() => leaveGroupScuffed(chatter?.channel_id)}
-					>LEAVE</Button
-				>
-			{/if}
 			<button
 				class="w-full transition transition-color p-3 flex items-center gap-3 hover:bg-gray-200 active:bg-gray-500 cursor-pointer dark:bg-darkobject dark:hover:bg-darkbackground"
 				class:bg-gray-200={$chatPartnerStore === chatter.channel_id}
@@ -217,6 +220,7 @@
 				<ProfilePicture
 					profilePicture={chatter?.recent_message?.profile_image}
 				/>
+
 				<div class="flex justify-between items-center w-full">
 					<div>
 						<div
@@ -238,6 +242,16 @@
 						</div>
 					{/if}
 				</div>
+				{#if chatter?.channel_origin_name === 'user_group'}
+					<Button
+						onClick={() => {
+							leaveGroupChannelId = chatter.channel_id;
+							leaveGroupModal = true;
+						}}
+					>
+						<Fa icon={faArrowRightFromBracket} />
+					</Button>
+				{/if}
 			</button>
 			<!-- Button for creating group user chat -->
 			<!-- {#if creatingGroup} -->
@@ -261,3 +275,34 @@
 		{/if}
 	{/each}
 </div>
+
+<Modal
+	bind:open={leaveGroupModal}
+	onClose={() => {
+		leaveGroupChannelId = null;
+	}}
+	buttons={[
+		{
+			label: 'Cancel',
+			type: 'default',
+			onClick: () => {
+				leaveGroupModal = false;
+			}
+		},
+		{
+			label: 'Leave',
+			type: 'warning',
+			onClick: async () => {
+				if (leaveGroupChannelId) {
+					await leaveGroupScuffed(leaveGroupChannelId);
+				}
+				leaveGroupModal = false;
+			}
+		}
+	]}
+>
+	<span slot="header">{$_('Leave Group')}</span>
+	<span slot="body"
+		>{$_('Are you sure you want to leave this group chat?')}</span
+	>
+</Modal>
