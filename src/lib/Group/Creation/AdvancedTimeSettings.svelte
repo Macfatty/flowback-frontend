@@ -3,7 +3,10 @@
 	import { maxDatePickerYear } from '$lib/Generic/DateFormatter';
 	import type { template } from './interface';
 	import RadioButtons2 from '$lib/Generic/RadioButtons2.svelte';
-	import { deepCopy, formatDateToLocalTime } from '$lib/Generic/GenericFunctions';
+	import {
+		deepCopy,
+		formatDateToLocalTime
+	} from '$lib/Generic/GenericFunctions';
 	import AdvancedCalendarSelector from './AdvancedCalendarSelector.svelte';
 	import Fa from 'svelte-fa';
 	import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
@@ -48,12 +51,18 @@
 		if (daysBetweenPhases === 0) {
 			//For debug purposes this puts one second delay between each phase. Useful for playwright testing.
 			_times.forEach((_: Date, i: number) => {
-				if (i !== 0) _times[i] = new Date(incrementer.setSeconds(incrementer.getSeconds() + 1));
+				if (i !== 0)
+					_times[i] = new Date(
+						incrementer.setSeconds(incrementer.getSeconds() + 1)
+					);
 			});
 		} else {
 			//For users to select over multiple days
 			_times.forEach((_: Date, i: number) => {
-				if (i !== 0) _times[i] = new Date(incrementer.setDate(incrementer.getDate() + days));
+				if (i !== 0)
+					_times[i] = new Date(
+						incrementer.setDate(incrementer.getDate() + days)
+					);
 			});
 		}
 		times = _times;
@@ -120,7 +129,8 @@
 							// End date needs to be before now to be valid
 							if (new Date() <= date) times[i] = date;
 							//@ts-ignore
-							else e.target.value = formatDateToLocalTime(start_date).slice(0, 16);
+							else
+								e.target.value = formatDateToLocalTime(start_date).slice(0, 16);
 						}}
 					/>
 				</div>

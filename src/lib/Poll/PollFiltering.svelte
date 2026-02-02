@@ -107,7 +107,7 @@
 			search: '',
 			finishedSelection: 'all',
 			public: false,
-			order_by: 'start_date_desc',
+			order_by: 'created_at_desc',
 			tag: null,
 			workgroup: null,
 			from: new Date(0).toISOString().slice(0, 16),
