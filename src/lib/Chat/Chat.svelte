@@ -104,7 +104,9 @@
 			}}
 			Class="px-6 my-3 dark:bg-darkbackground hover:brightness-95 active:brightness-90"
 		>
-			<div class="text-gray-800 dark:text-gray-200">
+			<div
+				class={`top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white`}
+			>
 				<Fa icon={faCog} />
 			</div>
 		</Button>
