@@ -9,7 +9,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Loader from '../Loader.svelte';
 	import type { timeProposal } from '$lib/Poll/interface';
 	import Button from '$lib/Generic/Button.svelte';
@@ -37,7 +37,7 @@
 		noChanges = true;
 
 	type SelDate = { date: Date; id: number; numOfVotes: number };
-	const pollId = $page.params.pollId;
+	const pollId = page.params.pollId;
 
 	// Date utility functions
 	const getRecentMonday = (d: Date) => {
@@ -244,7 +244,7 @@
 
 <Loader bind:loading>
 	<div
-		class={`sticky top-[7.6rem] ${results ? '-top-[1rem]' : 'md:top-[5.5rem]'}`}
+		class={`sticky ${results ? 'md:-top-[1rem]' : 'top-[7.6rem] md:top-[5.5rem]'}`}
 	>
 		<div
 			class="dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between mt-4 py-5 px-6 md:py-1 md:px-4"
@@ -284,7 +284,7 @@
 				)}
 
 				<button
-					class="bg-white dark:bg-darkobject border h-12 w-full"
+					class={`bg-white dark:bg-darkobject border h-12 w-full ${results ? 'cursor-default' : 'cursor-pointer'}`}
 					on:click={() => {
 						if (!results) toggleDate(date);
 					}}

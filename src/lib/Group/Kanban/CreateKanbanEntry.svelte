@@ -183,7 +183,7 @@
 					</label>
 					<input
 						bind:value={end_date}
-						class="w-full border rounded p-1 border-gray-300 dark:border-gray-600 dark:bg-darkobject
+						class="w-full border rounded p-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-darkobject
 						   {end_date ? 'text-black' : 'text-gray-500'}"
 						type="datetime-local"
 						id="end_date"
@@ -196,7 +196,7 @@
 					</label>
 					<Select
 						Class="w-full"
-						classInner="rounded p-1 border border-gray-300 dark:border-gray-600 dark:bg-darkobject"
+						classInner="rounded p-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-darkobject"
 						labels={priorities.map((i) =>
 							$_(priorityText[priorityText.length - i])
 						)}
@@ -213,7 +213,7 @@
 
 						<Select
 							Class="w-full"
-							classInner="rounded p-1 border border-gray-300 dark:border-gray-600 dark:bg-darkobject"
+							classInner="rounded p-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-darkobject"
 							labels={users.map((user) => user.user.username)}
 							values={users.map((user) => user.user.id)}
 							bind:value={assignee}

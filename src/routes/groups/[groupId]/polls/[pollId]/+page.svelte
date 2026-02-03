@@ -520,6 +520,7 @@
 					<DatePoll slot="bottom" Class="w-full" results />
 				</Structure>
 			{:else}
+				<!-- Voting Phase -->
 				<DatePoll Class="w-[100%] lg:w-[70%] md:p-6 max-w-[1000px]" />
 			{/if}
 		{/if}
