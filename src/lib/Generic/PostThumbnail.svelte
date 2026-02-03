@@ -47,11 +47,11 @@
 </script>
 
 <div
-	class="bg-white dark:bg-darkobject dark:text-darkmodeText p-6 rounded-sm"
+	class="bg-white dark:bg-darkobject dark:text-darkmodeText px-6 py-4 rounded-md"
 	class:poll-thumbnail-shadow={!$darkModeStore}
 >
 	<div class="flex justify-between items-center">
-		<div class="flex w-full justify-between">
+		<div class="items-center flex w-full justify-between">
 			<!-- Title. It is a button since this allows users to enter the Post -->
 			<button
 				class="pb-2 break-all cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
