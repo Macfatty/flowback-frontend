@@ -209,14 +209,14 @@
 											'Was not calculated at the time'}
 									</div>
 									{#each voteHistory.vote as vote}
-										{@const prediction = predictions.find((p) =>
+										{@const predictionsForProp = predictions.filter((p) =>
 											p.segments.find((s) => s.proposal_id === vote.proposal_id)
 										)}
 										<div class="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded">
 											<div>{vote.proposal_title}</div>
 											<div>{vote.proposal_description}</div>
 											<div>{$_('Delegate voted:')} {vote.raw_score}</div>
-											{#if prediction}
+											{#each predictionsForProp as prediction}
 												<div
 													class="mt-1 p-2 bg-gray-100 dark:bg-gray-700 rounded"
 												>
@@ -224,7 +224,7 @@
 													{prediction?.description}
 													{prediction?.combined_bet}
 												</div>
-											{/if}
+											{/each}
 										</div>
 									{/each}
 								</div>
