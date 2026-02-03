@@ -11,6 +11,7 @@
 	import Select from '$lib/Generic/Select.svelte';
 	import { userStore } from '$lib/User/interfaces';
 	import Structure from '$lib/Poll/NewDesign/Structure.svelte';
+	import type { PredictionStatement } from '$lib/Poll/PredictionMarket/interfaces';
 
 	export let history: null | number,
 		groupId = 0;
@@ -21,7 +22,8 @@
 		filteredVotingHistory: VoteHistory[] = [],
 		searchVoteQuery = '',
 		searched = false,
-		sortOrder: 'a-z' | 'z-a' = 'a-z';
+		sortOrder: 'a-z' | 'z-a' = 'a-z',
+		predictions: PredictionStatement[] = [];
 
 	const getDelegateHistory = async () => {
 		loading = true;
@@ -50,6 +52,17 @@
 		}
 	}
 
+	const getPredictionStatements = async () => {
+		const { res, json } = await fetchRequest(
+			'GET',
+			`group/${groupId}/poll/prediction/statement/list`
+		);
+
+		if (!res.ok) return;
+
+		predictions = json?.results;
+	};
+
 	const searchVotes = async (query: string) => {
 		searched = true;
 
@@ -68,6 +81,7 @@
 	onMount(async () => {
 		await getDelegateInfo();
 		await getDelegateHistory();
+		await getPredictionStatements();
 	});
 </script>
 
@@ -195,9 +209,23 @@
 											'Was not calculated at the time'}
 									</div>
 									{#each voteHistory.vote as vote}
-										<div>{vote.proposal_title}</div>
-										<div>{vote.proposal_description}</div>
-										<div>{$_('Delegate voted:')} {vote.raw_score}</div>
+										{@const prediction = predictions.find((p) =>
+											p.segments.find((s) => s.proposal_id === vote.proposal_id)
+										)}
+										<div class="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded">
+											<div>{vote.proposal_title}</div>
+											<div>{vote.proposal_description}</div>
+											<div>{$_('Delegate voted:')} {vote.raw_score}</div>
+											{#if prediction}
+												<div
+													class="mt-1 p-2 bg-gray-100 dark:bg-gray-700 rounded"
+												>
+													{prediction?.title}
+													{prediction?.description}
+													{prediction?.combined_bet}
+												</div>
+											{/if}
+										</div>
 									{/each}
 								</div>
 							</li>
