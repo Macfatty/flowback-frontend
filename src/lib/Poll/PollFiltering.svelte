@@ -179,8 +179,9 @@
 		/>
 
 		<Select
-			labels={['Ongoing', 'Failed', 'Finished']}
-			values={[0, -1, 1]}
+			labels={['All', 'Ongoing', 'Failed', 'Finished']}
+			values={[null, 0, -1, 1]}
+			disableFirstChoice
 			bind:value={filter.status}
 		></Select>
 
