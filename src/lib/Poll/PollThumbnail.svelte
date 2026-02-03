@@ -1,5 +1,4 @@
 <script lang="ts">
-	import DefaultBanner from '$lib/assets/default_banner_group.png';
 	import type { Phase, poll } from './interface';
 	import { page } from '$app/state';
 	import Tag from '$lib/Group/Tag.svelte';
@@ -7,29 +6,20 @@
 	import Fa from 'svelte-fa';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { _ } from 'svelte-i18n';
-	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import { onMount } from 'svelte';
 	import {
 		getPhase,
 		getPhaseUserFriendlyNameWithNumber,
-		imacFormatting,
-		nextPhase
+		imacFormatting
 	} from './functions';
-	import {
-		getPermissionsFast,
-		onThumbnailError
-	} from '$lib/Generic/GenericFunctions';
+	import { getPermissionsFast } from '$lib/Generic/GenericFunctions';
 	import Select from '$lib/Generic/Select.svelte';
 	import { getTags } from '$lib/Group/functions';
 	import type { Tag as TagType } from '$lib/Group/interface';
-	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import Button from '$lib/Generic/Button.svelte';
-	import NewDescription from './NewDescription.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import { env } from '$env/dynamic/public';
 	import {
 		faAnglesRight,
-		faThumbtack,
 		faAlignLeft,
 		faCalendarAlt,
 		faSlash,
@@ -37,13 +27,11 @@
 		faLock
 	} from '@fortawesome/free-solid-svg-icons';
 	import { goto } from '$app/navigation';
-	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import Timeline from './NewDesign/Timeline.svelte';
 	import ReportPostModal from './ReportPostModal.svelte';
 	import type { Permissions } from '$lib/Group/Permissions/interface';
-	import { groupUserStore } from '$lib/Group/interface';
 	import DeletePostModal from './DeletePostModal.svelte';
+	import PostThumbnail from '$lib/Generic/PostThumbnail.svelte';
 
 	let { poll }: { poll: poll } = $props();
 
@@ -158,114 +146,8 @@
 	});
 </script>
 
-<div
-	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded-sm p-4"
-	class:poll-thumbnail-shadow={!$darkModeStore}
-	id={`poll-thumbnail-${poll?.id.toString()}`}
->
-	<div class="mx-2">
-		<div class="flex justify-between items-start gap-4 pb-2">
-			<button
-				class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"
-				onclick={() => {
-					if (poll?.group_joined)
-						goto(
-							`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
-								page.params.groupId ? 'group' : 'home'
-							}`
-						);
-					else
-						ErrorHandlerStore.set({
-							message: 'You must join the group to access the poll',
-							success: false
-						});
-				}}
-			>
-				{poll?.title}
-			</button>
-
-			{#if poll?.group_joined}
-				<div class="flex gap-4 items-baseline">
-					<NotificationOptions
-						type="poll"
-						id={poll?.id}
-						api={`group/poll/${poll?.id}/subscribe`}
-						categories={['poll', 'poll_comment', 'poll_phase']}
-						labels={['Poll', 'Timeline', 'Comments']}
-						Class="text-black dark:text-darkmodeText"
-						ClassOpen="right-0"
-					/>
-
-					<!-- Pin poll button for admins -->
-					{#if page.params.groupId && ($groupUserStore?.is_admin || poll?.pinned)}
-						<button
-							class:cursor-pointer={$groupUserStore?.is_admin}
-							onclick={pinPoll}
-						>
-							<Fa
-								size="1.2x"
-								icon={faThumbtack}
-								color={poll?.pinned ? '#999' : '#CCC'}
-								rotate={poll?.pinned ? '0' : '45'}
-							/>
-						</button>
-					{/if}
-
-					<!-- Three dot menu for more options -->
-					<MultipleChoices
-						bind:choicesOpen
-						labels={!(phase === 'result' || phase === 'prediction_vote') &&
-						poll?.allow_fast_forward &&
-						(permissions?.poll_fast_forward || $groupUserStore?.is_admin)
-							? [$_('Delete Poll'), $_('Report Poll'), $_('Fast Forward')]
-							: [$_('Delete Poll'), $_('Report Poll')]}
-						functions={[
-							() => ((deletePollModalShow = true), (choicesOpen = false)),
-							() => ((reportPollModalShow = true), (choicesOpen = false)),
-							async () => (phase = await nextPhase(poll, phase))
-						]}
-						ClassInner="-translate-x-2/3 md:translate-x-0"
-					/>
-				</div>
-			{/if}
-		</div>
-
-		<div
-			class="flex gap-4 items-center pb-2 w-full justify-between dark:text-secondary"
-		>
-			<!-- Button for going to the group the poll is from -->
-			{#if !page.params.groupId}
-				<button
-					onclick={() =>
-						poll?.group_joined
-							? goto(`groups/${poll?.group_id}`)
-							: ErrorHandlerStore.set({
-									message: 'You must join the group to access the group',
-									success: false
-								})}
-					class:hover:underline={poll?.group_joined}
-					class="text-black dark:text-darkmodeText flex items-center"
-				>
-					<img
-						class="h-6 w-6 mr-1 rounded-full break-word"
-						src={`${env.PUBLIC_API_URL}${poll?.group_image}`}
-						alt={'Poll Thumbnail'}
-						onerror={(e) => onThumbnailError(e, DefaultBanner)}
-					/>
-					<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
-						>{poll?.group_name}</span
-					>
-				</button>
-			{/if}
-		</div>
-		{#if poll?.created_by?.user}
-			<div class="text-black dark:text-darkmodeText flex items-center">
-				<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
-					>{poll?.created_by?.user?.username}</span
-				>
-			</div>
-		{/if}
-
+<PostThumbnail post={poll}>
+	{#snippet icons()}
 		<div class="flex gap-4 my-2 items-center">
 			<!-- Poll Type Icons -->
 			{#if poll?.poll_type === 4}
@@ -324,21 +206,6 @@
 				</div>
 			{/if}
 
-			<!-- Comment icon. When user clicks it leads to the comment section on the poll -->
-			{#if poll.group_joined}
-				<a
-					class="flex gap-1 items-center dark:text-darkmodeText hover:bg-gray-100 dark:hover:bg-slate-500 cursor-pointer text-sm"
-					href={onHoverGroup
-						? '/groups/1'
-						: `/groups/${poll?.group_id || page.params.groupId}/polls/${
-								poll?.id
-							}?section=comments&source=${page.params.groupId ? 'group' : 'home'}`}
-				>
-					<img class="w-5 dark:invert" src={ChatIcon} alt="open chat" />
-					<span class="inline">{poll?.total_comments}</span>
-				</a>
-			{/if}
-
 			<!-- Poll tag -->
 			{#if poll?.poll_type === 4 && tag.name !== ''}
 				<Tag Class="cursor-default" bind:tag />
@@ -356,158 +223,149 @@
 				{$_(getPhaseUserFriendlyNameWithNumber(phase, poll.poll_type))}
 			</div>
 		</div>
+	{/snippet}
 
-		{#if poll?.description?.length > 0}
-			<NewDescription
-				limit={2}
-				lengthLimit={700}
-				description={poll?.description}
-				Class="mt-2"
-			/>
-		{/if}
+	<Timeline
+		bind:phase
+		bind:poll
+		enableDetails
+		displayTimelinePhase={false}
+		Class={'w-full md:!relative'}
+		horizontal
+	/>
 
-		<Timeline
-			bind:phase
-			bind:poll
-			enableDetails
-			displayTimelinePhase={false}
-			Class={'w-full md:!relative'}
-			horizontal
-		/>
+	<div class="!mt-4">
+		<!-- For text polls -->
+		{#if poll?.poll_type === 4 && poll?.group_joined}
+			<!-- PHASE 1: AREA VOTE -->
+			{#if phase === 'area_vote'}
+				<form
+					onsubmit={(e) => {
+						e.preventDefault();
+						submitTagVote(selectedTag);
+					}}
+					class="flex justify-between"
+				>
+					<Select
+						label={''}
+						labels={tags?.map((tag) => tag.name)}
+						bind:value={selectedTag}
+						values={tags?.map((tag) => tag.id)}
+						Class="w-[47%] "
+						classInner="w-full !p-2 bg-white p-4 border-gray-400 rounded-md border"
+						onInput={() => (voting = true)}
+					/>
+					{#if voting}
+						<Button type="submit" Class="w-[47%]" buttonStyle="primary-light"
+							>{$_('Save Vote')}</Button
+						>
+					{:else}
+						<p class="w-[47%] text-center">
+							{$_('Successfully saved voting!')}
+						</p>
+					{/if}
+				</form>
 
-		<div class="!mt-4">
-			<!-- For text polls -->
-			{#if poll?.poll_type === 4 && poll?.group_joined}
-				<!-- PHASE 1: AREA VOTE -->
-				{#if phase === 'area_vote'}
-					<form
-						onsubmit={(e) => {
-							e.preventDefault();
-							submitTagVote(selectedTag);
-						}}
-						class="flex justify-between"
+				<!-- PHASE 2: PROPOSAL CREATION -->
+			{:else if phase === 'proposal'}
+				<div class="flex justify-between">
+					<Button
+						Class="w-[47%]"
+						buttonStyle="primary-light"
+						onClick={() =>
+							goto(
+								`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=0&source=${
+									page.params.groupId ? 'group' : 'home'
+								}`
+							)}>{$_('See Proposals')} ({poll?.total_proposals})</Button
 					>
-						<Select
-							label={''}
-							labels={tags?.map((tag) => tag.name)}
-							bind:value={selectedTag}
-							values={tags?.map((tag) => tag.id)}
-							Class="w-[47%] "
-							classInner="w-full !p-2 bg-white p-4 border-gray-400 rounded-md border"
-							onInput={() => (voting = true)}
-						/>
-						{#if voting}
-							<Button type="submit" Class="w-[47%]" buttonStyle="primary-light"
-								>{$_('Save Vote')}</Button
-							>
-						{:else}
-							<p class="w-[47%] text-center">
-								{$_('Successfully saved voting!')}
-							</p>
-						{/if}
-					</form>
+					<Button
+						Class="w-[47%]"
+						buttonStyle="primary-light"
+						onClick={() =>
+							goto(
+								`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=1&source=${
+									page.params.groupId ? 'group' : 'home'
+								}`
+							)}>{$_('Create a Proposal')}</Button
+					>
+				</div>
 
-					<!-- PHASE 2: PROPOSAL CREATION -->
-				{:else if phase === 'proposal'}
-					<div class="flex justify-between">
-						<Button
-							Class="w-[47%]"
-							buttonStyle="primary-light"
-							onClick={() =>
-								goto(
-									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=0&source=${
-										page.params.groupId ? 'group' : 'home'
-									}`
-								)}>{$_('See Proposals')} ({poll?.total_proposals})</Button
-						>
-						<Button
-							Class="w-[47%]"
-							buttonStyle="primary-light"
-							onClick={() =>
-								goto(
-									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=1&source=${
-										page.params.groupId ? 'group' : 'home'
-									}`
-								)}>{$_('Create a Proposal')}</Button
-						>
-					</div>
+				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
+			{:else if phase === 'prediction_statement'}
+				<div class="flex justify-between">
+					<Button
+						Class="w-[47%]"
+						buttonStyle="primary-light"
+						onClick={() =>
+							goto(
+								`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=0&source=${
+									page.params.groupId ? 'group' : 'home'
+								}`
+							)}>{$_('See Consequences')} ({poll?.total_predictions})</Button
+					>
+					<Button
+						Class="w-[47%]"
+						buttonStyle="primary-light"
+						onClick={() =>
+							goto(
+								`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=1&source=${
+									page.params.groupId ? 'group' : 'home'
+								}`
+							)}>{$_('Create a Consequence')}</Button
+					>
+				</div>
 
-					<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
-				{:else if phase === 'prediction_statement'}
-					<div class="flex justify-between">
-						<Button
-							Class="w-[47%]"
-							buttonStyle="primary-light"
-							onClick={() =>
-								goto(
-									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=0&source=${
-										page.params.groupId ? 'group' : 'home'
-									}`
-								)}>{$_('See Consequences')} ({poll?.total_predictions})</Button
-						>
-						<Button
-							Class="w-[47%]"
-							buttonStyle="primary-light"
-							onClick={() =>
-								goto(
-									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?display=1&source=${
-										page.params.groupId ? 'group' : 'home'
-									}`
-								)}>{$_('Create a Consequence')}</Button
-						>
-					</div>
+				<!-- PHASE 4: PREDICTION BETTING -->
+			{:else if phase === 'prediction_bet'}
+				<div class="flex justify-between">
+					<Button
+						Class="w-[47%]"
+						buttonStyle="primary-light"
+						onClick={() =>
+							goto(
+								`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
+									page.params.groupId ? 'group' : 'home'
+								}`
+							)}>{$_('Manage Probabilities')}</Button
+					>
+					<!-- <p class="w-[47%]">{$_('You have not betted yet!')}</p> -->
+				</div>
 
-					<!-- PHASE 4: PREDICTION BETTING -->
-				{:else if phase === 'prediction_bet'}
-					<div class="flex justify-between">
-						<Button
-							Class="w-[47%]"
-							buttonStyle="primary-light"
-							onClick={() =>
-								goto(
-									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
-										page.params.groupId ? 'group' : 'home'
-									}`
-								)}>{$_('Manage Probabilities')}</Button
-						>
-						<!-- <p class="w-[47%]">{$_('You have not betted yet!')}</p> -->
-					</div>
+				<!-- PHASE 5 & 6: VOTING -->
+			{:else if phase === 'delegate_vote' || phase === 'vote'}
+				<div class="flex justify-between">
+					<Button
+						Class="w-[47%]"
+						buttonStyle="primary-light"
+						onClick={() =>
+							goto(
+								`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
+									page.params.groupId ? 'group' : 'home'
+								}`
+							)}>{$_('Manage votes')}</Button
+					>
+					<!-- <p class="w-[47%]">{$_('You have not voted yet!')}</p> -->
+				</div>
 
-					<!-- PHASE 5 & 6: VOTING -->
-				{:else if phase === 'delegate_vote' || phase === 'vote'}
-					<div class="flex justify-between">
-						<Button
-							Class="w-[47%]"
-							buttonStyle="primary-light"
-							onClick={() =>
-								goto(
-									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
-										page.params.groupId ? 'group' : 'home'
-									}`
-								)}>{$_('Manage votes')}</Button
-						>
-						<!-- <p class="w-[47%]">{$_('You have not voted yet!')}</p> -->
-					</div>
-
-					<!-- PHASE 7: RESULTS AND EVALUATION -->
-				{:else if phase === 'prediction_vote' || phase === 'result'}
-					<div class="flex justify-between">
-						<Button
-							Class="w-[47%]"
-							buttonStyle="primary-light"
-							onClick={() =>
-								goto(
-									`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
-										page.params.groupId ? 'group' : 'home'
-									}`
-								)}>{$_('View results & evaluate consequences')}</Button
-						>
-					</div>
-				{/if}
+				<!-- PHASE 7: RESULTS AND EVALUATION -->
+			{:else if phase === 'prediction_vote' || phase === 'result'}
+				<div class="flex justify-between">
+					<Button
+						Class="w-[47%]"
+						buttonStyle="primary-light"
+						onClick={() =>
+							goto(
+								`/groups/${poll?.group_id || page.params.groupId}/polls/${poll?.id}?source=${
+									page.params.groupId ? 'group' : 'home'
+								}`
+							)}>{$_('View results & evaluate consequences')}</Button
+					>
+				</div>
 			{/if}
-		</div>
+		{/if}
 	</div>
-</div>
+</PostThumbnail>
 
 <DeletePostModal bind:deleteModalShow={deletePollModalShow} postId={poll?.id} />
 

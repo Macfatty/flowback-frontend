@@ -31,6 +31,7 @@
 		values={[null, ...$groupStore.filter((g) => g.joined).map((g) => g.id)]}
 		bind:value={selectedGroupId}
 		label="Group"
+		classInner="rounded p-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-darkobject"
 	/>
 {/if}
 
@@ -63,4 +64,5 @@
 	]}
 	bind:value={selectedWorkgroupId}
 	label="WorkGroup"
+	classInner="rounded p-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-darkobject"
 />
