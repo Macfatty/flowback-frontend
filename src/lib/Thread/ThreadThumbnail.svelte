@@ -60,7 +60,7 @@
 		<div class="flex w-full justify-between">
 			<!-- Thread Title. It is a button since this allows users to enter the Thread -->
 			<button
-				class="break-words cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
+				class="pb-2 break-all cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
 				onclick={() => {
 					if (thread.group_joined)
 						goto(
@@ -126,7 +126,7 @@
 						success: false
 					});
 			}}
-			class="text-black flex items-center"
+			class="pb-2 text-black flex items-center"
 		>
 			<img
 				class="h-6 w-6 mr-1 rounded-full break-word"
@@ -162,35 +162,37 @@
 		</div>
 	{/if}
 
-	<div>
-		{#if thread?.work_group}
-			<span class="text-sm text-gray-500 dark:text-darkmodeText"
-				>#{thread.work_group.name},
-			</span>
+	<div class="flex gap-4 items-center mt-2 mb-4">
+		{#if thread?.public}
+			<HeaderIcon
+				Class="!p-0 !cursor-default"
+				icon={faGlobe}
+				text={'Public Poll'}
+			/>
+		{:else}
+			<HeaderIcon
+				Class="!p-0 !cursor-default"
+				icon={faLock}
+				text={'Private Poll'}
+			/>
 		{/if}
-		{#if thread?.created_at}
-			<span class="text-sm text-gray-500 dark:text-darkmodeText">
-				{new Date(thread.created_at)
-					.toISOString()
-					.split('T')[0]
-					.replace(/-/g, '.')}
-			</span>
-		{/if}
-	</div>
 
-	{#if thread?.public}
-		<HeaderIcon
-			Class="!p-0 !cursor-default"
-			icon={faGlobe}
-			text={'Public Poll'}
-		/>
-	{:else}
-		<HeaderIcon
-			Class="!p-0 !cursor-default"
-			icon={faLock}
-			text={'Private Poll'}
-		/>
-	{/if}
+		<div>
+			{#if thread?.work_group}
+				<span class="text-sm text-gray-500 dark:text-darkmodeText"
+					>#{thread.work_group.name},
+				</span>
+			{/if}
+			{#if thread?.created_at}
+				<span class="text-sm text-gray-500 dark:text-darkmodeText">
+					{new Date(thread.created_at)
+						.toISOString()
+						.split('T')[0]
+						.replace(/-/g, '.')}
+				</span>
+			{/if}
+		</div>
+	</div>
 
 	{#if thread?.description}
 		<NewDescription
@@ -199,8 +201,6 @@
 			description={thread?.description}
 		/>
 	{/if}
-
-	<hr class="my-3" />
 
 	{#if thread?.group_joined}
 		<div class="flex justify-between align-middle">

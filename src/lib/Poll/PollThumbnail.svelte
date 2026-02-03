@@ -164,7 +164,7 @@
 	id={`poll-thumbnail-${poll?.id.toString()}`}
 >
 	<div class="mx-2">
-		<div class="flex justify-between items-start gap-4 pb-2">
+		<div class="flex justify-between items-start gap-4 pb-0">
 			<button
 				class="cursor-pointer text-primary dark:text-secondary hover:underline text-xl break-words"
 				onclick={() => {
@@ -185,7 +185,7 @@
 			</button>
 
 			{#if poll?.group_joined}
-				<div class="flex gap-4 items-baseline">
+				<div class="flex gap-4 items-baseline mt-2">
 					<NotificationOptions
 						type="poll"
 						id={poll?.id}
