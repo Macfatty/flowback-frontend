@@ -4,26 +4,27 @@
 	import { page } from '$app/state';
 	import NotificationOptions from '$lib/Generic/NotificationOptions.svelte';
 	import Fa from 'svelte-fa';
-	import {
-		faThumbTack,
-		faGlobe,
-		faLock
-	} from '@fortawesome/free-solid-svg-icons';
+	import { faThumbTack } from '@fortawesome/free-solid-svg-icons';
 	import { _ } from 'svelte-i18n';
 	import NewDescription from '$lib/Poll/NewDescription.svelte';
 	import { groupUserStore, type Thread } from '$lib/Group/interface';
 	import MultipleChoices from '$lib/Generic/MultipleChoices.svelte';
-	import HeaderIcon from '$lib/Header/HeaderIcon.svelte';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import ReportPostModal from '$lib/Poll/ReportPostModal.svelte';
 	import DeletePostModal from '$lib/Poll/DeletePostModal.svelte';
 	import { goto } from '$app/navigation';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import DefaultBanner from '$lib/assets/default_banner_group.png';
+	import ChatIcon from '$lib/assets/Chat_fill.svg';
 	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 	import { env } from '$env/dynamic/public';
+	import type { poll } from '$lib/Poll/interface';
 
-	let { post, children }: { post: Thread; children?: Snippet } = $props();
+	let {
+		post,
+		children,
+		icons
+	}: { post: Thread | poll; children?: Snippet; icons?: Snippet } = $props();
 
 	let reportModalShow = $state(false),
 		deleteModalShow = $state(false),
@@ -55,7 +56,7 @@
 			<button
 				class="pb-2 break-all cursor-pointer hover:underline text-primary dark:text-secondary text-xl text-left"
 				onclick={() => {
-					if (post.group_joined)
+					if (post?.group_joined)
 						goto(
 							`/groups/${post?.group_id}/thread/${post?.id}?source=${
 								page.params.groupId ? 'group' : 'home'
@@ -112,7 +113,7 @@
 	{#if !page.params.groupId}
 		<button
 			onclick={() => {
-				if (post.group_joined) goto(`/groups/${post?.group_id}`);
+				if (post?.group_joined) goto(`/groups/${post?.group_id}`);
 				else
 					ErrorHandlerStore.set({
 						message: 'You must join the group to access the group',
@@ -156,35 +157,18 @@
 	{/if}
 
 	<div class="flex gap-4 items-center mt-2 mb-4">
-		{#if post?.public}
-			<HeaderIcon
-				Class="!p-0 !cursor-default"
-				icon={faGlobe}
-				text={'Public Poll'}
-			/>
-		{:else}
-			<HeaderIcon
-				Class="!p-0 !cursor-default"
-				icon={faLock}
-				text={'Private Poll'}
-			/>
+		<!-- Comment icon. When user clicks it leads to the comment section on the poll -->
+		{#if post.group_joined}
+			<a
+				class="flex gap-1 items-center dark:text-darkmodeText hover:bg-gray-100 dark:hover:bg-slate-500 cursor-pointer text-sm"
+				href={`/groups/${post?.group_id || page.params.groupId}/polls/${post?.id}?section=comments&source=${page.params.groupId ? 'group' : 'home'}`}
+			>
+				<img class="w-5 dark:invert" src={ChatIcon} alt="open chat" />
+				<span class="inline">{post?.total_comments}</span>
+			</a>
 		{/if}
 
-		<div>
-			{#if post?.work_group}
-				<span class="text-sm text-gray-500 dark:text-darkmodeText"
-					>#{post.work_group.name},
-				</span>
-			{/if}
-			{#if post?.created_at}
-				<span class="text-sm text-gray-500 dark:text-darkmodeText">
-					{new Date(post.created_at)
-						.toISOString()
-						.split('T')[0]
-						.replace(/-/g, '.')}
-				</span>
-			{/if}
-		</div>
+		{@render icons?.()}
 	</div>
 
 	{#if post?.description}
