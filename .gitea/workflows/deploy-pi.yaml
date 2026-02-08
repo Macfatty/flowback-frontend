@@ -1,0 +1,38 @@
+name: Flowback Frontend CI/CD
+on: [push]
+
+jobs:
+  quality-gate:
+    runs-on: native-arm64
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: npm install
+
+      - name: Static Analysis (ESLint)
+        run: npm run lint
+
+      - name: E2E Tests (Playwright)
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test
+
+  build-and-deploy:
+    needs: quality-gate
+    runs-on: native-arm64
+    steps:
+      - name: Build Docker Image (Native ARM64)
+        run: |
+          docker build \
+            --build-arg PUBLIC_API_URL=${{ secrets.BACKEND_URL }} \
+            -t flowback-frontend:latest .
+      
+      - name: Deploy to Pi (Rootless)
+        run: |
+          docker stop flowback-frontend || true
+          docker rm flowback-frontend || true
+          docker run -d --name flowback-frontend \
+            --restart unless-stopped \
+            -p 3000:3000 \
+            flowback-frontend:latest

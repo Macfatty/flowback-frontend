@@ -2,8 +2,8 @@ FROM node:24-alpine3.21 AS sk-build
 WORKDIR /usr/src/app
 
 # This is for frontend to connect to backend
-ARG VITE_API_URL=http://192.168.0.75:8000/api
-ENV VITE_API_URL=$VITE_API_URL
+ARG PUBLIC_API_URL
+ENV PUBLIC_API_URL=$PUBLIC_API_URL
 
 # This just sets the timezone
 ARG TZ=Europe/Stockholm
