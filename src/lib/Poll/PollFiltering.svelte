@@ -169,7 +169,7 @@
 	<div class="flex gap-4 flex-wrap items-center">
 		<Select
 			Class="rounded p-1 flex flex-row items-center gap-1"
-			classInner="font-semibold border border-0"
+			classInner="border border-0"
 			onInput={handleSort}
 			values={filter_by}
 			labels={filter_by_readable}

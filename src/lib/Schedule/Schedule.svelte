@@ -442,6 +442,8 @@
 				labels={['One-off', 'Daily', 'Weekly', 'Monthly', 'Yearly']}
 				values={[null, 1, 2, 3, 4]}
 				bind:value={editingEvent.repeat_frequency}
+				label="Repeat Frequency"
+				classInner="border bg-white dark:bg-darkobject border-gray-300 border-solid"
 			/>
 
 			<GroupSelection bind:selectedGroupId bind:selectedWorkgroupId />
