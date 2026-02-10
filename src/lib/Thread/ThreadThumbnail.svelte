@@ -16,17 +16,19 @@
 				<HeaderIcon
 					Class="!p-0 !cursor-default"
 					icon={faGlobe}
-					text={'Public Poll'}
+					text={'Public Thread'}
 				/>
 			{:else}
 				<HeaderIcon
 					Class="!p-0 !cursor-default"
 					icon={faLock}
-					text={'Private Poll'}
+					text={'Private Thread'}
 				/>
 			{/if}
 		{/snippet}
 
-		<ThreadVoting bind:thread />
+		{#if thread.group_joined}
+			<ThreadVoting bind:thread />
+		{/if}
 	</PostThumbnail>
 {/if}
