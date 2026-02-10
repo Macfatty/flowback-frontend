@@ -65,7 +65,7 @@
 				onclick={() => {
 					if (post?.group_joined)
 						goto(
-							`/groups/${post?.group_id}/${api}/${post?.id}?source=${
+							`/groups/${post?.group_id}/${api === 'poll' ? 'polls' : api}/${post?.id}?source=${
 								page.params.groupId ? 'group' : 'home'
 							}`
 						);
@@ -168,7 +168,7 @@
 		{#if post.group_joined}
 			<a
 				class="flex gap-1 items-center dark:text-darkmodeText hover:bg-gray-100 dark:hover:bg-slate-500 cursor-pointer text-sm"
-				href={`/groups/${post?.group_id || page.params.groupId}/polls/${post?.id}?section=comments&source=${page.params.groupId ? 'group' : 'home'}`}
+				href={`/groups/${post?.group_id || page.params.groupId}/${api === 'poll' ? 'polls' : api}/${post?.id}?section=comments&source=${page.params.groupId ? 'group' : 'home'}`}
 			>
 				<img class="w-5 dark:invert" src={ChatIcon} alt="open chat" />
 				<span class="inline">{post?.total_comments}</span>
