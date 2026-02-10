@@ -23,26 +23,33 @@
 	let {
 		post,
 		children,
-		icons
-	}: { post: Thread | poll; children?: Snippet; icons?: Snippet } = $props();
+		icons,
+		api = 'poll'
+	}: {
+		post: Thread | poll;
+		children?: Snippet;
+		icons?: Snippet;
+		api?: 'thread' | 'poll';
+	} = $props();
 
 	let reportModalShow = $state(false),
 		deleteModalShow = $state(false),
 		choicesOpen = $state(false);
 
-	//When adminn presses the pin tack symbol, pin the thread
-	const pinThread = async (_thread: Thread) => {
+	//When adminn presses the pin tack symbol, pin the post
+	const pinPost = async (_post: Thread | poll) => {
 		const { json, res } = await fetchRequest(
 			'POST',
-			`group/thread/${_thread?.id}/update`,
+			`group/${api}/${_post?.id}/update`,
 			{
-				pinned: !_thread?.pinned
+				pinned: !_post?.pinned
 			}
 		);
+
 		if (!res.ok) return;
 
-		_thread.pinned = !_thread?.pinned;
-		post = { ..._thread };
+		_post.pinned = !_post?.pinned;
+		post = { ..._post };
 	};
 </script>
 
@@ -58,13 +65,13 @@
 				onclick={() => {
 					if (post?.group_joined)
 						goto(
-							`/groups/${post?.group_id}/thread/${post?.id}?source=${
+							`/groups/${post?.group_id}/${api}/${post?.id}?source=${
 								page.params.groupId ? 'group' : 'home'
 							}`
 						);
 					else
 						ErrorHandlerStore.set({
-							message: 'You must join the group to access the thread',
+							message: 'You must join the group to access the post',
 							success: false
 						});
 				}}>{post?.title}</button
@@ -73,18 +80,18 @@
 				<!-- Notification Options -->
 				<div class="inline-flex gap-4 items-baseline">
 					<NotificationOptions
-						type="thread"
-						api={`group/thread/${post?.id}`}
+						type={api}
+						api={`group/${api}/${post?.id}`}
 						categories={['comment']}
 						id={post?.id}
 						labels={['comment']}
 					/>
 
-					<!-- Pin thread button for admins -->
+					<!-- Pin post button for admins -->
 					{#if page.params.groupId && ($groupUserStore?.is_admin || post?.pinned)}
 						<button
 							class:cursor-pointer={$groupUserStore?.is_admin}
-							onclick={() => pinThread(post)}
+							onclick={() => pinPost(post)}
 						>
 							<Fa
 								size="1.2x"
@@ -97,7 +104,7 @@
 
 					<MultipleChoices
 						bind:choicesOpen
-						labels={[$_('Delete Thread'), $_('Report Thread')]}
+						labels={[$_('Delete Post'), $_('Report Post')]}
 						functions={[
 							() => (deleteModalShow = true),
 							() => ((reportModalShow = true), (choicesOpen = false))
@@ -129,7 +136,7 @@
 						? `${env.PUBLIC_API_URL}${post?.group_image}`
 						: DefaultBanner
 				}`}
-				alt={'thread Thumbnail'}
+				alt={'Post Thumbnail'}
 				onerror={(e) => onThumbnailError(e, DefaultBanner)}
 			/>
 			<span class="break-word text-sm text-gray-700 dark:text-darkmodeText"
@@ -183,7 +190,7 @@
 
 <!-- TODO: Fix so group id is correct -->
 <ReportPostModal
-	post_type="thread"
+	post_type={api}
 	group_id={post?.group_id}
 	post_id={post?.id}
 	post_title={post?.title}
@@ -191,7 +198,7 @@
 	bind:reportModalShow
 />
 
-<DeletePostModal bind:deleteModalShow postId={post?.id} post_type="thread" />
+<DeletePostModal bind:deleteModalShow postId={post?.id} post_type={api} />
 
 <style>
 	.poll-thumbnail-shadow {

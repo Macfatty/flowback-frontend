@@ -146,7 +146,7 @@
 	});
 </script>
 
-<PostThumbnail post={poll}>
+<PostThumbnail post={poll} api="poll">
 	{#snippet icons()}
 		<div class="flex gap-4 my-2 items-center">
 			<!-- Poll Type Icons -->

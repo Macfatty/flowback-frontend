@@ -10,7 +10,7 @@
 </script>
 
 {#if thread}
-	<PostThumbnail post={thread}>
+	<PostThumbnail post={thread} api="thread">
 		{#snippet icons()}
 			{#if thread?.public}
 				<HeaderIcon
