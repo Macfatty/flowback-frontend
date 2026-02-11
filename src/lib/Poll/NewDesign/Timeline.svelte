@@ -4,8 +4,15 @@
 	import { faDownLong } from '@fortawesome/free-solid-svg-icons/faDownLong';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
-	import { dateLabels as dateLabelsTextPoll, dateLabelsDatePoll } from '../functions';
-	import { faCircle, faCircleCheck, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
+	import {
+		dateLabels as dateLabelsTextPoll,
+		dateLabelsDatePoll
+	} from '../functions';
+	import {
+		faCircle,
+		faCircleCheck,
+		faCircleExclamation
+	} from '@fortawesome/free-solid-svg-icons';
 	import type { Phase, poll } from '../interface';
 
 	export let enableDetails = false,
@@ -19,7 +26,8 @@
 
 	let datesArray: string[] = [],
 		displayDetails = false,
-		dateLabels = poll?.poll_type === 4 ? dateLabelsTextPoll : dateLabelsDatePoll,
+		dateLabels =
+			poll?.poll_type === 4 ? dateLabelsTextPoll : dateLabelsDatePoll,
 		currentPhaseIndex: number,
 		fraction: number,
 		datePlacement: number[] = [];
@@ -31,30 +39,20 @@
 		if (poll?.poll_type === 4) {
 			dates = [
 				new Date(poll?.start_date),
-				new Date(poll?.area_vote_end_date),
 				new Date(poll?.proposal_end_date),
-				new Date(poll?.prediction_statement_end_date),
 				new Date(poll?.prediction_bet_end_date),
 				new Date(poll?.delegate_vote_end_date),
 				new Date(poll?.end_date)
 			];
 
 			//TODO: Refactor so this works by making it easy for varying number of phases.
-			if (phase === 'area_vote' || phase === 'pre_start') {
-				currentPhaseIndex = 0;
-			} else if (phase === 'proposal') {
-				currentPhaseIndex = 1;
-			} else if (phase === 'prediction_statement') {
-				currentPhaseIndex = 2;
-			} else if (phase === 'prediction_bet') {
-				currentPhaseIndex = 3;
-			} else if (phase === 'delegate_vote') {
-				currentPhaseIndex = 4;
-			} else if (phase === 'vote') {
+			if (phase === 'pre_start') currentPhaseIndex = 0;
+			else if (phase === 'proposal') currentPhaseIndex = 1;
+			else if (phase === 'prediction_bet') currentPhaseIndex = 2;
+			else if (phase === 'delegate_vote') currentPhaseIndex = 3;
+			else if (phase === 'vote') currentPhaseIndex = 4;
+			else if (phase === 'result' || phase === 'prediction_vote')
 				currentPhaseIndex = 5;
-			} else if (phase === 'result' || phase === 'prediction_vote') {
-				currentPhaseIndex = 6;
-			}
 		} else if (poll?.poll_type === 3) {
 			dates = [new Date(poll?.start_date), new Date(poll?.end_date)];
 
@@ -112,8 +110,8 @@
 					i === currentPhaseIndex
 						? faCircleExclamation
 						: dates[i] <= new Date()
-						? faCircleCheck
-						: faCircle}
+							? faCircleCheck
+							: faCircle}
 
 				<HeaderIcon
 					Class="!cursor-default"
@@ -136,7 +134,9 @@
 		<ul class="p-2">
 			{#each dateLabels as label, i}
 				{#if i !== 0}
-					<li class="border-b md:border-b-0 flex justify-between flex-col md:flex-row text-center">
+					<li
+						class="border-b md:border-b-0 flex justify-between flex-col md:flex-row text-center"
+					>
 						<div class="mb-4 md:mb-0">{$_(label)}:</div>
 						<div class="mb-4 md:mb-0">{datesArray[i - 1]}</div>
 					</li>

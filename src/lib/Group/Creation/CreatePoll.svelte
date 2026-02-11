@@ -72,13 +72,11 @@
 		formData.append('description', description);
 		formData.append('start_date', times[0].toISOString());
 		if (selectedPoll === 'Text Poll') {
-			formData.append('area_vote_end_date', times[1].toISOString());
-			formData.append('proposal_end_date', times[2].toISOString());
-			formData.append('prediction_statement_end_date', times[3].toISOString());
-			formData.append('prediction_bet_end_date', times[4].toISOString());
-			formData.append('delegate_vote_end_date', times[5].toISOString());
-			formData.append('vote_end_date', times[6].toISOString());
-			formData.append('end_date', times[7].toISOString());
+			formData.append('proposal_end_date', times[1].toISOString());
+			formData.append('prediction_bet_end_date', times[2].toISOString());
+			formData.append('delegate_vote_end_date', times[3].toISOString());
+			formData.append('vote_end_date', times[4].toISOString());
+			formData.append('end_date', times[5].toISOString());
 		} else if (selectedPoll === 'Date Poll') {
 			formData.append('end_date', times[1].toISOString());
 		}
@@ -90,6 +88,7 @@
 		formData.append('dynamic', selectedPoll === 'Text Poll' ? 'false' : 'true');
 		formData.append('public', isPublic.toString());
 		formData.append('pinned', 'false');
+		formData.append('version', '2');
 		formData.append('tag', tags[0]?.id?.toString() || '1');
 
 		images.forEach((image) => {
@@ -172,6 +171,7 @@
 			selectedPage === 'poll' ? createPoll() : createThread();
 		}
 	};
+
 	onDestroy(() => {
 		//	TODO: Fix issue where reloading leads to 404 page
 		// 	document.removeEventListener('keydown', handleKeyDown);
@@ -186,7 +186,7 @@
 	$effect(() => {
 		times =
 			selectedPoll === 'Text Poll'
-				? new Array(8).fill(new Date())
+				? new Array(6).fill(new Date())
 				: new Array(2).fill(new Date());
 	});
 </script>
@@ -206,6 +206,7 @@
 	>
 		<Fa icon={faArrowLeft} />
 	</button>
+
 	<Loader {loading}>
 		<div
 			class="bg-white dark:bg-darkobject p-6 shadow-xl flex flex-col gap-3 rounded"
