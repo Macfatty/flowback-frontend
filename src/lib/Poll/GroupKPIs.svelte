@@ -108,17 +108,22 @@
 		const { res } = await fetchRequest(
 			'POST',
 			`group/${page.params.groupId}/kpi/update`,
-			{ active: !kpi.active }
+			{ active: kpi.active }
 		);
 
-		if (res.ok) getKPIs();
-		else {
+		loading = false;
+
+		if (!res.ok) {
 			ErrorHandlerStore.set({
 				message: 'Could not update KPI',
 				success: false
 			});
-			loading = false;
+			kpi.active = !kpi.active;
+			kpis = kpis;
+			return;
 		}
+
+		getKPIs();
 	};
 </script>
 
@@ -165,7 +170,7 @@
 					</p>
 				</div>
 				<div class="flex gap-2 items-center ml-auto">
-					<Toggle checked={kpi.active} onInput={() => toggleKPI(kpi)} />
+					<Toggle bind:checked={kpi.active} onInput={() => toggleKPI(kpi)} />
 					<button
 						class="text-red-500 p-2 pl-4 text-lg cursor-pointer"
 						disabled={loading}
