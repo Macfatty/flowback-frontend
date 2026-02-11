@@ -25,6 +25,7 @@
 	import { predictionStatementsStore } from '$lib/Poll/PredictionMarket/interfaces';
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+	import KPIVoting from '$lib/Poll/KPIVoting.svelte';
 
 	let poll: poll | null = $state(null),
 		pollType = $state(1),
@@ -243,7 +244,7 @@
 					</div>
 				</Structure>
 
-				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
+				<!-- PHASE 3: PREDICTION STATEMENT CREATION, TO BE DEPRECATED -->
 			{:else if phase === 'prediction_statement'}
 				<Structure
 					bind:phase
@@ -325,7 +326,7 @@
 					</div>
 				</Structure>
 
-				<!-- PHASE 4: PREDICTION BETTING -->
+				<!-- PHASE 4: PREDICTION BETTING/KPI -->
 			{:else if phase === 'prediction_bet'}
 				<Structure
 					bind:phase
@@ -340,7 +341,6 @@
 						>
 						<div class="max-h-[90%] overflow-y-auto">
 							<ProposalScoreVoting
-								{getPollData}
 								bind:comments
 								bind:phase
 								bind:proposals
@@ -348,6 +348,7 @@
 							/>
 						</div>
 					</div>
+
 					<div slot="right">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
@@ -366,12 +367,13 @@
 									limit={2}
 									lengthLimit={130}
 								/>
-								<PredictionStatements
-									{getPollData}
-									bind:selectedProposal
-									bind:phase
-									bind:poll
-								/>
+								<!-- <PredictionStatements -->
+								<!-- 	{getPollData} -->
+								<!-- 	bind:selectedProposal -->
+								<!-- 	bind:phase -->
+								<!-- 	bind:poll -->
+								<!-- /> -->
+								<KPIVoting proposal={selectedProposal} />
 							</div>
 						{/if}
 					</div>
