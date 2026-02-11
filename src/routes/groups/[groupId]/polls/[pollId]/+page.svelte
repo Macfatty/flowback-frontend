@@ -137,7 +137,6 @@
 </script>
 
 <Layout centered>
-	{phase} PHASESEE
 	{#if poll}
 		{#if pollType === 4}
 			<PollHeader

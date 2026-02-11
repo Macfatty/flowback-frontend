@@ -131,6 +131,7 @@ export const nextPhase = async (poll: poll, phase: Phase) => {
   let _phase: Phase = 'area_vote';
 
   if (poll.poll_type === 4) {
+    // Text Poll
     if (phase === 'area_vote') _phase = 'proposal';
     else if (phase === 'proposal') _phase = 'prediction_bet';
     else if (phase === 'prediction_bet') {
@@ -139,10 +140,12 @@ export const nextPhase = async (poll: poll, phase: Phase) => {
     }
     else if (phase === 'delegate_vote') _phase = 'vote';
     else if (phase === 'vote') {
-      _phase = 'prediction_vote';
+      _phase = 'result';
       poll.status = 2;
     }
-  } else if (poll.poll_type === 3) _phase = 'result';
+  }
+  // Date Poll
+  else if (poll.poll_type === 3) _phase = 'result';
 
 
   const { res, json } = await fetchRequest(
