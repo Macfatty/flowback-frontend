@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
 	import Button from '$lib/Generic/Button.svelte';
 	import { _ } from 'svelte-i18n';
@@ -20,17 +19,13 @@
 		values: number[];
 	}
 
-	let kpis: KPI[] = [],
-		kpiName = '',
-		kpiDescription = '',
-		kpiValues = '',
-		loading = false,
-		selectedKPI: KPI | null = null,
-		areYouSureModal = false;
-
-	onMount(() => {
-		getKPIs();
-	});
+	let kpis: KPI[] = $state([]),
+		kpiName = $state(''),
+		kpiDescription = $state(''),
+		kpiValues = $state(''),
+		loading = $state(false),
+		selectedKPI: KPI | null = $state(null),
+		areYouSureModal = $state(false);
 
 	const getKPIs = async () => {
 		loading = true;
@@ -49,7 +44,8 @@
 		loading = false;
 	};
 
-	const addKPI = async () => {
+	const addKPI = async (e: SubmitEvent) => {
+		e.preventDefault();
 		loading = true;
 
 		const values = kpiValues
@@ -118,17 +114,19 @@
 				message: 'Could not update KPI',
 				success: false
 			});
+
 			kpi.active = !kpi.active;
-			kpis = kpis;
 			return;
 		}
 
 		getKPIs();
 	};
+
+	getKPIs();
 </script>
 
 <Loader bind:loading>
-	<form on:submit|preventDefault={addKPI} class="pb-4 flex flex-col gap-2">
+	<form onsubmit={addKPI} class="pb-4 flex flex-col gap-2">
 		<TextInput
 			label="Name"
 			max={50}
@@ -174,7 +172,7 @@
 					<button
 						class="text-red-500 p-2 pl-4 text-lg cursor-pointer"
 						disabled={loading}
-						on:click={() => {
+						onclick={() => {
 							areYouSureModal = true;
 							selectedKPI = kpi;
 						}}
