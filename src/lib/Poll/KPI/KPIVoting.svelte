@@ -86,46 +86,65 @@
 
 <Loader bind:loading>
 	{#if kpis.length > 0}
-		<div class="flex flex-col gap-4">
-			<span class="text-lg font-semibold text-primary dark:text-secondary">
+		<div class="flex flex-col gap-6">
+			<span class="text-lg font-semibold text-purple-700 dark:text-purple-300">
 				{$_('KPIs')}
 			</span>
-			{#each kpis as kpi}
-				<div class="flex flex-col gap-1">
-					<span class="font-medium text-sm dark:text-darkmodeText"
-						>{kpi.name}</span
-					>
+			{#each kpis as kpi, kpiIndex}
+				{@const totalWeight = kpi.values.reduce((sum, v) => sum + (kpiProbabilities.find((p) => p.kpi_id === kpi.id && p.value === v)?.weight ?? 0), 0)}
+				<div
+					class="flex flex-col gap-3 p-4 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-800/40 kpi-card"
+					style="animation-delay: {kpiIndex * 80}ms"
+				>
+					<div class="flex items-center justify-between">
+						<span class="font-semibold text-base text-purple-900 dark:text-purple-100">
+							{kpi.name}
+						</span>
+						{#if totalWeight > 0}
+							<span class="text-xs font-medium text-purple-500 dark:text-purple-400 tabular-nums">
+								{totalWeight}% allocated
+							</span>
+						{/if}
+					</div>
 					{#if kpi.description}
-						<span class="text-xs text-gray-500">{kpi.description}</span>
+						<span class="text-sm text-purple-600/70 dark:text-purple-300/60 -mt-1">{kpi.description}</span>
 					{/if}
 
-					<div class="flex flex-col gap-1 mt-1">
+					<div class="flex flex-col gap-2">
 						{#each kpi.values as value, i}
-							<div class="flex items-center gap-2 w-full group">
-								<span class="text-xs w-6 text-right dark:text-darkmodeText"
-									>{value}</span
-								>
-								<button
-									aria-label="Set KPI probability"
-									onclick={(e) => {
-										// Gets the position of the click relative to the button and converts it to a percentage, which will be the new weight for the KPI value.
-										const rect = e.currentTarget.getBoundingClientRect();
-										const xWithinElement = e.clientX - rect.left;
-										const fraction = Math.floor(
-											(xWithinElement / rect.width) * 100
-										);
-										editProposalKPI(kpi, fraction, i);
-									}}
-									class="flex-1 h-6 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden relative"
-								>
+							{@const weight = kpiProbabilities.find(
+								(_kpi) => _kpi.kpi_id === kpi.id && _kpi.value === value
+							)?.weight ?? 0}
+							<button
+								aria-label="Set KPI probability for {value}"
+								onclick={(e) => {
+									const rect = e.currentTarget.getBoundingClientRect();
+									const xWithinElement = e.clientX - rect.left;
+									const fraction = Math.floor(
+										(xWithinElement / rect.width) * 100
+									);
+									editProposalKPI(kpi, fraction, i);
+								}}
+								class="group flex items-center gap-3 w-full cursor-pointer kpi-row"
+								style="animation-delay: {kpiIndex * 80 + i * 50}ms"
+							>
+								<span class="text-sm font-semibold w-8 text-right tabular-nums text-purple-700 dark:text-purple-300 shrink-0">
+									{value}
+								</span>
+								<div class="flex-1 h-10 bg-purple-100 dark:bg-purple-900/40 rounded-lg overflow-hidden relative group-hover:bg-purple-200/80 dark:group-hover:bg-purple-900/60 transition-colors duration-150">
 									<div
-										class="bg-purple-400 h-full rounded transition-all duration-200"
-										style="width: {kpiProbabilities.find(
-											(_kpi) => _kpi.kpi_id === kpi.id && _kpi.value === value
-										)?.weight ?? 0}%"
+										class="h-full rounded-lg bg-gradient-to-r from-purple-400 to-purple-500 dark:from-purple-500 dark:to-purple-400 transition-all duration-300 ease-out"
+										style="width: {weight}%"
 									></div>
-								</button>
-							</div>
+									{#if weight > 0}
+										<span class="absolute inset-0 flex items-center px-3 text-xs font-semibold tabular-nums {weight > 15 ? 'text-white' : 'text-purple-700 dark:text-purple-200'} transition-opacity duration-200"
+											style="padding-left: {weight > 15 ? '0.75rem' : Math.max(weight, 2).toString() + '%'}"
+										>
+											{weight}%
+										</span>
+									{/if}
+								</div>
+							</button>
 						{/each}
 					</div>
 				</div>
@@ -133,3 +152,24 @@
 		</div>
 	{/if}
 </Loader>
+
+<style>
+	.kpi-card {
+		animation: fadeSlideIn 0.35s ease-out both;
+	}
+
+	.kpi-row {
+		animation: fadeSlideIn 0.3s ease-out both;
+	}
+
+	@keyframes fadeSlideIn {
+		from {
+			opacity: 0;
+			transform: translateY(8px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+</style>
