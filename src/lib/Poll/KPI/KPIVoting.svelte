@@ -57,8 +57,8 @@
 			{
 				kpi_id: kpi.id,
 				values: kpi.values,
-				weights: kpiProbabilities.map((prob) =>
-					prob.value === kpi.values[index] ? value : prob.weight
+				weights: kpi.values.map((v, i) =>
+					i === index ? value : (kpiProbabilities.find((p) => p.value === v)?.weight ?? 0)
 				)
 			}
 		);
