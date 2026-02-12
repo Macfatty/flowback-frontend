@@ -68,6 +68,8 @@
 			});
 			return;
 		}
+
+		getKPIVoteList();
 	};
 	onMount(() => {
 		getGroupKPIs();
