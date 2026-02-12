@@ -105,7 +105,7 @@
 										class="h-full rounded transition-all duration-200"
 										class:bg-purple-400={!selected}
 										class:bg-purple-600={selected}
-										style="width: {getBarWidth(kpi, value)}%"
+										style="width: {getBarWidth(kpi, 2)}%"
 									/>
 									{#if selected}
 										<div

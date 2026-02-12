@@ -64,7 +64,7 @@
 			}
 		}
 
-		fraction = (currentPhaseIndex + 1) / dates.length;
+		fraction = (currentPhaseIndex * 1.3) / dates.length;
 
 		let totalTime = dates[dates.length - 1].getTime() - dates[0].getTime();
 
