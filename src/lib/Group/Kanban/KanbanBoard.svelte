@@ -108,7 +108,7 @@
 
 <div
 	id="kanban-board"
-	class={'dark:bg-darkobject dark:text-darkmodeText p-2 pt-4 break-words' +
+	class={'dark:bg-darkobject bg-white mt-2 dark:text-darkmodeText p-2 pt-4 break-words' +
 		Class}
 >
 	<AdvancedFiltering
@@ -120,7 +120,7 @@
 
 	<TextInput
 		Class="flex-1 h-full placeholder-gray-600 rounded text-gray-500 bg-gray-100 dark:bg-darkobject dark:text-darkmodeText"
-		inputClass="placeholder-gray-600 text-gray-500 border-0 bg-gray-100 dark:bg-darkobject dark:text-darkmodeText"
+		inputClass="placeholder-gray-600 text-gray-500 border-0 dark:bg-darkobject dark:text-darkmodeText"
 		placeholder={$_('Search tasks')}
 		on:change={async () => {
 			getKanbanEntries();
