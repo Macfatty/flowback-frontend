@@ -50,14 +50,16 @@
 		kpiProbabilities = json.results ?? [];
 	};
 
-	const editProposalKPI = async (kpi: KPI, value: number) => {
+	const editProposalKPI = async (kpi: KPI, value: number, index: number) => {
 		const { res } = await fetchRequest(
 			'POST',
 			`group/poll/proposal/${proposal.id}/kpi/bet`,
 			{
 				kpi_id: kpi.id,
 				values: kpi.values,
-				weights: [0, 1, 1, 1, 1].slice(0, kpi.values.length)
+				weights: kpiProbabilities.map((prob) =>
+					prob.value === kpi.values[index] ? value : prob.weight
+				)
 			}
 		);
 
@@ -66,13 +68,10 @@
 				message: 'Could not submit KPI vote',
 				success: false
 			});
+			return;
 		}
-	};
 
-	const getBarWidth = (kpi: KPI, value: number) => {
-		const max = Math.max(...kpi.values);
-		if (max === 0) return 0;
-		return (value / max) * 100;
+		getProposalKPIs();
 	};
 
 	onMount(() => {
@@ -97,10 +96,17 @@
 					{/if}
 
 					<div class="flex flex-col gap-1 mt-1">
-						{#each kpi.values as value}
+						{#each kpi.values as value, i}
 							<button
 								class="flex items-center gap-2 w-full group cursor-pointer"
-								onclick={() => editProposalKPI(kpi, value)}
+								onclick={(e) => {
+									const rect = e.currentTarget.getBoundingClientRect();
+									const xWithinElement = e.clientX - rect.left;
+									const fraction = Math.floor(
+										(xWithinElement / rect.width) * 100
+									);
+									editProposalKPI(kpi, fraction, i);
+								}}
 							>
 								<span class="text-xs w-6 text-right dark:text-darkmodeText"
 									>{value}</span
