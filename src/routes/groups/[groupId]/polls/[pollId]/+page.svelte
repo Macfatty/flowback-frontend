@@ -25,6 +25,8 @@
 	import { predictionStatementsStore } from '$lib/Poll/PredictionMarket/interfaces';
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+	import KPIVoting from '$lib/Poll/KPI/KPIVoting.svelte';
+	import KPIEvaluation from '$lib/Poll/KPI/KPIEvaluation.svelte';
 
 	let poll: poll | null = $state(null),
 		pollType = $state(1),
@@ -243,7 +245,7 @@
 					</div>
 				</Structure>
 
-				<!-- PHASE 3: PREDICTION STATEMENT CREATION -->
+				<!-- PHASE 3: PREDICTION STATEMENT CREATION, TO BE DEPRECATED -->
 			{:else if phase === 'prediction_statement'}
 				<Structure
 					bind:phase
@@ -325,7 +327,7 @@
 					</div>
 				</Structure>
 
-				<!-- PHASE 4: PREDICTION BETTING -->
+				<!-- PHASE 4: PREDICTION BETTING/KPI -->
 			{:else if phase === 'prediction_bet'}
 				<Structure
 					bind:phase
@@ -340,7 +342,6 @@
 						>
 						<div class="max-h-[90%] overflow-y-auto">
 							<ProposalScoreVoting
-								{getPollData}
 								bind:comments
 								bind:phase
 								bind:proposals
@@ -348,6 +349,7 @@
 							/>
 						</div>
 					</div>
+
 					<div slot="right">
 						{#if selectedProposal}
 							<div class="flex flex-col space-y-2 p-2">
@@ -366,12 +368,9 @@
 									limit={2}
 									lengthLimit={130}
 								/>
-								<PredictionStatements
-									{getPollData}
-									bind:selectedProposal
-									bind:phase
-									bind:poll
-								/>
+								{#key selectedProposal}
+									<KPIVoting proposal={selectedProposal} />
+								{/key}
 							</div>
 						{/if}
 					</div>
@@ -497,7 +496,9 @@
 			{:else if phase === 'result' || phase === 'prediction_vote'}
 				<Structure bind:phase bind:poll bind:resetScroll showBoth>
 					<div slot="left" class="h-full overflow-y-auto">
-						<PredictionStatements bind:selectedProposal bind:phase bind:poll />
+						{#if selectedProposal}
+							<KPIEvaluation proposal={selectedProposal} />
+						{/if}
 					</div>
 					<div slot="right">
 						<Results bind:selectedProposal bind:poll {getPollData} {pollType} />

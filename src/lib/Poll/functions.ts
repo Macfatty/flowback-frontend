@@ -1,6 +1,7 @@
 import { fetchRequest } from '$lib/FetchRequest';
 import { _ } from 'svelte-i18n';
 import type { Phase, poll } from './interface';
+import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 
 export const formatDate = (dateInput: string) => {
   const date = new Date(dateInput);
@@ -40,10 +41,8 @@ export const getPhase = (poll: poll): Phase => {
 // Labels for the circles on the timeline
 export const dateLabels = [
   'Start Date',
-  'Area voting',
   'Proposals creation',
-  'Prediction statements creation',
-  'Consequence probabilities',
+  'Predictions',
   'Delegate voting',
   'Voting for non-delegates',
   'Results and evaluation'
@@ -132,19 +131,21 @@ export const nextPhase = async (poll: poll, phase: Phase) => {
   let _phase: Phase = 'area_vote';
 
   if (poll.poll_type === 4) {
+    // Text Poll
     if (phase === 'area_vote') _phase = 'proposal';
-    else if (phase === 'proposal') _phase = 'prediction_statement';
-    else if (phase === 'prediction_statement') _phase = 'prediction_bet';
+    else if (phase === 'proposal') _phase = 'prediction_bet';
     else if (phase === 'prediction_bet') {
       _phase = 'delegate_vote';
       poll.status_prediction = 1;
     }
     else if (phase === 'delegate_vote') _phase = 'vote';
     else if (phase === 'vote') {
-      _phase = 'prediction_vote';
+      _phase = 'result';
       poll.status = 2;
     }
-  } else if (poll.poll_type === 3) _phase = 'result';
+  }
+  // Date Poll
+  else if (poll.poll_type === 3) _phase = 'result';
 
 
   const { res, json } = await fetchRequest(
@@ -155,6 +156,12 @@ export const nextPhase = async (poll: poll, phase: Phase) => {
     }
   );
 
+  if (!res.ok) {
+    ErrorHandlerStore.set({
+      message: "Something went wrong when trying to move to the next phase", success: false
+    })
+    return phase;
+  }
 
   return _phase
 };

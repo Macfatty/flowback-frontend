@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import type { Phase, poll } from '../interface';
 	import Timeline from './Timeline.svelte';
 	import { isMobile } from '$lib/utils/isMobile';
