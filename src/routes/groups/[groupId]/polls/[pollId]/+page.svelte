@@ -25,7 +25,7 @@
 	import { predictionStatementsStore } from '$lib/Poll/PredictionMarket/interfaces';
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-	import KPIVoting from '$lib/Poll/KPIVoting.svelte';
+	import KPIVoting from '$lib/Poll/KPI/KPIVoting.svelte';
 
 	let poll: poll | null = $state(null),
 		pollType = $state(1),
@@ -367,13 +367,9 @@
 									limit={2}
 									lengthLimit={130}
 								/>
-								<!-- <PredictionStatements -->
-								<!-- 	{getPollData} -->
-								<!-- 	bind:selectedProposal -->
-								<!-- 	bind:phase -->
-								<!-- 	bind:poll -->
-								<!-- /> -->
-								<KPIVoting proposal={selectedProposal} />
+								{#key selectedProposal}
+									<KPIVoting proposal={selectedProposal} />
+								{/key}
 							</div>
 						{/if}
 					</div>

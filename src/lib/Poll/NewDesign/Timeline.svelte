@@ -64,7 +64,13 @@
 			}
 		}
 
-		fraction = (currentPhaseIndex * 1.3) / dates.length;
+		fraction = currentPhaseIndex / dates.length;
+
+		// Scuffed solution for text polls to look good.
+		// TODO: Refactor so this works by making it easy for varying number of phases with the same display for all.
+		if (poll?.poll_type === 4) {
+			fraction *= 1.3;
+		}
 
 		let totalTime = dates[dates.length - 1].getTime() - dates[0].getTime();
 

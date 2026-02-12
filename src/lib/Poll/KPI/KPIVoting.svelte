@@ -4,29 +4,18 @@
 	import { _ } from 'svelte-i18n';
 	import Loader from '$lib/Generic/Loader.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import type { proposal } from './interface';
-
-	interface KPI {
-		id: number;
-		name: string;
-		description: string;
-		active: boolean;
-		values: number[];
-	}
-
-	interface KPIVote {
-		kpi_id: number;
-		values: number[];
-		weights: number[];
-	}
+	import type { proposal } from '$lib/Poll/interface';
+	import type { KPI, KPIBetProposal } from './interface';
+	import { onMount } from 'svelte';
 
 	let kpis: KPI[] = $state([]),
 		votes: Map<number, number | null> = $state(new Map()),
-		loading = $state(false);
+		loading = $state(false),
+		kpiProbabilities: KPIBetProposal | null = $state(null);
 
 	let { proposal }: { proposal: proposal } = $props();
 
-	const getKPIs = async () => {
+	const getGroupKPIs = async () => {
 		loading = true;
 		const { res, json } = await fetchRequest(
 			'GET',
@@ -43,16 +32,33 @@
 		kpis = json ?? [];
 	};
 
-	const selectValue = async (kpi: KPI, value: number) => {
-		const current = votes.get(kpi.id);
-		const newValue = current === value ? null : value;
-		votes.set(kpi.id, newValue);
-		votes = new Map(votes);
+	const getProposalKPIs = async () => {
+		loading = true;
+		const { res, json } = await fetchRequest(
+			'GET',
+			// TODO: Make this more efficient with a bulk endpoint
+			`group/${page.params.groupId}/poll/proposal/kpi/bet/list?proposal_ids=${proposal.id}`
+		);
 
+		loading = false;
+
+		if (!res.ok) {
+			ErrorHandlerStore.set({ message: 'Could not get KPIs', success: false });
+			return;
+		}
+
+		kpiProbabilities = json ?? null;
+	};
+
+	const editProposalKPI = async (kpi: KPI, value: number) => {
 		const { res } = await fetchRequest(
 			'POST',
 			`group/poll/proposal/${proposal.id}/kpi/bet`,
-			{ value: newValue, kpi_id: kpi.id }
+			{
+				kpi_id: kpi.id,
+				values: kpi.values,
+				weights: [1, 1, 1, 1, 1].slice(0, kpi.values.length)
+			}
 		);
 
 		if (!res.ok) {
@@ -71,7 +77,10 @@
 		return (value / max) * 100;
 	};
 
-	getKPIs();
+	onMount(() => {
+		getGroupKPIs();
+		getProposalKPIs();
+	});
 </script>
 
 <Loader bind:loading>
@@ -88,12 +97,12 @@
 					{#if kpi.description}
 						<span class="text-xs text-gray-500">{kpi.description}</span>
 					{/if}
+
 					<div class="flex flex-col gap-1 mt-1">
 						{#each kpi.values as value}
-							{@const selected = votes.get(kpi.id) === value}
 							<button
 								class="flex items-center gap-2 w-full group cursor-pointer"
-								onclick={() => selectValue(kpi, value)}
+								onclick={() => editProposalKPI(kpi, value)}
 							>
 								<span class="text-xs w-6 text-right dark:text-darkmodeText"
 									>{value}</span
@@ -102,16 +111,9 @@
 									class="flex-1 h-6 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden relative"
 								>
 									<div
-										class="h-full rounded transition-all duration-200"
-										class:bg-purple-400={!selected}
-										class:bg-purple-600={selected}
-										style="width: {getBarWidth(kpi, 2)}%"
-									/>
-									{#if selected}
-										<div
-											class="absolute inset-0 border-2 border-purple-600 rounded"
-										/>
-									{/if}
+										class="bg-purple-400 h-full rounded transition-all duration-200"
+										style="width: {getBarWidth(kpi, value)}%"
+									></div>
 								</div>
 							</button>
 						{/each}

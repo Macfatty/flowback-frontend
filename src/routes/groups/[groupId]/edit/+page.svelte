@@ -4,7 +4,7 @@
 	import EditGroup from '$lib/Group/Creation/CreateEditGroup.svelte';
 	import Permissions from '$lib/Group/Permissions/Permissions.svelte';
 	import Tags from '$lib/Group/Tags.svelte';
-	import GroupKPIs from '$lib/Poll/GroupKPIs.svelte';
+	import GroupKPIs from '$lib/Poll/KPI/GroupKPIs.svelte';
 	import { page } from '$app/state';
 	import { _ } from 'svelte-i18n';
 	import Fa from 'svelte-fa';
