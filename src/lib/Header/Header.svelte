@@ -138,6 +138,7 @@
 			</div>
 			<button
 				id="side-header"
+				class="shrink-0"
 				on:click={() => (sideHeaderOpen = !sideHeaderOpen)}
 			>
 				<img

@@ -16,30 +16,8 @@
 	let { times = $bindable() }: { times: Date[] } = $props();
 
 	let calendarView = $state('0'),
-		// templateCounter = $state(0), // Add counter
 		showAdvancedTimeSettings = $state(false),
 		daysBetweenPhases = $state(2);
-
-	const handleSelectTemplate = (template: template) => {
-		const now = new Date().getTime();
-		// start_date = new Date();
-		// start_date.setHours(0, 0, 0, 0);
-		// area_vote_end_date = new Date(now + template.area_vote_time_delta);
-		// proposal_end_date = new Date(area_vote_end_date.getTime() + template.proposal_time_delta);
-		// prediction_statement_end_date = new Date(
-		// 	proposal_end_date.getTime() + template.prediction_statement_time_delta
-		// );
-		// prediction_bet_end_date = new Date(
-		// 	prediction_statement_end_date.getTime() + template.prediction_bet_time_delta
-		// );
-		// delegate_vote_end_date = new Date(
-		// 	prediction_bet_end_date.getTime() + template.delegate_vote_time_delta
-		// );
-		// vote_end_date = new Date(delegate_vote_end_date.getTime() + template.vote_time_delta);
-		// end_date = new Date(vote_end_date.getTime() + template.end_time_delta);
-
-		// templateCounter++; // Increment counter
-	};
 
 	const changeDaysBetweenPhases = (days: number | string) => {
 		days = Number(days);
@@ -138,18 +116,3 @@
 		</div>
 	{/if}
 </div>
-<!-- {#if selected_poll === 'Text Poll'}
-	<TimelineTemplate
-		area_vote_time_delta={area_vote_end_date.getTime() - start_date.getTime()}
-		proposal_time_delta={proposal_end_date.getTime() - area_vote_end_date.getTime()}
-		prediction_statement_time_delta={prediction_statement_end_date.getTime() -
-			proposal_end_date.getTime()}
-		prediction_bet_time_delta={prediction_bet_end_date.getTime() -
-			prediction_statement_end_date.getTime()}
-		delegate_vote_time_delta={delegate_vote_end_date.getTime() - prediction_bet_end_date.getTime()}
-		vote_time_delta={vote_end_date.getTime() - delegate_vote_end_date.getTime()}
-		end_time_delta={end_date.getTime() - vote_end_date.getTime()}
-		poll_type={selected_poll === 'Text Poll' ? 4 : 3}
-		{handleSelectTemplate}
-	/>
-{/if}  -->
