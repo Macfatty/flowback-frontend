@@ -9,12 +9,12 @@
 	import { onMount } from 'svelte';
 
 	let kpis: KPI[] = $state([]),
-		votes: Map<number, number | null> = $state(new Map()),
 		loading = $state(false),
-		kpiProbabilities: KPIBetProposal | null = $state(null);
+		kpiProbabilities: KPIBetProposal[] = $state([]);
 
 	let { proposal }: { proposal: proposal } = $props();
 
+	// TODO: Move into poll and just pass it into here.
 	const getGroupKPIs = async () => {
 		loading = true;
 		const { res, json } = await fetchRequest(
@@ -47,7 +47,7 @@
 			return;
 		}
 
-		kpiProbabilities = json ?? null;
+		kpiProbabilities = json.results ?? [];
 	};
 
 	const editProposalKPI = async (kpi: KPI, value: number) => {
@@ -57,7 +57,7 @@
 			{
 				kpi_id: kpi.id,
 				values: kpi.values,
-				weights: [1, 1, 1, 1, 1].slice(0, kpi.values.length)
+				weights: [0, 1, 1, 1, 1].slice(0, kpi.values.length)
 			}
 		);
 
@@ -66,8 +66,6 @@
 				message: 'Could not submit KPI vote',
 				success: false
 			});
-			votes.set(kpi.id, current ?? null);
-			votes = new Map(votes);
 		}
 	};
 
@@ -112,7 +110,9 @@
 								>
 									<div
 										class="bg-purple-400 h-full rounded transition-all duration-200"
-										style="width: {getBarWidth(kpi, value)}%"
+										style="width: {kpiProbabilities.find(
+											(_kpi) => _kpi.value === value
+										)?.weight ?? 0}%"
 									></div>
 								</div>
 							</button>
