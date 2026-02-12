@@ -97,21 +97,21 @@
 
 					<div class="flex flex-col gap-1 mt-1">
 						{#each kpi.values as value, i}
-							<button
-								class="flex items-center gap-2 w-full group cursor-pointer"
-								onclick={(e) => {
-									const rect = e.currentTarget.getBoundingClientRect();
-									const xWithinElement = e.clientX - rect.left;
-									const fraction = Math.floor(
-										(xWithinElement / rect.width) * 100
-									);
-									editProposalKPI(kpi, fraction, i);
-								}}
-							>
+							<div class="flex items-center gap-2 w-full group">
 								<span class="text-xs w-6 text-right dark:text-darkmodeText"
 									>{value}</span
 								>
-								<div
+								<button
+									aria-label="Set KPI probability"
+									onclick={(e) => {
+										// Gets the position of the click relative to the button and converts it to a percentage, which will be the new weight for the KPI value.
+										const rect = e.currentTarget.getBoundingClientRect();
+										const xWithinElement = e.clientX - rect.left;
+										const fraction = Math.floor(
+											(xWithinElement / rect.width) * 100
+										);
+										editProposalKPI(kpi, fraction, i);
+									}}
 									class="flex-1 h-6 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden relative"
 								>
 									<div
@@ -120,8 +120,8 @@
 											(_kpi) => _kpi.value === value
 										)?.weight ?? 0}%"
 									></div>
-								</div>
-							</button>
+								</button>
+							</div>
 						{/each}
 					</div>
 				</div>
