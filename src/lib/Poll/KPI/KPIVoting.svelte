@@ -91,60 +91,97 @@
 				{$_('KPIs')}
 			</span>
 			{#each kpis as kpi, kpiIndex}
-				{@const totalWeight = kpi.values.reduce((sum, v) => sum + (kpiProbabilities.find((p) => p.kpi_id === kpi.id && p.value === v)?.weight ?? 0), 0)}
+				{@const totalWeight = kpi.values.reduce(
+					(sum, v) =>
+						sum +
+						(kpiProbabilities.find((p) => p.kpi_id === kpi.id && p.value === v)
+							?.weight ?? 0),
+					0
+				)}
+				{@const overAllocated = totalWeight > 100}
 				<div
-					class="flex flex-col gap-3 p-4 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-800/40 kpi-card"
+					class="flex flex-col gap-3 p-4 rounded-xl kpi-card transition-colors duration-300
+						{overAllocated
+							? 'bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/40'
+							: 'bg-purple-50 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-800/40'}"
 					style="animation-delay: {kpiIndex * 80}ms"
 				>
 					<div class="flex items-center justify-between">
-						<span class="font-semibold text-base text-purple-900 dark:text-purple-100">
+						<span
+							class="font-semibold text-base text-purple-900 dark:text-purple-100"
+						>
 							{kpi.name}
 						</span>
 						{#if totalWeight > 0}
-							<span class="text-xs font-medium text-purple-500 dark:text-purple-400 tabular-nums">
+							<span
+								class="text-xs font-medium tabular-nums transition-colors duration-300
+									{overAllocated
+										? 'text-red-600 dark:text-red-400'
+										: 'text-purple-500 dark:text-purple-400'}"
+							>
 								{totalWeight}% allocated
+								{#if overAllocated}
+									— exceeds 100%
+								{/if}
 							</span>
 						{/if}
 					</div>
 					{#if kpi.description}
-						<span class="text-sm text-purple-600/70 dark:text-purple-300/60 -mt-1">{kpi.description}</span>
+						<span
+							class="text-sm text-purple-600/70 dark:text-purple-300/60 -mt-1"
+							>{kpi.description}</span
+						>
 					{/if}
 
 					<div class="flex flex-col gap-2">
 						{#each kpi.values as value, i}
-							{@const weight = kpiProbabilities.find(
-								(_kpi) => _kpi.kpi_id === kpi.id && _kpi.value === value
-							)?.weight ?? 0}
-							<button
+							{@const weight =
+								kpiProbabilities.find(
+									(_kpi) => _kpi.kpi_id === kpi.id && _kpi.value === value
+								)?.weight ?? 0}
+							<div
 								aria-label="Set KPI probability for {value}"
-								onclick={(e) => {
-									const rect = e.currentTarget.getBoundingClientRect();
-									const xWithinElement = e.clientX - rect.left;
-									const fraction = Math.floor(
-										(xWithinElement / rect.width) * 100
-									);
-									editProposalKPI(kpi, fraction, i);
-								}}
 								class="group flex items-center gap-3 w-full cursor-pointer kpi-row"
 								style="animation-delay: {kpiIndex * 80 + i * 50}ms"
 							>
-								<span class="text-sm font-semibold w-8 text-right tabular-nums text-purple-700 dark:text-purple-300 shrink-0">
+								<span
+									class="text-sm font-semibold w-8 text-right tabular-nums text-purple-700 dark:text-purple-300 shrink-0"
+								>
 									{value}
 								</span>
-								<div class="flex-1 h-10 bg-purple-100 dark:bg-purple-900/40 rounded-lg overflow-hidden relative group-hover:bg-purple-200/80 dark:group-hover:bg-purple-900/60 transition-colors duration-150">
+								<button
+									class="flex-1 h-10 bg-purple-100 dark:bg-purple-900/40 rounded-lg overflow-hidden relative group-hover:bg-purple-200/80 dark:group-hover:bg-purple-900/60 transition-colors duration-150"
+									onclick={(e) => {
+										const rect = e.currentTarget.getBoundingClientRect();
+										const xWithinElement = e.clientX - rect.left;
+										const fraction = Math.floor(
+											(xWithinElement / rect.width) * 100
+										);
+										editProposalKPI(kpi, fraction, i);
+									}}
+								>
 									<div
-										class="h-full rounded-lg bg-gradient-to-r from-purple-400 to-purple-500 dark:from-purple-500 dark:to-purple-400 transition-all duration-300 ease-out"
+										class="h-full rounded-lg transition-all duration-300 ease-out
+											{overAllocated
+												? 'bg-gradient-to-r from-red-400 to-red-500 dark:from-red-500 dark:to-red-400'
+												: 'bg-gradient-to-r from-purple-400 to-purple-500 dark:from-purple-500 dark:to-purple-400'}"
 										style="width: {weight}%"
 									></div>
 									{#if weight > 0}
-										<span class="absolute inset-0 flex items-center px-3 text-xs font-semibold tabular-nums {weight > 15 ? 'text-white' : 'text-purple-700 dark:text-purple-200'} transition-opacity duration-200"
-											style="padding-left: {weight > 15 ? '0.75rem' : Math.max(weight, 2).toString() + '%'}"
+										<span
+											class="absolute inset-0 flex items-center px-3 text-xs font-semibold tabular-nums {weight >
+											15
+												? 'text-white'
+												: 'text-purple-700 dark:text-purple-200'} transition-opacity duration-200"
+											style="padding-left: {weight > 15
+												? '0.75rem'
+												: Math.max(weight, 2).toString() + '%'}"
 										>
 											{weight}%
 										</span>
 									{/if}
-								</div>
-							</button>
+								</button>
+							</div>
 						{/each}
 					</div>
 				</div>

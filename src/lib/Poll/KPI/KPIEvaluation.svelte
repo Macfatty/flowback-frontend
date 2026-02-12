@@ -88,11 +88,16 @@
 					class="flex flex-col gap-3 p-4 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-800/40 kpi-card"
 					style="animation-delay: {kpiIndex * 80}ms"
 				>
-					<span class="font-semibold text-base text-purple-900 dark:text-purple-100">
+					<span
+						class="font-semibold text-base text-purple-900 dark:text-purple-100"
+					>
 						{kpi.name}
 					</span>
 					{#if kpi.description}
-						<span class="text-sm text-purple-600/70 dark:text-purple-300/60 -mt-1">{kpi.description}</span>
+						<span
+							class="text-sm text-purple-600/70 dark:text-purple-300/60 -mt-1"
+							>{kpi.description}</span
+						>
 					{/if}
 
 					<div class="flex flex-wrap gap-2">
@@ -104,8 +109,8 @@
 								onclick={() => evaluateKPI(kpi, value)}
 								class="h-10 min-w-[3rem] px-4 rounded-lg text-sm font-semibold tabular-nums transition-all duration-200 cursor-pointer kpi-eval-btn
 									{selected
-										? 'bg-purple-600 text-white shadow-md shadow-purple-300 dark:shadow-purple-900 scale-105'
-										: 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800/50'}"
+									? 'bg-purple-600 text-white shadow-md shadow-purple-300 dark:shadow-purple-900 scale-105'
+									: 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800/50'}"
 								style="animation-delay: {kpiIndex * 80 + i * 50}ms"
 							>
 								{value}
