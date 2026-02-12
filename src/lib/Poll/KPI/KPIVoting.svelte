@@ -58,7 +58,11 @@
 				kpi_id: kpi.id,
 				values: kpi.values,
 				weights: kpi.values.map((v, i) =>
-					i === index ? value : (kpiProbabilities.find((p) => p.value === v)?.weight ?? 0)
+					i === index
+						? value
+						: (kpiProbabilities.find(
+								(p) => p.kpi_id === kpi.id && p.value === v
+							)?.weight ?? 0)
 				)
 			}
 		);
@@ -117,7 +121,7 @@
 									<div
 										class="bg-purple-400 h-full rounded transition-all duration-200"
 										style="width: {kpiProbabilities.find(
-											(_kpi) => _kpi.value === value
+											(_kpi) => _kpi.kpi_id === kpi.id && _kpi.value === value
 										)?.weight ?? 0}%"
 									></div>
 								</button>
