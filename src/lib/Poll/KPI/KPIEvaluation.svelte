@@ -95,11 +95,11 @@
 							<div
 								class="flex items-center gap-2 w-full group"
 								class:bg-purple-500={kpiEvaluations.find(
-									(e) => e.vote === value && e.vote === 1
+									(e) => e.vote === value && e.kpi_id === kpi.id
 								)}
 							>
 								<button
-									onclick={() => evaluateKPI(kpi)}
+									onclick={() => evaluateKPI(kpi, value)}
 									class="text-xs w-6 text-right dark:text-darkmodeText"
 									>{value}</button
 								>
