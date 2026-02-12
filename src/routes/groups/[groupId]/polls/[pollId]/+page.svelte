@@ -26,6 +26,7 @@
 	import Fa from 'svelte-fa';
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 	import KPIVoting from '$lib/Poll/KPI/KPIVoting.svelte';
+	import KPIEvaluation from '$lib/Poll/KPI/KPIEvaluation.svelte';
 
 	let poll: poll | null = $state(null),
 		pollType = $state(1),
@@ -495,7 +496,9 @@
 			{:else if phase === 'result' || phase === 'prediction_vote'}
 				<Structure bind:phase bind:poll bind:resetScroll showBoth>
 					<div slot="left" class="h-full overflow-y-auto">
-						<PredictionStatements bind:selectedProposal bind:phase bind:poll />
+						{#if selectedProposal}
+							<KPIEvaluation proposal={selectedProposal} />
+						{/if}
 					</div>
 					<div slot="right">
 						<Results bind:selectedProposal bind:poll {getPollData} {pollType} />

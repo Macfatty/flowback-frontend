@@ -20,4 +20,13 @@ export interface KPIBetProposal {
   weight: number;
 }
 
+export interface KPIEvaluation {
+  id: number;
+  kpi_id: number;
+  kpi_name: string;
+  kpi_description: string;
+  vote: number;
+  proposal: proposal;
+  created_by: GroupUser;
+}
 
