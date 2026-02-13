@@ -102,8 +102,8 @@
 				<div
 					class="flex flex-col gap-3 p-4 rounded-xl kpi-card transition-colors duration-300
 						{overAllocated
-							? 'bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/40'
-							: 'bg-purple-50 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-800/40'}"
+						? 'bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/40'
+						: 'bg-purple-50 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-800/40'}"
 					style="animation-delay: {kpiIndex * 80}ms"
 				>
 					<div class="flex items-center justify-between">
@@ -116,8 +116,8 @@
 							<span
 								class="text-xs font-medium tabular-nums transition-colors duration-300
 									{overAllocated
-										? 'text-red-600 dark:text-red-400'
-										: 'text-purple-500 dark:text-purple-400'}"
+									? 'text-red-600 dark:text-red-400'
+									: 'text-purple-500 dark:text-purple-400'}"
 							>
 								{totalWeight}% allocated
 								{#if overAllocated}
@@ -163,8 +163,8 @@
 									<div
 										class="h-full rounded-lg transition-all duration-300 ease-out
 											{overAllocated
-												? 'bg-gradient-to-r from-red-400 to-red-500 dark:from-red-500 dark:to-red-400'
-												: 'bg-gradient-to-r from-purple-400 to-purple-500 dark:from-purple-500 dark:to-purple-400'}"
+											? 'bg-gradient-to-r from-red-400 to-red-500 dark:from-red-500 dark:to-red-400'
+											: 'bg-gradient-to-r from-purple-400 to-purple-500 dark:from-purple-500 dark:to-purple-400'}"
 										style="width: {weight}%"
 									></div>
 									{#if weight > 0}
@@ -186,6 +186,14 @@
 					</div>
 				</div>
 			{/each}
+		</div>
+	{:else}
+		<div>
+			<span class="text-sm text-gray-500 dark:text-gray-400"
+				>{$_(
+					'No KPIs found for this group. A moderator has to add KPIs in group edit.'
+				)}</span
+			>
 		</div>
 	{/if}
 </Loader>
