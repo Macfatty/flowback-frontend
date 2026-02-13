@@ -15,7 +15,10 @@
 
 	let groupedBets = $derived(
 		combinedBets.reduce<
-			Record<number, { name: string; description: string | null; bets: CombinedBet[] }>
+			Record<
+				number,
+				{ name: string; description: string | null; bets: CombinedBet[] }
+			>
 		>((acc, bet) => {
 			if (!acc[bet.kpi_id]) {
 				acc[bet.kpi_id] = {
@@ -87,7 +90,7 @@
 					<div class="flex flex-col gap-1.5">
 						{#each group.bets as bet, i}
 							{@const betValue = Number(bet.combined_bet) || 0}
-							{@const barWidth = maxBet > 0 ? (betValue / maxBet) * 100 : 0}
+							{@const barWidth = (betValue / maxBet) * 100}
 							<div
 								class="flex items-center gap-3 w-full kpi-row"
 								style="animation-delay: {kpiIndex * 80 + i * 40}ms"
@@ -107,18 +110,16 @@
 												{bet.outcome
 												? 'bg-gradient-to-r from-emerald-400 to-emerald-500 dark:from-emerald-500 dark:to-emerald-400'
 												: 'bg-gradient-to-r from-purple-400 to-purple-500 dark:from-purple-500 dark:to-purple-400'}"
-											style="width: {barWidth}%"
+											style="width: {betValue.toFixed(1) * 100}%"
 										></div>
 										<span
 											class="absolute inset-0 flex items-center text-xs font-semibold tabular-nums
-												{barWidth > 25
-												? 'text-white px-3'
-												: 'text-purple-700 dark:text-purple-200'}"
+												{barWidth > 25 ? 'text-white px-3' : 'text-purple-700 dark:text-purple-200'}"
 											style="padding-left: {barWidth > 25
 												? '0.75rem'
 												: `max(${barWidth}% + 0.5rem, 3rem)`}"
 										>
-											{betValue.toFixed(1)}%
+											{betValue.toFixed(1) * 100}%
 										</span>
 									{:else}
 										<span
