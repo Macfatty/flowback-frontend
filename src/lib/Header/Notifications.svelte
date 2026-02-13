@@ -7,12 +7,12 @@
 	import { onMount } from 'svelte';
 	import type { notification } from './Notification';
 	import TimeAgo from 'javascript-time-ago';
-	import { faX } from '@fortawesome/free-solid-svg-icons/faX';
 	import { goto } from '$app/navigation';
 	import { notifications as notificationLimit } from '$lib/Generic/APILimits.json';
 	import { darkModeStore } from '$lib/Generic/DarkMode';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
-	import { N } from 'ethers';
+	import { isMobile } from '$lib/utils/isMobile'
+	
 
 	let notifications: notification[],
 		timeAgo: TimeAgo,
@@ -127,7 +127,7 @@
 	class="small-notification relative cursor-pointer"
 	on:click={() => (notificationsOpen = !notificationsOpen)}
 >
-	<Fa icon={faBell} color={$darkModeStore ? 'white' : 'black'} size={'1.3x'} />
+	<Fa icon={faBell} color={$darkModeStore ? 'white' : 'black'} size={$isMobile ? '1.5x' : '1.3x'} />
 	<div
 		class:hidden={!notifications ||
 			notifications?.filter((n) => !n.read)?.length === 0}
@@ -140,7 +140,8 @@
 <!-- Menu of notifications, that for now opens when clicking the notification bell in the header -->
 {#if notificationsOpen}
 	<ul
-		class="max-h-[90vh] overflow-y-scroll absolute right-0 top-full bg-white dark:bg-darkobject dark:text-darkmodeText select-none shadow slide-animation z-[60]"
+		class="max-h-[90vh] overflow-y-scroll absolute right-0 bg-white dark:bg-darkobject dark:text-darkmodeText select-none shadow z-[60]
+		{$isMobile ? 'slide-animation-mobile bottom-full' : 'slide-animation bottom-auto top-full'}"
 		id="notifications-list"
 	>
 		<button
@@ -152,7 +153,7 @@
 		{#if notifications?.length > 0}
 			{#each notifications as notification}
 				<li
-					class=" flex justify-between max-w-[25rem] border-gray-200 dark:border-gray-600 border hover:shadow transition-all dark:hover:bg-slate-700 hover:bg-blue-300 hover:border-l-2 hover:border-l-primary"
+					class="flex justify-between max-w-[25rem] border-gray-200 dark:border-gray-600 border hover:shadow transition-all dark:hover:bg-slate-700 hover:bg-blue-300 hover:border-l-2 hover:border-l-primary"
 					class:bg-green-300={!notification.read}
 					class:dark:bg-slate-600={!notification.read}
 				>
@@ -206,6 +207,20 @@
 		to {
 			top: 100%;
 		}
+	}
+
+	@keyframes slide-animation-mobile {
+		from {
+			bottom: 80%;
+		}
+		to {
+			bottom: 100%;
+		}
+	}
+
+	.slide-animation-mobile {
+		animation-name: slide-animation-mobile;
+		animation-duration: 300ms;
 	}
 
 	.slide-animation {

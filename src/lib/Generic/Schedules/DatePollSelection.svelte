@@ -244,7 +244,7 @@
 
 <Loader bind:loading>
 	<div
-		class={`sticky ${results ? 'md:-top-[1rem]' : 'top-[7.6rem] md:top-[5.5rem]'}`}
+		class={`sticky ${results ? 'md:-top-[1rem]' : 'top-0 md:top-[5.5rem]'}`}
 	>
 		<div
 			class="dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between mt-4 py-5 px-6 md:py-1 md:px-4"

@@ -64,7 +64,7 @@
 	class="bg-white dark:bg-darkobject dark:text-darkmodeText rounded shadow poll-header-grid py-8 w-full max-w-[1200px]"
 >
 	<button
-		class="cursor-pointer bg-white dark:bg-darkobject dark:text-darkmodeText justify-center m-0 px-4"
+		class="cursor-pointer dark:bg-darkobject dark:text-darkmodeText px-4 mt-1"
 		on:click={() => {
 			if (source === 'home') goto('/home');
 			else if (source === 'group')
@@ -87,14 +87,13 @@
 		{poll?.title}
 	</h1>
 
-	<div class="inline-flex gap-4 items-baseline">
+	<div class="flex gap-3 items-center mt-1 justify-end pr-3">
 		<NotificationOptions
 			type="poll"
 			id={poll?.id}
 			api={`group/poll/${poll?.id}/subscribe`}
 			categories={['poll', 'poll_comment', 'poll_phase']}
 			labels={['Poll', 'Timeline', 'Comments']}
-			Class="justify-self-center mt-2"
 			ClassOpen="right-0"
 		/>
 
@@ -119,7 +118,7 @@
 		/>
 	</div>
 
-	<div class="flex gap-4 items-center grid-area-items my-1 border-b py-4">
+	<div class="flex gap-4 items-center grid-area-items border-b py-4">
 		{#if env.PUBLIC_ONE_GROUP_FLOWBACK !== 'TRUE'}
 			<a
 				href={`/groups/${$page.params.groupId}`}
@@ -182,12 +181,8 @@
 	</div>
 
 	{#if poll?.description.length > 0}
-		<div class="grid-area-description break-words w-[90vw] max-w-[1100px] mt-4">
-			<NewDescription
-				limit={3}
-				lengthLimit={300}
-				description={poll?.description}
-			/>
+		<div class="grid-area-description break-words mt-4">
+			<NewDescription limit={3} lengthLimit={300} description={poll?.description} />
 		</div>
 	{/if}
 </div>
@@ -234,20 +229,19 @@
 
 	.grid-area-items {
 		grid-area: 2 / 2 / 3 / 3;
+		
 	}
 
 	.grid-area-description {
 		grid-area: 3 / 2 / 4 / 3;
 	}
 
-	@media (max-width: 768px) {
-		.poll-header-grid {
-			max-width: 100vw;
-		}
-
+	@media (max-width: 760px) {
+		.grid-area-items,
 		.grid-area-description {
-			width: 100%;
-			word-break: break-word;
+			grid-column: 1 / -1;
+			padding-left: 1rem;
+			padding-right: 1rem;
 		}
 	}
 </style>
