@@ -27,6 +27,7 @@
 	import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 	import KPIVoting from '$lib/Poll/KPI/KPIVoting.svelte';
 	import KPIEvaluation from '$lib/Poll/KPI/KPIEvaluation.svelte';
+	import CombinedKPIBet from '$lib/Poll/KPI/CombinedKPIBet.svelte';
 
 	let poll: poll | null = $state(null),
 		pollType = $state(1),
@@ -164,7 +165,7 @@
 					<Comments bind:proposals api={'poll'} />
 				</div>
 
-				<!-- PHASE 1: AREA VOTE -->
+				<!-- PHASE 1: AREA VOTE (TO BE DEPRICATED) -->
 			{:else if phase === 'area_vote'}
 				<Structure bind:phase bind:poll>
 					<div slot="left" class="h-full"><AreaVote /></div>
@@ -173,7 +174,7 @@
 					</div>
 				</Structure>
 
-				<!-- PHASE 2: PROPOSAL CREATION -->
+				<!-- PHASE 2/1: PROPOSAL CREATION -->
 			{:else if phase === 'proposal'}
 				<Structure
 					bind:phase
@@ -327,7 +328,7 @@
 					</div>
 				</Structure>
 
-				<!-- PHASE 4: PREDICTION BETTING/KPI -->
+				<!-- PHASE 4/2: PREDICTION BETTING/KPI -->
 			{:else if phase === 'prediction_bet'}
 				<Structure
 					bind:phase
@@ -379,7 +380,7 @@
 					</div>
 				</Structure>
 
-				<!-- PHASE 5: DELEGATE VOTING -->
+				<!-- PHASE 5/3: DELEGATE VOTING -->
 			{:else if phase === 'delegate_vote'}
 				<Structure
 					bind:phase
@@ -419,11 +420,16 @@
 									limit={2}
 									lengthLimit={130}
 								/>
-								<PredictionStatements
-									bind:selectedProposal
-									bind:phase
-									bind:poll
-								/>
+
+								{#key selectedProposal}
+									<CombinedKPIBet proposal={selectedProposal} />
+								{/key}
+
+								<!-- <PredictionStatements -->
+								<!-- 	bind:selectedProposal -->
+								<!-- 	bind:phase -->
+								<!-- 	bind:poll -->
+								<!-- /> -->
 							</div>
 						{/if}
 					</div>
@@ -432,7 +438,7 @@
 					</div>
 				</Structure>
 
-				<!-- PHASE 6: NON-DELEGATE VOTING -->
+				<!-- PHASE 6/4: NON-DELEGATE VOTING -->
 			{:else if phase === 'vote'}
 				<Structure
 					bind:phase
@@ -479,11 +485,12 @@
 									limit={2}
 									lengthLimit={130}
 								/>
-								<PredictionStatements
-									bind:selectedProposal
-									bind:phase
-									bind:poll
-								/>
+								<CombinedKPIBet proposal={selectedProposal} />
+								<!-- <PredictionStatements -->
+								<!-- 	bind:selectedProposal -->
+								<!-- 	bind:phase -->
+								<!-- 	bind:poll -->
+								<!-- /> -->
 							</div>
 						{/if}
 					</div>
@@ -492,7 +499,7 @@
 					</div>
 				</Structure>
 
-				<!-- PHASE 7: RESULTS AND EVALUATION -->
+				<!-- PHASE 7/5: RESULTS AND EVALUATION -->
 			{:else if phase === 'result' || phase === 'prediction_vote'}
 				<Structure bind:phase bind:poll bind:resetScroll showBoth>
 					<div slot="left" class="h-full overflow-y-auto">

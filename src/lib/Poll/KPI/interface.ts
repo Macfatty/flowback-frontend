@@ -30,3 +30,13 @@ export interface KPIEvaluation {
   created_by: GroupUser;
 }
 
+export interface CombinedBet {
+  id: number;
+  proposal: proposal;
+  kpi_id: number;
+  kpi_name: string;
+  kpi_description: string | null;
+  value: number;
+  combined_bet: number | null;
+  outcome: boolean;
+}
