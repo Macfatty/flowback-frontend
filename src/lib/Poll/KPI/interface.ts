@@ -37,6 +37,6 @@ export interface CombinedBet {
   kpi_name: string;
   kpi_description: string | null;
   value: number;
-  combined_bet: number | null;
+  combined_bet: string | null;
   outcome: boolean;
 }

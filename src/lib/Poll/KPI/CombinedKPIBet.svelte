@@ -64,7 +64,7 @@
 
 			{#each Object.entries(groupedBets) as [kpiId, group], kpiIndex}
 				{@const maxBet = Math.max(
-					...group.bets.map((b) => b.combined_bet ?? 0),
+					...group.bets.map((b) => Number(b.combined_bet) || 0),
 					0.01
 				)}
 				<div
@@ -86,7 +86,7 @@
 
 					<div class="flex flex-col gap-1.5">
 						{#each group.bets as bet, i}
-							{@const betValue = bet.combined_bet ?? 0}
+							{@const betValue = Number(bet.combined_bet) || 0}
 							{@const barWidth = maxBet > 0 ? (betValue / maxBet) * 100 : 0}
 							<div
 								class="flex items-center gap-3 w-full kpi-row"
