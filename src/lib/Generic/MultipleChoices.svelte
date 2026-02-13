@@ -7,6 +7,7 @@
 	export let choicesOpen = false,
 		labels: string[],
 		Class = '',
+		ClassInner = '',
 		functions: any[] = [],
 		id = 'multiple-choices';
 
@@ -15,7 +16,9 @@
 			if (
 				choicesOpen &&
 				//@ts-ignore
-				![...document.getElementsByClassName(`notifications-clickable-region`)]?.find((element) =>
+				![
+					...document.getElementsByClassName(`notifications-clickable-region`)
+				]?.find((element) =>
 					//@ts-ignore
 					element.contains(e.target)
 				)
@@ -48,7 +51,7 @@
 
 	{#if choicesOpen}
 		<div
-			class="right-0 z-50 absolute mt-2 bg-white dark:bg-darkobject dark:text-darkmodeText shadow-xl text-sm "
+			class={`${ClassInner} z-50 absolute bg-white dark:bg-darkobject dark:text-darkmodeText shadow-xl text-sm`}
 		>
 			<div class="text-xs p-2">{$_('Actions')}</div>
 			{#each labels as label, i}
@@ -61,4 +64,3 @@
 		</div>
 	{/if}
 </div>
-

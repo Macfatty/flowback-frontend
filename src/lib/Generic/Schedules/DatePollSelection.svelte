@@ -3,10 +3,13 @@
 -->
 
 <script lang="ts">
-	import { faCheck, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faChevronLeft,
+		faChevronRight
+	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { _ } from 'svelte-i18n';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Loader from '../Loader.svelte';
 	import type { timeProposal } from '$lib/Poll/interface';
 	import Button from '$lib/Generic/Button.svelte';
@@ -19,7 +22,8 @@
 
 	export let x = 10,
 		y = 10,
-		proposals: timeProposal[];
+		proposals: timeProposal[],
+		results = false;
 
 	let weekOffset = 0,
 		initialMonday: Date,
@@ -33,7 +37,7 @@
 		noChanges = true;
 
 	type SelDate = { date: Date; id: number; numOfVotes: number };
-	const pollId = $page.params.pollId;
+	const pollId = page.params.pollId;
 
 	// Date utility functions
 	const getRecentMonday = (d: Date) => {
@@ -65,7 +69,10 @@
 		// Saved dates are meant to match tbe backend, while selected dates matches what the user has selected in the frontend
 		savedDates = json.results.map((vote: any) => ({
 			id: vote.proposal,
-			date: new Date(proposals.find((proposal) => proposal.id === vote.proposal)?.start_date ?? '')
+			date: new Date(
+				proposals.find((proposal) => proposal.id === vote.proposal)
+					?.start_date ?? ''
+			)
 		}));
 
 		selectedDates = savedDates;
@@ -88,13 +95,20 @@
 			} else {
 				const end_date = new Date(selectedDate.date.getTime() + 60 * 60 * 1000);
 
-				const { res, json } = await fetchRequest('POST', `group/poll/${pollId}/proposal/create`, {
-					start_date: selectedDate.date,
-					end_date
-				});
+				const { res, json } = await fetchRequest(
+					'POST',
+					`group/poll/${pollId}/proposal/create`,
+					{
+						start_date: selectedDate.date,
+						end_date
+					}
+				);
 
 				if (!res.ok) {
-					ErrorHandlerStore.set({ message: "Couldn't save some dates", success: false });
+					ErrorHandlerStore.set({
+						message: "Couldn't save some dates",
+						success: false
+					});
 					continue;
 				}
 
@@ -108,7 +122,10 @@
 			const { results } = await ProposalsApi.getProposals(pollId);
 			proposals = results;
 		} catch (error) {
-			ErrorHandlerStore.set({ message: "Couldn't save selections", success: false });
+			ErrorHandlerStore.set({
+				message: "Couldn't save selections",
+				success: false
+			});
 			loading = false;
 			return;
 		}
@@ -116,7 +133,10 @@
 		savedDates = selectedDates;
 		noChanges = true;
 		loading = false;
-		ErrorHandlerStore.set({ message: 'Successfully saved selections', success: true });
+		ErrorHandlerStore.set({
+			message: 'Successfully saved selections',
+			success: true
+		});
 	}
 
 	// Triggers when user clicks "Clear" button
@@ -132,14 +152,18 @@
 		);
 
 		// If date is already selected, remove it; otherwise add it
-
 		if (cellPreviouslySelected) {
-			selectedDates = selectedDates.filter((d) => d.date.getTime() !== date.getTime());
+			selectedDates = selectedDates.filter(
+				(d) => d.date.getTime() !== date.getTime()
+			);
 		} else {
 			selectedDates = [
 				...selectedDates,
 				{
-					id: proposals.find((p) => new Date(p.start_date).getTime() === date.getTime())?.id ?? 0,
+					id:
+						proposals.find(
+							(p) => new Date(p.start_date).getTime() === date.getTime()
+						)?.id ?? 0,
 					date,
 					numOfVotes: 1
 				}
@@ -197,7 +221,13 @@
 	$: gridDates = Array.from({ length: y }, (_, j) =>
 		Array.from(
 			{ length: x },
-			(_, i) => new Date(monday?.getFullYear(), monday?.getMonth(), monday?.getDate() + i, j)
+			(_, i) =>
+				new Date(
+					monday?.getFullYear(),
+					monday?.getMonth(),
+					monday?.getDate() + i,
+					j
+				)
 		)
 	);
 
@@ -214,23 +244,27 @@
 
 <Loader bind:loading>
 	<div
-		class="sticky top-0 md:top-[5.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between mt-4 py-5 px-6 md:py-1 md:px-4"
+		class={`sticky ${results ? 'md:-top-[1rem]' : 'top-0 md:top-[5.5rem]'}`}
 	>
-		<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>
-		{currentMonth}
-		{currentYear}
-		<button on:click={nextWeek}><Fa icon={faChevronRight} /></button>
-	</div>
-	<div
-		class="sticky top-[3.5rem] md:top-[7.5rem] dark:bg-darkobject dark:text-darkmodeText bg-white grid grid-cols-8 text-center border-b border-gray-300 py-1"
-	>
-		<br />
-		{#each weekDates as date, i}
-			<div class="flex flex-col items-center {$isMobile ? 'text-xs' : ''}">
-				<div class="font-semibold pt-2">{date.getDate()}</div>
-				<div class="text-gray-600">{$_(weekdays[i])}</div>
-			</div>
-		{/each}
+		<div
+			class="dark:bg-darkobject dark:text-darkmodeText bg-white flex items-center justify-between mt-4 py-5 px-6 md:py-1 md:px-4"
+		>
+			<button on:click={prevWeek}><Fa icon={faChevronLeft} /></button>
+			{currentMonth}
+			{currentYear}
+			<button on:click={nextWeek}><Fa icon={faChevronRight} /></button>
+		</div>
+		<div
+			class="dark:bg-darkobject dark:text-darkmodeText bg-white grid grid-cols-8 text-center border-b border-gray-300 py-1"
+		>
+			<br />
+			{#each weekDates as date, i}
+				<div class="flex flex-col items-center {$isMobile ? 'text-xs' : ''}">
+					<div class="font-semibold pt-2">{date.getDate()}</div>
+					<div class="text-gray-600">{$_(weekdays[i])}</div>
+				</div>
+			{/each}
+		</div>
 	</div>
 	<div
 		class="grid w-full text-sm text-center"
@@ -238,17 +272,51 @@
 		id="weekView"
 	>
 		{#each gridDates as row, j}
-			<div class="bg-primary text-white flex justify-center items-center px-0.5 
-				{$isMobile ? 'text-xs' : ''}">{j}:00</div>
+			<div
+				class="bg-primary text-white flex justify-center items-center px-0.5
+				{$isMobile ? 'text-xs' : ''}"
+			>
+				{j}:00
+			</div>
 			{#each row as date, i}
+				{@const proposal = proposals.find(
+					(p) => new Date(p.start_date).getTime() === date.getTime()
+				)}
+
 				<button
-					class="bg-white dark:bg-darkobject border h-12 w-full"
-					on:click={() => toggleDate(date)}
+					class={`bg-white dark:bg-darkobject border h-12 w-full ${results ? 'cursor-default' : 'cursor-pointer'}`}
+					on:click={() => {
+						if (!results) toggleDate(date);
+					}}
 				>
+					{#if proposal?.preliminary_score && proposal?.preliminary_score > 0}
+						{@const score = (() => {
+							// This function allows for real-time updating
+							// as the user is clicking on the dates.
+							let s = proposal?.preliminary_score;
+
+							if (
+								savedDates.find((s) => s.date.valueOf() === date.valueOf()) &&
+								!selectedDates.find((s) => s.date.valueOf() === date.valueOf())
+							)
+								s -= 1;
+							else if (
+								!savedDates.find((s) => s.date.valueOf() === date.valueOf()) &&
+								selectedDates.find((s) => s.date.valueOf() === date.valueOf())
+							)
+								s += 1;
+
+							return s;
+						})()}
+						{#if score > 0}
+							{score}
+						{/if}
+					{/if}
+
 					{#if selectedDates.find((_date) => _date.date.getTime() === date?.getTime())}
-						<div class="bg-green-600 w-full flex items-center justify-center h-full">
-							<Fa icon={faCheck} color="white" size="2x" />
-						</div>
+						<div
+							class="bg-green-600 w-full flex items-center justify-center h-full"
+						></div>
 					{:else}
 						<slot {i} {j} />
 					{/if}
@@ -257,20 +325,22 @@
 		{/each}
 	</div>
 	<div class="p-4 border-t flex gap-4 bg-white dark:bg-darkobject">
-		<Button
-			disabled={arraysEqual(
-				selectedDates.map((d) => d.date.getTime()).sort(),
-				savedDates.map((d) => d.date.getTime()).sort()
-			)}
-			onClick={saveSelection}
-			buttonStyle="primary-light"
-			Class="flex-1">{$_('Submit')}</Button
-		>
-		<Button
-			onClick={clearSelection}
-			buttonStyle="warning-light"
-			disabled={selectedDates.length === 0}
-			Class="flex-1 disabled:!text-gray-300">{$_('Clear')}</Button
-		>
+		{#if !results}
+			<Button
+				disabled={arraysEqual(
+					selectedDates.map((d) => d.date.getTime()).sort(),
+					savedDates.map((d) => d.date.getTime()).sort()
+				)}
+				onClick={saveSelection}
+				buttonStyle="primary-light"
+				Class="flex-1">{$_('Submit')}</Button
+			>
+			<Button
+				onClick={clearSelection}
+				buttonStyle="warning-light"
+				disabled={selectedDates.length === 0}
+				Class="flex-1 disabled:!text-gray-300">{$_('Clear')}</Button
+			>
+		{/if}
 	</div>
 </Loader>

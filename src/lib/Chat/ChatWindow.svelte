@@ -4,7 +4,6 @@
 	import Button from '$lib/Generic/Button.svelte';
 	import { fetchRequest } from '$lib/FetchRequest';
 	import { userStore } from '$lib/User/interfaces';
-	import { formatDate } from '$lib/Generic/DateFormatter';
 	import { _ } from 'svelte-i18n';
 	import { browser } from '$app/environment';
 	import TextArea from '$lib/Generic/TextArea.svelte';
@@ -25,7 +24,7 @@
 		newerMessages: string,
 		showEmoji = false,
 		messages: Message[] = [],
-		socket: WebSocket,
+		socket: WebSocket | null = null,
 		chatWindow: any,
 		errorState = false,
 		participants: any[] = [],
@@ -241,15 +240,16 @@
 		let interval: NodeJS.Timeout;
 		// Attempt reconnecting websocket when server is shut down
 		// Inspired by the user2909737's reply https://stackoverflow.com/questions/3780511/reconnection-of-client-when-server-reboots-in-websocket
+		if (!socket) return;
 		socket.onclose = () => {
 			if (!interval)
 				interval = setInterval(() => {
-					console.log('Attempting to reconnect');
-					if (socket.readyState === socket.OPEN || retries === 100) {
+					console.warn('Attempting to reconnect');
+					if (socket?.readyState === socket?.OPEN || retries === 50) {
 						clearInterval(interval);
 						return;
 					}
-					socket = Socket.createSocket($userStore?.id);
+					socket = Socket.createSocket($userStore?.id ?? 0) ?? null;
 					retries++;
 					// TODO: Add randomness to the interval to prevent many people reconnecting at once if backend issue?
 				}, 4000);

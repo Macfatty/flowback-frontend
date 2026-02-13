@@ -23,9 +23,14 @@
 	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 	import { chatOpenStore } from '$lib/Chat/functions';
 	import { isMobile } from '$lib/utils/isMobile'
+	import { onNavigate } from '$app/navigation';
 
 	let sideHeaderOpen = false,
 		selectedHref = '';
+
+	onNavigate(() => {
+		selectedHref = window.location.pathname.slice(1);
+	});
 </script>
 
 <header
@@ -45,7 +50,13 @@
 	<div class="!flex justify-between md:w-[80%]">
 		<nav class="flex items-center p-6 justify-center gap-[10%] w-full md:w-[75%]">
 			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
-				<HeaderIcon disableTextOnHover icon={faHouse} text="Home" href="home" bind:selectedHref />
+				<HeaderIcon
+					disableTextOnHover
+					icon={faHouse}
+					text="Home"
+					href="home"
+					bind:selectedHref
+				/>
 				<HeaderIcon
 					disableTextOnHover
 					icon={faPeopleGroup}
@@ -71,7 +82,6 @@
 				href="kanban"
 				bind:selectedHref
 			/>
-
 			<HeaderIcon
 				disableTextOnHover
 				icon={faCalendarDays}
@@ -79,12 +89,13 @@
 				href="schedule"
 				bind:selectedHref
 			/>
-
 			{#if env.PUBLIC_FLOWBACK_LEDGER_MODULE === 'TRUE'}
 				<HeaderIcon
 					disableTextOnHover
 					icon={faCoins}
-					text={!(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE') ? 'My Ledger' : 'Group Ledger'}
+					text={!(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')
+						? 'My Ledger'
+						: 'Group Ledger'}
 					href="ledger"
 					bind:selectedHref
 				/>
