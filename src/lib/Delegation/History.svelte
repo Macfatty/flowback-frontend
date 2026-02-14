@@ -90,9 +90,7 @@
 		<div
 			class="w-full max-w-screen-md mx-auto p-4 bg-white dark:bg-darkobject rounded shadow mb-4"
 		>
-			<span
-				class="font-semibold text-sm text-gray-700 dark:text-darkmodeText pb-2"
-			>
+			<span class="text-sm text-gray-700 dark:text-darkmodeText pb-2">
 				{$_('Delegate history for')}
 				{$userStore?.username}
 			</span>
@@ -114,7 +112,7 @@
 					<div class="flex flex-row items-center gap-1 pt-2">
 						<span class="text-gray-700 dark:text-gray-300">{$_('Sort')}: </span>
 						<Select
-							classInner="p-1 font-semibold dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600"
+							classInner="p-1 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600"
 							labels={[$_('A - Z'), $_('Z - A')]}
 							values={['a-z', 'z-a']}
 							bind:value={sortOrder}
