@@ -72,9 +72,8 @@
 	@media (min-width: 768px) {
 		.poll-grid {
 			grid-template-columns: 0.1fr repeat(2, minmax(0, 1fr));
-			grid-template-rows: repeat(2, minmax(0, 55vh));
+			grid-template-rows: 450px 1fr;
 			display: grid;
-			max-height: 2000px;
 		}
 
 		.poll-grid-no-timeline {
