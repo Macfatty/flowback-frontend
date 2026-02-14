@@ -7,7 +7,6 @@ const config = {
     exclude: ['chart.js']
   },
   server: {
-    //Insert port here, TODO: Make it easier for backend to add port
     port: 4000,
     strictPort: true
   }
