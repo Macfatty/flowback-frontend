@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fetchRequest } from '$lib/FetchRequest';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import { formatDate } from '$lib/Generic/DateFormatter';
 	import Statistics from './Statistics.svelte';
@@ -22,14 +22,19 @@
 		labels: string[] = [],
 		noVotes = false;
 
+	const getProposalIterations = 15;
+
 	const getProposals = async () => {
 		const { res, json } = await fetchRequest(
 			'GET',
-			`group/poll/${$page.params.pollId}/proposals?limit=1000&order_by=score_desc`
+			`group/poll/${page.params.pollId}/proposals?limit=1000&order_by=score_desc`
 		);
 
 		if (!res.ok) {
-			ErrorHandlerStore.set({ message: 'Failed to get proposals', success: false });
+			ErrorHandlerStore.set({
+				message: 'Failed to get proposals',
+				success: false
+			});
 			return;
 		}
 
@@ -75,9 +80,19 @@
 		noVotes = checkIfNoVotes();
 		let k = 0;
 
+		// Start fetching poll results whenever the poll is in the calculating phase.
 		if (poll?.status === 2) {
 			let time = setInterval(() => {
-				if (poll.status === -1 || poll.status === 1 || k === 15) clearInterval(time);
+				if (
+					// If poll failed, succeeded, taken longer than some amount of iterations,
+					// or if the user has navigated to another poll, stop.
+
+					poll.status === -1 ||
+					poll.status === 1 ||
+					Number(page.params.pollId) !== poll.id ||
+					k === getProposalIterations
+				)
+					clearInterval(time);
 				getProposals();
 				getPollData();
 				k++;
@@ -97,7 +112,8 @@
 </script>
 
 <div class="w-full flex flex-col">
-	<span class="text-primary dark:text-secondary font-semibold text-xl text-center block py-2"
+	<span
+		class="text-primary dark:text-secondary font-semibold text-xl text-center block py-2"
 		>{$_('Results')}</span
 	>
 
@@ -117,7 +133,9 @@
 				<Statistics bind:votes bind:labels />
 			{/if}
 			{#each proposals as proposal, i}
-				<div class="border-gray-300 border-b-2 mt-3 pb-1 overflow-auto max-w-full">
+				<div
+					class="border-gray-300 border-b-2 mt-3 pb-1 overflow-auto max-w-full"
+				>
 					<span
 						class="text-primary dark:text-secondary font-semibold flex items-center gap-1 break-words"
 						>{#if i === 0 && !noVotes}
@@ -125,9 +143,15 @@
 						{/if}
 						{proposal.title}</span
 					>
-					<NewDescription description={proposal.description} limit={2} lengthLimit={100} />
+					<NewDescription
+						description={proposal.description}
+						limit={2}
+						lengthLimit={100}
+					/>
 					<span class="block text-right"
-						><span class="text-primary dark:text-secondary font-semibold">{$_('Points')}:</span>
+						><span class="text-primary dark:text-secondary font-semibold"
+							>{$_('Points')}:</span
+						>
 						{proposal.score || '0'}</span
 					>
 				</div>
@@ -137,7 +161,9 @@
 		<div class="flex flex-col items-center justify-center h-full gap-4 mt-10">
 			{#if proposals.length > 0}
 				<Fa icon={faStar} color="orange" class="text-5xl" />
-				<div class="text-primary dark:text-secondary font-semibold text-lg text-center block">
+				<div
+					class="text-primary dark:text-secondary font-semibold text-lg text-center block"
+				>
 					{$_('Results have also been added to Group Schedule')}!
 				</div>
 

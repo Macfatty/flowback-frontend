@@ -174,7 +174,7 @@
 				/>
 			{/if}
 
-			{#if displayTag && tag}
+			{#if displayTag && tag && env.PUBLIC_POLL_VERSION === '1'}
 				<Tag id={'poll-tag'} bind:tag />
 			{/if}
 		{/if}
@@ -182,7 +182,11 @@
 
 	{#if poll?.description.length > 0}
 		<div class="grid-area-description break-words mt-4">
-			<NewDescription limit={3} lengthLimit={300} description={poll?.description} />
+			<NewDescription
+				limit={3}
+				lengthLimit={300}
+				description={poll?.description}
+			/>
 		</div>
 	{/if}
 </div>
@@ -229,7 +233,6 @@
 
 	.grid-area-items {
 		grid-area: 2 / 2 / 3 / 3;
-		
 	}
 
 	.grid-area-description {
