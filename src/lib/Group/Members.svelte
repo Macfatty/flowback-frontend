@@ -290,26 +290,27 @@
 				{#each usersAskingForInvite as user}
 					{#if user.external === true}
 						<div
-							class="text-black pt-4 flex align-middle outline-gray-200 w-full dark:text-darkmodeText dark:bg-darkobject"
+							class="text-black pt-4 flex align-middle justify-between outline-gray-200 w-full dark:text-darkmodeText dark:bg-darkobject"
 						>
 							<ProfilePicture
-								Class="w-full"
 								displayName
 								username={user.username}
 								profilePicture={user.profile_image}
 							/>
-							<Button
-								Class="mr-4 px-2"
-								buttonStyle="primary-light"
-								onClick={() => acceptInviteUser(user.user)}
-								>{$_('Accept')}</Button
-							>
-							<Button
-								Class="px-2"
-								buttonStyle="warning-light"
-								onClick={() => denyInviteUser(user.user)}
-								>{$_('Decline')}</Button
-							>
+							<div>
+								<Button
+									Class="mr-2 px-2"
+									buttonStyle="primary-light"
+									onClick={() => acceptInviteUser(user.user)}
+									>{$_('Accept')}</Button
+								>
+								<Button
+									Class="px-2 mr-1"
+									buttonStyle="warning-light"
+									onClick={() => denyInviteUser(user.user)}
+									>{$_('Decline')}</Button
+								>
+							</div>
 						</div>
 					{/if}
 				{/each}
