@@ -22,7 +22,7 @@
 	import Fa from 'svelte-fa';
 	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 	import { chatOpenStore } from '$lib/Chat/functions';
-	import { isMobile } from '$lib/utils/isMobile'
+	import { isMobile } from '$lib/utils/isMobile';
 	import { onNavigate } from '$app/navigation';
 
 	let sideHeaderOpen = false,
@@ -48,7 +48,9 @@
 		/></a
 	>
 	<div class="!flex justify-between md:w-[80%]">
-		<nav class="flex items-center p-6 justify-center gap-[10%] w-full md:w-[75%]">
+		<nav
+			class="flex items-center p-6 justify-center gap-[10%] w-full md:w-[75%]"
+		>
 			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
 				<HeaderIcon
 					disableTextOnHover
@@ -113,7 +115,7 @@
 				<HeaderIcon
 					disableTextOnHover
 					icon={faPeopleArrows}
-					text={'Delegations'}
+					text={'Delegation'}
 					href="delegations"
 					bind:selectedHref
 				/>
@@ -121,7 +123,10 @@
 
 			{#if $isMobile}
 				<div class="flex flex-shrink-0">
-						<button id="side-header" on:click={() => (sideHeaderOpen = !sideHeaderOpen)}>
+					<button
+						id="side-header"
+						on:click={() => (sideHeaderOpen = !sideHeaderOpen)}
+					>
 						<img
 							src={$userStore?.profile_image
 								? `${env.PUBLIC_API_URL}${$userStore?.profile_image}`
@@ -151,7 +156,10 @@
 					</button>
 					<Notifications />
 				</div>
-				<button id="side-header" on:click={() => (sideHeaderOpen = !sideHeaderOpen)}>
+				<button
+					id="side-header"
+					on:click={() => (sideHeaderOpen = !sideHeaderOpen)}
+				>
 					<img
 						src={$userStore?.profile_image
 							? `${env.PUBLIC_API_URL}${$userStore?.profile_image}`
@@ -182,5 +190,4 @@
 			padding: 0.5rem 1.5rem;
 		}
 	}
-
 </style>

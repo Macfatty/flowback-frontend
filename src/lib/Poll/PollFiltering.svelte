@@ -204,7 +204,7 @@
 				</label>
 				<select
 					style="width:100%"
-					class="rounded p-1 dark:border-gray-600 dark:bg-darkobject font-semibold"
+					class="rounded p-1 dark:border-gray-600 dark:bg-darkobject"
 					on:input={(e) => {
 						//@ts-ignore
 						onWorkGroupChange(e?.target?.value);
