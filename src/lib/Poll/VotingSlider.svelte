@@ -30,7 +30,9 @@
 
 	const onMouseDown = (e: MouseEvent) => {
 		const onMouseMove = (e: MouseEvent) => {
-			const container = (e.target as HTMLElement).closest(`#track-container-${id}`) as HTMLElement;
+			const container = (e.target as HTMLElement).closest(
+				`#track-container-${id}`
+			) as HTMLElement;
 			if (!container) return;
 
 			const rect = container.getBoundingClientRect();
@@ -75,14 +77,18 @@
 	<div
 		id={`track-container-${id}`}
 		style={`color: ${style}`}
-		class="{disabled ? 'disabled' : ''} relative w-full h-3 bg-purple-200 rounded-full"
+		class="{disabled
+			? 'disabled'
+			: ''} relative w-full h-3 bg-purple-200 rounded-full"
 	>
 		<!-- Active bar -->
 		<div
 			class="absolute top-0 left-0 h-full"
 			class:!dark:bg-gray-500={style === 'gray' || disabled}
 			class:!bg-gray-300={style === 'gray' || disabled}
-			style="width: {lineWidth}%; background-color: {true ? '#a78bfa' : '#BBBBBB'};"
+			style="width: {lineWidth}%; background-color: {true
+				? '#a78bfa'
+				: '#BBBBBB'};"
 		/>
 
 		{#each snapPoints as point, index}
@@ -136,26 +142,20 @@
 	</div>
 </div>
 
-{#if !hideClearButton}
-	<div class="flex justify-center w-full">
-		<Button
-			Class="!p-0 border-none text-sm text-red-600 !bg-transparent cursor-pointer hover:underline hover:bg-transparent"
-			buttonStyle="warning-light"
-			onClick={() => {
-				if (disabled) return;
-				lineWidth = 0;
-				score = null;
-				currentSnapPosition = null;
-				onSelection(null);
-			}}
-			{disabled}
-		>
-			{#if !disabled}
-				{$_(phase === 'prediction_bet' ? 'Clear probability' : 'Clear vote')}
-			{/if}
-		</Button>
-	</div>
-{/if}
+<div class="flex justify-center w-full">
+	<Button
+		Class="!p-0 border-none text-sm text-red-600 !bg-transparent cursor-pointer hover:underline hover:bg-transparent"
+		buttonStyle="warning-light"
+		onClick={() => {
+			if (disabled) return;
+			lineWidth = 0;
+			score = null;
+			currentSnapPosition = null;
+			onSelection(null);
+		}}
+		{disabled}
+	></Button>
+</div>
 
 <style>
 	.draggable {

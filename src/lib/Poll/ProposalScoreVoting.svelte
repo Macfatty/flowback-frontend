@@ -268,6 +268,16 @@
 											{$_('Clear vote')}
 										</button>
 									</div>
+								{:else if phase === 'delegate_vote' && $groupUserStore?.delegate_pool_id !== null}
+									<button
+										class="mt-2 flex items-center gap-1.5 text-sm text-red-400 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors cursor-pointer"
+										on:click={() => {
+											handleSliderClick(null, proposal);
+										}}
+									>
+										<Fa icon={faXmark} size="sm" />
+										{$_('Clear vote')}
+									</button>
 								{/if}
 							{/if}
 						</Proposal>
