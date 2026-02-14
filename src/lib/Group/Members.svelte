@@ -237,7 +237,7 @@
 					<div class="flex flex-row items-center gap-1 pt-2">
 						<span>{$_('Sort')}: </span>
 						<Select
-							classInner="p-1 font-semibold"
+							classInner="p-1"
 							labels={[$_('A - Z'), $_('Z - A')]}
 							values={['a-z', 'z-a']}
 							bind:value={sortOrder}
@@ -246,7 +246,7 @@
 
 						<span class="pl-4">{$_('Role')}: </span>
 						<Select
-							classInner="p-1 font-semibold"
+							classInner="p-1"
 							labels={[$_('All'), $_('Admin'), $_('Member')]}
 							values={['All', 'Admin', 'Member']}
 							bind:value={adminFilter}
@@ -256,7 +256,7 @@
 
 						<span class="pl-4">{$_('Role')}: </span>
 						<Select
-							classInner="p-1 font-semibold"
+							classInner="p-1"
 							labels={[
 								'All',
 								...permissions.map((permission) => permission.role_name)
@@ -284,7 +284,7 @@
 			<div
 				class="w-full flex-col gap-6 shadow rounded bg-white p-2 dark:bg-darkobject"
 			>
-				<span class="font-semibold text-sm text-gray-700 dark:text-darkmodeText"
+				<span class="text-sm text-gray-700 dark:text-darkmodeText"
 					>{$_('Users requesting invite')}</span
 				>
 				{#each usersAskingForInvite as user}
@@ -334,7 +334,7 @@
 			<div
 				class="w-full p-4 flex flex-col gap-6 bg-white rounded shadow dark:bg-darkobject"
 			>
-				<span class="font-semibold text-sm text-gray-700 dark:text-darkmodeText"
+				<span class="text-sm text-gray-700 dark:text-darkmodeText"
 					>{$_('All members')}</span
 				>
 				{#each searchedUsers as user}
