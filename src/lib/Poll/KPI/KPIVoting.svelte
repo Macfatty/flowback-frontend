@@ -152,12 +152,13 @@
 								<button
 									class="flex-1 h-10 bg-purple-100 dark:bg-purple-900/40 rounded-lg overflow-hidden relative group-hover:bg-purple-200/80 dark:group-hover:bg-purple-900/60 transition-colors duration-150"
 									onclick={(e) => {
+										// Calculate click position as percentage of button width
 										const rect = e.currentTarget.getBoundingClientRect();
 										const xWithinElement = e.clientX - rect.left;
-										const fraction = Math.floor(
-											(xWithinElement / rect.width) * 100
-										);
-										editProposalKPI(kpi, fraction, i);
+										const fraction = (xWithinElement / rect.width) * 100;
+
+										const weight = Math.round(fraction / 5) * 5; // Round to nearest 5%
+										editProposalKPI(kpi, weight, i);
 									}}
 								>
 									<div
