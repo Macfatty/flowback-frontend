@@ -34,7 +34,7 @@
 </script>
 
 <header
-	class="md:sticky md:top-0 fixed bottom-0 w-full z-50 md:flex justify-between flex-row items-center p-1.5 px-3 bg-white select-none dark:bg-darkobject shadow-[0_1px_5px_rgba(0,0,0,0.15)] md:shadow"
+	class="md:sticky md:top-0 fixed bottom-0 w-full z-[60] md:flex justify-between flex-row items-center p-1.5 px-3 bg-white select-none dark:bg-darkobject shadow-[0_1px_5px_rgba(0,0,0,0.15)] md:shadow"
 	id="header"
 >
 	<a
