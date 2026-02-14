@@ -16,6 +16,7 @@
 	import { predictionStatementsStore } from './PredictionMarket/interfaces';
 	import { idfy } from '$lib/Generic/GenericFunctions2';
 	import { page } from '$app/stores';
+	import { env } from '$env/dynamic/public';
 
 	export let proposal: proposal,
 		Class = '',
@@ -127,7 +128,7 @@
 				).length}
 			</button>
 
-			{#if phase !== 'proposal'}
+			{#if phase !== 'proposal' && env.PUBLIC_POLL_VERSION === '1'}
 				<button
 					class="flex items-center"
 					on:click={() => {
