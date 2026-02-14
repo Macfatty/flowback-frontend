@@ -22,6 +22,7 @@
 	import Fa from 'svelte-fa';
 	import { onThumbnailError } from '$lib/Generic/GenericFunctions';
 	import { chatOpenStore } from '$lib/Chat/functions';
+	import { isMobile } from '$lib/utils/isMobile';
 	import { onNavigate } from '$app/navigation';
 
 	let sideHeaderOpen = false,
@@ -33,13 +34,13 @@
 </script>
 
 <header
-	class="sticky top-0 z-50 md:flex justify-between flex-row items-center p-1.5 px-3 bg-white shadow select-none dark:bg-darkobject"
+	class="md:sticky md:top-0 fixed bottom-0 w-full z-[60] md:flex justify-between flex-row items-center p-1.5 px-3 bg-white select-none dark:bg-darkobject shadow-[0_1px_5px_rgba(0,0,0,0.15)] md:shadow"
 	id="header"
 >
 	<a
 		href={env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE' ? '/groups/1' : '/home'}
 		on:click={() => chatOpenStore.set(false)}
-		class="md:w-auto flex justify-center md:flex-none"
+		class="hidden md:block md:w-auto md:flex-none"
 		><img
 			src={env.PUBLIC_LOGO === 'REFORUM' ? Reforum : Logo}
 			class="w-32 cursor-pointer"
@@ -48,7 +49,7 @@
 	>
 	<div class="!flex justify-between md:w-[80%]">
 		<nav
-			class="flex items-baseline p-6 justify-evenly md:justify-center md:gap-[10%] w-[70%]"
+			class="flex items-center p-6 justify-center gap-[10%] w-full md:w-[75%]"
 		>
 			{#if !(env.PUBLIC_ONE_GROUP_FLOWBACK === 'TRUE')}
 				<HeaderIcon
@@ -114,47 +115,66 @@
 				<HeaderIcon
 					disableTextOnHover
 					icon={faPeopleArrows}
-					text={'Delegations'}
+					text={'Delegation'}
 					href="delegations"
 					bind:selectedHref
 				/>
 			{/if}
+
+			{#if $isMobile}
+				<div class="flex flex-shrink-0">
+					<button
+						id="side-header"
+						on:click={() => (sideHeaderOpen = !sideHeaderOpen)}
+					>
+						<img
+							src={$userStore?.profile_image
+								? `${env.PUBLIC_API_URL}${$userStore?.profile_image}`
+								: DefaultPFP}
+							class={`w-8 rounded-full cursor-pointer ${sideHeaderOpen && 'ring-blue-500'}`}
+							alt="default pfp"
+							on:error={(e) => onThumbnailError(e, DefaultPFP)}
+						/>
+					</button>
+				</div>
+			{/if}
 		</nav>
-		<div class="flex gap-4 items-center float-right hover:bg-grey-800">
-			<div class="mr-5 flex gap-4 items-center">
+
+		{#if !$isMobile}
+			<div class="flex gap-4 items-center float-right hover:bg-grey-800">
+				<div class="mr-5 flex gap-4 items-center">
+					<button
+						class="dark:text-darkmodeText cursor-pointer pl-2"
+						title={`Enable ${$darkModeStore ? 'lightmode' : 'darkmode'}`}
+						on:click={toggleDarkMode}
+					>
+						{#if $darkModeStore}
+							<Sun />
+						{:else}
+							<Fa icon={faMoon} size={'1.3x'} />
+						{/if}
+					</button>
+					<Notifications />
+				</div>
 				<button
-					class="dark:text-darkmodeText cursor-pointer pl-2"
-					title={`Enable ${$darkModeStore ? 'lightmode' : 'darkmode'}`}
-					on:click={toggleDarkMode}
+					id="side-header"
+					on:click={() => (sideHeaderOpen = !sideHeaderOpen)}
 				>
-					{#if $darkModeStore}
-						<Sun />
-					{:else}
-						<Fa icon={faMoon} size={'1.3x'} />
-					{/if}
+					<img
+						src={$userStore?.profile_image
+							? `${env.PUBLIC_API_URL}${$userStore?.profile_image}`
+							: DefaultPFP}
+						class={`w-8 rounded-full cursor-pointer ${sideHeaderOpen && 'ring-blue-500 ring-4'}`}
+						alt="default pfp"
+						on:error={(e) => onThumbnailError(e, DefaultPFP)}
+					/>
 				</button>
-				<Notifications />
 			</div>
-			<button
-				id="side-header"
-				class="shrink-0"
-				on:click={() => (sideHeaderOpen = !sideHeaderOpen)}
-			>
-				<img
-					src={$userStore?.profile_image
-						? `${env.PUBLIC_API_URL}${$userStore?.profile_image}`
-						: DefaultPFP}
-					class={`w-8 h-8 rounded-full cursor-pointer ${sideHeaderOpen && 'ring-blue-500 ring-4'}`}
-					alt="default pfp"
-					on:error={(e) => onThumbnailError(e, DefaultPFP)}
-				/>
-			</button>
-		</div>
+		{/if}
 	</div>
 	<SideHeader bind:sideHeaderOpen />
 </header>
 
-<!-- Kind of an ugly fix for mobile phones. TODO: More elegant solution  -->
 <style>
 	header:nth-child(1) {
 		align-self: stretch;
@@ -165,10 +185,9 @@
 		padding: 0rem 1rem;
 	}
 
-	@media only screen and (max-width: 500px) {
-		header > div:last-child {
-			float: none;
-			display: block;
+	@media only screen and (max-width: 768px) {
+		header {
+			padding: 0.5rem 1.5rem;
 		}
 	}
 </style>

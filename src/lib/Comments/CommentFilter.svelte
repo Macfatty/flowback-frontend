@@ -41,7 +41,9 @@
 		/>
 	</div>
 
-	<div class="w-auto max-w-xs flex flex-row items-center dark:text-darkmodeText">
+	<div
+		class="w-auto max-w-xs flex flex-row items-center dark:text-darkmodeText"
+	>
 		<p class="pr-2">{$_('Sort')}:</p>
 		<Select
 			innerLabel={null}
@@ -55,8 +57,14 @@
 				null
 			]}
 			bind:value={sortBy}
-			labels={[$_('Recent'), $_('Oldest'), $_('Top'), $_('Controversial'), $_('Hot')]}
-			Class="border-0 font-semibold"
+			labels={[
+				$_('Recent'),
+				$_('Oldest'),
+				$_('Top'),
+				$_('Controversial'),
+				$_('Hot')
+			]}
+			Class="border-0"
 		/>
 
 		{#if proposals?.length > 0}
@@ -81,7 +89,9 @@
 						bind:group={selectedProposals}
 					/>
 					<!-- on:input={filterByTags} -->
-					<label class="text-left" for={`proposal-${proposal.id}`}>{proposal.title}</label>
+					<label class="text-left" for={`proposal-${proposal.id}`}
+						>{proposal.title}</label
+					>
 				</div>
 			{/each}
 		</div>

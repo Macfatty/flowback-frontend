@@ -164,7 +164,7 @@
 				<GroupSidebarButton
 					action={() => goto(`/delegations?groupId=${$page.params.groupId}`)}
 					isSelected={selectedPage === 'delegation'}
-					text="Delegation"
+					text="Group Delegation"
 					faIcon={faPeopleArrows}
 				/>
 

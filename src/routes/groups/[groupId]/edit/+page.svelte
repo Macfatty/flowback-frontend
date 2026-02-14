@@ -17,6 +17,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
 	import { groupUserStore } from '$lib/Group/interface';
+	import { env } from '$env/dynamic/public';
 
 	let selectedPage: 'group' | 'areas' | 'perms' | 'blockchain' | 'kpis' =
 			'group',
@@ -61,16 +62,19 @@
 				>
 					<Fa icon={faCog} class="w-5 h-5" />{$_('Edit Group')}
 				</button>
-				<button
-					on:click={() => (selectedPage = 'areas')}
-					class={`${optionsDesign}`}
-					class:bg-gray-100={selectedPage === 'areas'}
-					class:dark:bg-gray-700={selectedPage === 'areas'}
-					class:border-l-2={selectedPage === 'areas'}
-					class:border-primary={selectedPage === 'areas'}
-				>
-					<Fa icon={faTags} class="w-5 h-5" />{$_('Areas')}
-				</button>
+
+				{#if env.PUBLIC_POLL_VERSION === '1'}
+					<button
+						on:click={() => (selectedPage = 'areas')}
+						class={`${optionsDesign}`}
+						class:bg-gray-100={selectedPage === 'areas'}
+						class:dark:bg-gray-700={selectedPage === 'areas'}
+						class:border-l-2={selectedPage === 'areas'}
+						class:border-primary={selectedPage === 'areas'}
+					>
+						<Fa icon={faTags} class="w-5 h-5" />{$_('Areas')}
+					</button>
+				{/if}
 				<button
 					on:click={() => (selectedPage = 'perms')}
 					class={`${optionsDesign}`}

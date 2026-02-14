@@ -89,6 +89,7 @@
 
 					<div class="flex flex-col gap-1.5">
 						{#each group.bets as bet, i}
+							<!-- TODO: Only one const needed -->
 							{@const betValue = Number(bet.combined_bet) || 0}
 							{@const barWidth = (betValue / maxBet) * 100}
 							<div

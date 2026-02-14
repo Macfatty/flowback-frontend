@@ -10,6 +10,7 @@
 	import { darkModeStore, getIconFilter } from '$lib/Generic/DarkMode';
 	import { chatOpenStore } from '$lib/Chat/functions';
 	import { goto } from '$app/navigation';
+	import { isMobile } from '$lib/utils/isMobile'
 
 	export let icon: IconDefinition | string = faCircle,
 		icons: (IconDefinition | string)[] = [faCircle],
@@ -73,11 +74,11 @@
 					{:else}
 						<Fa
 							{icon}
-							{size}
+							size={$isMobile ? '1.5x' : '1x'}
 							class={`inline ${selectedPage ? 'lightgray' : selectedPage ? '#015BC0' : 'black'}`}
 						/>
 					{/if}
-					<div class={`${textClass} text-xs mt-2 dark:text-darkmodeText`}>
+					<div class={`${textClass} text-xs mt-2 dark:text-darkmodeText hidden md:block`}>
 						{$_(text)}
 					</div>
 				{/each}
@@ -144,6 +145,13 @@
 		width: 4rem;
 		height: 2px;
 		background-color: var(--primary);
+	}
+
+	@media (max-width: 768px) {
+		.active-icon::after {
+			top: -2.2rem;
+			bottom: auto;
+		}
 	}
 
 	/* Add smooth transition for color changes */

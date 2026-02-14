@@ -237,7 +237,7 @@
 					<div class="flex flex-row items-center gap-1 pt-2">
 						<span>{$_('Sort')}: </span>
 						<Select
-							classInner="p-1 font-semibold"
+							classInner="p-1"
 							labels={[$_('A - Z'), $_('Z - A')]}
 							values={['a-z', 'z-a']}
 							bind:value={sortOrder}
@@ -246,7 +246,7 @@
 
 						<span class="pl-4">{$_('Role')}: </span>
 						<Select
-							classInner="p-1 font-semibold"
+							classInner="p-1"
 							labels={[$_('All'), $_('Admin'), $_('Member')]}
 							values={['All', 'Admin', 'Member']}
 							bind:value={adminFilter}
@@ -256,7 +256,7 @@
 
 						<span class="pl-4">{$_('Role')}: </span>
 						<Select
-							classInner="p-1 font-semibold"
+							classInner="p-1"
 							labels={[
 								'All',
 								...permissions.map((permission) => permission.role_name)
@@ -284,32 +284,33 @@
 			<div
 				class="w-full flex-col gap-6 shadow rounded bg-white p-2 dark:bg-darkobject"
 			>
-				<span class="font-semibold text-sm text-gray-700 dark:text-darkmodeText"
+				<span class="text-sm text-gray-700 dark:text-darkmodeText"
 					>{$_('Users requesting invite')}</span
 				>
 				{#each usersAskingForInvite as user}
 					{#if user.external === true}
 						<div
-							class="text-black pt-4 flex align-middle outline-gray-200 w-full dark:text-darkmodeText dark:bg-darkobject"
+							class="text-black pt-4 flex align-middle justify-between outline-gray-200 w-full dark:text-darkmodeText dark:bg-darkobject"
 						>
 							<ProfilePicture
-								Class="w-full"
 								displayName
 								username={user.username}
 								profilePicture={user.profile_image}
 							/>
-							<Button
-								Class="mr-4 px-2"
-								buttonStyle="primary-light"
-								onClick={() => acceptInviteUser(user.user)}
-								>{$_('Accept')}</Button
-							>
-							<Button
-								Class="px-2"
-								buttonStyle="warning-light"
-								onClick={() => denyInviteUser(user.user)}
-								>{$_('Decline')}</Button
-							>
+							<div>
+								<Button
+									Class="mr-2 px-2"
+									buttonStyle="primary-light"
+									onClick={() => acceptInviteUser(user.user)}
+									>{$_('Accept')}</Button
+								>
+								<Button
+									Class="px-2 mr-1"
+									buttonStyle="warning-light"
+									onClick={() => denyInviteUser(user.user)}
+									>{$_('Decline')}</Button
+								>
+							</div>
 						</div>
 					{/if}
 				{/each}
@@ -334,7 +335,7 @@
 			<div
 				class="w-full p-4 flex flex-col gap-6 bg-white rounded shadow dark:bg-darkobject"
 			>
-				<span class="font-semibold text-sm text-gray-700 dark:text-darkmodeText"
+				<span class="text-sm text-gray-700 dark:text-darkmodeText"
 					>{$_('All members')}</span
 				>
 				{#each searchedUsers as user}

@@ -32,6 +32,7 @@
 	import type { Permissions } from '$lib/Group/Permissions/interface';
 	import DeletePostModal from './DeletePostModal.svelte';
 	import PostThumbnail from '$lib/Generic/PostThumbnail.svelte';
+	import { env } from '$env/dynamic/public';
 
 	let { poll }: { poll: poll } = $props();
 
@@ -207,7 +208,7 @@
 			{/if}
 
 			<!-- Poll tag -->
-			{#if poll?.poll_type === 4 && tag.name !== ''}
+			{#if poll?.poll_type === 4 && tag.name !== '' && env.PUBLIC_POLL_VERSION === '1'}
 				<Tag Class="cursor-default" bind:tag />
 			{/if}
 
