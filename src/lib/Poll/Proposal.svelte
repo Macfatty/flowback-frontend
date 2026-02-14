@@ -44,7 +44,7 @@
 		commentFilterProposalId = proposal.id;
 		// Scroll to the comments section
 		const comments = document.getElementById('comments');
-		
+
 		scrollTo({
 			top: comments?.offsetTop,
 			behavior: 'smooth'
@@ -58,8 +58,8 @@
 </script>
 
 <div
-	class={`dark:bg-darkobject bg-white w-full py-3 px-3 transition-all
-	 dark:border-gray-500 ${Class}`}
+	class={`dark:bg-darkobject bg-white w-full py-3 px-4 transition-all rounded-lg
+	 border border-gray-200 dark:border-gray-700 ${Class}`}
 	class:!bg-blue-100={selectedProposal === proposal && !$darkModeStore}
 	class:!bg-slate-700={selectedProposal === proposal && $darkModeStore}
 	class:border-l-2={selectedProposal === proposal}
@@ -108,7 +108,9 @@
 		{proposal.description}
 	</p>
 
-	<slot />
+	<div class="mt-2 mb-1">
+		<slot />
+	</div>
 
 	<div class="flex justify-between w-full items-center">
 		<div class="flex justify-between gap-10">
@@ -132,9 +134,15 @@
 						selectedProposal = proposal;
 					}}
 				>
-					<Fa icon={faMagnifyingGlassChart} class="mr-4 text-primary" size="md" />
+					<Fa
+						icon={faMagnifyingGlassChart}
+						class="mr-4 text-primary"
+						size="md"
+					/>
 					{$predictionStatementsStore.filter((statement) =>
-						statement.segments.find((segment) => segment.proposal_id === proposal.id)
+						statement.segments.find(
+							(segment) => segment.proposal_id === proposal.id
+						)
 					).length}
 				</button>
 			{/if}
@@ -146,7 +154,7 @@
 			}}
 			class="hover:underline cursor-pointer flex gap-2 items-baseline text-sm text-gray-700 dark:text-darkmodeText"
 		>
-			{$_('See More')}
+			{$_('See more')}
 			<Fa icon={faChevronRight} size="xs" />
 		</button>
 	</div>

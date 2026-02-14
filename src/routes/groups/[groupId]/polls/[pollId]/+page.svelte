@@ -184,7 +184,7 @@
 				>
 					<div slot="left" class="h-full relative flex flex-col">
 						<span
-							class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
+							class="text-xl font-semibold mb-4 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="flex-grow overflow-y-auto mb-4">
@@ -256,7 +256,7 @@
 				>
 					<div slot="left" class="relative h-full flex flex-col">
 						<span
-							class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
+							class="text-xl font-semibold mb-4 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-full overflow-y-auto mb-5">
@@ -338,7 +338,7 @@
 				>
 					<div slot="left" class="h-full">
 						<span
-							class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
+							class="text-xl font-semibold mb-4 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-[90%] overflow-y-auto">
@@ -390,7 +390,7 @@
 				>
 					<div slot="left" class="h-full">
 						<span
-							class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
+							class="text-xl font-semibold mb-4 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div class="max-h-[90%] overflow-y-auto">
@@ -448,7 +448,7 @@
 				>
 					<div slot="left" class="h-full" id="proposals-section">
 						<span
-							class="text-xl font-semibold mb-4 ml-3 text-primary dark:text-secondary"
+							class="text-xl font-semibold mb-4 text-primary dark:text-secondary"
 							>{$_('Proposals')} ({proposals?.length})</span
 						>
 						<div>

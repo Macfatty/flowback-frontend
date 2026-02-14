@@ -13,7 +13,8 @@
 		maxScore = 5,
 		dragLinePosition: number | null = null,
 		currentSnapPosition: number | null = null,
-		id = '';
+		id = '',
+		hideClearButton = false;
 
 	const snapPoints = Array.from({ length: maxScore + 1 }, (_, i) => i); // [0,1,2,3,4,5]
 
@@ -135,24 +136,26 @@
 	</div>
 </div>
 
-<div class="flex justify-center w-full">
-	<Button
-		Class="!p-0 border-none text-sm text-red-600 !bg-transparent cursor-pointer hover:underline hover:bg-transparent"
-		buttonStyle="warning-light"
-		onClick={() => {
-			if (disabled) return;
-			lineWidth = 0;
-			score = null;
-			currentSnapPosition = null;
-			onSelection(null);
-		}}
-		{disabled}
-	>
-		{#if !disabled}
-			{$_(phase === 'prediction_bet' ? 'Clear probability' : 'Clear vote')}
-		{/if}
-	</Button>
-</div>
+{#if !hideClearButton}
+	<div class="flex justify-center w-full">
+		<Button
+			Class="!p-0 border-none text-sm text-red-600 !bg-transparent cursor-pointer hover:underline hover:bg-transparent"
+			buttonStyle="warning-light"
+			onClick={() => {
+				if (disabled) return;
+				lineWidth = 0;
+				score = null;
+				currentSnapPosition = null;
+				onSelection(null);
+			}}
+			{disabled}
+		>
+			{#if !disabled}
+				{$_(phase === 'prediction_bet' ? 'Clear probability' : 'Clear vote')}
+			{/if}
+		</Button>
+	</div>
+{/if}
 
 <style>
 	.draggable {
