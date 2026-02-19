@@ -140,8 +140,11 @@
 			<RadioButtons2
 				name="assignee"
 				label="Assignee"
-				labels={['Anyone', ...users.map((u) => u.username)]}
-				values={[0, ...users.map((u) => u.id)]}
+				labels={[
+					'Anyone',
+					...users.filter((u) => u.is_active).map((u) => u.username)
+				]}
+				values={[0, ...users.filter((u) => u.is_active).map((u) => u.id)]}
 				bind:value={assigneeId}
 				onChange={(v: String) => (assigneeId = Number(v))}
 			/>
