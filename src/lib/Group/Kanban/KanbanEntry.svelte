@@ -19,7 +19,7 @@
 	import type { kanbanEdited, kanban } from './Kanban';
 	import type { WorkGroup } from '../WorkingGroups/interface';
 	import { env } from '$env/dynamic/public';
-	import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+	import { faArrowLeft, faArrowRight, faCalendar } from '@fortawesome/free-solid-svg-icons';
 	import Select from '$lib/Generic/Select.svelte';
 	import { ErrorHandlerStore } from '$lib/Generic/ErrorHandlerStore';
 	import FileUploads from '$lib/Generic/File/FileUploads.svelte';
@@ -35,6 +35,7 @@
 	let users: GroupUser[] = [];
 
 	const lanes = ['', 'Backlog', 'To do', 'In progress', 'Evaluation', 'Done'];
+	const laneColors = ['', '#9CA3AF', '#60A5FA', '#A78BFA', '#FBBF24', '#34D399'];
 
 	const priorityBorderColors: Record<number, string> = {
 		1: '#9CA3AF',
@@ -384,7 +385,7 @@
 	<Modal
 		bind:open={openModal}
 		id="kanban-entry-modal"
-		Class="cursor-default min-w-[400px] max-w-[500px] z-50"
+		Class="cursor-default min-w-[400px] max-w-[560px] z-50"
 		buttons={isEditing
 			? [
 					{ label: 'Update', type: 'primary', onClick: updateKanbanEntry },
@@ -474,34 +475,65 @@
 						<FileUploads bind:files={images} bind:toRemove disableCropping />
 					</div>
 				</div>
-				<!-- If not editing, so normal display -->
+				<!-- View mode -->
 			{:else}
-				<div class="text-center">
-					<h2 class="pb-1 font-semibold text-xl w-full">{kanban.title}</h2>
-				</div>
-				<div class="flex mt-4 w-full">
-					<div class="flex flex-col mr-4 text-left gap-1 w-full">
-						{#if kanban.origin_type === 'group'}
-							<p class="font-bold">{$_('Group')}</p>
-							<p class="font-bold">{$_('Work Group')}</p>
-						{/if}
-						<p class="font-bold">{$_('End Date')}</p>
-						<p class="font-bold">{$_('Priority')}</p>
-						<p class="font-bold">{$_('Assignee')}</p>
-						<p class="font-bold">{$_('Attachments')}</p>
-					</div>
-
-					<div class="flex flex-col text-right gap-1 w-full">
-						<button
-							class="text-right"
-							on:click={() => goto(`/groups/${kanban?.origin_id}`)}
-							>{$groupStore.find((g) => g.id === kanban.origin_id)
-								?.name}</button
+				<!-- Colored header strip -->
+				<div
+					class="-mx-6 -mt-6 mb-5 px-6 pt-5 pb-4"
+					style="border-top: 3px solid {laneColors[kanban.lane]}"
+				>
+					<div class="flex items-center gap-2 mb-2.5 flex-wrap">
+						<span
+							class="text-xs font-semibold px-2.5 py-1 rounded-full text-white"
+							style="background-color: {laneColors[kanban.lane]}"
 						>
-						<p>{kanban?.work_group?.name ?? 'No Work Group'}</p>
+							{lanes[kanban.lane]}
+						</span>
+						{#if kanban.priority}
+							<span
+								class="text-xs font-semibold px-2.5 py-1 rounded-full border flex items-center gap-1"
+								style="color: {priorityBorderColors[kanban.priority]}; border-color: {priorityBorderColors[kanban.priority]}"
+							>
+								<PriorityIcons priority={kanban.priority} />
+								{priorityText[priorities.length - kanban.priority]}
+							</span>
+						{/if}
+					</div>
+					<h2
+						class="text-xl font-bold text-gray-900 dark:text-darkmodeText text-left leading-snug pr-8"
+					>
+						{kanban.title}
+					</h2>
+				</div>
 
-						<p>
-							{#if kanban?.end_date}
+				<!-- Description -->
+				{#if kanban.description}
+					<div class="mb-4 text-left">
+						<p
+							class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5"
+						>
+							{$_('Description')}
+						</p>
+						<div
+							id={`kanban-${kanban.id}-description`}
+							class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 max-h-[20vh] overflow-y-auto"
+						>
+							{kanban.description}
+						</div>
+					</div>
+				{/if}
+
+				<!-- Detail cards -->
+				<div class="grid grid-cols-2 gap-2.5 mb-4">
+					<div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-left">
+						<p
+							class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1 flex items-center gap-1"
+						>
+							<Fa icon={faCalendar} size="xs" />
+							{$_('Due Date')}
+						</p>
+						{#if kanban.end_date}
+							<p class="text-sm font-medium text-gray-800 dark:text-darkmodeText">
 								{new Intl.DateTimeFormat(navigator?.language, {
 									weekday: 'short',
 									day: '2-digit',
@@ -510,44 +542,89 @@
 									.format(new Date(kanban.end_date))
 									.replace(/\b\w/g, (char) => char.toLowerCase())
 									.replace(/^\w/, (c) => c.toUpperCase())}
-							{:else}
-								{$_('No end date set')}
-							{/if}
+							</p>
+						{:else}
+							<p class="text-sm text-gray-400 italic">{$_('Not set')}</p>
+						{/if}
+					</div>
+
+					<div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-left">
+						<p
+							class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1"
+						>
+							{$_('Assignee')}
 						</p>
-						<div class="flex justify-end items-center gap-2 w-full">
-							{#if kanban.priority}
-								<PriorityIcons Class="ruby" priority={kanban?.priority} />
-							{/if}
-							<p>
-								{kanbanEdited.priority != null
-									? priorityText[priorities.length - kanbanEdited.priority]
-									: $_('No priority')}
+						{#if kanban.assignee}
+							<div class="flex items-center gap-1.5 min-w-0">
+								<ProfilePicture
+									username={kanban.assignee.username}
+									profilePicture={kanban.assignee.profile_image}
+									size={1}
+								/>
+								<p
+									class="text-sm font-medium text-gray-800 dark:text-darkmodeText truncate"
+								>
+									{kanban.assignee.username}
+								</p>
+							</div>
+						{:else}
+							<p class="text-sm text-gray-400 italic">{$_('Unassigned')}</p>
+						{/if}
+					</div>
+
+					{#if kanban.origin_type === 'group'}
+						<div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-left">
+							<p
+								class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1"
+							>
+								{$_('Group')}
+							</p>
+							<button
+								class="text-sm font-medium text-primary hover:underline text-left truncate w-full"
+								on:click={() => goto(`/groups/${kanban.origin_id}`)}
+							>
+								{$groupStore.find((g) => g.id === kanban.origin_id)?.name}
+							</button>
+						</div>
+
+						<div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-left">
+							<p
+								class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1"
+							>
+								{$_('Work Group')}
+							</p>
+							<p class="text-sm font-medium text-gray-800 dark:text-darkmodeText">
+								{kanban.work_group?.name ?? $_('None')}
 							</p>
 						</div>
-						<p>{kanban?.assignee?.username || $_('Unassigned')}</p>
-						{#if kanbanEdited.attachments && kanbanEdited.attachments.length > 0}
+					{/if}
+				</div>
+
+				<!-- Attachments -->
+				{#if kanbanEdited.attachments && kanbanEdited.attachments.length > 0}
+					<div class="text-left">
+						<p
+							class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2"
+						>
+							{$_('Attachments')}
+						</p>
+						<div class="flex flex-wrap gap-2">
 							{#each kanbanEdited.attachments as file}
-								<li>
+								<a
+									href={`${env.PUBLIC_API_URL}/media/${file.file}`}
+									target="_blank"
+									rel="noopener"
+								>
 									<img
 										src={`${env.PUBLIC_API_URL}/media/${file.file}`}
 										alt={file.file_name}
-										class="w-10 h-10"
+										class="w-16 h-16 rounded-lg object-cover border border-gray-200 dark:border-gray-700 hover:opacity-90 transition-opacity"
 									/>
-								</li>
+								</a>
 							{/each}
-						{:else}
-							<p>{$_('No attachments available')}</p>
-						{/if}
+						</div>
 					</div>
-				</div>
-				<div class="text-left mt-1 w-full">
-					<p class="font-bold">{$_('Description')}</p>
-					<p
-						class="max-h-[25vh] overflow-y-auto w-full id={`kanban-${kanban.id}-description`} whitespace-pre-wrap"
-					>
-						{kanban?.description}
-					</p>
-				</div>
+				{/if}
 			{/if}
 		</div>
 	</Modal>
