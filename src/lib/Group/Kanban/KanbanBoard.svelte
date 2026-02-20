@@ -12,6 +12,7 @@
 	import { type kanban } from './Kanban';
 	import AdvancedFiltering from '$lib/Generic/AdvancedFiltering.svelte';
 	import TextInput from '$lib/Generic/TextInput.svelte';
+	import { isMobile } from '$lib/utils/isMobile';
 
 	const tags = ['', 'Backlog', 'To do', 'Current', 'Evaluation', 'Done'];
 	const laneColors = [
@@ -160,27 +161,27 @@
 	</div>
 
 	<!-- Mobile: lane tab bar -->
-	<div class="flex gap-1.5 overflow-x-auto pb-2 md:hidden">
-		{#each tags as _tag, i}
-			{#if i !== 0}
-				{@const count = kanbanEntries.filter((e) => e?.lane === i).length}
-				<button
-					class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors flex-shrink-0
+	{#if $isMobile}
+		<div class="flex gap-1.5 overflow-x-auto pb-2">
+			{#each tags as _tag, i}
+				{#if i !== 0}
+					{@const count = kanbanEntries.filter((e) => e?.lane === i).length}
+					<button
+						class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors flex-shrink-0
 						{activeLane === i
-						? 'text-white shadow-sm'
-						: 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}"
-					style={activeLane === i ? `background-color: ${laneColors[i]}` : ''}
-					onclick={() => (activeLane = i)}
-				>
-					{$_(_tag)}
-					<span class="text-xs opacity-75 font-normal">{count}</span>
-				</button>
-			{/if}
-		{/each}
-	</div>
+							? 'text-white shadow-sm'
+							: 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}"
+						style={activeLane === i ? `background-color: ${laneColors[i]}` : ''}
+						onclick={() => (activeLane = i)}
+					>
+						{$_(_tag)}
+						<span class="text-xs opacity-75 font-normal">{count}</span>
+					</button>
+				{/if}
+			{/each}
+		</div>
 
-	<!-- Mobile: single active lane -->
-	<div class="md:hidden">
+		<!-- Mobile: single active lane -->
 		{#if true}
 			{@const count = kanbanEntries.filter(
 				(e) => e?.lane === activeLane
@@ -240,8 +241,7 @@
 				</div>
 			</div>
 		{/if}
-	</div>
-
+	{/if}
 	<!-- Desktop: all lanes side by side -->
 	<div class="hidden md:flex overflow-x-auto py-3 gap-2">
 		{#each tags as _tag, i}
