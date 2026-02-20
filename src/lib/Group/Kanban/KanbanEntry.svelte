@@ -353,7 +353,7 @@
 		class="flex justify-between items-center mt-2 pt-2 border-t border-gray-100 dark:border-gray-700"
 	>
 		<button
-			class="p-1.5 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+			class="p-2 md:p-1.5 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
 			disabled={kanban.lane <= 1}
 			on:click={(event) => {
 				event.stopPropagation();
@@ -366,7 +366,7 @@
 		</button>
 
 		<button
-			class="p-1.5 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+			class="p-2 md:p-1.5 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
 			disabled={kanban.lane >= lanes.length - 1}
 			on:click={(event) => {
 				event.stopPropagation();
