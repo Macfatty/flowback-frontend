@@ -44,6 +44,8 @@
 		5: '#EF4444'
 	};
 
+	let isDragging = false;
+
 	let openModal = false,
 		selectedEntry: number,
 		priorities = [5, 4, 3, 2, 1],
@@ -260,9 +262,16 @@
 <svelte:window bind:innerWidth bind:outerWidth />
 
 <div
-	class="text-left bg-white dark:bg-darkobject dark:text-darkmodeText rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 dark:border-gray-700 border-l-4 p-3 cursor-pointer"
+	class="text-left bg-white dark:bg-darkobject dark:text-darkmodeText rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 dark:border-gray-700 border-l-4 p-3 cursor-grab active:cursor-grabbing {isDragging ? 'opacity-50' : ''}"
 	style="border-left-color: {priorityBorderColors[kanban.priority ?? 3]}"
 	in:fade
+	draggable="true"
+	on:dragstart={(e) => {
+		e.dataTransfer?.setData('text/plain', kanban.id.toString());
+		if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+		setTimeout(() => { isDragging = true; }, 0);
+	}}
+	on:dragend={() => { isDragging = false; }}
 	on:click={() => {
 		openModal = true;
 		selectedEntry = kanban.id;

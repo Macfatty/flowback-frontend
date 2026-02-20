@@ -27,7 +27,23 @@
 		groupIds: number[] = $state([]),
 		workgroupIds: number[] = $state([]),
 		userChecked = $state(false),
-		assigneeId: number = $state(0);
+		assigneeId: number = $state(0),
+		draggingOverLane: number | null = $state(null);
+
+	const updateKanbanLaneFromDrop = async (entryId: number, targetLane: number) => {
+		const entry = kanbanEntries.find((e) => e.id === entryId);
+		if (!entry || entry.lane === targetLane) return;
+
+		const { res } = await fetchRequest(
+			'POST',
+			entry.origin_type === 'group'
+				? `group/${entry.origin_id}/kanban/entry/update`
+				: 'user/kanban/entry/update',
+			{ lane: targetLane, entry_id: entryId }
+		);
+
+		if (res.ok) await getKanbanEntries();
+	};
 
 	const removeKanbanEntry = (id: number) => {
 		kanbanEntries.filter((entry) => entry.id !== id);
@@ -135,7 +151,21 @@
 				{@const count = kanbanEntries.filter((e) => e?.lane === i).length}
 				<div
 					id={`${_tag}-kanban-lane`}
-					class="min-w-[200px] w-[15vw] max-w-[260px] flex flex-col rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-darkbackground overflow-hidden shadow-sm"
+					class="min-w-[200px] w-[15vw] max-w-[260px] flex flex-col rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-darkbackground overflow-hidden shadow-sm {draggingOverLane === i
+						? 'ring-2 ring-blue-400 dark:ring-blue-500 bg-blue-50 dark:bg-blue-900/20'
+						: ''}"
+					ondragenter={(e) => { e.preventDefault(); draggingOverLane = i; }}
+					ondragleave={(e) => {
+						if (!(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node))
+							draggingOverLane = null;
+					}}
+					ondragover={(e) => { e.preventDefault(); }}
+					ondrop={async (e) => {
+						e.preventDefault();
+						draggingOverLane = null;
+						const entryId = Number(e.dataTransfer?.getData('text/plain'));
+						if (entryId) await updateKanbanLaneFromDrop(entryId, i);
+					}}
 				>
 					<!-- Lane header -->
 					<div
