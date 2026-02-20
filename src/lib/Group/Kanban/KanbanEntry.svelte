@@ -36,6 +36,14 @@
 
 	const lanes = ['', 'Backlog', 'To do', 'In progress', 'Evaluation', 'Done'];
 
+	const priorityBorderColors: Record<number, string> = {
+		1: '#9CA3AF',
+		2: '#6EE7B7',
+		3: '#60A5FA',
+		4: '#FB923C',
+		5: '#EF4444'
+	};
+
 	let openModal = false,
 		selectedEntry: number,
 		priorities = [5, 4, 3, 2, 1],
@@ -252,7 +260,8 @@
 <svelte:window bind:innerWidth bind:outerWidth />
 
 <div
-	class="text-left bg-gray-50 dark:bg-darkobject dark:text-darkmodeText rounded shadow hover:bg-gray-200 dark:hover:brightness-125 p-2 border"
+	class="text-left bg-white dark:bg-darkobject dark:text-darkmodeText rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 dark:border-gray-700 border-l-4 p-3 cursor-pointer"
+	style="border-left-color: {priorityBorderColors[kanban.priority ?? 3]}"
 	in:fade
 	on:click={() => {
 		openModal = true;
@@ -331,9 +340,12 @@
 			{$_('Work Group')}: {elipsis(kanban.work_group.name || '', 20)}
 		</div>
 	{/if}
-	<div class="flex justify-between mt-3">
+	<div
+		class="flex justify-between items-center mt-2 pt-2 border-t border-gray-100 dark:border-gray-700"
+	>
 		<button
-			class="cursor-pointer py-0.5 transition-all"
+			class="p-1.5 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+			disabled={kanban.lane <= 1}
 			on:click={(event) => {
 				event.stopPropagation();
 				if (kanban.lane > 1) {
@@ -341,11 +353,12 @@
 				}
 			}}
 		>
-			<Fa icon={faArrowLeft} size="md" />
+			<Fa icon={faArrowLeft} size="sm" />
 		</button>
 
 		<button
-			class="cursor-pointer hover:dark:text-darkmodeText hover:text-gray-400 py-0.5 transition-all"
+			class="p-1.5 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+			disabled={kanban.lane >= lanes.length - 1}
 			on:click={(event) => {
 				event.stopPropagation();
 				if (kanban.lane < lanes.length - 1) {
@@ -353,7 +366,7 @@
 				}
 			}}
 		>
-			<Fa icon={faArrowRight} size="md" />
+			<Fa icon={faArrowRight} size="sm" />
 		</button>
 	</div>
 </div>

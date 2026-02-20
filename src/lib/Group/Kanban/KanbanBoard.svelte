@@ -14,6 +14,7 @@
 	import TextInput from '$lib/Generic/TextInput.svelte';
 
 	const tags = ['', 'Backlog', 'To do', 'Current', 'Evaluation', 'Done'];
+	const laneColors = ['', '#9CA3AF', '#60A5FA', '#A78BFA', '#FBBF24', '#34D399'];
 
 	let { Class = '' } = $props();
 
@@ -128,27 +129,43 @@
 		label="Search"
 		bind:value={search}
 	/>
-	<div class="flex overflow-x-auto py-3">
+	<div class="flex overflow-x-auto py-3 gap-2">
 		{#each tags as _tag, i}
 			{#if i !== 0}
+				{@const count = kanbanEntries.filter((e) => e?.lane === i).length}
 				<div
 					id={`${_tag}-kanban-lane`}
-					class="bg-white w-[15vw] max-w-[250px] p-2 m-1 dark:bg-darkbackground dark:text-darkmodeText border-gray-200 rounded shadow flex flex-col"
+					class="min-w-[200px] w-[15vw] max-w-[260px] flex flex-col rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-darkbackground overflow-hidden shadow-sm"
 				>
-					<div class="flex justify-between pb-3">
-						<span class="xl:text-md md:text-sm p-1 font-medium">{$_(_tag)}</span
-						>
+					<!-- Lane header -->
+					<div
+						class="px-3 py-2.5 flex items-center justify-between"
+						style="border-top: 3px solid {laneColors[i]}"
+					>
+						<div class="flex items-center gap-2">
+							<span
+								class="font-semibold text-sm text-gray-700 dark:text-darkmodeText"
+								>{$_(_tag)}</span
+							>
+							<span
+								class="text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full px-2 py-0.5 font-medium"
+								>{count}</span
+							>
+						</div>
 						<button
 							id={`${_tag}-add`}
-							class="text-sm p-1"
+							class="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors text-gray-600 dark:text-gray-200"
 							onclick={() => {
 								open = true;
 								lane = i;
-							}}><Fa icon={faPlus} size="12px" /></button
+							}}><Fa icon={faPlus} size="10px" /></button
 						>
 					</div>
 
-					<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
+					<!-- Cards list -->
+					<ul
+						class="flex flex-col gap-2 p-2 flex-grow overflow-y-auto min-h-[80px]"
+					>
 						{#each kanbanEntries as kanban, j}
 							{#if kanban?.lane === i}
 								<KanbanEntry
@@ -161,17 +178,17 @@
 						{/each}
 					</ul>
 
-					<div class="flex justify-between pt-4">
+					<!-- Add task footer -->
+					<div class="px-2 pb-2">
 						<button
-							class="text-sm flex items-center gap-2"
+							class="w-full text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg py-1.5 flex items-center gap-1 transition-colors"
 							onclick={() => {
 								open = true;
 								lane = i;
 							}}
 						>
-							<span class="text-gray-600 dark:text-darkmodeText"
-								>+ {$_('Add a task')}</span
-							>
+							<span class="text-base leading-none">+</span>
+							<span>{$_('Add a task')}</span>
 						</button>
 					</div>
 				</div>
