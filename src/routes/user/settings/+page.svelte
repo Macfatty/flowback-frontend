@@ -104,7 +104,8 @@
 			post_type: 'poll',
 			post_title: '',
 			post_description: '',
-			title: ''
+			title: '',
+			admin_action: 'nothing'
 		};
 
 	const userUpdate = async () => {
@@ -290,7 +291,8 @@
 					<div>{$_('Frontend version')}: {version}</div>
 					<div>{$_('Backend version')}: {serverConfig.VERSION}</div>
 				{:else if selectedPage === 'reports'}
-					<span class="text-lg text-primary dark:text-secondary font-semibold mb-1"
+					<span
+						class="text-lg text-primary dark:text-secondary font-semibold mb-1"
 						>{$_('Reports')}</span
 					>
 					{#if reports?.length > 0}
@@ -371,6 +373,16 @@
 			</span>
 		</div>
 
+		<div
+			class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700"
+		>
+			<div
+				class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2"
+			>
+				{$_('Admin Action')}
+			</div>
+			{selectedRepport.admin_action}
+		</div>
 		<!-- Reported post details -->
 		{#await fetchRequest('GET', selectedRepport.post_type === 'poll' ? `home/polls?group_ids=${selectedRepport.group_id}&id=${selectedRepport.post_id}` : `group/thread/list?group_ids=${selectedRepport.group_id}&id=${selectedRepport.post_id}`) then { res, json }}
 			{#if res.ok}
