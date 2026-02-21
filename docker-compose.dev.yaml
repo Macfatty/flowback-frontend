@@ -1,3 +1,14 @@
 services:
-    flowback-frontend:
-        command: sh -c "npm run dev -- --host 0.0.0.0 --port $PORT"
+  flowback-frontend:
+    # Overrides the production command to start the development server
+    # This enables Hot Module Replacement (HMR) so the page updates as you code.
+    command: sh -c "npm run dev -- --host 0.0.0.0 --port ${PORT:-3000}"
+    
+    # Extra settings for the 'docker compose watch' feature
+    develop:
+      watch:
+        - path: ./package.json
+          action: rebuild
+        - path: ./src
+          target: /app/src
+          action: sync

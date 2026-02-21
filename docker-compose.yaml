@@ -1,38 +1,38 @@
 services:
-    flowback-frontend:
-        restart: unless-stopped
-        build: .
-        command: sh -c "npm run build && npm run preview -- --host 0.0.0.0 --port $PORT"
-        ports:
-            - ${PORT:-3000}:${PORT:-3000}
-        env_file:
-            - .env
-        develop:
-            watch:
-                - path: .
-                  target: /usr/src/app
-                  action: sync
-                - path: ./docker-compose.yaml
-                  target: /usr/src/app
-                  action: rebuild
-                - path: ./Dockerfile
-                  target: /usr/src/app
-                  action: rebuild
+  flowback-frontend:
+    # Build configuration using the Dockerfile in the current directory
+    build:
+      context: .
+      args:
+        # Passes the API URL from your .env file to the Docker build process
+        - PUBLIC_API_URL=${PUBLIC_API_URL:-/api}
+    
+    container_name: flowback-frontend
+    restart: unless-stopped
+    
+    # By default, we run the production build (from the multi-stage Dockerfile)
+    # The Dockerfile CMD is used here, so we don't need a custom 'command' line
+    # unless we want to override it.
+    
+    ports:
+      # Maps the host port to the container port (defaulting to 3000)
+      - "${PORT:-3000}:${PORT:-3000}"
+    
+    env_file:
+      - .env
 
-          # TODO:: Fix healthcheck
-        # healthcheck:
-        #     test: ['CMD', 'curl', '-f', 'http://localhost:${PORT:-3000}/']
-        #     interval: 4s
-        #     timeout: 4s
-        #     retries: 5
-        #     start_period: 5s
-        volumes:
-            - ./src:/home/node/app/src
-            - ./static:/home/node/app/static
-            - ./vite.config.js:/home/node/app/vite.config.js
-            - ./tsconfig.json:/home/node/app/tsconfig.json
-            - ./svelte.config.js:/home/node/app/svelte.config.js
-            - ./:/app
-            - /app/node_modules
+    volumes:
+      # Sync the entire project directory to /app for development
+      - ./:/app
+      # Anonymous volume for node_modules: 
+      # This prevents your laptop's local node_modules from overwriting 
+      # the correct Linux-based packages inside the container.
+      - /app/node_modules
 
-# TODO: Have a production setting (either in Dockerfile or in docker-compose, set in .env)
+    # Network settings for the internal gateway/proxy
+    networks:
+      - flowback-network
+
+networks:
+  flowback-network:
+    external: true
